@@ -1,39 +1,56 @@
-# Libro — Booking Intelligence for La Paloma Barcelona
+# Libro — Booking Intelligence for Live Music
 
-Enter seed artists → discover similar artists → filter out anyone unavailable → rank by Barcelona Spotify demand + Instagram Spain followers.
+Libro helps promoters and venues make smarter booking decisions. Enter seed artists, discover similar ones, filter out anyone unavailable, and rank by local demand.
 
-## Setup
+## Quick Start
 
-1. Run `verify_exclusions.py` to scrape fresh RA data
-2. Run `LibroSetup.command` (double-click) or `python3 server.py`
-3. Open http://localhost:8000
+```bash
+python3 server.py
+# Open http://localhost:8000
+```
 
-## How it works
+First visit: complete the 3-step onboarding (venue, taste, constraints). This customizes everything to your market.
 
+## How It Works
+
+### Discovery Pipeline
 1. **Seed artists** → Soundcharts finds 50 similar artists per seed
-2. **RA BCN filter** → Excludes anyone who played/is announced in Barcelona (7 months back, 3 months forward from your event date)
-3. **RA same-day filter** → Excludes anyone playing anywhere in the world on your event date
-4. **Soundcharts streaming** → Fetches Barcelona Spotify listeners + Instagram Spain followers
-5. **Threshold** → Only shows artists with 300+ BCN Spotify listeners
-6. **Rank** → Sorted by BCN Spotify listeners, with IG Spain shown alongside
+2. **RA city filter** (live) → Excludes anyone who played/is announced in your city (7mo back, 3mo forward)
+3. **RA same-day filter** (live) → Excludes anyone playing anywhere in the world on your event date
+4. **Soundcharts streaming** → Fetches city-level Spotify listeners
+5. **Threshold & rank** → Only shows artists above your minimum, ranked by local demand
 
-## Data sources
+### Date Scanner
+Pick any date, see every event in your city. Spot competing events before you commit to a date.
 
-- **Resident Advisor** — BCN event history + worldwide same-day check (GraphQL API)
-- **Soundcharts** — Artist discovery, Spotify streaming, Instagram followers
-- **Bandsintown** — Deprecated (API blocked)
+### Venue Report
+Auto-generated intelligence report based on your onboarding answers + RA event history + Soundcharts data.
 
-## Files
+## Data Sources
 
-- `libro.html` — The app (served via server.py)
-- `server.py` — Local proxy server (Soundcharts + RA GraphQL)
-- `verify_exclusions.py` — Scrapes RA and generates verified exclusion list
-- `exclusions_verified.json` — Generated exclusion data (run verify_exclusions.py to create)
-- `LibroSetup.command` — macOS double-click launcher (scrapes + launches)
+- **Soundcharts** — Artist discovery, Spotify city listeners, Instagram (city/country on paid plan)
+- **Resident Advisor** — Live event queries via GraphQL. No pre-scraping needed.
 
-## Event: June 26, 2026
+## Architecture
 
-- BCN exclusion window: Nov 26, 2025 → Sep 26, 2026
-- Same-day worldwide check: Jun 26, 2026
-- 3,146 BCN artists excluded
-- 545 worldwide same-day artists excluded
+- `server.py` — Python proxy server. Proxies Soundcharts API + RA GraphQL to avoid CORS.
+- `index.html` — Single-file app. All logic in vanilla JS. Data persists in localStorage.
+
+All RA queries are live — no JSON files to maintain, no scrapers to run. The app queries RA in real-time for every availability check.
+
+## Supported Cities
+
+Barcelona, Berlin, London, Amsterdam, Paris, Lisbon, Madrid, Milan, New York, Los Angeles, Detroit, Melbourne, Tokyo, São Paulo, Buenos Aires, Tbilisi, Manchester, Ibiza, Brussels, Copenhagen, Stockholm, Warsaw, Prague, Zurich, Bangkok, Seoul.
+
+## Environment Variables (optional)
+
+```bash
+export SC_APP_ID="your-soundcharts-app-id"
+export SC_API_KEY="your-soundcharts-api-key"
+```
+
+If not set, defaults to the built-in free tier credentials.
+
+## License
+
+Private. Not for redistribution.
