@@ -535,6 +535,7 @@ textarea {
       <label>Seed Artists</label>
       <textarea id="seedInput" placeholder="One artist per line&#10;e.g.&#10;Floating Points&#10;Avalon Emerson&#10;DJ Koze"></textarea>
       <small>Libro finds 50 similar artists per seed via Soundcharts, then filters for availability.</small>
+      <div id="seedHistory" style="margin-top:8px"></div>
     </div>
     <div class="form-row">
       <div class="input-group" style="margin-bottom:0">
@@ -581,6 +582,54 @@ let RA_DATA = [];          // bcn_exclusions.json
 let RA_LOADED = false;
 let SC_CALLS = 907;        // Soundcharts budget tracker
 const SAVED_KEY = 'libro_saved_artists';
+const SEED_HISTORY_KEY = 'libro_seed_history';
+
+// ── Seed History ──────────────────────────────────────────
+function getSeedHistory() {
+  try { return JSON.parse(localStorage.getItem(SEED_HISTORY_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveSeedHistory(seeds) {
+  const history = getSeedHistory();
+  for (const s of seeds) {
+    const lower = s.toLowerCase().trim();
+    if (lower && !history.some(h => h.toLowerCase() === lower)) {
+      history.unshift(s.trim());
+    }
+  }
+  // Keep last 50
+  if (history.length > 50) history.length = 50;
+  localStorage.setItem(SEED_HISTORY_KEY, JSON.stringify(history));
+  renderSeedHistory();
+}
+
+function removeSeedFromHistory(name) {
+  const history = getSeedHistory().filter(h => h !== name);
+  localStorage.setItem(SEED_HISTORY_KEY, JSON.stringify(history));
+  renderSeedHistory();
+}
+
+function addSeedToInput(name) {
+  const input = document.getElementById('seedInput');
+  const current = input.value.trim();
+  const lines = current ? current.split('\n').map(l => l.trim()).filter(Boolean) : [];
+  if (!lines.some(l => l.toLowerCase() === name.toLowerCase())) {
+    lines.push(name);
+    input.value = lines.join('\n');
+  }
+}
+
+function renderSeedHistory() {
+  const container = document.getElementById('seedHistory');
+  const history = getSeedHistory();
+  if (history.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = '<span style="font-family:var(--font-head);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-faint);margin-right:6px">Previously used:</span>' +
+    history.map(h => `<span style="display:inline-block;background:var(--surface-2);border:1px solid var(--border);padding:2px 8px;border-radius:3px;font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin:2px 4px 2px 0;cursor:pointer" onclick="addSeedToInput('${h.replace(/'/g, "\\'")}')" title="Click to add">${esc(h)} <span onclick="event.stopPropagation();removeSeedFromHistory('${h.replace(/'/g, "\\'")}')" style="color:var(--text-faint);cursor:pointer;margin-left:4px" title="Remove">×</span></span>`).join('');
+}
 
 // European countries for routing check
 const EUROPE = new Set([
@@ -639,6 +688,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load saved
   renderSaved();
+  renderSeedHistory();
   updateBudget(SC_CALLS);
 
   // Tab switching
@@ -910,6 +960,7 @@ async function runDiscovery() {
   if (!seedText) return;
 
   const seeds = seedText.split('\n').map(s => s.trim()).filter(Boolean);
+  saveSeedHistory(seeds);
   const btn = document.getElementById('discoverBtn');
   btn.disabled = true;
   btn.textContent = 'Running…';
@@ -1072,23 +1123,18 @@ async function runDiscovery() {
     }
     try {
       const streaming = await scStreaming(c.uuid);
-      const ig = await scInstagram(c.uuid);
       c.bcnListeners = streaming.bcn;
       c.globalListeners = streaming.global;
-      c.igSpain = ig.igSpain;
-      c.igGlobal = ig.igGlobal;
       withStreaming.push(c);
-      if (streaming.bcn > 0 || ig.igSpain > 0) {
-        log(`  ✓ ${c.name} — ${fmtNum(streaming.bcn)} BCN Spotify / ${fmtNum(ig.igSpain)} IG Spain`, 'ok');
+      if (streaming.bcn > 0) {
+        log(`  ✓ ${c.name} — ${fmtNum(streaming.bcn)} BCN Spotify`, 'ok');
       } else {
-        log(`  · ${c.name} — no BCN/IG data`, 'dim');
+        log(`  · ${c.name} — no BCN data (global: ${fmtNum(streaming.global)})`, 'dim');
       }
     } catch (e) {
       log(`  ? ${c.name} — error: ${e.message}`, 'warn');
       c.bcnListeners = 0;
       c.globalListeners = 0;
-      c.igSpain = 0;
-      c.igGlobal = 0;
       withStreaming.push(c);
     }
   }
@@ -1096,15 +1142,16 @@ async function runDiscovery() {
   // ── Step 6: Filter & Rank ──────────────────────────────
   log('');
   log('▸ STEP 6 — Filtering (min 300 BCN Spotify) & ranking', 'step');
-  const qualified = withStreaming.filter(a => (a.bcnListeners || 0) >= 2000 && (a.igSpain || 0) >= 500);
+  const qualified = withStreaming.filter(a => (a.bcnListeners || 0) >= 2000);
   const cut = withStreaming.length - qualified.length;
   qualified.sort((a, b) => (b.bcnListeners || 0) - (a.bcnListeners || 0));
-  log(`  ${cut} artists below thresholds (2K BCN Spotify + 500 IG Spain) — removed`, 'dim');
-  log(`  ${qualified.length} artists qualified and ranked.`, 'ok');
+  const top50 = qualified.slice(0, 50);
+  log(`  ${cut} artists below 2K BCN Spotify threshold — removed`, 'dim');
+  log(`  ${qualified.length} qualified, showing top ${top50.length}`, 'ok');
   log(`  Soundcharts budget: ~${SC_CALLS} calls remaining`, SC_CALLS < 200 ? 'warn' : 'dim');
 
   // ── Render results ─────────────────────────────────────
-  renderDiscoverResults(qualified, eventDate);
+  renderDiscoverResults(top50, eventDate);
   btn.disabled = false;
   btn.textContent = 'Discover';
 }
