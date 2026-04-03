@@ -1096,10 +1096,10 @@ async function runDiscovery() {
   // ── Step 6: Filter & Rank ──────────────────────────────
   log('');
   log('▸ STEP 6 — Filtering (min 300 BCN Spotify) & ranking', 'step');
-  const qualified = withStreaming.filter(a => (a.bcnListeners || 0) >= 300);
+  const qualified = withStreaming.filter(a => (a.bcnListeners || 0) >= 2000 && (a.igSpain || 0) >= 500);
   const cut = withStreaming.length - qualified.length;
   qualified.sort((a, b) => (b.bcnListeners || 0) - (a.bcnListeners || 0));
-  log(`  ${cut} artists below 300 BCN Spotify threshold — removed`, 'dim');
+  log(`  ${cut} artists below thresholds (2K BCN Spotify + 500 IG Spain) — removed`, 'dim');
   log(`  ${qualified.length} artists qualified and ranked.`, 'ok');
   log(`  Soundcharts budget: ~${SC_CALLS} calls remaining`, SC_CALLS < 200 ? 'warn' : 'dim');
 
@@ -1219,7 +1219,7 @@ function renderDiscoverResults(artists, eventDate) {
           <div class="global">${fmtNum(a.globalListeners || 0)} global</div>
         </div>
         <div class="bcn-number" style="text-align:right;min-width:80px">
-          <div class="value" style="color:${(a.igSpain || 0) >= 300 ? 'var(--red)' : 'var(--text-faint)'};font-size:1.2rem">${a.igSpain > 0 ? fmtNum(a.igSpain) : '—'}</div>
+          <div class="value" style="color:${(a.igSpain || 0) >= 500 ? 'var(--red)' : 'var(--text-faint)'};font-size:1.2rem">${a.igSpain > 0 ? fmtNum(a.igSpain) : '—'}</div>
           <div class="label">IG Spain</div>
           <div class="global">${fmtNum(a.igGlobal || 0)} global</div>
         </div>
