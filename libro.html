@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libro — La Paloma BCN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   LIBRO — Design Tokens
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --bg:        #08080a;
+  --surface:   #111114;
+  --surface-2: #19191d;
+  --border:    #252528;
+  --border-hi: #35353a;
+  --text:      #d8d4cc;
+  --text-dim:  #7a776f;
+  --text-faint:#4a4843;
+  --red:       #c23c2a;
+  --red-dim:   #8a2a1e;
+  --red-glow:  rgba(194, 60, 42, 0.15);
+  --green:     #3a8a5c;
+  --green-dim: rgba(58, 138, 92, 0.15);
+  --amber:     #b8860b;
+  --amber-dim: rgba(184, 134, 11, 0.15);
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'Newsreader', Georgia, serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --radius:    6px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reset & Base
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--red); color: #fff; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ═══════════════════════════════════════════════════════════
+   Layout
+   ═══════════════════════════════════════════════════════════ */
+.shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+header {
+  padding: 40px 0 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.masthead h1 {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.masthead h1 span { color: var(--red); }
+.masthead .tagline {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.budget-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-left: 16px;
+}
+.budget-pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+}
+.budget-pill.warn .dot { background: var(--amber); }
+.budget-pill.crit .dot { background: var(--red); }
+
+/* ═══════════════════════════════════════════════════════════
+   Tabs
+   ═══════════════════════════════════════════════════════════ */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+}
+.tab-btn {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  padding: 10px 20px 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ═══════════════════════════════════════════════════════════
+   Forms
+   ═══════════════════════════════════════════════════════════ */
+.input-group {
+  margin-bottom: 20px;
+}
+.input-group label {
+  display: block;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.input-group small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-top: 4px;
+  font-style: italic;
+}
+textarea, input[type="text"], input[type="date"] {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+textarea:focus, input:focus {
+  border-color: var(--border-hi);
+}
+textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.7;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+.btn {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 11px 28px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-primary {
+  background: var(--red);
+  color: #fff;
+}
+.btn-primary:hover { background: #d44433; }
+.btn-primary:disabled {
+  background: var(--red-dim);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 7px 16px;
+  font-size: 0.7rem;
+}
+.btn-ghost:hover {
+  border-color: var(--border-hi);
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Pipeline Log
+   ═══════════════════════════════════════════════════════════ */
+.pipeline-log {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin: 20px 0;
+  max-height: 240px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.8;
+  color: var(--text-dim);
+  display: none;
+}
+.pipeline-log.visible { display: block; }
+.pipeline-log .step { color: var(--red); }
+.pipeline-log .ok { color: var(--green); }
+.pipeline-log .warn { color: var(--amber); }
+.pipeline-log .dim { color: var(--text-faint); }
+
+/* ═══════════════════════════════════════════════════════════
+   Results
+   ═══════════════════════════════════════════════════════════ */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 28px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.results-header h2 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.results-header .count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+.artist-card {
+  display: grid;
+  grid-template-columns: 60px 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.artist-card:hover { background: var(--surface); margin: 0 -18px; padding: 16px 18px; border-radius: var(--radius); }
+.rank {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--text-faint);
+  text-align: center;
+}
+.artist-card:nth-child(-n+3) .rank { color: var(--red); }
+.artist-info h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+.artist-info .meta {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+.artist-info .meta .seed-tag {
+  display: inline-block;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  margin-left: 4px;
+}
+.artist-info .routing {
+  display: inline-block;
+  background: var(--amber-dim);
+  color: var(--amber);
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  margin-left: 6px;
+}
+.bcn-number {
+  text-align: right;
+}
+.bcn-number .value {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--red);
+  line-height: 1.1;
+}
+.bcn-number .label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.bcn-number .global {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+}
+.artist-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.artist-actions button {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.artist-actions button:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+.artist-actions button.saved {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Verify Panel
+   ═══════════════════════════════════════════════════════════ */
+.verify-result {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-top: 20px;
+}
+.verify-result h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+}
+.verify-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.verify-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.verify-box .vb-label {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.verify-box .vb-value {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--red);
+}
+.verify-box .vb-detail {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.status-ok { color: var(--green); }
+.status-warn { color: var(--amber); }
+.status-block { color: var(--red); }
+
+/* ═══════════════════════════════════════════════════════════
+   Saved Panel
+   ═══════════════════════════════════════════════════════════ */
+.saved-list { margin-top: 16px; }
+.saved-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+.saved-card h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1rem;
+}
+.saved-card .saved-bcn {
+  font-family: var(--font-head);
+  font-weight: 800;
+  color: var(--red);
+  font-size: 1.2rem;
+}
+.saved-card .saved-meta {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.saved-card textarea.notes {
+  margin-top: 8px;
+  min-height: 50px;
+  font-size: 0.85rem;
+}
+.saved-card .remove-btn {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+.saved-card .remove-btn:hover { color: var(--red); border-color: var(--red); }
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .verify-grid { grid-template-columns: 1fr; }
+  .artist-card { grid-template-columns: 40px 1fr; }
+  .bcn-number { grid-column: 2; text-align: left; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════════════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.artist-card { animation: fadeIn 0.3s ease both; }
+.artist-card:nth-child(1) { animation-delay: 0ms; }
+.artist-card:nth-child(2) { animation-delay: 40ms; }
+.artist-card:nth-child(3) { animation-delay: 80ms; }
+.artist-card:nth-child(4) { animation-delay: 120ms; }
+.artist-card:nth-child(5) { animation-delay: 160ms; }
+.artist-card:nth-child(6) { animation-delay: 200ms; }
+.artist-card:nth-child(7) { animation-delay: 240ms; }
+.artist-card:nth-child(8) { animation-delay: 280ms; }
+.artist-card:nth-child(9) { animation-delay: 320ms; }
+.artist-card:nth-child(10) { animation-delay: 360ms; }
+
+.loading-spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ═══════ Header ═══════ -->
+  <header>
+    <div class="masthead">
+      <div>
+        <h1>Lib<span>r</span>o</h1>
+        <span class="tagline">Booking intelligence for La Paloma Barcelona</span>
+      </div>
+      <div>
+        <span class="budget-pill" id="budgetPill">
+          <span class="dot"></span>
+          <span id="budgetCount">—</span> SC calls left
+        </span>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="discover">Discover</button>
+      <button class="tab-btn" data-tab="verify">Verify</button>
+      <button class="tab-btn" data-tab="saved">Saved</button>
+    </div>
+  </header>
+
+  <!-- ═══════ DISCOVER ═══════ -->
+  <div class="tab-panel active" id="panel-discover">
+    <div class="input-group">
+      <label>Seed Artists</label>
+      <textarea id="seedInput" placeholder="One artist per line&#10;e.g.&#10;Floating Points&#10;Avalon Emerson&#10;DJ Koze"></textarea>
+      <small>Libro finds 50 similar artists per seed via Soundcharts, then filters for availability.</small>
+    </div>
+    <div class="form-row">
+      <div class="input-group" style="margin-bottom:0">
+        <label>Event Date</label>
+        <input type="date" id="eventDate">
+      </div>
+      <button class="btn btn-primary" id="discoverBtn" onclick="runDiscovery()">Discover</button>
+    </div>
+
+    <div class="pipeline-log" id="pipelineLog"></div>
+    <div id="discoverResults"></div>
+  </div>
+
+  <!-- ═══════ VERIFY ═══════ -->
+  <div class="tab-panel" id="panel-verify">
+    <div class="input-group">
+      <label>Artist Name</label>
+      <input type="text" id="verifyInput" placeholder="Enter exact artist name">
+    </div>
+    <button class="btn btn-primary" onclick="runVerify()">Check Availability</button>
+    <div id="verifyResults"></div>
+  </div>
+
+  <!-- ═══════ SAVED ═══════ -->
+  <div class="tab-panel" id="panel-saved">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div class="input-group" style="margin:0">
+        <label>Your Shortlist</label>
+      </div>
+      <button class="btn-ghost" onclick="exportSaved()">Export CSV</button>
+    </div>
+    <div class="saved-list" id="savedList"></div>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   LIBRO — Core Engine
+   ═══════════════════════════════════════════════════════════ */
+
+// ── State ─────────────────────────────────────────────────
+let RA_DATA = [];          // bcn_exclusions.json
+let RA_LOADED = false;
+let SC_CALLS = 907;        // Soundcharts budget tracker
+const SAVED_KEY = 'libro_saved_artists';
+
+// European countries for routing check
+const EUROPE = new Set([
+  'Austria','Belgium','Bulgaria','Croatia','Cyprus','Czech Republic','Czechia',
+  'Denmark','Estonia','Finland','France','Germany','Greece','Hungary','Iceland',
+  'Ireland','Italy','Latvia','Lithuania','Luxembourg','Malta','Netherlands',
+  'Norway','Poland','Portugal','Romania','Slovakia','Slovenia','Spain',
+  'Sweden','Switzerland','United Kingdom','UK','Serbia','Bosnia and Herzegovina',
+  'Montenegro','North Macedonia','Albania','Moldova','Ukraine','Belarus',
+  'Turkey','Georgia'
+]);
+
+// ── Init ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  // Set default date to 2 months from now
+  const d = new Date();
+  d.setMonth(d.getMonth() + 2);
+  document.getElementById('eventDate').value = d.toISOString().split('T')[0];
+
+  // Load RA exclusions
+  try {
+    const resp = await fetch('/bcn_exclusions.json');
+    const raw = await resp.json();
+
+    // Handle nested format: { artists: { slug: { name, appearances: [...] } } }
+    if (raw.artists && typeof raw.artists === 'object' && !Array.isArray(raw.artists)) {
+      RA_DATA = [];
+      for (const [slug, artist] of Object.entries(raw.artists)) {
+        const name = artist.name || slug;
+        const appearances = artist.appearances || artist.events || [];
+        for (const app of appearances) {
+          RA_DATA.push({
+            name: name,
+            date: app.date || app.startDate || app.eventDate || '',
+            venue: app.venue || app.venueName || '',
+            event: app.event || app.eventName || app.title || '',
+          });
+        }
+      }
+    }
+    // Handle flat array format: [{ name, date, venue }, ...]
+    else if (Array.isArray(raw)) {
+      RA_DATA = raw;
+    }
+    // Unknown format
+    else {
+      console.warn('[Libro] Unrecognised bcn_exclusions.json format:', Object.keys(raw));
+      RA_DATA = [];
+    }
+
+    RA_LOADED = RA_DATA.length > 0;
+    console.log(`[Libro] Loaded ${RA_DATA.length} RA exclusion records from ${raw.total_artists || '?'} artists`);
+  } catch (e) {
+    console.warn('[Libro] Could not load bcn_exclusions.json:', e);
+  }
+
+  // Load saved
+  renderSaved();
+  updateBudget(SC_CALLS);
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+});
+
+// ── Budget tracker ────────────────────────────────────────
+function updateBudget(n) {
+  SC_CALLS = n;
+  const el = document.getElementById('budgetCount');
+  const pill = document.getElementById('budgetPill');
+  el.textContent = n;
+  pill.className = 'budget-pill' + (n < 100 ? ' crit' : n < 300 ? ' warn' : '');
+}
+function useSC(n = 1) { updateBudget(SC_CALLS - n); }
+
+// ── Pipeline Log ──────────────────────────────────────────
+const logEl = () => document.getElementById('pipelineLog');
+function logClear() {
+  const el = logEl();
+  el.innerHTML = '';
+  el.classList.add('visible');
+}
+function log(msg, cls = '') {
+  const el = logEl();
+  const line = document.createElement('div');
+  line.innerHTML = cls ? `<span class="${cls}">${msg}</span>` : msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  API Layer
+// ═══════════════════════════════════════════════════════════
+
+async function scFetch(path) {
+  useSC();
+  const url = '/api/soundcharts' + path;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`SC ${resp.status}: ${path}`);
+    return resp.json();
+  } catch (e) {
+    console.error(`[scFetch] ${url}`, e);
+    throw e;
+  }
+}
+
+// Soundcharts: search for artist → uuid
+async function scSearch(name) {
+  const data = await scFetch(`/api/v2/artist/search/${encodeURIComponent(name)}?limit=1`);
+  if (data.items && data.items.length > 0) return data.items[0];
+  return null;
+}
+
+// Soundcharts: get related artists
+async function scRelated(uuid) {
+  const data = await scFetch(`/api/v2/artist/${uuid}/related?limit=50`);
+  return (data.items || []);
+}
+
+// Soundcharts: get streaming data
+async function scStreaming(uuid) {
+  const data = await scFetch(`/api/v2/artist/${uuid}/streaming/spotify`);
+  const item = (data.items || [])[0];
+  if (!item) return { global: 0, bcn: 0 };
+  const global = item.value || 0;
+  let bcn = 0;
+  if (item.cityPlots) {
+    const bcnCity = item.cityPlots.find(c =>
+      c.cityName && c.cityName.toLowerCase().includes('barcelona')
+    );
+    if (bcnCity) bcn = bcnCity.value || 0;
+  }
+  return { global, bcn };
+}
+
+// Soundcharts: get Instagram followers (global + Spain/Catalunya)
+async function scInstagram(uuid) {
+  try {
+    const data = await scFetch(`/api/v2/artist/${uuid}/social/instagram`);
+    const item = (data.items || [])[0];
+    if (!item) return { igGlobal: 0, igSpain: 0 };
+    const igGlobal = item.value || 0;
+    let igSpain = 0;
+    // Check countryPlots for Spain
+    if (item.countryPlots) {
+      const spain = item.countryPlots.find(c =>
+        c.countryName && (c.countryName.toLowerCase() === 'spain' || c.countryName.toLowerCase() === 'españa')
+      );
+      if (spain) igSpain = spain.value || 0;
+    }
+    // Also check cityPlots for Barcelona/Catalunya
+    if (item.cityPlots && igSpain === 0) {
+      const bcnIG = item.cityPlots.find(c =>
+        c.cityName && c.cityName.toLowerCase().includes('barcelona')
+      );
+      if (bcnIG) igSpain = bcnIG.value || 0;
+    }
+    return { igGlobal, igSpain };
+  } catch (e) {
+    console.warn(`[IG] ${uuid}:`, e.message);
+    return { igGlobal: 0, igSpain: 0 };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RA Exclusion Check (local)
+// ═══════════════════════════════════════════════════════════
+
+function checkRA(artistName, eventDate) {
+  if (!RA_LOADED || RA_DATA.length === 0) return { excluded: false, reason: null };
+
+  const normalise = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const target = normalise(artistName);
+
+  // All windows are relative to the EVENT DATE, not today
+  // 7 months back, 3 months forward
+  const anchor = eventDate ? new Date(eventDate) : new Date();
+  const lookBack = new Date(anchor);
+  lookBack.setMonth(anchor.getMonth() - 7);
+  const lookForward = new Date(anchor);
+  lookForward.setMonth(anchor.getMonth() + 3);
+
+  for (const entry of RA_DATA) {
+    const entryNorm = normalise(entry.name || '');
+
+    // Fuzzy match: exact, or one contains the other BUT only if lengths are close
+    // (prevents "aire" matching "bellaire")
+    const lenRatio = Math.min(entryNorm.length, target.length) / Math.max(entryNorm.length, target.length);
+    const match = entryNorm === target
+      || (target.length >= 5 && lenRatio > 0.6 && entryNorm.includes(target))
+      || (entryNorm.length >= 5 && lenRatio > 0.6 && target.includes(entryNorm));
+    if (!match) continue;
+
+    const dateStr = entry.date || '';
+    if (!dateStr) continue;
+    const d = new Date(dateStr);
+
+    if (d >= lookBack && d < anchor) {
+      return { excluded: true, reason: `Played BCN ${formatDate(d)} (${entry.venue || 'RA'}) — ${monthsAgo(d, anchor)}mo before your date` };
+    }
+    if (d >= anchor && d <= lookForward) {
+      return { excluded: true, reason: `Announced BCN ${formatDate(d)} (${entry.venue || 'RA'}) — ${monthsAfter(d, anchor)}mo after your date` };
+    }
+  }
+  return { excluded: false, reason: null };
+}
+
+function monthsAgo(d, anchor) {
+  return Math.max(1, Math.round((anchor - d) / (30.44 * 24 * 60 * 60 * 1000)));
+}
+function monthsAfter(d, anchor) {
+  return Math.max(1, Math.round((d - anchor) / (30.44 * 24 * 60 * 60 * 1000)));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RA Worldwide Schedule Check (replaces dead Bandsintown)
+// ═══════════════════════════════════════════════════════════
+
+const RA_QUERY = `query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){
+  eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){
+    data{event{date title venue{name area{name}} artists{name}}}
+    totalResults
+  }
+}`;
+
+async function raFetch(query, variables) {
+  const resp = await fetch('/api/ra/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables }),
+  });
+  if (!resp.ok) throw new Error(`RA ${resp.status}`);
+  return resp.json();
+}
+
+// Check if an artist is playing ANYWHERE on a specific date
+async function checkRAWorldwide(artistName, eventDate) {
+  const result = {
+    excluded: false,
+    reason: null,
+  };
+
+  if (!eventDate) return result;
+
+  try {
+    // Search RA for events on the exact event date (worldwide, no area filter)
+    const d = await raFetch(RA_QUERY, {
+      f: { listingDate: { gte: eventDate, lte: eventDate } },
+      fo: {},
+      p: 1,
+      s: 50,
+    });
+
+    const events = d?.data?.eventListings?.data || [];
+    const normalise = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const target = normalise(artistName);
+
+    for (const el of events) {
+      const ev = el.event || {};
+      const artists = (ev.artists || []).map(a => a.name || '');
+      const matched = artists.find(a => {
+        const n = normalise(a);
+        const lenRatio = Math.min(n.length, target.length) / Math.max(n.length, target.length);
+        return n === target || (target.length >= 5 && lenRatio > 0.6 && n.includes(target)) || (n.length >= 5 && lenRatio > 0.6 && target.includes(n));
+      });
+
+      if (matched) {
+        const venue = ev.venue?.name || '?';
+        const area = ev.venue?.area?.name || '?';
+        result.excluded = true;
+        result.reason = `Playing ${venue} (${area}) same day — ${ev.title || ''}`;
+        return result;
+      }
+    }
+
+    // If more than 50 results, check remaining pages
+    const total = d?.data?.eventListings?.totalResults || 0;
+    if (total > 50) {
+      const pages = Math.min(Math.ceil(total / 50), 5); // cap at 5 pages
+      for (let p = 2; p <= pages; p++) {
+        const d2 = await raFetch(RA_QUERY, {
+          f: { listingDate: { gte: eventDate, lte: eventDate } },
+          fo: {},
+          p,
+          s: 50,
+        });
+        const events2 = d2?.data?.eventListings?.data || [];
+        for (const el of events2) {
+          const ev = el.event || {};
+          const artists = (ev.artists || []).map(a => a.name || '');
+          const matched = artists.find(a => {
+            const n = normalise(a);
+            const lenRatio = Math.min(n.length, target.length) / Math.max(n.length, target.length);
+            return n === target || (target.length >= 5 && lenRatio > 0.6 && n.includes(target)) || (n.length >= 5 && lenRatio > 0.6 && target.includes(n));
+          });
+          if (matched) {
+            const venue = ev.venue?.name || '?';
+            const area = ev.venue?.area?.name || '?';
+            result.excluded = true;
+            result.reason = `Playing ${venue} (${area}) same day — ${ev.title || ''}`;
+            return result;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn(`[RA worldwide] ${artistName}:`, e.message);
+  }
+
+  return result;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DISCOVERY PIPELINE
+// ═══════════════════════════════════════════════════════════
+
+async function runDiscovery() {
+  const seedText = document.getElementById('seedInput').value.trim();
+  const eventDate = document.getElementById('eventDate').value;
+  if (!seedText) return;
+
+  const seeds = seedText.split('\n').map(s => s.trim()).filter(Boolean);
+  const btn = document.getElementById('discoverBtn');
+  btn.disabled = true;
+  btn.textContent = 'Running…';
+  logClear();
+  document.getElementById('discoverResults').innerHTML = '';
+
+  log(`Starting discovery with ${seeds.length} seed${seeds.length > 1 ? 's' : ''}`, 'step');
+  if (eventDate) {
+    const anchor = new Date(eventDate);
+    const from = new Date(anchor); from.setMonth(anchor.getMonth() - 7);
+    const to = new Date(anchor); to.setMonth(anchor.getMonth() + 3);
+    log(`Event date: ${eventDate}`, 'dim');
+    log(`Exclusion window: ${formatDate(from)} → ${formatDate(to)} (7mo before / 3mo after your date)`, 'dim');
+  }
+  log(`RA exclusions loaded: ${RA_DATA.length} records`, 'dim');
+
+  // ── Step 1: Resolve seeds ──────────────────────────────
+  log('');
+  log('▸ STEP 1 — Resolving seeds on Soundcharts', 'step');
+  const resolvedSeeds = [];
+  for (const seed of seeds) {
+    try {
+      const artist = await scSearch(seed);
+      if (artist) {
+        resolvedSeeds.push({ name: artist.name || seed, uuid: artist.uuid, seedName: seed });
+        log(`  ✓ ${seed} → ${artist.name} (${artist.uuid.slice(0,8)}…)`, 'ok');
+      } else {
+        log(`  ✗ ${seed} — not found`, 'warn');
+      }
+    } catch (e) {
+      log(`  ✗ ${seed} — error: ${e.message}`, 'warn');
+    }
+  }
+
+  if (resolvedSeeds.length === 0) {
+    log('No seeds resolved. Stopping.', 'warn');
+    btn.disabled = false;
+    btn.textContent = 'Discover';
+    return;
+  }
+
+  // ── Step 2: Fetch related artists ──────────────────────
+  log('');
+  log('▸ STEP 2 — Fetching related artists', 'step');
+  const candidateMap = new Map(); // uuid → { name, seeds: [] }
+  for (const seed of resolvedSeeds) {
+    try {
+      const related = await scRelated(seed.uuid);
+      log(`  ${seed.name}: ${related.length} related artists`, 'ok');
+      for (const r of related) {
+        if (resolvedSeeds.some(s => s.uuid === r.uuid)) continue; // skip seeds themselves
+        if (!candidateMap.has(r.uuid)) {
+          candidateMap.set(r.uuid, { name: r.name, uuid: r.uuid, seeds: [] });
+        }
+        candidateMap.get(r.uuid).seeds.push(seed.seedName);
+      }
+    } catch (e) {
+      log(`  ${seed.name}: error — ${e.message}`, 'warn');
+    }
+  }
+  const candidates = Array.from(candidateMap.values());
+  log(`  ${candidates.length} unique candidates (deduplicated)`, 'dim');
+
+  // ── Step 3: RA filter ──────────────────────────────────
+  log('');
+  log('▸ STEP 3 — RA exclusion filter (local)', 'step');
+  let raExcluded = 0;
+  const afterRA = [];
+  for (const c of candidates) {
+    const ra = checkRA(c.name, eventDate);
+    if (ra.excluded) {
+      raExcluded++;
+      log(`  ✗ ${c.name} — ${ra.reason}`, 'dim');
+    } else {
+      afterRA.push(c);
+    }
+  }
+  log(`  ${raExcluded} excluded, ${afterRA.length} remain`, raExcluded > 0 ? 'ok' : 'dim');
+
+  // ── Step 4: RA worldwide same-day check ─────────────────
+  log('');
+  log(`▸ STEP 4 — RA worldwide same-day check (${eventDate})`, 'step');
+
+  // Fetch ALL events worldwide on the event date from RA (once, not per artist)
+  let worldwideArtists = new Set();
+  let raWorldwideOK = false;
+  try {
+    let raPage = 1;
+    while (true) {
+      const d = await raFetch(RA_QUERY, {
+        f: { listingDate: { gte: eventDate, lte: eventDate } },
+        fo: {},
+        p: raPage,
+        s: 50,
+      });
+      const events = d?.data?.eventListings?.data || [];
+      const total = d?.data?.eventListings?.totalResults || 0;
+      for (const el of events) {
+        const ev = el.event || {};
+        const venue = ev.venue?.name || '?';
+        const area = ev.venue?.area?.name || '?';
+        for (const a of (ev.artists || [])) {
+          const name = (a.name || '').trim();
+          if (name) {
+            worldwideArtists.add(JSON.stringify({
+              name,
+              norm: name.toLowerCase().replace(/[^a-z0-9]/g, ''),
+              venue,
+              area,
+              title: ev.title || '',
+            }));
+          }
+        }
+      }
+      if (raPage * 50 >= total || raPage >= 20) break;
+      raPage++;
+    }
+    raWorldwideOK = true;
+    log(`  Loaded ${worldwideArtists.size} artists playing worldwide on ${eventDate}`, 'dim');
+  } catch (e) {
+    log(`  ⚠ RA worldwide check failed: ${e.message}`, 'warn');
+  }
+
+  let sameDayExcluded = 0;
+  const afterSameDay = [];
+  const normalise = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  for (const c of afterRA) {
+    if (!raWorldwideOK) {
+      afterSameDay.push(c);
+      continue;
+    }
+    const target = normalise(c.name);
+    let blocked = false;
+    for (const raw of worldwideArtists) {
+      const w = JSON.parse(raw);
+      const lenRatio = Math.min(w.norm.length, target.length) / Math.max(w.norm.length, target.length);
+      const match = w.norm === target
+        || (target.length >= 5 && lenRatio > 0.6 && w.norm.includes(target))
+        || (w.norm.length >= 5 && lenRatio > 0.6 && target.includes(w.norm));
+      if (match) {
+        sameDayExcluded++;
+        log(`  ✗ ${c.name} — playing ${w.venue} (${w.area}) same day`, 'dim');
+        blocked = true;
+        break;
+      }
+    }
+    if (!blocked) afterSameDay.push(c);
+  }
+  log(`  ${sameDayExcluded} excluded, ${afterSameDay.length} remain`, 'ok');
+
+  // ── Step 5: Soundcharts BCN Spotify + Instagram ─────────
+  log('');
+  log(`▸ STEP 5 — Fetching BCN Spotify + Instagram Spain (${afterSameDay.length} artists)`, 'step');
+  const withStreaming = [];
+  for (let i = 0; i < afterSameDay.length; i++) {
+    const c = afterSameDay[i];
+    if (i > 0 && i % 10 === 0) {
+      log(`  … ${i}/${afterSameDay.length} fetched`, 'dim');
+    }
+    try {
+      const streaming = await scStreaming(c.uuid);
+      const ig = await scInstagram(c.uuid);
+      c.bcnListeners = streaming.bcn;
+      c.globalListeners = streaming.global;
+      c.igSpain = ig.igSpain;
+      c.igGlobal = ig.igGlobal;
+      withStreaming.push(c);
+      if (streaming.bcn > 0 || ig.igSpain > 0) {
+        log(`  ✓ ${c.name} — ${fmtNum(streaming.bcn)} BCN Spotify / ${fmtNum(ig.igSpain)} IG Spain`, 'ok');
+      } else {
+        log(`  · ${c.name} — no BCN/IG data`, 'dim');
+      }
+    } catch (e) {
+      log(`  ? ${c.name} — error: ${e.message}`, 'warn');
+      c.bcnListeners = 0;
+      c.globalListeners = 0;
+      c.igSpain = 0;
+      c.igGlobal = 0;
+      withStreaming.push(c);
+    }
+  }
+
+  // ── Step 6: Filter & Rank ──────────────────────────────
+  log('');
+  log('▸ STEP 6 — Filtering (min 300 BCN Spotify) & ranking', 'step');
+  const qualified = withStreaming.filter(a => (a.bcnListeners || 0) >= 300);
+  const cut = withStreaming.length - qualified.length;
+  qualified.sort((a, b) => (b.bcnListeners || 0) - (a.bcnListeners || 0));
+  log(`  ${cut} artists below 300 BCN Spotify threshold — removed`, 'dim');
+  log(`  ${qualified.length} artists qualified and ranked.`, 'ok');
+  log(`  Soundcharts budget: ~${SC_CALLS} calls remaining`, SC_CALLS < 200 ? 'warn' : 'dim');
+
+  // ── Render results ─────────────────────────────────────
+  renderDiscoverResults(qualified, eventDate);
+  btn.disabled = false;
+  btn.textContent = 'Discover';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  VERIFY
+// ═══════════════════════════════════════════════════════════
+
+async function runVerify() {
+  const name = document.getElementById('verifyInput').value.trim();
+  if (!name) return;
+  const container = document.getElementById('verifyResults');
+  container.innerHTML = '<div style="padding:20px;color:var(--text-dim)"><span class="loading-spinner"></span> Checking…</div>';
+
+  let scData = null, streaming = { global: 0, bcn: 0 }, raResult, sameDayResult;
+
+  // Soundcharts
+  try {
+    scData = await scSearch(name);
+    if (scData) {
+      streaming = await scStreaming(scData.uuid);
+    }
+  } catch (e) { console.warn('SC error:', e); }
+
+  // RA BCN exclusion
+  raResult = checkRA(name, document.getElementById('eventDate').value);
+
+  // RA worldwide same-day check
+  try {
+    sameDayResult = await checkRAWorldwide(name, document.getElementById('eventDate').value);
+  } catch (e) {
+    sameDayResult = { excluded: false, reason: null };
+  }
+
+  // Overall verdict
+  const blocked = raResult.excluded || sameDayResult.excluded;
+  const verdictClass = blocked ? 'status-block' : 'status-ok';
+  const verdictText = blocked
+    ? `Blocked — ${raResult.reason || sameDayResult.reason}`
+    : 'Available';
+
+  container.innerHTML = `
+    <div class="verify-result">
+      <h3>${scData?.name || name} <span class="${verdictClass}" style="font-size:0.8rem;font-family:var(--font-mono);margin-left:12px">${verdictText}</span></h3>
+      <div class="verify-grid">
+        <div class="verify-box">
+          <div class="vb-label">BCN Spotify Listeners</div>
+          <div class="vb-value">${streaming.bcn > 0 ? fmtNum(streaming.bcn) : '—'}</div>
+          <div class="vb-detail">Global: ${fmtNum(streaming.global)}</div>
+        </div>
+        <div class="verify-box">
+          <div class="vb-label">RA — BCN History</div>
+          <div class="vb-value" style="font-size:1.2rem;color:${raResult.excluded ? 'var(--red)' : 'var(--green)'}">${raResult.excluded ? 'Conflict' : 'Clear'}</div>
+          <div class="vb-detail">${raResult.reason || 'No BCN gigs in exclusion window'}</div>
+        </div>
+        <div class="verify-box">
+          <div class="vb-label">RA — Same Day Worldwide</div>
+          <div class="vb-value" style="font-size:1.2rem;color:${sameDayResult.excluded ? 'var(--red)' : 'var(--green)'}">${sameDayResult.excluded ? 'Conflict' : 'Clear'}</div>
+          <div class="vb-detail">${sameDayResult.reason || 'Not playing anywhere on your date'}</div>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn-ghost" onclick="saveArtist('${(scData?.name || name).replace(/'/g, "\\'")}', ${streaming.bcn}, ${streaming.global}, '${(scData?.uuid || '').replace(/'/g, "\\'")}')">
+          Save to shortlist
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Rendering
+// ═══════════════════════════════════════════════════════════
+
+function renderDiscoverResults(artists, eventDate) {
+  const container = document.getElementById('discoverResults');
+  if (artists.length === 0) {
+    container.innerHTML = '<div class="empty-state">No artists survived the filters. Try different seeds or a different date.</div>';
+    return;
+  }
+
+  let html = `
+    <div class="results-header">
+      <h2>Results</h2>
+      <span class="count">${artists.length} artists · ranked by BCN Spotify</span>
+    </div>
+  `;
+
+  artists.forEach((a, i) => {
+    const seedTags = a.seeds.map(s => `<span class="seed-tag">${esc(s)}</span>`).join('');
+    const routingTag = a.routing
+      ? `<span class="routing">↗ ${esc(a.routing.city)} ${a.routing.date}</span>`
+      : '';
+    const isSaved = getSaved().some(s => s.name === a.name);
+
+    html += `
+      <div class="artist-card">
+        <div class="rank">${i + 1}</div>
+        <div class="artist-info">
+          <h3>${esc(a.name)}</h3>
+          <div class="meta">via ${seedTags} ${routingTag}</div>
+          <div class="artist-actions">
+            <button onclick="saveArtist('${a.name.replace(/'/g, "\\'")}', ${a.bcnListeners || 0}, ${a.globalListeners || 0}, '${(a.uuid || '').replace(/'/g, "\\'")}')" ${isSaved ? 'class="saved"' : ''}>
+              ${isSaved ? '✓ saved' : '+ save'}
+            </button>
+            <button onclick="verifyFromDiscover('${a.name.replace(/'/g, "\\'")}')">verify</button>
+          </div>
+        </div>
+        <div class="bcn-number" style="text-align:right">
+          <div class="value">${a.bcnListeners > 0 ? fmtNum(a.bcnListeners) : '—'}</div>
+          <div class="label">BCN Spotify</div>
+          <div class="global">${fmtNum(a.globalListeners || 0)} global</div>
+        </div>
+        <div class="bcn-number" style="text-align:right;min-width:80px">
+          <div class="value" style="color:${(a.igSpain || 0) >= 300 ? 'var(--red)' : 'var(--text-faint)'};font-size:1.2rem">${a.igSpain > 0 ? fmtNum(a.igSpain) : '—'}</div>
+          <div class="label">IG Spain</div>
+          <div class="global">${fmtNum(a.igGlobal || 0)} global</div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function verifyFromDiscover(name) {
+  document.getElementById('verifyInput').value = name;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="verify"]').classList.add('active');
+  document.getElementById('panel-verify').classList.add('active');
+  runVerify();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Saved / localStorage
+// ═══════════════════════════════════════════════════════════
+
+function getSaved() {
+  try { return JSON.parse(localStorage.getItem(SAVED_KEY)) || []; }
+  catch { return []; }
+}
+
+function setSaved(data) {
+  localStorage.setItem(SAVED_KEY, JSON.stringify(data));
+}
+
+function saveArtist(name, bcn, global, uuid) {
+  const saved = getSaved();
+  if (saved.some(s => s.name === name)) return;
+  saved.push({ name, bcn, global, uuid, notes: '', savedAt: new Date().toISOString() });
+  setSaved(saved);
+  renderSaved();
+  // Update button states in discover results
+  document.querySelectorAll('.artist-actions button').forEach(btn => {
+    if (btn.textContent.trim() === '+ save' && btn.onclick?.toString().includes(name.replace(/'/g, "\\'"))) {
+      btn.textContent = '✓ saved';
+      btn.classList.add('saved');
+    }
+  });
+}
+
+function removeSaved(name) {
+  const saved = getSaved().filter(s => s.name !== name);
+  setSaved(saved);
+  renderSaved();
+}
+
+function updateNotes(name, notes) {
+  const saved = getSaved();
+  const artist = saved.find(s => s.name === name);
+  if (artist) { artist.notes = notes; setSaved(saved); }
+}
+
+function renderSaved() {
+  const container = document.getElementById('savedList');
+  const saved = getSaved();
+  if (saved.length === 0) {
+    container.innerHTML = '<div class="empty-state">No saved artists yet. Discover or verify artists and save them here.</div>';
+    return;
+  }
+
+  // Sort by BCN listeners desc
+  saved.sort((a, b) => (b.bcn || 0) - (a.bcn || 0));
+
+  container.innerHTML = saved.map(a => `
+    <div class="saved-card">
+      <div>
+        <h3>${esc(a.name)}</h3>
+        <div class="saved-meta">BCN: ${a.bcn > 0 ? fmtNum(a.bcn) : '—'} · Global: ${fmtNum(a.global || 0)} · Saved ${new Date(a.savedAt).toLocaleDateString()}</div>
+        <textarea class="notes"
+          placeholder="Notes…"
+          onchange="updateNotes('${a.name.replace(/'/g, "\\'")}', this.value)"
+        >${esc(a.notes || '')}</textarea>
+      </div>
+      <div>
+        <div class="saved-bcn">${a.bcn > 0 ? fmtNum(a.bcn) : '—'}</div>
+        <button class="remove-btn" onclick="removeSaved('${a.name.replace(/'/g, "\\'")}')">Remove</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function exportSaved() {
+  const saved = getSaved();
+  if (saved.length === 0) return;
+  const header = 'Name,BCN Spotify,Global Spotify,Notes,Saved Date\n';
+  const rows = saved.map(a =>
+    `"${a.name}",${a.bcn || 0},${a.global || 0},"${(a.notes || '').replace(/"/g, '""')}",${a.savedAt}`
+  ).join('\n');
+  const blob = new Blob([header + rows], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `libro-shortlist-${new Date().toISOString().split('T')[0]}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Helpers
+// ═══════════════════════════════════════════════════════════
+
+function fmtNum(n) {
+  if (n == null || isNaN(n)) return '0';
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return n.toLocaleString();
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+</script>
+
+</body>
+</html>
