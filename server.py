@@ -16,8 +16,8 @@ from pathlib import Path
 PORT = 8000
 SOUNDCHARTS_BASE = "https://customer.api.soundcharts.com"
 SOUNDCHARTS_HEADERS = {
-    "x-app-id": "MLAST-NAME1095-API_89A60DF5",
-    "x-api-key": "182286ca5585d881",
+    "x-app-id": "DROP-API_A71FB164",
+    "x-api-key": "8f73f2f557f4e693",
 }
 BANDSINTOWN_APP_ID = "libro"
 
