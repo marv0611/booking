@@ -3,196 +3,240 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Libro — Booking Intelligence</title>
+<title>Night Pulse — Booking Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #08080a; --surface: #111114; --surface-2: #19191d;
-  --border: #252528; --border-hi: #35353a;
-  --text: #d8d4cc; --text-dim: #7a776f; --text-faint: #4a4843;
-  --red: #c23c2a; --red-dim: #8a2a1e; --red-glow: rgba(194,60,42,0.12);
-  --green: #3a8a5c; --green-dim: rgba(58,138,92,0.12);
-  --amber: #b8860b; --amber-dim: rgba(184,134,11,0.12);
-  --blue: #3a6a8a; --blue-dim: rgba(58,106,138,0.12);
+  --bg: #06060a; --surface: #0e0e13; --surface-2: #16161d;
+  --border: #1f1f28; --border-hi: #2e2e3a;
+  --text: #dbd8d0; --text-dim: #7d7a72; --text-faint: #4a4843;
+  --accent: #e84430; --accent-dim: #8a2a1e; --accent-glow: rgba(232,68,48,0.10);
+  --green: #2fb866; --green-dim: rgba(47,184,102,0.10);
+  --amber: #d4a017; --amber-dim: rgba(212,160,23,0.10);
+  --blue: #4a90c4; --blue-dim: rgba(74,144,196,0.10);
   --font-head: 'Syne', sans-serif;
   --font-body: 'Newsreader', Georgia, serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  --radius: 8px;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.4), 0 20px 60px rgba(0,0,0,0.3);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 15px; }
+html { font-size: 15px; scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-::selection { background: var(--red); color: #fff; }
-::-webkit-scrollbar { width: 6px; }
+::selection { background: var(--accent); color: #fff; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hi); }
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInScale { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-.shell { max-width: 1000px; margin: 0 auto; padding: 0 28px; }
-header { padding: 32px 0 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-.masthead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
-.masthead h1 { font-family: var(--font-head); font-weight: 800; font-size: 1.8rem; letter-spacing: -0.5px; }
-.masthead h1 b { color: var(--red); font-weight: 800; }
-.tagline { font-style: italic; font-size: 0.82rem; color: var(--text-dim); }
-.venue-pill { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: border-color 0.2s; }
-.venue-pill:hover { border-color: var(--border-hi); }
-.tabs { display: flex; gap: 0; overflow-x: auto; }
-.tab-btn { font-family: var(--font-head); font-weight: 600; font-size: 0.75rem; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-faint); background: none; border: none; padding: 10px 18px 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.shell { max-width: 980px; margin: 0 auto; padding: 0 28px; }
+header { padding: 28px 0 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; position: sticky; top: 0; z-index: 50; background: var(--bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.masthead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+.masthead h1 { font-family: var(--font-head); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; }
+.masthead h1 b { color: var(--accent); font-weight: 800; }
+.tagline { font-style: italic; font-size: 0.78rem; color: var(--text-faint); letter-spacing: 0.2px; }
+.venue-pill { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+.venue-pill:hover { border-color: var(--accent); color: var(--text); box-shadow: 0 0 12px var(--accent-glow); }
+.tabs { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn { font-family: var(--font-head); font-weight: 600; font-size: 0.72rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-faint); background: none; border: none; padding: 10px 16px 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.25s ease; white-space: nowrap; position: relative; }
 .tab-btn:hover { color: var(--text-dim); }
-.tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
-.tab-panel { display: none; padding-bottom: 60px; }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 20%; right: 20%; height: 2px; background: var(--accent); filter: blur(4px); opacity: 0.6; }
+.tab-panel { display: none; padding-bottom: 60px; animation: fadeIn 0.35s ease; }
 .tab-panel.active { display: block; }
+
+/* Inputs */
 .input-group { margin-bottom: 18px; }
-.input-group label { display: block; font-family: var(--font-head); font-weight: 600; font-size: 0.68rem; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px; }
-.input-group .hint { display: block; font-size: 0.73rem; color: var(--text-faint); margin-top: 4px; font-style: italic; }
+.input-group label { display: block; font-family: var(--font-head); font-weight: 600; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+.input-group .hint { display: block; font-size: 0.72rem; color: var(--text-faint); margin-top: 5px; font-style: italic; }
 textarea, input[type="text"], input[type="date"], input[type="number"], select {
   width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  color: var(--text); font-family: var(--font-body); font-size: 0.92rem; padding: 10px 14px; outline: none; transition: border-color 0.2s;
+  color: var(--text); font-family: var(--font-body); font-size: 0.92rem; padding: 11px 14px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-textarea:focus, input:focus, select:focus { border-color: var(--red); }
+textarea:focus, input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
 textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
+select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%237a776f' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
 .row { display: flex; gap: 14px; align-items: end; flex-wrap: wrap; }
 .row > * { flex: 1; min-width: 140px; }
 .row > .shrink { flex: 0 0 auto; }
-.btn { font-family: var(--font-head); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; padding: 11px 24px; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
-.btn-red { background: var(--red); color: #fff; }
-.btn-red:hover { background: #d44433; transform: translateY(-1px); }
-.btn-red:disabled { background: var(--red-dim); cursor: not-allowed; opacity: 0.5; transform: none; }
-.btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px 14px; font-size: 0.68rem; font-family: var(--font-head); font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); transition: all 0.15s; }
-.btn-ghost:hover { border-color: var(--border-hi); color: var(--text); }
+
+/* Buttons */
+.btn { font-family: var(--font-head); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; padding: 12px 26px; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
+.btn-red { background: var(--accent); color: #fff; }
+.btn-red:hover { background: #f04e3d; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,68,48,0.3); }
+.btn-red:active { transform: translateY(0); }
+.btn-red:disabled { background: var(--accent-dim); cursor: not-allowed; opacity: 0.5; transform: none; box-shadow: none; }
+.btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px 14px; font-size: 0.65rem; font-family: var(--font-head); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); transition: all 0.2s; }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
 /* Progress */
 .progress-wrap { margin: 20px 0; display: none; }
-.progress-wrap.visible { display: block; animation: fadeIn 0.3s ease; }
+.progress-wrap.visible { display: block; animation: slideDown 0.3s ease; }
 .progress-label { font-family: var(--font-head); font-weight: 600; font-size: 0.78rem; color: var(--text); margin-bottom: 8px; }
-.progress-bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--red), #e05545); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
-.progress-detail { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-top: 8px; max-height: 140px; overflow-y: auto; line-height: 1.8; }
+.progress-bar { height: 3px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f06050, var(--accent)); background-size: 200% 100%; border-radius: 2px; transition: width 0.4s ease; width: 0%; animation: shimmer 2s linear infinite; }
+.progress-detail { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint); margin-top: 8px; max-height: 140px; overflow-y: auto; line-height: 1.9; }
 
-/* Cards & Results */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; transition: border-color 0.2s; }
-.card:hover { border-color: var(--border-hi); }
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; transition: all 0.25s ease; }
+.card:hover { border-color: var(--border-hi); box-shadow: var(--shadow); }
 .card h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
 .stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
-.stat { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; min-width: 100px; }
-.stat .sv { font-family: var(--font-head); font-weight: 800; font-size: 1.2rem; color: var(--red); line-height: 1.1; }
-.stat .sl { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+.stat { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; min-width: 100px; transition: border-color 0.2s; }
+.stat:hover { border-color: var(--border-hi); }
+.stat .sv { font-family: var(--font-head); font-weight: 800; font-size: 1.2rem; color: var(--accent); line-height: 1.1; }
+.stat .sl { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; }
 
 /* Result items */
-.result-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.3s ease both; }
+.result-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.3s ease both; transition: background 0.15s; }
+.result-item:hover { background: var(--surface); margin: 0 -10px; padding: 14px 10px; border-radius: var(--radius); }
 .result-item:last-child { border-bottom: none; }
-.ri-rank { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; color: var(--text-faint); width: 36px; text-align: center; flex-shrink: 0; }
-.result-item:nth-child(-n+3) .ri-rank { color: var(--red); }
-.ri-img { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); flex-shrink: 0; object-fit: cover; border: 2px solid var(--border); }
+.ri-rank { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--text-faint); width: 32px; text-align: center; flex-shrink: 0; }
+.result-item:nth-child(-n+3) .ri-rank { color: var(--accent); }
+.ri-img { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); flex-shrink: 0; object-fit: cover; border: 2px solid var(--border); transition: border-color 0.2s; }
+.result-item:hover .ri-img { border-color: var(--accent); }
 .ri-img-placeholder { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: 0.8rem; color: var(--text-faint); }
 .ri-info { flex: 1; min-width: 0; }
-.ri-info h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.92rem; }
-.ri-info .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
-.ri-info .tag { font-family: var(--font-mono); font-size: 0.6rem; background: var(--surface-2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px; color: var(--text-dim); }
+.ri-info h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; }
+.ri-info .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+.ri-info .tag { font-family: var(--font-mono); font-size: 0.58rem; background: var(--surface-2); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; color: var(--text-dim); transition: all 0.15s; }
+.ri-info .tag:hover { border-color: var(--border-hi); }
 .ri-info .tag-routing { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
 .ri-info .ig-line { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); margin-top: 2px; }
-.ri-actions { display: flex; gap: 5px; margin-top: 5px; }
-.ri-actions button { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 3px; padding: 2px 7px; cursor: pointer; transition: all 0.15s; }
-.ri-actions button:hover { border-color: var(--red); color: var(--red); }
-.ri-actions button.saved { border-color: var(--green); color: var(--green); }
+.ri-actions { display: flex; gap: 5px; margin-top: 6px; }
+.ri-actions button { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; cursor: pointer; transition: all 0.2s; }
+.ri-actions button:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.ri-actions button.saved { border-color: var(--green); color: var(--green); background: var(--green-dim); }
 .ri-number { text-align: right; flex-shrink: 0; }
-.ri-number .big { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--red); line-height: 1; }
-.ri-number .sub { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; }
-.ri-number .dim { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); }
+.ri-number .big { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--accent); line-height: 1; }
+.ri-number .sub { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; }
+.ri-number .dim { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-faint); }
 
 /* Events */
-.ev-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: start; }
-.ev-att { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; color: var(--red); width: 50px; text-align: center; flex-shrink: 0; line-height: 1.2; }
-.ev-att .ev-lbl { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-faint); text-transform: uppercase; }
+.ev-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: start; transition: background 0.15s; }
+.ev-item:hover { background: var(--surface); margin: 0 -8px; padding: 12px 8px; border-radius: var(--radius); }
+.ev-att { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; color: var(--accent); width: 50px; text-align: center; flex-shrink: 0; line-height: 1.2; }
+.ev-att .ev-lbl { font-family: var(--font-mono); font-size: 0.48rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.3px; }
 .ev-detail { flex: 1; }
 .ev-detail .ev-v { font-family: var(--font-head); font-weight: 700; font-size: 0.88rem; }
 .ev-detail .ev-t { font-size: 0.8rem; color: var(--text-dim); }
-.ev-detail .ev-a { font-size: 0.75rem; color: var(--text-faint); margin-top: 2px; }
+.ev-detail .ev-a { font-size: 0.73rem; color: var(--text-faint); margin-top: 2px; }
 
 /* Onboarding */
-#onboarding { max-width: 560px; margin: 40px auto; }
-#onboarding h2 { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; margin-bottom: 6px; }
-#onboarding .sub { color: var(--text-dim); font-style: italic; margin-bottom: 24px; font-size: 0.88rem; }
-.ob-dots { display: flex; gap: 6px; margin-bottom: 20px; }
-.ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
-.ob-dot.active { background: var(--red); }
+#onboarding { max-width: 520px; margin: 60px auto; animation: fadeInScale 0.5s ease; }
+#onboarding h2 { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; margin-bottom: 6px; letter-spacing: -0.3px; }
+#onboarding .sub { color: var(--text-dim); font-style: italic; margin-bottom: 28px; font-size: 0.88rem; line-height: 1.6; }
+.ob-dots { display: flex; gap: 8px; margin-bottom: 24px; }
+.ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s ease; }
+.ob-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
 .ob-step { display: none; }
-.ob-step.active { display: block; }
+.ob-step.active { display: block; animation: fadeIn 0.4s ease; }
 
 /* Saved */
-.saved-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: start; gap: 14px; }
+.saved-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: start; gap: 14px; transition: all 0.2s; }
+.saved-item:hover { border-color: var(--border-hi); box-shadow: var(--shadow); }
 .saved-item h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; }
 .saved-item textarea { margin-top: 6px; min-height: 40px; font-size: 0.82rem; width: 100%; }
 
 /* Misc */
-.empty { text-align: center; padding: 50px 20px; color: var(--text-faint); font-style: italic; }
-.section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.empty { text-align: center; padding: 60px 20px; color: var(--text-faint); font-style: italic; font-size: 0.88rem; }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 .section-head h2 { font-family: var(--font-head); font-weight: 700; font-size: 1rem; }
-.section-head .count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); }
-.badge { display: inline-block; font-family: var(--font-mono); font-size: 0.6rem; padding: 2px 8px; border-radius: 3px; font-weight: 600; }
+.section-head .count { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); }
+.badge { display: inline-block; font-family: var(--font-mono); font-size: 0.58rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.2px; }
 .badge-green { background: var(--green-dim); color: var(--green); }
-.badge-red { background: var(--red-glow); color: var(--red); }
+.badge-red { background: var(--accent-glow); color: var(--accent); }
 .badge-amber { background: var(--amber-dim); color: var(--amber); }
 .badge-blue { background: var(--blue-dim); color: var(--blue); }
-.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
 
 /* Autocomplete */
 .ac-wrap { position: relative; }
-.ac-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 100; background: var(--surface); border: 1px solid var(--border-hi); border-radius: var(--radius); margin-top: 4px; max-height: 260px; overflow-y: auto; box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; }
-.ac-dropdown.open { display: block; }
-.ac-item { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border); }
+.ac-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 100; background: var(--surface); border: 1px solid var(--border-hi); border-radius: var(--radius); margin-top: 4px; max-height: 260px; overflow-y: auto; box-shadow: var(--shadow-lg); display: none; }
+.ac-dropdown.open { display: block; animation: slideDown 0.2s ease; }
+.ac-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border); }
 .ac-item:last-child { border-bottom: none; }
 .ac-item:hover, .ac-item.selected { background: var(--surface-2); }
 .ac-item img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--surface-2); }
 .ac-item .ac-name { font-family: var(--font-head); font-weight: 600; font-size: 0.82rem; }
 .ac-item .ac-sub { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); }
 
-/* Filter controls */
-.filter-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; }
-.filter-bar h4 { font-family: var(--font-head); font-weight: 600; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-dim); margin-bottom: 10px; }
-.filter-row { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
-.filter-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); }
-.filter-item input[type="range"] { width: 100px; accent-color: var(--red); }
-.filter-item .fval { font-family: var(--font-head); font-weight: 700; color: var(--red); min-width: 30px; font-size: 0.85rem; }
+/* Filter controls — segmented picker */
+.filter-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 18px; }
+.filter-bar h4 { font-family: var(--font-head); font-weight: 600; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); margin-bottom: 12px; }
+.filter-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: start; }
+.filter-group { flex: 1; min-width: 200px; }
+.filter-group .fg-label { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-dim); margin-bottom: 8px; display: block; }
+.seg-picker { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.seg-picker button { flex: 1; padding: 8px 4px; border: none; background: none; color: var(--text-faint); font-family: var(--font-mono); font-size: 0.65rem; cursor: pointer; transition: all 0.2s; position: relative; }
+.seg-picker button:not(:last-child) { border-right: 1px solid var(--border); }
+.seg-picker button:hover { color: var(--text-dim); background: var(--surface); }
+.seg-picker button.active { background: var(--accent); color: #fff; font-weight: 600; }
+.seg-picker button .seg-sub { display: block; font-size: 0.5rem; opacity: 0.7; margin-top: 1px; }
 
 /* Fee crowdsource */
-.fee-row { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+.fee-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
 .fee-row input[type="number"] { width: 100px; padding: 5px 8px; font-size: 0.78rem; }
-.fee-row .thumb-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.fee-row .thumb-btn:hover { border-color: var(--border-hi); }
+.fee-row .thumb-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.fee-row .thumb-btn:hover { border-color: var(--border-hi); transform: scale(1.1); }
 .fee-row .thumb-btn.active-up { border-color: var(--green); background: var(--green-dim); }
-.fee-row .thumb-btn.active-down { border-color: var(--red); background: var(--red-glow); }
+.fee-row .thumb-btn.active-down { border-color: var(--accent); background: var(--accent-glow); }
 
-/* Calendar */
-.cal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
-.cal-cell { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; text-align: center; transition: border-color 0.2s; }
-.cal-cell:hover { border-color: var(--border-hi); }
-.cal-cell .cal-day { font-family: var(--font-head); font-weight: 600; font-size: 0.72rem; color: var(--text-dim); }
-.cal-cell .cal-count { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; margin: 4px 0; }
-.cal-cell .cal-label { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-faint); text-transform: uppercase; }
-.cal-good { border-color: var(--green); }
+/* Calendar — color-bar timeline cards */
+.cal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 6px; }
+.cal-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px 8px; text-align: center; transition: all 0.2s; cursor: default; position: relative; overflow: hidden; }
+.cal-cell::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--border); transition: background 0.2s; }
+.cal-cell:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.cal-cell .cal-day { font-family: var(--font-head); font-weight: 600; font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.3px; }
+.cal-cell .cal-count { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; margin: 2px 0 0; line-height: 1.1; }
+.cal-cell .cal-label { font-family: var(--font-mono); font-size: 0.46rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.5px; }
+.cal-good::before { background: var(--green); }
+.cal-good { border-color: rgba(47,184,102,0.2); }
 .cal-good .cal-count { color: var(--green); }
-.cal-bad { border-color: var(--red); }
-.cal-bad .cal-count { color: var(--red); }
+.cal-good .cal-day { color: var(--green); }
+.cal-bad::before { background: var(--accent); }
+.cal-bad { border-color: rgba(232,68,48,0.15); }
+.cal-bad .cal-count { color: var(--accent); }
+.cal-bad .cal-day { color: var(--accent); }
+.cal-mid::before { background: var(--amber); }
+.cal-mid { border-color: rgba(212,160,23,0.12); }
 .cal-mid .cal-count { color: var(--amber); }
 
 /* Routing card */
-.routing-card { background: var(--amber-dim); border: 1px solid rgba(184,134,11,0.3); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.routing-card { background: var(--amber-dim); border: 1px solid rgba(212,160,23,0.25); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
 .routing-card .rc-icon { font-size: 1.2rem; }
 .routing-card .rc-info { flex: 1; font-size: 0.82rem; color: var(--text); }
 .routing-card .rc-city { font-family: var(--font-head); font-weight: 700; color: var(--amber); }
 
-@media (max-width: 640px) { .row { flex-direction: column; } .filter-row { flex-direction: column; gap: 12px; } }
+/* Tooltip */
+[data-tip] { position: relative; }
+[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--surface-2); border: 1px solid var(--border-hi); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.58rem; padding: 4px 10px; border-radius: 4px; white-space: nowrap; pointer-events: none; animation: fadeIn 0.15s ease; z-index: 200; }
+
+@media (max-width: 640px) {
+  .row { flex-direction: column; }
+  .filter-row { flex-direction: column; gap: 12px; }
+  .stats { gap: 6px; }
+  .stat { min-width: 80px; padding: 8px 10px; }
+  .masthead { flex-direction: column; gap: 8px; }
+  header { position: relative; }
+}
 </style>
 </head>
 <body>
 <div class="shell">
   <header>
     <div class="masthead">
-      <div><h1>Li<b>b</b>ro</h1><div class="tagline">Booking intelligence for live music</div></div>
+      <div><h1>Night<b>Pulse</b></h1><div class="tagline">Booking intelligence for live music</div></div>
       <div class="venue-pill" id="venuePill" style="display:none" onclick="resetOb()" title="Click to reconfigure"></div>
     </div>
     <div class="tabs" id="mainTabs" style="display:none">
@@ -207,9 +251,9 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
 
   <!-- ONBOARDING -->
   <div id="onboarding">
-    <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div></div>
+    <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div><div class="ob-dot" id="d4"></div></div>
     <div class="ob-step active" id="ob1">
-      <h2>Welcome to Libro</h2>
+      <h2>Welcome to Night Pulse</h2>
       <div class="sub">Let's set up your venue in 60 seconds. Everything adapts to your market.</div>
       <div class="input-group"><label>City</label>
         <select id="obC">
@@ -229,7 +273,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
     </div>
     <div class="ob-step" id="ob2">
       <h2>Your Booking DNA</h2>
-      <div class="sub">This teaches Libro what works for your room.</div>
+      <div class="sub">This teaches Night Pulse what works for your room.</div>
       <div class="input-group"><label>3 artists that packed your room</label><div class="ac-wrap"><textarea id="obW" placeholder="One per line" rows="3"></textarea></div><span class="hint">The nights where the queue was around the block.</span></div>
       <div class="input-group"><label>3 artists that flopped</label><div class="ac-wrap"><textarea id="obL" placeholder="One per line" rows="3"></textarea></div><span class="hint">No judgment — this is how we learn.</span></div>
       <button class="btn btn-red" onclick="obGo(3)">Continue</button>
@@ -239,21 +283,48 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
       <div class="sub">Last details to calibrate results.</div>
       <div class="input-group"><label>Headliner budget</label><select id="obB"><option value="0-3k">Under €3K</option><option value="3-6k" selected>€3K – €6K</option><option value="6-10k">€6K – €10K</option><option value="10k+">€10K+</option></select></div>
       <div class="input-group"><label>Booking frequency</label><select id="obF"><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly" selected>Monthly</option><option value="few">A few times a year</option></select></div>
-      <button class="btn btn-red" onclick="obDone()">Launch Libro</button>
+      <button class="btn btn-red" onclick="obDone()">Launch Night Pulse</button>
+    </div>
+    <div class="ob-step" id="ob4">
+      <h2>Analyzing Your Venue</h2>
+      <div class="sub">Night Pulse is scanning your past 12 months of bookings to understand your audience. This takes 2-3 minutes.</div>
+      <div class="progress-wrap visible" style="margin:20px 0">
+        <div class="progress-label" id="dnaLbl">Starting analysis…</div>
+        <div class="progress-bar"><div class="progress-fill" id="dnaFill" style="width:0%"></div></div>
+        <div class="progress-detail" id="dnaDet" style="margin-top:12px"></div>
+      </div>
+      <div id="dnaSummary" style="display:none"></div>
     </div>
   </div>
 
   <!-- DISCOVER -->
   <div class="tab-panel" id="panel-discover">
     <div class="input-group"><label>Seed Artists</label>
-      <div class="ac-wrap"><textarea id="seedInput" placeholder="One artist per line — Libro finds 50 similar artists per seed" rows="3"></textarea></div>
+      <div class="ac-wrap"><textarea id="seedInput" placeholder="One artist per line — Night Pulse finds 50 similar artists per seed" rows="3"></textarea></div>
       <div id="seedH" style="margin-top:6px"></div>
     </div>
     <div class="filter-bar">
       <h4>Exclusion Filters</h4>
       <div class="filter-row">
-        <div class="filter-item">Hasn't played <span id="fCityD">city</span> in last <input type="range" id="filterBack" min="1" max="24" value="7" oninput="document.getElementById('fBackV').textContent=this.value"> <span class="fval" id="fBackV">7</span> months</div>
-        <div class="filter-item">Not booked for next <input type="range" id="filterFwd" min="1" max="12" value="3" oninput="document.getElementById('fFwdV').textContent=this.value"> <span class="fval" id="fFwdV">3</span> months</div>
+        <div class="filter-group">
+          <span class="fg-label">Hasn't played <span id="fCityD">city</span> in last</span>
+          <div class="seg-picker" id="segBack">
+            <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',7)" data-v="7" class="active">7<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',12)" data-v="12">12<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
+          </div>
+          <input type="hidden" id="filterBack" value="7">
+        </div>
+        <div class="filter-group">
+          <span class="fg-label">Not booked for next</span>
+          <div class="seg-picker" id="segFwd">
+            <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
+            <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segFwd','filterFwd',6)" data-v="6">6<span class="seg-sub">months</span></button>
+          </div>
+          <input type="hidden" id="filterFwd" value="3">
+        </div>
       </div>
     </div>
     <div class="row">
@@ -279,8 +350,25 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
     <div class="filter-bar">
       <h4>Availability Filters</h4>
       <div class="filter-row">
-        <div class="filter-item">Hasn't played <span id="fCityR">city</span> in last <input type="range" id="rFilterBack" min="1" max="24" value="7" oninput="document.getElementById('rBackV').textContent=this.value"> <span class="fval" id="rBackV">7</span> months</div>
-        <div class="filter-item">Not booked for next <input type="range" id="rFilterFwd" min="1" max="12" value="3" oninput="document.getElementById('rFwdV').textContent=this.value"> <span class="fval" id="rFwdV">3</span> months</div>
+        <div class="filter-group">
+          <span class="fg-label">Hasn't played <span id="fCityR">city</span> in last</span>
+          <div class="seg-picker" id="rSegBack">
+            <button onclick="setPicker('rSegBack','rFilterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('rSegBack','rFilterBack',7)" data-v="7" class="active">7<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('rSegBack','rFilterBack',12)" data-v="12">12<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('rSegBack','rFilterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
+          </div>
+          <input type="hidden" id="rFilterBack" value="7">
+        </div>
+        <div class="filter-group">
+          <span class="fg-label">Not booked for next</span>
+          <div class="seg-picker" id="rSegFwd">
+            <button onclick="setPicker('rSegFwd','rFilterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
+            <button onclick="setPicker('rSegFwd','rFilterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('rSegFwd','rFilterFwd',6)" data-v="6">6<span class="seg-sub">months</span></button>
+          </div>
+          <input type="hidden" id="rFilterFwd" value="3">
+        </div>
       </div>
     </div>
     <div class="progress-wrap" id="rteProg"><div class="progress-label" id="rteLbl">Starting...</div><div class="progress-bar"><div class="progress-fill" id="rteFill"></div></div><div class="progress-detail" id="rteDet"></div></div>
@@ -325,7 +413,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
 
 <script>
 /* ═══════════════════════════════════════════
-   LIBRO v5 — Clean Rebuild
+   NIGHT PULSE v6 — Clean Rebuild
    Single bulk-fetch architecture. No chunking.
    ═══════════════════════════════════════════ */
 
@@ -338,7 +426,8 @@ const NEARBY_CITIES={
   amsterdam:['berlin','london','brussels','paris','copenhagen'],
   paris:['london','amsterdam','brussels','berlin','barcelona'],
 };
-const PK='libro_p',SK='libro_s',HK='libro_h',LK='libro_log',FK='libro_fees';
+// localStorage keys (kept as 'libro_*' for backwards compatibility with existing data)
+const PK='libro_p',SK='libro_s',HK='libro_h',LK='libro_log',FK='libro_fees',DK='libro_dna';
 const P=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch{return{}}};
 const setP=d=>localStorage.setItem(PK,JSON.stringify(d));
 const saved=()=>{try{return JSON.parse(localStorage.getItem(SK))||[]}catch{return[]}};
@@ -347,6 +436,8 @@ const seeds=()=>{try{return JSON.parse(localStorage.getItem(HK))||[]}catch{retur
 const setSeeds=d=>localStorage.setItem(HK,JSON.stringify(d));
 const fees=()=>{try{return JSON.parse(localStorage.getItem(FK))||{}}catch{return{}}};
 const setFees=d=>localStorage.setItem(FK,JSON.stringify(d));
+const getDNA=()=>{try{return JSON.parse(localStorage.getItem(DK))||null}catch{return null}};
+const setDNA=d=>localStorage.setItem(DK,JSON.stringify(d));
 const addLog=e=>{try{const l=JSON.parse(localStorage.getItem(LK)||'[]');l.push({...e,ts:Date.now()});if(l.length>500)l.splice(0,l.length-500);localStorage.setItem(LK,JSON.stringify(l))}catch{}};
 const fmt=n=>{if(!n||isNaN(n))return'0';if(n>=1e6)return(n/1e6).toFixed(1).replace(/\.0$/,'')+'M';if(n>=1e3)return(n/1e3).toFixed(1).replace(/\.0$/,'')+'K';return n.toLocaleString()};
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML};
@@ -354,6 +445,13 @@ const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
 const areaId=()=>AREAS[(P().city||'barcelona').toLowerCase()]||20;
 const cityName=()=>{const c=P().city||'barcelona';return c.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')};
 const fdate=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+
+/* Segmented picker helper */
+function setPicker(pickerId,hiddenId,val){
+  const picker=document.getElementById(pickerId);
+  picker.querySelectorAll('button').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.v)===val));
+  document.getElementById(hiddenId).value=val;
+}
 
 /* ═══ API LAYER ═══ */
 async function ra(v){
@@ -371,6 +469,200 @@ async function scSpotify(uuid){
   const city=(P().city||'barcelona').toLowerCase();
   const cp=(i.cityPlots||[]).find(c=>c.cityName&&c.cityName.toLowerCase().includes(city));
   return{g:i.value||0,c:cp?cp.value||0:0};
+}
+async function scMeta(uuid){
+  try{const d=await sc('/api/v2.9/artist/'+uuid);return d.object||d||null}catch(e){return null}
+}
+
+/* ═══ VENUE DNA ENGINE ═══ */
+
+const DNA_MAX_AGE=7*24*60*60*1000; // 7 days
+
+function dnaValid(){
+  const d=getDNA();
+  if(!d||!d.ts)return false;
+  if(d.city!==(P().city||'barcelona'))return false;
+  if(d.venue!==P().venue)return false;
+  if(Date.now()-d.ts>DNA_MAX_AGE)return false;
+  return true;
+}
+
+/* Build DNA from venue's past 12 months of bookings.
+   Deep analysis: every artist → SC lookup for genres + Spotify listeners */
+async function buildDNA(statusCb){
+  const p=P(),venueName=p.venue,city=p.city||'barcelona';
+  if(!venueName){if(statusCb)statusCb('No venue set');return null}
+
+  if(statusCb)statusCb('Loading '+cityName()+' event history…');
+  const allEvents=await ensureCache();
+
+  // Extract events at this venue
+  const venueEvents=allEvents.filter(ev=>ev.venue&&ev.venue.toLowerCase().includes(venueName.toLowerCase()));
+  if(statusCb)statusCb('Found '+venueEvents.length+' events at '+venueName);
+
+  // Get unique artist names
+  const artistSet=new Map();
+  for(const ev of venueEvents)for(const a of ev.artists){const n=norm(a);if(n&&!artistSet.has(n))artistSet.set(n,a)}
+  const artistNames=[...artistSet.values()];
+  if(statusCb)statusCb(artistNames.length+' unique artists — analyzing…');
+
+  // Look up each artist on Soundcharts (deep: all of them)
+  const profiles=[];
+  for(let i=0;i<artistNames.length;i++){
+    const name=artistNames[i];
+    if(statusCb&&i%3===0)statusCb('Analyzing '+(i+1)+'/'+artistNames.length+': '+name);
+    try{
+      const a=await scSearch(name);
+      if(!a)continue;
+      const sp=await scSpotify(a.uuid);
+      // Get genres from metadata
+      let genres=[];
+      try{
+        const meta=await scMeta(a.uuid);
+        if(meta&&meta.genres)genres=meta.genres.map(g=>(g.name||g).toLowerCase());
+        else if(meta&&meta.mainGenre)genres=[(meta.mainGenre.name||meta.mainGenre).toLowerCase()];
+        // Also try subgenres
+        if(meta&&meta.subGenres)genres=[...genres,...meta.subGenres.map(g=>(g.name||g).toLowerCase())];
+      }catch(e){}
+      profiles.push({name:a.name,uuid:a.uuid,bcn:sp.c,global:sp.g,genres,imageUrl:a.imageUrl||''});
+    }catch(e){}
+  }
+  if(statusCb)statusCb('Building DNA from '+profiles.length+' artists…');
+
+  // Build listener range
+  const listeners=profiles.map(p=>p.bcn).filter(v=>v>0).sort((a,b)=>a-b);
+  const globals=profiles.map(p=>p.global).filter(v=>v>0).sort((a,b)=>a-b);
+  const median=arr=>arr.length?arr[Math.floor(arr.length/2)]:0;
+
+  // Build genre weights (how often each genre appears, normalized)
+  const genreCounts={};let totalGenreTags=0;
+  for(const p of profiles)for(const g of p.genres){genreCounts[g]=(genreCounts[g]||0)+1;totalGenreTags++}
+  const genreWeights={};
+  for(const[g,c] of Object.entries(genreCounts))genreWeights[g]=c/totalGenreTags;
+  // Sort by weight
+  const sortedGenres=Object.entries(genreWeights).sort((a,b)=>b[1]-a[1]);
+
+  // Artist cloud (names for reference)
+  const cloud=profiles.map(p=>p.name).slice(0,30);
+
+  const dna={
+    city,
+    venue:venueName,
+    ts:Date.now(),
+    venueEvents:venueEvents.length,
+    artistCount:profiles.length,
+    listenerRange:{
+      min:listeners.length?listeners[0]:0,
+      max:listeners.length?listeners[listeners.length-1]:0,
+      median:median(listeners),
+      p25:listeners.length>=4?listeners[Math.floor(listeners.length*0.25)]:listeners[0]||0,
+      p75:listeners.length>=4?listeners[Math.floor(listeners.length*0.75)]:listeners[listeners.length-1]||0,
+    },
+    globalRange:{
+      min:globals.length?globals[0]:0,
+      max:globals.length?globals[globals.length-1]:0,
+      median:median(globals),
+    },
+    genres:genreWeights,
+    topGenres:sortedGenres.slice(0,8).map(([g,w])=>({genre:g,weight:Math.round(w*100)})),
+    cloud,
+    profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres})),
+  };
+  setDNA(dna);
+  if(statusCb)statusCb('DNA complete — '+profiles.length+' artists, '+sortedGenres.length+' genres');
+  return dna;
+}
+
+/* Score a candidate artist against venue DNA (0-100).
+   Factors: listener fit (40%), genre overlap (40%), related-to-cloud (20% bonus from seeds) */
+function dnaScore(candidate){
+  const dna=getDNA();
+  if(!dna||!dna.artistCount)return{score:50,flags:[],label:'No DNA'};
+
+  const lr=dna.listenerRange;
+  let listenerScore=0,genreScore=0;
+  const flags=[];
+
+  // --- Listener fit (0-40) ---
+  const bcn=candidate.bcn||0;
+  if(bcn>0&&lr.median>0){
+    // Perfect = near median. Penalize distance from the p25-p75 range.
+    if(bcn>=lr.p25&&bcn<=lr.p75){
+      listenerScore=40; // sweet spot
+    }else if(bcn>=lr.min&&bcn<=lr.max){
+      listenerScore=28; // within range but outside interquartile
+    }else if(bcn<lr.min){
+      // Below range — might be too small
+      const ratio=bcn/lr.min;
+      listenerScore=Math.max(5,Math.round(28*ratio));
+      if(ratio<0.3)flags.push('Below typical range');
+    }else{
+      // Above range — might be too expensive / wrong tier
+      const ratio=lr.max/bcn;
+      listenerScore=Math.max(5,Math.round(28*ratio));
+      if(ratio<0.3)flags.push('Above typical range');
+    }
+  }else{
+    listenerScore=15; // no data — neutral
+  }
+
+  // --- Genre overlap (0-40) ---
+  const cGenres=(candidate.genres||[]).map(g=>g.toLowerCase());
+  if(cGenres.length>0&&Object.keys(dna.genres).length>0){
+    let overlap=0,totalWeight=0;
+    for(const g of cGenres){
+      if(dna.genres[g]){overlap+=dna.genres[g]}
+      totalWeight+=1;
+    }
+    // Normalize: if all candidate genres are in DNA, overlap approaches sum of weights
+    const maxPossible=cGenres.length>0?cGenres.reduce((s,g)=>s+(dna.genres[g]||0),0):0;
+    // Also check: does the candidate share ANY top genre?
+    const topGenreNames=dna.topGenres.map(t=>t.genre);
+    const hasTopGenre=cGenres.some(g=>topGenreNames.includes(g));
+
+    if(hasTopGenre){
+      genreScore=Math.min(40,Math.round(25+maxPossible*60));
+    }else if(maxPossible>0){
+      genreScore=Math.min(30,Math.round(maxPossible*50));
+    }else{
+      genreScore=3;
+      flags.push('Genre mismatch');
+    }
+  }else{
+    genreScore=15; // no genre data — neutral
+  }
+
+  // --- Cloud bonus (0-20) — if the candidate was related to a seed that's in the venue cloud ---
+  let cloudBonus=0;
+  if(candidate.seeds&&dna.cloud){
+    const cloudNorm=new Set(dna.cloud.map(n=>norm(n)));
+    for(const s of(candidate.seeds||[])){if(cloudNorm.has(norm(s)))cloudBonus=Math.min(cloudBonus+10,20)}
+  }
+
+  const score=Math.min(100,listenerScore+genreScore+cloudBonus);
+  let label='';
+  if(score>=70)label='Strong fit';
+  else if(score>=50)label='Decent fit';
+  else if(score>=30)label='Weak fit';
+  else label='Poor fit';
+
+  return{score,flags,label,listenerScore,genreScore,cloudBonus};
+}
+
+/* Get genre info for a candidate (fetches from SC if not already present) */
+async function enrichGenres(candidate){
+  if(candidate.genres&&candidate.genres.length>0)return;
+  if(!candidate.uuid)return;
+  try{
+    const meta=await scMeta(candidate.uuid);
+    if(meta){
+      const genres=[];
+      if(meta.genres)genres.push(...meta.genres.map(g=>(g.name||g).toLowerCase()));
+      else if(meta.mainGenre)genres.push((meta.mainGenre.name||meta.mainGenre).toLowerCase());
+      if(meta.subGenres)genres.push(...meta.subGenres.map(g=>(g.name||g).toLowerCase()));
+      candidate.genres=[...new Set(genres)];
+    }
+  }catch(e){}
 }
 
 /* ═══ CACHED RA ENGINE ═══ */
@@ -657,22 +949,37 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('scanDate').value=ds;
   document.getElementById('routeDate').value=ds;
   document.getElementById('xDate').value=ds;
-  // Sync X-Ray date when Discover date changes
-  document.getElementById('eventDate').addEventListener('change',e=>{document.getElementById('xDate').value=e.target.value});
+
+  // Sync dates: Discover→Routing/X-Ray, Routing→X-Ray
+  const syncDates=(source,...targets)=>{
+    document.getElementById(source).addEventListener('change',e=>{
+      for(const t of targets)document.getElementById(t).value=e.target.value;
+    });
+  };
+  syncDates('eventDate','routeDate','xDate','scanDate');
+  syncDates('routeDate','xDate');
+
+  // Enter key triggers primary action
+  document.getElementById('xIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!document.querySelector('.ac-dropdown.open'))runXray()});
+  document.getElementById('seedInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.metaKey)runDiscover()});
+
+  // Tab switching with smooth transitions
   document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');document.getElementById('panel-'+b.dataset.tab).classList.add('active');
+    b.classList.add('active');
+    const panel=document.getElementById('panel-'+b.dataset.tab);
+    panel.classList.add('active');
+    // Scroll to top of panel
+    window.scrollTo({top:panel.offsetTop-80,behavior:'smooth'});
   }));
   renderSaved();renderSeeds();
   setupAutocomplete(document.getElementById('xIn'),a=>{document.getElementById('xIn').value=a.name});
-  // Per-line artist autocomplete on all textareas
   setupTextareaAC(document.getElementById('seedInput'));
   setupTextareaAC(document.getElementById('obW'));
   setupTextareaAC(document.getElementById('obL'));
   setupVenueAC();
   updateCityLabels();
-  // Pre-load event cache in background
   if(P().venue)ensureCache();
 });
 function updateCityLabels(){
@@ -688,21 +995,70 @@ function updateCityLabels(){
 }
 
 /* ═══ ONBOARDING ═══ */
-function obGo(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));document.getElementById('ob'+n).classList.add('active');for(let i=1;i<=3;i++)document.getElementById('d'+i).classList.toggle('active',i<=n)}
-function obDone(){
+function obGo(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));document.getElementById('ob'+n).classList.add('active');for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i<=n)}
+async function obDone(){
   setP({venue:document.getElementById('obV').value.trim(),city:document.getElementById('obC').value,capacity:parseInt(document.getElementById('obCap').value)||0,wins:document.getElementById('obW').value.split('\n').filter(Boolean).map(s=>s.trim()),losses:document.getElementById('obL').value.split('\n').filter(Boolean).map(s=>s.trim()),budget:document.getElementById('obB').value,freq:document.getElementById('obF').value,created:new Date().toISOString()});
-  showApp();
+  // Go to step 4: DNA analysis
+  obGo(4);
+  const lbl=document.getElementById('dnaLbl'),fill=document.getElementById('dnaFill'),det=document.getElementById('dnaDet');
+  let step=0;
+  const status=msg=>{step++;lbl.textContent=msg;fill.style.width=Math.min(95,step*4)+'%';det.innerHTML+='<div>'+msg+'</div>';det.scrollTop=det.scrollHeight};
+  try{
+    const dna=await buildDNA(status);
+    fill.style.width='100%';
+    if(dna&&dna.artistCount>0){
+      lbl.textContent='DNA complete ✓';
+      const sum=document.getElementById('dnaSummary');
+      sum.style.display='block';
+      const tg=dna.topGenres.slice(0,5).map(t=>'<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent)">'+esc(t.genre)+' '+t.weight+'%</span>').join(' ');
+      sum.innerHTML=`<div class="card" style="margin-top:16px"><h3 style="color:var(--accent)">Your Venue DNA</h3>
+        <div class="stats"><div class="stat"><div class="sv">${dna.artistCount}</div><div class="sl">Artists analyzed</div></div><div class="stat"><div class="sv">${dna.venueEvents}</div><div class="sl">Events (12mo)</div></div><div class="stat"><div class="sv">${fmt(dna.listenerRange.median)}</div><div class="sl">Median ${cityName()} Spotify</div></div></div>
+        <div style="margin:10px 0"><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase">Listener range:</span> <span style="font-family:var(--font-head);font-weight:700;font-size:0.85rem">${fmt(dna.listenerRange.p25)} – ${fmt(dna.listenerRange.p75)}</span> <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint)">(25th–75th percentile)</span></div>
+        <div style="margin:8px 0">${tg}</div>
+        <button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Night Pulse</button>
+      </div>`;
+    }else{
+      lbl.textContent='No booking history found — skipping DNA';
+      const sum=document.getElementById('dnaSummary');sum.style.display='block';
+      sum.innerHTML='<div style="margin-top:16px"><p style="font-size:0.82rem;color:var(--text-dim)">No events found at this venue. Night Pulse will still work — DNA scoring will improve once you have booking history.</p><button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Night Pulse</button></div>';
+    }
+  }catch(e){
+    lbl.textContent='DNA analysis failed — continuing without it';
+    fill.style.width='100%';
+    const sum=document.getElementById('dnaSummary');sum.style.display='block';
+    sum.innerHTML='<div style="margin-top:16px"><p style="font-size:0.82rem;color:var(--text-dim)">'+esc(e.message)+'. Night Pulse will still work fine.</p><button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Night Pulse</button></div>';
+  }
 }
 function showApp(){
   document.getElementById('onboarding').style.display='none';
   document.getElementById('mainTabs').style.display='flex';
   document.getElementById('panel-discover').classList.add('active');
   const p=P(),pill=document.getElementById('venuePill');
-  pill.textContent=p.venue+' · '+cityName();
+  const dna=getDNA();
+  const dnaTag=dna&&dna.artistCount?' · DNA ✓':' · <span style="color:var(--amber);cursor:pointer" onclick="rebuildDNA()" title="Click to build DNA">No DNA</span>';
+  pill.innerHTML=esc(p.venue)+' · '+cityName()+dnaTag;
   pill.style.display='inline-block';
   updateCityLabels();
+  // Background DNA build if missing or stale
+  if(!dnaValid()&&p.venue){
+    setTimeout(()=>rebuildDNA(true),2000);
+  }
 }
-function resetOb(){if(confirm('Reconfigure venue?')){localStorage.removeItem(PK);location.reload()}}
+async function rebuildDNA(silent){
+  if(!silent)showCacheStatus('Rebuilding venue DNA…');
+  try{
+    const dna=await buildDNA(silent?null:msg=>showCacheStatus(msg));
+    if(dna&&dna.artistCount>0){
+      showCacheStatus('DNA rebuilt — '+dna.artistCount+' artists, '+dna.topGenres.length+' genres ✓',true);
+      // Refresh pill
+      const p=P(),pill=document.getElementById('venuePill');
+      pill.innerHTML=esc(p.venue)+' · '+cityName()+' · DNA ✓';
+    }else if(!silent){
+      showCacheStatus('No booking history found for DNA',true);
+    }
+  }catch(e){if(!silent)showCacheStatus('DNA rebuild failed: '+e.message,true)}
+}
+function resetOb(){if(confirm('Reconfigure venue?')){localStorage.removeItem(PK);localStorage.removeItem(DK);location.reload()}}
 
 /* ═══ SEED HISTORY ═══ */
 function saveSeeds(list){const h=seeds();list.forEach(s=>{if(s&&!h.some(x=>x.toLowerCase()===s.toLowerCase()))h.unshift(s)});if(h.length>40)h.length=40;setSeeds(h);renderSeeds()}
@@ -766,16 +1122,30 @@ async function runDiscover(){
     for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' — '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
     prog(sdX+' same-day conflicts, '+afterSD.length+' remain',65);
 
-    // Step 5: Spotify
-    prog('Fetching Spotify data…',70);
+    // Step 5: Spotify + Genres
+    prog('Fetching Spotify & genre data…',70);
     const wd=[];
+    const hasDNA=!!getDNA()?.artistCount;
     for(let i=0;i<afterSD.length;i++){
       const c=afterSD[i];
-      try{const s=await scSpotify(c.uuid);c.bcn=s.c;c.global=s.g;wd.push(c);if(s.c>0)prog(null,70+Math.round((i/afterSD.length)*25),'✓ '+c.name+' '+fmt(s.c)+' '+cn)}
-      catch(e){c.bcn=0;c.global=0;wd.push(c)}
+      try{
+        const s=await scSpotify(c.uuid);c.bcn=s.c;c.global=s.g;
+        // Fetch genres for DNA scoring
+        if(hasDNA)await enrichGenres(c);
+        wd.push(c);if(s.c>0)prog(null,70+Math.round((i/afterSD.length)*25),'✓ '+c.name+' '+fmt(s.c)+' '+cn)
+      }catch(e){c.bcn=0;c.global=0;wd.push(c)}
     }
-    const qual=wd.filter(a=>(a.bcn||0)>=min);qual.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
-    prog('Done! '+qual.length+' artists above '+fmt(min),100);
+    const qual=wd.filter(a=>(a.bcn||0)>=min);
+
+    // Score and sort by DNA if available, else by Spotify
+    if(hasDNA){
+      for(const a of qual)a._dna=dnaScore(a);
+      qual.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0));
+      prog('Done! '+qual.length+' artists above '+fmt(min)+' — sorted by venue DNA fit',100);
+    }else{
+      qual.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
+      prog('Done! '+qual.length+' artists above '+fmt(min),100);
+    }
     renderDiscover(qual);
   }catch(e){prog('Error: '+e.message,100)}
   btn.disabled=false;btn.textContent='Discover';
@@ -783,14 +1153,23 @@ async function runDiscover(){
 
 function renderDiscover(arts){
   const c=document.getElementById('dRes'),cn=cityName();
+  const hasDNA=!!getDNA()?.artistCount;
   if(!arts.length){c.innerHTML='<div class="empty">No artists passed all filters. Try different seeds or lower the threshold.</div>';return}
-  let h='<div class="section-head"><h2>Results</h2><span class="count">'+arts.length+' artists · by '+cn+' Spotify</span></div>';
+  let h='<div class="section-head"><h2>Results</h2><span class="count">'+arts.length+' artists'+(hasDNA?' · sorted by DNA fit':' · by '+cn+' Spotify')+'</span></div>';
   arts.forEach((a,i)=>{
     const tags=a.seeds.map(s=>'<span class="tag">'+esc(s)+'</span>').join('');
     const sv=saved().some(s=>s.name===a.name);
     const img=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
+    // DNA badge
+    let dnaBadge='';
+    if(hasDNA&&a._dna){
+      const d=a._dna,clr=d.score>=70?'green':d.score>=50?'amber':'red';
+      dnaBadge=`<span class="badge badge-${clr}" style="margin-left:6px">${d.score} · ${d.label}</span>`;
+      if(d.flags.length)dnaBadge+=d.flags.map(f=>' <span style="font-family:var(--font-mono);font-size:0.55rem;color:var(--amber)">⚠ '+esc(f)+'</span>').join('');
+    }
+    const genreTags=(a.genres||[]).slice(0,3).map(g=>'<span class="tag" style="opacity:0.7">'+esc(g)+'</span>').join('');
     h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
-      <div class="ri-info"><h3>${esc(a.name)}</h3><div class="tags">${tags}</div>
+      <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags">${tags}${genreTags}</div>
         <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn},${a.global},'${a.uuid}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button></div>
       </div><div class="ri-number"><div class="big">${fmt(a.bcn)}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global)} global</div></div></div>`;
   });
@@ -815,13 +1194,246 @@ async function runScan(){
     if(!all.length){c.innerHTML='<div class="empty">No events found on '+fdate(date)+'</div>';return}
     all.sort((a,b)=>(b.attending||0)-(a.attending||0));
     const totalAtt=all.reduce((s,e)=>s+(e.attending||0),0);
-    const danger=all.length>15?'High':all.length>8?'Medium':'Low';
-    const dclr=all.length>15?'var(--red)':all.length>8?'var(--amber)':'var(--green)';
+
+    // DNA-powered direct competition detection
+    const dna=getDNA();
+    const hasDNA=dna&&dna.artistCount>0;
+    const direct=[], general=[];
+
+    if(hasDNA){
+      // Classify each event: does it compete for YOUR audience?
+      // Match by: genre overlap with venue DNA, or artist appearing in venue's cloud
+      const cloudNorm=new Set((dna.cloud||[]).map(n=>norm(n)));
+      const topGenres=new Set((dna.topGenres||[]).slice(0,5).map(t=>t.genre));
+
+      for(const ev of all){
+        let isDirect=false,reason='';
+        // Check if any artist in this event is in the venue's cloud
+        for(const a of ev.artists){
+          if(cloudNorm.has(norm(a))){isDirect=true;reason='Played your venue';break}
+        }
+        // Check genre via event title / known artist genres from DNA profiles
+        if(!isDirect&&dna.profiles){
+          for(const a of ev.artists){
+            const prof=dna.profiles.find(p=>norm(p.name)===norm(a));
+            if(prof&&prof.genres){
+              const shared=prof.genres.filter(g=>topGenres.has(g));
+              if(shared.length){isDirect=true;reason=shared[0];break}
+            }
+          }
+        }
+        // If still not classified, try Soundcharts lookup for the headliner (first artist)
+        // But only do this for high-attendance events to save API calls
+        if(!isDirect&&ev.attending>=50&&ev.artists.length>0){
+          try{
+            const sc_a=await scSearch(ev.artists[0]);
+            if(sc_a){
+              const meta=await scMeta(sc_a.uuid);
+              if(meta){
+                const aGenres=[];
+                if(meta.genres)aGenres.push(...meta.genres.map(g=>(g.name||g).toLowerCase()));
+                else if(meta.mainGenre)aGenres.push((meta.mainGenre.name||meta.mainGenre).toLowerCase());
+                if(meta.subGenres)aGenres.push(...meta.subGenres.map(g=>(g.name||g).toLowerCase()));
+                const shared=aGenres.filter(g=>topGenres.has(g));
+                if(shared.length){isDirect=true;reason=shared[0]}
+              }
+            }
+          }catch(e){}
+        }
+        if(isDirect)direct.push({...ev,reason});
+        else general.push(ev);
+      }
+    }
+
+    // Competition ratings
+    const overallLevel=all.length>15?'High':all.length>8?'Medium':'Low';
+    const overallClr=all.length>15?'var(--accent)':all.length>8?'var(--amber)':'var(--green)';
+    const directLevel=hasDNA?(direct.length>5?'High':direct.length>2?'Medium':direct.length>0?'Low':'None'):'—';
+    const directClr=direct.length>5?'var(--accent)':direct.length>2?'var(--amber)':direct.length>0?'var(--green)':'var(--green)';
+
     let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2><span class="count">${all.length} events</span></div>
-      <div class="stats"><div class="stat"><div class="sv">${all.length}</div><div class="sl">Events</div></div><div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total attending</div></div><div class="stat"><div class="sv" style="color:${dclr}">${danger}</div><div class="sl">Competition</div></div></div>`;
-    for(const ev of all)h+=`<div class="ev-item"><div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">going</div></div><div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div><div class="ev-a">${esc(ev.artists.join(', '))}</div></div></div>`;
+      <div class="stats">
+        <div class="stat"><div class="sv">${all.length}</div><div class="sl">Total events</div></div>
+        <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total attending</div></div>
+        <div class="stat"><div class="sv" style="color:${overallClr}">${overallLevel}</div><div class="sl">Overall competition</div></div>
+        ${hasDNA?`<div class="stat"><div class="sv" style="color:${directClr}">${directLevel}</div><div class="sl">Direct competition</div></div>`:''}
+        ${hasDNA?`<div class="stat"><div class="sv" style="color:var(--accent)">${direct.length}</div><div class="sl">Competing for your audience</div></div>`:''}
+      </div>`;
+
+    // Direct competition section (DNA-powered)
+    if(hasDNA&&direct.length>0){
+      h+=`<div class="card" style="border-color:var(--accent);margin-top:16px">
+        <h3 style="color:var(--accent);margin-bottom:2px">Direct Competition</h3>
+        <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">Events targeting your audience — same genres, similar artists</p>`;
+      for(const ev of direct.sort((a,b)=>(b.attending||0)-(a.attending||0))){
+        h+=`<div class="ev-item"><div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">going</div></div>
+          <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div>
+          <div class="ev-a">${esc(ev.artists.join(', '))}</div>
+          <div style="margin-top:3px"><span class="badge badge-red">${esc(ev.reason)}</span></div></div></div>`;
+      }
+      h+=`</div>`;
+    }else if(hasDNA){
+      h+=`<div class="card" style="border-color:var(--green);margin-top:16px">
+        <h3 style="color:var(--green);margin-bottom:2px">No Direct Competition</h3>
+        <p style="font-size:0.82rem;color:var(--text-dim)">No events on this date target your specific audience. Good date to book.</p></div>`;
+    }else{
+      h+=`<div class="card" style="margin-top:16px;border-color:var(--amber)">
+        <p style="font-size:0.82rem;color:var(--amber)">Build your Venue DNA to see direct competition analysis. <span style="cursor:pointer;text-decoration:underline" onclick="rebuildDNA()">Build now</span></p></div>`;
+    }
+
+    // Overall events
+    h+=`<div style="margin-top:20px"><div class="section-head"><h2>All Events</h2><span class="count">${all.length} total</span></div>`;
+    for(const ev of all){
+      const isDirect=hasDNA&&direct.some(d=>d.title===ev.title&&d.venue===ev.venue);
+      h+=`<div class="ev-item"${isDirect?' style="border-left:3px solid var(--accent);padding-left:11px"':''}>
+        <div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">going</div></div>
+        <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}${isDirect?' <span class="badge badge-red" style="font-size:0.5rem">DIRECT</span>':''}</div>
+        <div class="ev-t">${esc(ev.title)}</div><div class="ev-a">${esc(ev.artists.join(', '))}</div></div></div>`;
+    }
+    h+=`</div>`;
+
+    // Adjacent day threat radar placeholder
+    h+=`<div id="adjacentThreats" style="margin-top:20px"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning day before &amp; after for threats…</div></div>`;
+
     c.innerHTML=h;
+
+    // Run adjacent day scan async (don't block main render)
+    scanAdjacentThreats(date);
   }catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>'}
+}
+
+/* Scan day before & day after for big events competing for your audience */
+async function scanAdjacentThreats(dateStr){
+  const box=document.getElementById('adjacentThreats');
+  if(!box)return;
+  const dna=getDNA();
+  const hasDNA=dna&&dna.artistCount>0;
+
+  try{
+    const center=new Date(dateStr);
+    const dayB=new Date(center);dayB.setDate(center.getDate()-1);
+    const dayA=new Date(center);dayA.setDate(center.getDate()+1);
+    const dayBStr=dayB.toISOString().slice(0,10);
+    const dayAStr=dayA.toISOString().slice(0,10);
+
+    // Get events for both days
+    const cache=getCache();
+    let evBefore=[],evAfter=[];
+    if(cache&&cache.areaCode===areaId()){
+      evBefore=cache.events.filter(e=>e.date===dayBStr);
+      evAfter=cache.events.filter(e=>e.date===dayAStr);
+      if(!evBefore.length)try{evBefore=await raBulkFetch(areaId(),dayBStr,dayBStr,10)}catch(e){}
+      if(!evAfter.length)try{evAfter=await raBulkFetch(areaId(),dayAStr,dayAStr,10)}catch(e){}
+    }else{
+      try{evBefore=await raBulkFetch(areaId(),dayBStr,dayBStr,10)}catch(e){}
+      try{evAfter=await raBulkFetch(areaId(),dayAStr,dayAStr,10)}catch(e){}
+    }
+
+    // Find threats: high-attendance events (1000+ going) OR direct genre competitors (50+ going)
+    const ATT_THRESHOLD=1000; // big event threshold (any genre)
+    const DIRECT_ATT_THRESHOLD=50; // direct competitor threshold
+    const threats=[];
+
+    const classifyAdjacentEvents=async(events,dayLabel,dayDate)=>{
+      const topGenres=hasDNA?new Set((dna.topGenres||[]).slice(0,5).map(t=>t.genre)):new Set();
+      const cloudNorm=hasDNA?new Set((dna.cloud||[]).map(n=>norm(n))):new Set();
+
+      for(const ev of events){
+        const att=ev.attending||0;
+        let isDirect=false,reason='';
+
+        if(hasDNA){
+          // Check cloud
+          for(const a of ev.artists){if(cloudNorm.has(norm(a))){isDirect=true;reason='Played your venue';break}}
+          // Check DNA profiles
+          if(!isDirect&&dna.profiles){
+            for(const a of ev.artists){
+              const prof=dna.profiles.find(p=>norm(p.name)===norm(a));
+              if(prof&&prof.genres){
+                const shared=prof.genres.filter(g=>topGenres.has(g));
+                if(shared.length){isDirect=true;reason=shared[0];break}
+              }
+            }
+          }
+          // Live lookup for big events only
+          if(!isDirect&&att>=DIRECT_ATT_THRESHOLD&&ev.artists.length>0){
+            try{
+              const sc_a=await scSearch(ev.artists[0]);
+              if(sc_a){
+                const meta=await scMeta(sc_a.uuid);
+                if(meta){
+                  const aGenres=[];
+                  if(meta.genres)aGenres.push(...meta.genres.map(g=>(g.name||g).toLowerCase()));
+                  else if(meta.mainGenre)aGenres.push((meta.mainGenre.name||meta.mainGenre).toLowerCase());
+                  if(meta.subGenres)aGenres.push(...meta.subGenres.map(g=>(g.name||g).toLowerCase()));
+                  const shared=aGenres.filter(g=>topGenres.has(g));
+                  if(shared.length){isDirect=true;reason=shared[0]}
+                }
+              }
+            }catch(e){}
+          }
+        }
+
+        // Include if: big event (any genre, 1000+) OR direct competitor (50+)
+        if(att>=ATT_THRESHOLD||(isDirect&&att>=DIRECT_ATT_THRESHOLD)){
+          threats.push({...ev,dayLabel,dayDate,isDirect,reason,isBig:att>=ATT_THRESHOLD});
+        }
+      }
+    };
+
+    await classifyAdjacentEvents(evBefore,'Night before',dayBStr);
+    await classifyAdjacentEvents(evAfter,'Night after',dayAStr);
+
+    // Render threats
+    if(!threats.length){
+      box.innerHTML=`<div class="card" style="border-color:var(--green)">
+        <h3 style="color:var(--green);margin-bottom:4px">Adjacent Days Clear</h3>
+        <p style="font-size:0.78rem;color:var(--text-dim)">No major events or direct competitors on ${fdate(dayBStr)} or ${fdate(dayAStr)}.</p></div>`;
+      return;
+    }
+
+    threats.sort((a,b)=>(b.attending||0)-(a.attending||0));
+    const directThreats=threats.filter(t=>t.isDirect);
+    const bigThreats=threats.filter(t=>t.isBig&&!t.isDirect);
+
+    let th=`<div class="card" style="border-color:var(--amber)">
+      <h3 style="color:var(--amber);margin-bottom:2px">⚠ Adjacent Day Threats</h3>
+      <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">Big events or direct competitors the night before/after can drain your audience</p>`;
+
+    for(const t of threats){
+      const borderClr=t.isDirect?'var(--accent)':'var(--amber)';
+      const badge=t.isDirect
+        ?`<span class="badge badge-red">${esc(t.reason)}</span>`
+        :`<span class="badge badge-amber">Large event</span>`;
+      th+=`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);border-left:3px solid ${borderClr};padding-left:11px">
+        <div style="text-align:center;min-width:50px">
+          <div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;color:var(--accent)">${t.attending>0?fmt(t.attending):'—'}</div>
+          <div style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-faint);text-transform:uppercase">going</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--amber);margin-bottom:2px">${esc(t.dayLabel)} · ${fdate(t.dayDate)}</div>
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.88rem">${esc(t.venue)}</div>
+          <div style="font-size:0.8rem;color:var(--text-dim)">${esc(t.title)}</div>
+          <div style="font-size:0.75rem;color:var(--text-faint);margin-top:2px">${esc(t.artists.join(', '))}</div>
+          <div style="margin-top:4px">${badge}</div>
+        </div>
+      </div>`;
+    }
+
+    // Summary verdict
+    if(directThreats.length>0){
+      th+=`<div style="margin-top:12px;padding:10px 14px;background:var(--accent-glow);border:1px solid var(--accent);border-radius:var(--radius)">
+        <p style="font-size:0.82rem"><strong style="color:var(--accent)">Warning:</strong> ${directThreats.length} direct competitor${directThreats.length>1?'s':''} nearby — your audience may split. Consider picking a different date.</p></div>`;
+    }else{
+      th+=`<div style="margin-top:12px;padding:10px 14px;background:var(--amber-dim);border:1px solid rgba(184,134,11,0.3);border-radius:var(--radius)">
+        <p style="font-size:0.82rem"><strong style="color:var(--amber)">Heads up:</strong> ${bigThreats.length} large event${bigThreats.length>1?'s':''} nearby, but different audience. Probably fine.</p></div>`;
+    }
+    th+=`</div>`;
+    box.innerHTML=th;
+  }catch(e){
+    box.innerHTML=`<div class="card" style="border-color:var(--border)">
+      <p style="font-size:0.78rem;color:var(--text-faint)">Could not scan adjacent days: ${esc(e.message)}</p></div>`;
+  }
 }
 
 /* ═══ X-RAY ═══ */
@@ -879,7 +1491,7 @@ async function runXray(){
     if(wwHit)sdC={hit:true,venue:wwHit.venue,area:wwHit.area};
 
     const blocked=cityC.hit||sdC.hit;
-    let lastTxt='Never played '+cn;
+    let lastTxt='No shows in last 12 months';
     if(shows.length){
       const lastShow=shows.find(s=>new Date(s.date)<=new Date()); // most recent past show
       if(lastShow){const m=Math.round((new Date()-new Date(lastShow.date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(lastShow.date)+')'}
@@ -888,7 +1500,7 @@ async function runXray(){
 
     let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start"><div style="display:flex;align-items:center">${imgH}<div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div style="font-size:0.78rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div></div><span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span></div>
       <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);margin:8px 0 4px">Checked against your date: ${fdate(date)} · Exclusion: ${backMo}mo back / ${fwdMo}mo forward</div>
-      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--red)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--red)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
+      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
     if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${fdate(cityC.date)} @ ${esc(cityC.venue)} — within ${backMo}mo before / ${fwdMo}mo after your date</p>`;
     if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">⚠ Playing ${esc(sdC.venue)} (${esc(sdC.area)}) on ${fdate(date)}</p>`;
     if(shows.length){
@@ -896,7 +1508,7 @@ async function runXray(){
       for(const s of shows.slice(0,5)){
         const isPast=new Date(s.date)<=new Date();
         const isFuture=!isPast;
-        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--font-mono)">UPCOMING</span> ':''}${fdate(s.date)} — ${esc(s.venue)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--red)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'—'}</span></div>`;
+        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--font-mono)">UPCOMING</span> ':''}${fdate(s.date)} — ${esc(s.venue)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--accent)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'—'}</span></div>`;
       }
       h+=`</div>`;
     }
@@ -916,10 +1528,10 @@ async function runRouting(){
   rteProgReset();document.getElementById('rteRes').innerHTML='';
 
   try{
-    // Day before, day of, day after
+    // Day before and day after only (not same day — that's YOUR date)
     const center=new Date(date),dayB=new Date(center),dayA=new Date(center);
     dayB.setDate(center.getDate()-1);dayA.setDate(center.getDate()+1);
-    const dates=[dayB.toISOString().slice(0,10),date,dayA.toISOString().slice(0,10)];
+    const dates=[dayB.toISOString().slice(0,10),dayA.toISOString().slice(0,10)];
 
     rteProg('Scanning nearby cities…',5);
     const nearbyArtists=new Map();
@@ -948,15 +1560,25 @@ async function runRouting(){
     for(const[key,info] of nearbyArtists){if(!idxLookup(cityIdx,info.name)){routingOpps.push(info);rteProg(null,70,'✓ '+info.name+' — '+info.city+' '+fdate(info.date))}}
 
     // Spotify for top 15
-    rteProg('Fetching Spotify…',80);
+    // Spotify + Genres for top candidates
+    rteProg('Fetching Spotify & genres…',80);
     const withData=[];
+    const hasDNA=!!getDNA()?.artistCount;
     for(let i=0;i<Math.min(routingOpps.length,15);i++){
       const a=routingOpps[i];
-      try{const sc_a=await scSearch(a.name);if(sc_a){const sp=await scSpotify(sc_a.uuid);a.bcn=sp.c;a.global=sp.g;a.uuid=sc_a.uuid;a.imageUrl=sc_a.imageUrl||''}withData.push(a)}catch(e){withData.push(a)}
+      try{const sc_a=await scSearch(a.name);if(sc_a){const sp=await scSpotify(sc_a.uuid);a.bcn=sp.c;a.global=sp.g;a.uuid=sc_a.uuid;a.imageUrl=sc_a.imageUrl||'';if(hasDNA)await enrichGenres(a)}withData.push(a)}catch(e){withData.push(a)}
     }
     for(let i=15;i<routingOpps.length;i++)withData.push(routingOpps[i]);
-    withData.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
-    rteProg('Done! '+withData.length+' routing opportunities.',100);
+
+    // Score and sort by DNA if available
+    if(hasDNA){
+      for(const a of withData)a._dna=dnaScore(a);
+      withData.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0));
+      rteProg('Done! '+withData.length+' routing opportunities — sorted by DNA fit.',100);
+    }else{
+      withData.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
+      rteProg('Done! '+withData.length+' routing opportunities.',100);
+    }
     renderRouting(withData);
   }catch(e){rteProg('Error: '+e.message,100)}
   btn.disabled=false;btn.textContent='Find Routing';
@@ -964,14 +1586,23 @@ async function runRouting(){
 
 function renderRouting(arts){
   const c=document.getElementById('rteRes'),cn=cityName();
+  const hasDNA=!!getDNA()?.artistCount;
   if(!arts.length){c.innerHTML='<div class="empty">No routing opportunities found.</div>';return}
-  let h='<div class="section-head"><h2>Routing Opportunities</h2><span class="count">'+arts.length+' artists</span></div>';
+  let h='<div class="section-head"><h2>Routing Opportunities</h2><span class="count">'+arts.length+' artists'+(hasDNA?' · sorted by DNA fit':'')+'</span></div>';
   h+='<p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px;font-style:italic">Artists playing nearby — already in the region, likely lower fees.</p>';
   arts.forEach((a,i)=>{
     const sv=saved().some(s=>s.name===a.name);
     const img=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
+    // DNA badge
+    let dnaBadge='';
+    if(hasDNA&&a._dna){
+      const d=a._dna,clr=d.score>=70?'green':d.score>=50?'amber':'red';
+      dnaBadge=`<span class="badge badge-${clr}" style="margin-left:6px">${d.score} · ${d.label}</span>`;
+      if(d.flags.length)dnaBadge+=d.flags.map(f=>' <span style="font-family:var(--font-mono);font-size:0.55rem;color:var(--amber)">⚠ '+esc(f)+'</span>').join('');
+    }
+    const genreTags=(a.genres||[]).slice(0,2).map(g=>'<span class="tag" style="opacity:0.7">'+esc(g)+'</span>').join('');
     h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
-      <div class="ri-info"><h3>${esc(a.name)}</h3><div class="tags"><span class="tag tag-routing">↗ ${esc(a.city)} · ${fdate(a.date)}</span><span class="tag">${esc(a.venue)}</span></div>
+      <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags"><span class="tag tag-routing">↗ ${esc(a.city)} · ${fdate(a.date)}</span><span class="tag">${esc(a.venue)}</span>${genreTags}</div>
         ${a.attending?'<div style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint);margin-top:2px">'+fmt(a.attending)+' going</div>':''}
         <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn||0},${a.global||0},'${a.uuid||''}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button></div>
       </div><div class="ri-number"><div class="big">${(a.bcn||0)>0?fmt(a.bcn):'—'}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global||0)} global</div></div></div>`;
@@ -1000,18 +1631,18 @@ async function genReport(){
     if(wN)wAvg=Math.round(wAvg/wN);if(lN)lAvg=Math.round(lAvg/lN);
     const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
-    let h=`<div class="card"><h3 style="color:var(--red)">Venue Profile</h3><div class="stats"><div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div><div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div><div class="stat"><div class="sv">${p.capacity||'—'}</div><div class="sl">Capacity</div></div><div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${cn} events/year</div></div></div></div>`;
+    let h=`<div class="card"><h3 style="color:var(--accent)">Venue Profile</h3><div class="stats"><div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div><div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div><div class="stat"><div class="sv">${p.capacity||'—'}</div><div class="sl">Capacity</div></div><div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${cn} events/year</div></div></div></div>`;
 
     if(wH||lH){
       h+=`<div class="card"><h3>Booking DNA</h3>`;
       if(wH)h+=`<p style="font-size:0.78rem;color:var(--green);margin-bottom:8px;font-family:var(--font-head);font-weight:600">✓ Wins — avg ${fmt(wAvg)} ${cn} Spotify</p><div class="stats">${wH}</div>`;
       if(lH)h+=`<p style="font-size:0.78rem;color:var(--amber);margin:12px 0 8px;font-family:var(--font-head);font-weight:600">✗ Losses — avg ${fmt(lAvg)} ${cn} Spotify</p><div class="stats">${lH}</div>`;
-      if(wAvg>0&&lAvg>0){const t=Math.round((wAvg+lAvg)/2);h+=`<div style="margin-top:14px;padding:12px 16px;background:var(--red-glow);border:1px solid var(--red);border-radius:var(--radius)"><p style="font-size:0.85rem;line-height:1.6"><strong style="color:var(--red)">Insight:</strong> Wins avg <strong>${fmt(wAvg)}</strong>, losses avg <strong>${fmt(lAvg)}</strong>. Target above <strong style="color:var(--red)">${fmt(t)}</strong> ${cn} Spotify.</p></div>`}
+      if(wAvg>0&&lAvg>0){const t=Math.round((wAvg+lAvg)/2);h+=`<div style="margin-top:14px;padding:12px 16px;background:var(--accent-glow);border:1px solid var(--accent);border-radius:var(--radius)"><p style="font-size:0.85rem;line-height:1.6"><strong style="color:var(--accent)">Insight:</strong> Wins avg <strong>${fmt(wAvg)}</strong>, losses avg <strong>${fmt(lAvg)}</strong>. Target above <strong style="color:var(--accent)">${fmt(t)}</strong> ${cn} Spotify.</p></div>`}
       h+=`</div>`;
     }
 
-    h+=`<div class="card"><h3 style="color:var(--red)">Competitive Landscape</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Top venues (12 months):</p>`;
-    for(const[name,count] of topV){const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase());h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem${isU?';color:var(--red);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--font-mono);font-size:0.7rem">${count}</span></div>`}
+    h+=`<div class="card"><h3 style="color:var(--accent)">Competitive Landscape</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Top venues (12 months):</p>`;
+    for(const[name,count] of topV){const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase());h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem${isU?';color:var(--accent);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--font-mono);font-size:0.7rem">${count}</span></div>`}
     h+=`</div>`;
 
     // Fee intelligence
@@ -1026,7 +1657,7 @@ async function genReport(){
     // Calendar
     h+=`<div class="card"><h3 style="color:var(--blue)">Calendar</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Fri/Sat competition next 3 months:</p><div id="calGrid"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning…</div></div></div>`;
 
-    h+=`<div class="card"><h3>Recommendations</h3><ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)"><li>Target <strong style="color:var(--red)">${wAvg>0?fmt(wAvg)+'+':'2K+'}</strong> ${cn} Spotify</li><li>Use <strong>Routing</strong> for cheaper bookings</li><li>Use <strong>What's On</strong> before committing dates</li><li>Use <strong>X-Ray</strong> before making offers</li></ul></div>`;
+    h+=`<div class="card"><h3>Recommendations</h3><ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)"><li>Target <strong style="color:var(--accent)">${wAvg>0?fmt(wAvg)+'+':'2K+'}</strong> ${cn} Spotify</li><li>Use <strong>Routing</strong> for cheaper bookings</li><li>Use <strong>What's On</strong> before committing dates</li><li>Use <strong>X-Ray</strong> before making offers</li></ul></div>`;
 
     c.innerHTML=h;btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';
     loadCalendar();
@@ -1054,8 +1685,8 @@ async function loadCalendar(){
 
   let h='<div style="margin-bottom:16px"><div style="font-family:var(--font-head);font-weight:600;font-size:0.72rem;color:var(--green);text-transform:uppercase;margin-bottom:6px">Best dates</div>';
   for(const r of sorted.slice(0,3))h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--green)">${r.count} events</span></div>`;
-  h+='</div><div><div style="font-family:var(--font-head);font-weight:600;font-size:0.72rem;color:var(--red);text-transform:uppercase;margin-bottom:6px">Busiest dates</div>';
-  for(const r of sorted.slice(-3).reverse())h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--red)">${r.count} events</span></div>`;
+  h+='</div><div><div style="font-family:var(--font-head);font-weight:600;font-size:0.72rem;color:var(--accent);text-transform:uppercase;margin-bottom:6px">Busiest dates</div>';
+  for(const r of sorted.slice(-3).reverse())h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent)">${r.count} events</span></div>`;
   h+='</div><div style="margin-top:16px"><div class="cal-grid">';
   for(const r of results){const cls=r.count<=low?'cal-good':r.count>=high?'cal-bad':'cal-mid';h+=`<div class="cal-cell ${cls}"><div class="cal-day">${r.dow} ${r.date.getDate()} ${r.date.toLocaleDateString('en-GB',{month:'short'})}</div><div class="cal-count">${r.count}</div><div class="cal-label">events</div></div>`}
   h+='</div></div>';grid.innerHTML=h;
@@ -1079,13 +1710,13 @@ function renderSaved(){
       <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin-top:4px">${cn}: ${a.bcn>0?fmt(a.bcn):'—'} · Global: ${fmt(a.g||0)}</div>
       <textarea class="notes" placeholder="Add notes…" onchange="updateNotes('${esc(a.name).replace(/'/g,"\\'")}',this.value)">${esc(a.notes||'')}</textarea>
       <div class="fee-row"><span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);text-transform:uppercase">Fee: €</span><input type="number" placeholder="0" value="${a.fee||''}" onchange="updateFee('${esc(a.name).replace(/'/g,"\\'")}',this.value)"><span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);margin-left:8px">Result:</span><button class="thumb-btn ${a.outcome==='up'?'active-up':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','up')">👍</button><button class="thumb-btn ${a.outcome==='down'?'active-down':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','down')">👎</button></div>
-    </div><div style="text-align:right"><div style="font-family:var(--font-head);font-weight:800;color:var(--red);font-size:1.1rem">${a.bcn>0?fmt(a.bcn):'—'}</div><button class="btn-ghost" style="margin-top:8px;font-size:0.6rem;padding:3px 8px" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button></div></div>`}).join('');
+    </div><div style="text-align:right"><div style="font-family:var(--font-head);font-weight:800;color:var(--accent);font-size:1.1rem">${a.bcn>0?fmt(a.bcn):'—'}</div><button class="btn-ghost" style="margin-top:8px;font-size:0.6rem;padding:3px 8px" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button></div></div>`}).join('');
 }
 
 function exportCSV(){
   const s=saved();if(!s.length)return;
   const csv='Name,'+cityName()+' Spotify,Global Spotify,Fee,Outcome,Notes,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+','+(a.fee||'')+','+(a.outcome||'')+',"'+(a.notes||'').replace(/"/g,'""')+'",'+a.at).join('\n');
-  const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='libro-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
+  const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='nightpulse-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
 }
 </script>
 </body>
