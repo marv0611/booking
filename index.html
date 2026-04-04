@@ -1520,7 +1520,7 @@ input[type="number"] { font-family: var(--font-mono); }
     <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3" style="display:none"></div><div class="ob-dot" id="d4" style="display:none"></div></div>
     <div class="ob-step active" id="ob1">
       <h2>Set Up Your DNA</h2>
-      <div class="sub">Night Pulse reads your booking history from Resident Advisor and builds an audience profile in 60 seconds. Everything calibrates automatically.</div>
+      <div class="sub">Night Pulse scans your booking history and builds an audience profile. Everything calibrates automatically.</div>
       <div class="input-group"><label>I am a…</label>
         <div class="seg-picker" id="obTypePicker" style="max-width:300px">
           <button onclick="setObType('venue')" data-v="venue" class="active">Venue<span class="seg-sub">club / space</span></button>
@@ -1531,63 +1531,87 @@ input[type="number"] { font-family: var(--font-mono); }
       <div class="input-group"><label>City</label>
         <select id="obC">
           <option value="barcelona" selected>Barcelona</option>
-          <option value="london">London</option>
-          <option value="paris">Paris</option>
-          <option value="amsterdam">Amsterdam</option>
           <option value="berlin">Berlin</option>
+          <option value="london">London</option>
+          <option value="amsterdam">Amsterdam</option>
+          <option value="paris">Paris</option>
+          <option value="lisbon">Lisbon</option>
+          <option value="madrid">Madrid</option>
+          <option value="milan">Milan</option>
+          <option value="ibiza">Ibiza</option>
+          <option value="manchester">Manchester</option>
+          <option value="brussels">Brussels</option>
+          <option value="copenhagen">Copenhagen</option>
+          <option value="stockholm">Stockholm</option>
+          <option value="warsaw">Warsaw</option>
+          <option value="prague">Prague</option>
+          <option value="zurich">Zurich</option>
+          <option value="hamburg">Hamburg</option>
+          <option value="munich">Munich</option>
+          <option value="vienna">Vienna</option>
+          <option value="dublin">Dublin</option>
         </select>
       </div>
       <div class="input-group" id="obVenueGroup"><label>Venue Name</label>
         <div class="ac-wrap"><input type="text" id="obV" placeholder="Start typing your venue name…" autocomplete="off"></div>
-        <span class="hint" id="venueHint">Loading venues from RA…</span>
+        <span class="hint" id="venueHint">Loading venues…</span>
       </div>
       <div class="input-group" id="obPromoterGroup" style="display:none">
-        <label>Promoter / Party Name</label>
-        <div class="ac-wrap"><input type="text" id="obPromoterName" placeholder="Start typing your promoter name…" autocomplete="off"></div>
-        <span class="hint" id="promoterHint">Loading promoters…</span>
-        <div style="margin-top:14px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">
-          <label style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:block">RA Promoter ID <span style="color:var(--accent)">*</span> <span style="font-weight:400;color:var(--text-faint);font-size:0.65rem;text-transform:none;letter-spacing:0">— required for accurate DNA</span></label>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="number" id="obPromoterRaId" placeholder="e.g. 103095" style="max-width:160px;font-size:0.82rem;padding:8px 12px;font-family:var(--font-mono)">
-            <a id="obPromoterRaLink" href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.6rem;color:var(--accent);text-decoration:none;letter-spacing:0.3px">Find my ID on RA →</a>
-            <span id="obPromoterRaStatus" style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint)"></span>
+        <label>Promoter Name</label>
+        <div class="ac-wrap"><input type="text" id="obPromoterName" placeholder="Your promoter or party brand name" autocomplete="off"></div>
+        <span class="hint" id="promoterHint"></span>
+        <div class="input-group" style="margin-top:16px;margin-bottom:0">
+          <label>RA Promoter ID <span style="color:var(--accent)">*</span></label>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input type="number" id="obPromoterRaId" placeholder="e.g. 83067" style="max-width:180px;font-family:var(--font-mono)">
+            <a id="obPromoterRaLink" href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent);text-decoration:none">Find my ID →</a>
           </div>
-          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);margin-top:6px">Your ID is in your ra.co/promoters/[ID] URL</div>
+          <span id="obPromoterRaStatus" style="display:block;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-faint);margin-top:6px"></span>
+          <span class="hint">The number in your ra.co/promoters/[ID] URL</span>
         </div>
       </div>
-      <div class="input-group"><label>Capacity <span style="font-weight:400;font-size:0.8em;color:var(--text-faint);text-transform:none;letter-spacing:0">(optional)</span></label><input type="number" id="obCap" placeholder="e.g. 400"></div>
+      <div class="input-group" id="obCapGroup"><label>Average Event Size <span style="font-weight:400;font-size:0.8em;color:var(--text-faint);text-transform:none;letter-spacing:0">(optional)</span></label><input type="number" id="obCap" placeholder="e.g. 400"></div>
       <button class="btn btn-red" onclick="obDone()" style="margin-top:8px">Analyse My Bookings →</button>
     </div>
     <div class="ob-step" id="ob2" style="display:none">
       <h2>Your Competition</h2>
-      <div class="sub">Tell Night Pulse who you're competing against. This sharpens every recommendation and threat detection.</div>
+      <div class="sub">Tag up to 5 competitors. The more we know about them, the smarter your threat detection becomes.</div>
       <div class="input-group">
-        <label>Competitor Promoters / Brands</label>
-        <div class="ac-wrap"><input type="text" id="obCompetitorInput" placeholder="Type a promoter name and press Enter" autocomplete="off"></div>
-        <div id="obCompetitorChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
-        <span class="hint">Other promoters targeting your audience in your city</span>
-      </div>
-      <div class="input-group">
-        <label>Venues You Use</label>
-        <div class="ac-wrap"><input type="text" id="obMyVenuesInput" placeholder="Type a venue name and press Enter" autocomplete="off"></div>
-        <div id="obMyVenuesChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
-        <span class="hint">Clubs where you host your events</span>
+        <label>Competitor Promoters</label>
+        <div id="obCompetitorList"></div>
+        <div style="display:flex;gap:8px;align-items:end;margin-top:8px">
+          <div style="flex:1"><input type="text" id="obCompetitorName" placeholder="Competitor name" autocomplete="off" style="font-size:0.85rem"></div>
+          <div style="width:140px"><input type="number" id="obCompetitorRaId" placeholder="RA ID" style="font-size:0.85rem;font-family:var(--font-mono)"></div>
+          <button type="button" class="btn-ghost" onclick="_addCompetitor()" style="padding:10px 14px;white-space:nowrap">+ Add</button>
+        </div>
+        <span class="hint">Name + RA Promoter ID for precise tracking (up to 5)</span>
       </div>
       <div class="input-group">
         <label>Your Genre Focus</label>
         <div style="display:flex;flex-wrap:wrap;gap:6px" id="obGenrePicker">
           <button type="button" class="btn-ghost" data-genre="house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">House</button>
+          <button type="button" class="btn-ghost" data-genre="deep-house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Deep House</button>
+          <button type="button" class="btn-ghost" data-genre="tech-house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Tech House</button>
+          <button type="button" class="btn-ghost" data-genre="afro-house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Afro House</button>
+          <button type="button" class="btn-ghost" data-genre="soulful-house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Soulful House</button>
+          <button type="button" class="btn-ghost" data-genre="jackin-house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Jackin House</button>
           <button type="button" class="btn-ghost" data-genre="techno" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Techno</button>
-          <button type="button" class="btn-ghost" data-genre="melodic" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Melodic</button>
-          <button type="button" class="btn-ghost" data-genre="minimal" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Minimal</button>
-          <button type="button" class="btn-ghost" data-genre="disco" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Disco / Funk</button>
-          <button type="button" class="btn-ghost" data-genre="dnb" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">DnB / Breaks</button>
+          <button type="button" class="btn-ghost" data-genre="melodic" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Melodic House & Techno</button>
+          <button type="button" class="btn-ghost" data-genre="minimal" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Minimal / Deep Tech</button>
+          <button type="button" class="btn-ghost" data-genre="disco" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Disco</button>
+          <button type="button" class="btn-ghost" data-genre="funk" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Funk / Soul</button>
+          <button type="button" class="btn-ghost" data-genre="nu-disco" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Nu Disco</button>
+          <button type="button" class="btn-ghost" data-genre="dnb" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">DnB / Jungle</button>
+          <button type="button" class="btn-ghost" data-genre="breaks" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Breaks</button>
           <button type="button" class="btn-ghost" data-genre="electronic" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Electronica</button>
-          <button type="button" class="btn-ghost" data-genre="other" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Other</button>
+          <button type="button" class="btn-ghost" data-genre="ambient" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Ambient</button>
+          <button type="button" class="btn-ghost" data-genre="uk-garage" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">UK Garage</button>
         </div>
       </div>
-      <button class="btn btn-red" onclick="obStep2Done()" style="margin-top:8px">Continue →</button>
-      <button class="btn-ghost" onclick="obStep2Done()" style="margin-top:8px;margin-left:8px">Skip for now</button>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-red" onclick="obStep2Done()" style="flex:1">Continue →</button>
+        <button class="btn-ghost" onclick="obStep2Done()">Skip</button>
+      </div>
     </div>
     <div class="ob-step" id="ob3" style="display:none"></div>
     <div class="ob-step" id="ob4">
@@ -1611,7 +1635,7 @@ input[type="number"] { font-family: var(--font-mono); }
           <div style="font-family:var(--font-head);font-weight:700;font-size:0.82rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Finding artists for <span id="discoverVenueName" style="color:var(--accent)"></span></div>
           <div id="discoverDNASeeds" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-dim)"></div>
         </div>
-        <button class="btn-ghost" onclick="loadDNASeedsIntoDiscover()">↓ Load my full booking history</button>
+        <button class="btn-ghost" onclick="loadDNASeedsIntoDiscover()">↓ Analyze my DNA</button>
       </div>
     </div>
 
@@ -1743,7 +1767,7 @@ input[type="number"] { font-family: var(--font-mono); }
       </div>
     </div>
     <div class="intel-search-wrap">
-      <input type="text" id="intelSearch" placeholder="e.g. Nitsa, Brunch Electronik, Input, Razzmatazz…" autocomplete="off" style="font-size:0.88rem;padding:12px 14px;flex:1">
+      <input type="text" id="intelSearch" placeholder="e.g. Nitsa, Brunch Electronik, Input, Razzmatazz…" autocomplete="off" style="font-size:0.88rem;padding:12px 14px;flex:1" onkeydown="if(event.key==='Enter')runIntel()">
       <button class="btn btn-red" onclick="runIntel()" style="white-space:nowrap;flex-shrink:0">Analyse</button>
     </div>
     <div id="intelQuickChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px"></div>
@@ -1831,7 +1855,47 @@ async function raPromoterQuery(id,type,year){
   if(!r.ok)throw new Error('RA '+r.status);
   return r.json();
 }
-const AREAS={barcelona:20,berlin:34,london:13,amsterdam:29,paris:44,lisbon:89,madrid:88,milan:108,hamburg:106,'new york':8,'los angeles':7,detroit:43,melbourne:100,tokyo:74,'sao paulo':154,'buenos aires':28,tbilisi:173,manchester:17,ibiza:25,brussels:37,copenhagen:42,stockholm:72,warsaw:84,prague:50,zurich:56,bangkok:142,seoul:152,lyon:71,marseille:48,munich:41,vienna:35,dublin:45,glasgow:36,birmingham:52,bristol:22,leeds:23,brighton:14,cologne:86,antwerp:58,rotterdam:107,munich:41};
+const AREAS={
+  // ═══ 80 EUROPEAN CITIES — verified RA area IDs (April 2026 scan) ═══
+  // Using newer IDs (300+) where duplicates exist for city-level precision
+  // UK
+  london:13,manchester:344,bristol:446,edinburgh:341,glasgow:340,
+  leeds:346,liverpool:343,newcastle:345,belfast:35,aberdeen:342,
+  // Spain
+  barcelona:20,madrid:41,ibiza:25,
+  // France
+  paris:44,lyon:337,marseille:338,lille:278,montpellier:339,
+  // Germany
+  berlin:34,cologne:143,frankfurt:354,hamburg:148,munich:151,
+  stuttgart:152,leipzig:356,mannheim:336,dusseldorf:145,dresden:150,
+  hannover:358,nuremberg:154,
+  // Netherlands
+  amsterdam:176,rotterdam:174,utrecht:175,'the hague':178,eindhoven:177,
+  // Italy
+  milan:347,rome:351,turin:348,florence:352,naples:406,bologna:350,venice:349,
+  // Portugal
+  lisbon:53,porto:364,
+  // Switzerland
+  zurich:390,geneva:392,basel:391,lausanne:393,bern:394,
+  // Belgium
+  brussels:405,antwerp:404,
+  // Scandinavia
+  copenhagen:402,stockholm:396,oslo:408,helsinki:407,
+  gothenburg:397,malmo:398,aarhus:403,bergen:409,
+  // Eastern Europe
+  warsaw:454,prague:451,budapest:449,vienna:450,
+  bucharest:381,krakow:455,ljubljana:142,tallinn:184,sofia:95,
+  'cluj-napoca':382,
+  // Georgia
+  tbilisi:376,
+  // Ireland
+  dublin:386,cork:387,galway:389,
+  // Non-European (kept for future use)
+  'new york':8,'los angeles':7,detroit:43,melbourne:100,tokyo:74,
+  'sao paulo':154,'buenos aires':28,bangkok:142,seoul:152
+};
+// All European cities for routing (80 cities)
+const EU_CITIES=Object.keys(AREAS).filter(c=>!['new york','los angeles','detroit','melbourne','tokyo','sao paulo','buenos aires','bangkok','seoul'].includes(c));
 // Confirmed RA venue IDs scraped from ra.co/clubs URLs — used for exact venue matching.
 // Eliminates substring false-positives (e.g. "Fabric" matching "Fabric of Reality").
 // Add your venue here if it's missing — the ID is the number in its ra.co/clubs/[ID] URL.
@@ -1940,13 +2004,13 @@ function raVenueId(name){
   return null;
 }
 
-const NEARBY_CITIES={
-  barcelona:['madrid','lisbon','ibiza','paris','milan','lyon','marseille','zurich','berlin','amsterdam','london','brussels','manchester','munich'],
-  berlin:['amsterdam','prague','warsaw','copenhagen','hamburg','munich','zurich','brussels','paris','london','stockholm','vienna','milan'],
-  london:['amsterdam','paris','brussels','manchester','berlin','dublin','glasgow','birmingham','bristol','leeds','brighton','lisbon','barcelona'],
-  amsterdam:['berlin','london','brussels','paris','copenhagen','hamburg','cologne','zurich','manchester','antwerp','rotterdam','munich','barcelona'],
-  paris:['london','amsterdam','brussels','berlin','barcelona','lyon','marseille','zurich','milan','lisbon','manchester','dublin','cologne'],
-};
+const NEARBY_CITIES=(()=>{
+  const map={};
+  for(const city of EU_CITIES){
+    if(AREAS[city])map[city]=EU_CITIES.filter(c=>c!==city);
+  }
+  return map;
+})();
 // Genre filters — only keep artists matching these genres
 const RA_GENRES_KEEP=new Set(['acid','acid house','afro house','ambient','baile funk','balearic','club','dancehall','deep house','disco','electro','electronica','experimental','funk','funk / soul','funk/soul','soul','garage','house','italo disco','jazz','jungle','minimal','minimal techno','progressive house','tech house','techno','uk funky']);
 const SC_GENRES_KEEP=new Set(['electronic','dance','r&b/soul','r&b','soul']);
@@ -2436,6 +2500,45 @@ async function raArtistFollowers(name){
   }catch(e){return null}
 }
 
+/* ═══ BEATPORT GENRE ENRICHMENT ═══ */
+async function beatportArtistGenres(artistName){
+  try{
+    // Step 1: search for artist on Beatport
+    const sr=await fetch('/api/beatport/search?q='+encodeURIComponent(artistName));
+    if(!sr.ok)return null;
+    const sd=await sr.json();
+    const artists=sd.artists||[];
+    if(!artists.length)return null;
+    // Find best match
+    const an=artistName.toLowerCase().replace(/[^a-z0-9]/g,'');
+    const match=artists.find(a=>(a.name||'').toLowerCase().replace(/[^a-z0-9]/g,'')===an)||artists[0];
+    if(!match||!match.id)return null;
+    // Step 2: get genre breakdown
+    const gr=await fetch('/api/beatport/artist/'+match.id+'/genres');
+    if(!gr.ok)return null;
+    const gd=await gr.json();
+    return{beatportId:match.id,genres:gd.genres||{},subgenres:gd.subgenres||{},trackCount:gd.tracks||0};
+  }catch(e){return null}
+}
+
+/* ═══ TRAXSOURCE GENRE ENRICHMENT ═══ */
+async function traxsourceArtistGenres(artistName){
+  try{
+    const sr=await fetch('/api/traxsource/search?q='+encodeURIComponent(artistName));
+    if(!sr.ok)return null;
+    const sd=await sr.json();
+    const artists=sd.artists||[];
+    if(!artists.length)return null;
+    const an=artistName.toLowerCase().replace(/[^a-z0-9]/g,'');
+    const match=artists.find(a=>(a.name||'').toLowerCase().replace(/[^a-z0-9]/g,'')===an)||artists[0];
+    if(!match||!match.id)return null;
+    const gr=await fetch('/api/traxsource/artist/'+match.id+'/genres');
+    if(!gr.ok)return null;
+    const gd=await gr.json();
+    return{traxsourceId:match.id,genres:gd.genres||{}};
+  }catch(e){return null}
+}
+
 async function raOfficialRelated(seedName){
   // First build ID index from cache if not done
   const cacheEvents=getCache()?.events||[];
@@ -2570,7 +2673,15 @@ async function buildDNA(statusCb,artistCb){
     }else{
       // Primary path — uses confirmed working RA GraphQL queries
       // NEVER use eventListings with promoter filter — it returns all 10k events regardless of ID
-      if(statusCb)statusCb('Fetching your RA history (ID: '+pid+')…');
+      
+      // Check if background prefetch already got our events
+      if(_prefetchPromise)await _prefetchPromise.catch(()=>{});
+      if(_prefetchedPromoterEvents&&_prefetchedPromoterEvents.events&&_prefetchedPromoterEvents.events.length>0){
+        if(statusCb)statusCb('Using prefetched data ('+_prefetchedPromoterEvents.events.length+' events)');
+        venueEvents.push(..._prefetchedPromoterEvents.events);
+        _prefetchedPromoterEvents=null;
+      }else{
+      if(statusCb)statusCb('Scanning your event history…');
       try{
         // Verify promoter exists
         const checkD=await raPromoterQuery(pid,'PREVIOUS');
@@ -2640,6 +2751,7 @@ async function buildDNA(statusCb,artistCb){
         if(statusCb)statusCb('Fetch failed: '+e.message);
         return null;
       }
+      } // end else (no prefetch)
     }
   }else{
     // Venue path — use local cache with ID matching
@@ -2767,6 +2879,35 @@ async function buildDNA(statusCb,artistCb){
   const realArtists=profiles.filter(p=>p.isReal===true);
   if(statusCb)statusCb(realArtists.length+' headliner-level artists (≥'+FOLLOWER_GATE+' RA followers) out of '+profiles.length+' total');
 
+  // ═══ NEW: Beatport + Traxsource genre enrichment for headliners ═══
+  // Only enrich artists with ≥100 followers — no point looking up local acts
+  const enrichTargets=profiles.filter(p=>p.isReal===true);
+  if(enrichTargets.length&&statusCb)statusCb('Enriching genre data from Beatport + Traxsource ('+enrichTargets.length+' artists)…');
+  
+  const ENRICH_BATCH=3; // conservative to avoid rate limits
+  for(let i=0;i<enrichTargets.length;i+=ENRICH_BATCH){
+    const batch=enrichTargets.slice(i,i+ENRICH_BATCH);
+    await Promise.all(batch.map(async prof=>{
+      // Beatport
+      try{
+        const bp=await beatportArtistGenres(prof.name);
+        if(bp){prof.beatportGenres=bp.genres;prof.beatportSubgenres=bp.subgenres;prof.beatportId=bp.beatportId}
+      }catch(e){}
+      // Traxsource
+      try{
+        const ts=await traxsourceArtistGenres(prof.name);
+        if(ts){prof.traxsourceGenres=ts.genres;prof.traxsourceId=ts.traxsourceId}
+      }catch(e){}
+    }));
+    if(statusCb)statusCb('Genre enrichment: '+(i+batch.length)+'/'+enrichTargets.length+' artists');
+    if(i+ENRICH_BATCH<enrichTargets.length)await new Promise(r=>setTimeout(r,300));
+  }
+  
+  // Count enrichment success
+  const bpCount=enrichTargets.filter(p=>p.beatportGenres&&Object.keys(p.beatportGenres).length).length;
+  const tsCount=enrichTargets.filter(p=>p.traxsourceGenres&&Object.keys(p.traxsourceGenres).length).length;
+  if(statusCb)statusCb('Genre data: '+bpCount+' from Beatport, '+tsCount+' from Traxsource');
+
   // Build RA co-billing network: for each booked artist, find who they share lineups with
   // Uses venueEvents (the promoter/venue's own events) — always defined, works for both paths
   if(statusCb)statusCb('Mapping RA co-billing network…');
@@ -2833,6 +2974,19 @@ async function buildDNA(statusCb,artistCb){
   const raTopGenres=[...raGenreCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name])=>name);
   const raSceneGroupsSet=new Set(raTopGenres.map(g=>_genreGroupMap.get(g.toLowerCase())).filter(Boolean));
 
+  // Auto-detect venues from promoter's event history
+  if(isPromoter&&venueEvents.length){
+    const venueCounts=new Map();
+    for(const ev of venueEvents){
+      if(ev.venue&&ev.venue!=='?')venueCounts.set(ev.venue,(venueCounts.get(ev.venue)||0)+1);
+    }
+    const detectedVenues=[...venueCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10).map(([v])=>v.toLowerCase());
+    const p2=P();
+    p2.myVenues=detectedVenues;
+    setP(p2);
+    if(statusCb)statusCb('Auto-detected '+detectedVenues.length+' venues from your events');
+  }
+
   const dna={
     city,
     venue:venueName,
@@ -2865,7 +3019,7 @@ async function buildDNA(statusCb,artistCb){
     cloud:extendedCloud,
     secondDegree:[...secondDegreeSet],
     coBillNetwork:coBillNetwork.slice(0,30).map(c=>({name:c.name,coBills:c.totalCoBills,via:c.connectedTo.slice(0,3)})),
-    profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl,raShows:p.raShows||1,raAvgAtt:p.raAvgAtt||0,raFollowers:p.raFollowers,isReal:p.isReal,avgBillingPos:p.avgBillingPos,titleMatches:p.titleMatches,headlinerScore:p.headlinerScore||0})),
+    profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl,raShows:p.raShows||1,raAvgAtt:p.raAvgAtt||0,raFollowers:p.raFollowers,isReal:p.isReal,avgBillingPos:p.avgBillingPos,titleMatches:p.titleMatches,headlinerScore:p.headlinerScore||0,beatportGenres:p.beatportGenres||null,beatportSubgenres:p.beatportSubgenres||null,traxsourceGenres:p.traxsourceGenres||null})),
     archiveYearsFetched:window._dnaBuildMeta?.archiveYearsFetched??null,
     dnaComplete:window._dnaBuildMeta?.dnaComplete??true,
     // Compact venue events for recency weighting + time-of-day fingerprint
@@ -3098,7 +3252,7 @@ function eventThreat(event, dna){
       const competitors=p.competitors||[];
       const evVenue=norm(event.venue||'');
       const evTitle=norm(event.title||'');
-      competitorBoost=competitors.some(c=>evVenue.includes(norm(c))||evTitle.includes(norm(c)));
+      competitorBoost=competitors.some(c=>{const cn=norm(c.name||c);return evVenue.includes(cn)||evTitle.includes(cn)});
     }
     
     return{
@@ -3128,7 +3282,7 @@ function eventThreat(event, dna){
         const competitors=p.competitors||[];
         const evVenue=norm(event.venue||'');
         const evTitle=norm(event.title||'');
-        competitorBoost=competitors.some(c=>evVenue.includes(norm(c))||evTitle.includes(norm(c)));
+        competitorBoost=competitors.some(c=>{const cn=norm(c.name||c);return evVenue.includes(cn)||evTitle.includes(cn)});
       }
       
       return{
@@ -3777,10 +3931,12 @@ function updateCityLabels(){
 /* Live RA promoter ID verifier — fires when user types in the ID field.
    Uses PREVIOUS to get recent events + promoter profile to confirm identity. */
 let _raIdVerifyTimer=null;
+let _prefetchedPromoterEvents=null;
+let _prefetchPromise=null;
 async function verifyRaPromoterId(id){
   const statusEl=document.getElementById('obPromoterRaStatus');
   const linkEl=document.getElementById('obPromoterRaLink');
-  if(!id){if(statusEl)statusEl.textContent='';return}
+  if(!id){if(statusEl)statusEl.textContent='';_prefetchedPromoterEvents=null;return}
   if(linkEl)linkEl.href='https://ra.co/promoters/'+id;
   if(statusEl){statusEl.textContent='Verifying…';statusEl.style.color='var(--text-faint)'}
   try{
@@ -3788,13 +3944,12 @@ async function verifyRaPromoterId(id){
     const d=await raPromoterQuery(id,'PREVIOUS');
     const promoter=d?.data?.promoter;
     if(!promoter?.id){
-      if(statusEl){statusEl.textContent='⚠ ID not found on RA — check ra.co/promoters/'+id;statusEl.style.color='var(--amber)'}
+      if(statusEl){statusEl.textContent='⚠ ID not found — check ra.co/promoters/'+id;statusEl.style.color='var(--amber)'}
       return;
     }
     const events=promoter.events||[];
-    const sample=events.slice(0,3).map(e=>`${fdate(e.date||'')}: ${(e.artists||[]).slice(0,2).map(a=>a.name).join(', ')}`).join(' · ');
     if(statusEl){
-      statusEl.textContent='✓ '+promoter.name+' · '+promoter.followerCount+' followers · '+sample;
+      statusEl.textContent='✓ Profile matched — '+promoter.name;
       statusEl.style.color='var(--green)';
     }
     // Auto-fill promoter name field from RA canonical name
@@ -3802,6 +3957,13 @@ async function verifyRaPromoterId(id){
     if(nameInp&&!nameInp.value.trim()&&promoter.name){
       nameInp.value=promoter.name;
     }
+    // ═══ BACKGROUND PREFETCH — start loading full history while user fills step 2 ═══
+    _prefetchedPromoterEvents=null;
+    const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+    _prefetchPromise=raBulkFetchByPromoter(id,ago,now,10).then(evts=>{
+      _prefetchedPromoterEvents=evts;
+      console.log('[Prefetch] '+evts.length+' events ready');
+    }).catch(()=>{_prefetchedPromoterEvents=null});
   }catch(e){
     if(statusEl){statusEl.textContent='Error: '+e.message;statusEl.style.color='var(--accent)'}
   }
@@ -3882,9 +4044,6 @@ async function obDone(){
     document.getElementById('ob2').classList.add('active');
     for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i<=2);
     document.getElementById('d2').style.display='';
-    // Setup chip inputs for competitor step
-    _setupChipInput('obCompetitorInput','obCompetitorChips');
-    _setupChipInput('obMyVenuesInput','obMyVenuesChips');
     return;
   }
   
@@ -3911,6 +4070,35 @@ function _setupChipInput(inputId,chipsId){
   });
 }
 
+/* Add a competitor (name + optional RA ID) */
+function _addCompetitor(){
+  const nameInp=document.getElementById('obCompetitorName');
+  const idInp=document.getElementById('obCompetitorRaId');
+  const list=document.getElementById('obCompetitorList');
+  if(!nameInp||!list)return;
+  const name=nameInp.value.trim();
+  if(!name)return;
+  const raId=idInp?parseInt(idInp.value)||null:null;
+  
+  // Check limit
+  if(list.querySelectorAll('.competitor-entry').length>=5){
+    alert('Maximum 5 competitors');return;
+  }
+  
+  const entry=document.createElement('div');
+  entry.className='competitor-entry';
+  entry.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px;font-family:var(--font-mono);font-size:0.82rem';
+  entry.dataset.name=name;
+  entry.dataset.raId=raId||'';
+  entry.innerHTML='<span style="flex:1;font-family:var(--font-head);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">'+esc(name)+'</span>'
+    +(raId?'<span style="color:var(--accent);font-size:0.72rem">ID '+raId+'</span>':'<span style="color:var(--text-faint);font-size:0.72rem">No ID</span>')
+    +'<span style="cursor:pointer;color:var(--text-faint);padding:2px 6px" onclick="this.parentElement.remove()">×</span>';
+  list.appendChild(entry);
+  nameInp.value='';
+  if(idInp)idInp.value='';
+  nameInp.focus();
+}
+
 /* Helper: genre toggle buttons */
 function _toggleGenre(btn){
   btn.classList.toggle('active');
@@ -3931,9 +4119,15 @@ function _readChips(chipsId){
 /* Step 2 done — save competitor data and proceed to DNA build */
 function obStep2Done(){
   const p=P();
-  p.competitors=_readChips('obCompetitorChips').map(s=>s.toLowerCase());
-  p.myVenues=_readChips('obMyVenuesChips').map(s=>s.toLowerCase());
+  // Read competitors as name+raId pairs
+  const list=document.getElementById('obCompetitorList');
+  const competitors=list?[...list.querySelectorAll('.competitor-entry')].map(el=>({
+    name:(el.dataset.name||'').toLowerCase(),
+    raId:parseInt(el.dataset.raId)||null
+  })).filter(c=>c.name):[];
+  p.competitors=competitors;
   p.genreFocus=[...document.querySelectorAll('#obGenrePicker button.active')].map(b=>b.dataset.genre).filter(Boolean);
+  // Auto-detect venues from event history (done during DNA build)
   setP(p);
   _startDNABuild();
 }
@@ -3947,10 +4141,10 @@ async function _startDNABuild(){
   const _isPromo=_obType==='promoter';
   const _ob4Title=document.getElementById('ob4Title');
   const _ob4Sub=document.getElementById('ob4Sub');
-  if(_ob4Title)_ob4Title.textContent=_isPromo?'Scanning Your History':'Scanning Your Venue';
+  if(_ob4Title)_ob4Title.textContent=_isPromo?'Scanning Your 12-Month History':'Scanning Your Venue';
   if(_ob4Sub)_ob4Sub.textContent=_isPromo
-    ?'Fetching every event you\'ve promoted from Resident Advisor — artists, attendance, scene profile.'
-    :'Fetching your past 12 months of bookings from Resident Advisor to build your audience DNA.';
+    ?'Analyzing your events, artists, attendance, and scene profile.'
+    :'Analyzing your past 12 months of bookings to build your audience DNA.';
   const lbl=document.getElementById('dnaLbl'),fill=document.getElementById('dnaFill'),det=document.getElementById('dnaDet'),mosaic=document.getElementById('dnaMosaic');
   if(mosaic)mosaic.innerHTML='';
   if(det)det.innerHTML='';
@@ -4017,7 +4211,7 @@ async function _startDNABuild(){
         ?'<div style="margin-top:16px"><div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:8px">Artists in your orbit</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+dna.coBillNetwork.slice(0,12).map(c=>'<span class="tag">'+esc(c.name)+' <span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--blue)">×'+c.coBills+'</span></span>').join('')+'</div></div>':'';
 
       sum.innerHTML='<div class="card" style="margin-top:16px;border-color:var(--accent)"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;flex-wrap:wrap;gap:8px"><div><h3 style="color:var(--accent);font-size:1.1rem;margin-bottom:4px">'+esc(dna.venue||P().venue)+'</h3><div style="font-size:0.78rem;color:var(--text-dim)">'+(dna.isPromoter?'Promoter':'Venue')+' · '+cityName()+'</div></div><div style="text-align:right"><div style="font-family:var(--font-head);font-weight:800;font-size:1.8rem;color:var(--text);line-height:1">'+dna.artistCount+'</div><div style="font-size:0.7rem;color:var(--text-dim)">artists booked</div></div></div>'
-        +(dna.isPromoter&&dna.promoterId?'<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--green);margin-bottom:12px;padding:6px 10px;background:rgba(34,197,94,0.08);border-radius:4px">✓ Fetched via RA ID '+dna.promoterId+' — exact data</div>':'')
+        +(dna.isPromoter?'<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--green);margin-bottom:12px;padding:6px 10px;background:rgba(34,197,94,0.08);border-radius:4px">✓ Profile verified</div>':'')
         +'<div class="stats" style="margin-bottom:16px"><div class="stat"><div class="sv">'+dna.venueEvents+'</div><div class="sl">Events</div></div><div class="stat"><div class="sv">'+(dna.eventsPerMonth||'—')+'</div><div class="sl">Per month</div></div><div class="stat"><div class="sv">'+(dna.avgAttendance?fmt(dna.avgAttendance):'—')+'</div><div class="sl">Avg RA interest</div></div><div class="stat"><div class="sv">'+realCount+'</div><div class="sl">Headliners (100+ followers)</div></div></div>'
         +(topArtists.length?'<div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:4px">Your headliners</div>'+topArtHtml:'')
         +(tg?'<div style="margin-top:14px"><div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Your scene</div>'+tg+'</div>':'')
@@ -4279,10 +4473,10 @@ function _buildSmartSeeds(dna){
   // Also mix in co-billing network
   const coBills=(dna.coBillNetwork||[]).slice(0,5).map(c=>c.name);
   
-  // Top 12 qualifying + top 5 co-bills
+  // All qualifying artists + top co-bills (no artificial limit)
   const seeds=[
-    ...qualifying.slice(0,12).map(a=>a.name),
-    ...coBills.filter(n=>!qualifying.slice(0,12).some(p=>norm(p.name)===norm(n)))
+    ...qualifying.map(a=>a.name),
+    ...coBills.filter(n=>!qualifying.some(p=>norm(p.name)===norm(n)))
   ].filter(Boolean);
   
   return seeds;
@@ -5564,10 +5758,13 @@ async function runIntel(targetName){
   const inp=document.getElementById('intelSearch');
   if(inp)inp.value=name;
   const c=document.getElementById('intelRes');
-  c.innerHTML=`<div class="empty" style="padding:24px 20px"><span class="spinner"></span> Loading ${esc(name)}…</div>`;
+  c.innerHTML=`<div class="empty" style="padding:24px 20px"><span class="spinner"></span> Searching for ${esc(name)}…</div>`;
 
   try{
-    // Ensure city cache is loaded first
+    // Ensure city cache is loaded first — may take 30-60s on first load
+    if(!cacheValid()){
+      c.innerHTML=`<div class="empty" style="padding:24px 20px"><span class="spinner"></span> Loading ${cityName()} event data first (this takes ~30s on first run)…</div>`;
+    }
     const allEvents=await ensureCache().catch(()=>[]);
 
     // Try to find entity in cache
