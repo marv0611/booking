@@ -299,15 +299,17 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
   <header>
     <div class="masthead">
       <div><h1>Night<b>Pulse</b></h1><div class="tagline">Booking intelligence for live music</div></div>
-      <div class="venue-pill" id="venuePill" style="display:none" onclick="resetOb()" title="Click to reconfigure"></div>
+      <div id="venueSwitcherWrap" style="display:none;position:relative">
+        <div class="venue-pill" id="venuePill" onclick="toggleVenueSwitcher(event)" title="Switch venue or add new"></div>
+      </div>
     </div>
     <div class="tabs" id="mainTabs" style="display:none">
-      <button class="tab-btn active" data-tab="discover">Discover</button>
-      <button class="tab-btn" data-tab="routing">Routing</button>
+      <button class="tab-btn active" data-tab="discover">Find Artists</button>
+      <button class="tab-btn" data-tab="routing">Routing Deals</button>
       <button class="tab-btn" data-tab="scanner">What's On</button>
-      <button class="tab-btn" data-tab="verify">X-Ray</button>
-      <button class="tab-btn" data-tab="intel">Intelligence</button>
-      <button class="tab-btn" data-tab="saved">Shortlist</button>
+      <button class="tab-btn" data-tab="intel">Scene Intel</button>
+      <button class="tab-btn" data-tab="verify">Artist Check</button>
+      <button class="tab-btn" data-tab="saved">My Pipeline</button>
       <button class="tab-btn" data-tab="report">Report</button>
     </div>
   </header>
@@ -385,15 +387,28 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
 
   <!-- DISCOVER -->
   <div class="tab-panel" id="panel-discover">
-    <div class="input-group"><label>Seed Artists</label>
-      <div class="ac-wrap"><textarea id="seedInput" placeholder="One artist per line — Night Pulse finds 50 similar artists per seed" rows="3"></textarea></div>
+    <!-- DNA context banner -->
+    <div id="discoverContext" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.78rem;margin-bottom:4px">Finding artists for <span id="discoverVenueName" style="color:var(--accent)"></span></div>
+          <div id="discoverDNASeeds" style="font-size:0.75rem;color:var(--text-dim)"></div>
+        </div>
+        <button class="btn-ghost" style="font-size:0.68rem;white-space:nowrap" onclick="loadDNASeedsIntoDiscover()">↓ Use my top artists as seeds</button>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Start from artists like…</label>
+      <div class="ac-wrap"><textarea id="seedInput" placeholder="Type artists your crowd loves — one per line. Night Pulse finds who else fits your scene and is available on your date." rows="3"></textarea></div>
       <div id="seedH" style="margin-top:6px"></div>
     </div>
+
     <div class="filter-bar">
-      <h4>Exclusion Filters</h4>
+      <h4>Keep results fresh</h4>
       <div class="filter-row">
         <div class="filter-group">
-          <span class="fg-label">Hasn't played <span id="fCityD">city</span> in last</span>
+          <span class="fg-label">Only show artists who haven't played <span id="fCityD">city</span> in the last</span>
           <div class="seg-picker" id="segBack">
             <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
             <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
@@ -403,7 +418,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
           <input type="hidden" id="filterBack" value="6">
         </div>
         <div class="filter-group">
-          <span class="fg-label">Not booked for next</span>
+          <span class="fg-label">And not already booked in the next</span>
           <div class="seg-picker" id="segFwd">
             <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
             <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
@@ -413,15 +428,17 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
         </div>
       </div>
     </div>
+
     <div class="row">
-      <div class="input-group" style="margin:0"><label>Event Date</label>
+      <div class="input-group" style="margin:0">
+        <label>Your event date</label>
         <div class="date-wrap">
-          <input type="date" id="eventDate" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):''">
+          <input type="date" id="eventDate" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
           <span class="date-display" id="eventDateDisplay"></span>
         </div>
       </div>
-      <div class="input-group" style="margin:0;max-width:130px"><label>Min <span id="minLabel">BCN</span> Spotify</label><input type="number" id="minBcn" value="2000"></div>
-      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="dBtn" onclick="runDiscover()">Discover</button></div>
+      <div class="input-group" style="margin:0;max-width:160px"><label>Max results</label><select id="minBcn" style="font-size:0.82rem"><option value="0">All matches</option><option value="20" selected>Top 20</option><option value="40">Top 40</option><option value="100">Top 100</option></select></div>
+      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="dBtn" onclick="runDiscover()">Find Artists</button></div>
     </div>
     <div class="progress-wrap" id="dProg"><div class="progress-label" id="pLbl">Starting...</div><div class="progress-bar"><div class="progress-fill" id="pFill"></div></div><div class="progress-detail" id="pDet"></div></div>
     <div id="dRes"></div>
@@ -429,12 +446,17 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
 
   <!-- ROUTING -->
   <div class="tab-panel" id="panel-routing">
+    <!-- DNA context banner -->
+    <div id="routingContext" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:0.78rem;margin-bottom:2px">Routing for <span id="routingVenueName" style="color:var(--accent)"></span></div>
+      <div id="routingDNAContext" style="font-size:0.75rem;color:var(--text-dim)"></div>
+    </div>
     <div class="card" style="margin-bottom:18px">
-      <h3 style="color:var(--amber);margin-bottom:2px">↗ Routing Detection</h3>
-      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:14px">Find artists playing nearby cities around your date — they already have routing through your region, meaning lower fees and higher chance of booking.</p>
+      <h3 style="color:var(--amber);margin-bottom:2px">↗ Routing Deals</h3>
+      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:14px">Artists playing nearby cities the day before or after your date are already in the region — you can often book them for <strong>30–50% less</strong> than their normal fee. Night Pulse scans every city within range and shows you who's passing through.</p>
       <div id="nearbyCities" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);margin-bottom:12px"></div>
       <div class="row">
-        <div class="input-group" style="margin:0"><label>Your Event Date</label><input type="date" id="routeDate"></div>
+        <div class="input-group" style="margin:0"><label>Your Event Date</label><input type="date" id="routeDate" onchange="syncDateToAll(this.value)"></div>
         <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="rteBtn" onclick="runRouting()">Find Routing</button></div>
       </div>
     </div>
@@ -468,23 +490,29 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
 
   <!-- WHAT'S ON -->
   <div class="tab-panel" id="panel-scanner">
+    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem;color:var(--text-dim)">
+      Pick a date to see every event happening in your city — and which ones are competing directly for your audience. Your DNA tells you which events are a real threat vs harmless noise.
+    </div>
     <div class="row" style="margin-bottom:20px">
-      <div class="input-group" style="margin:0"><label>Check a date</label><input type="date" id="scanDate"></div>
-      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" onclick="runScan()">Scan</button></div>
+      <div class="input-group" style="margin:0"><label>Check a date</label><input type="date" id="scanDate" onchange="syncDateToAll(this.value)"></div>
+      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" onclick="runScan()">Scan Competition</button></div>
     </div>
     <div id="scanRes"></div>
   </div>
 
   <!-- X-RAY -->
   <div class="tab-panel" id="panel-verify">
+    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem;color:var(--text-dim)">
+      Check any artist before making an offer. See their full history in your city, whether they're available on your date, and how they've performed at other venues.
+    </div>
     <div class="row" style="margin-bottom:20px">
       <div class="input-group" style="margin:0"><label>Artist name</label>
-        <div class="ac-wrap"><input type="text" id="xIn" placeholder="Start typing an artist name..." autocomplete="off"></div>
+        <div class="ac-wrap"><input type="text" id="xIn" placeholder="Type an artist name…" autocomplete="off"></div>
       </div>
       <div class="input-group" style="margin:0"><label>Your event date</label>
-        <input type="date" id="xDate">
+        <input type="date" id="xDate" onchange="syncDateToAll(this.value)">
       </div>
-      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" onclick="runXray()">X-Ray</button></div>
+      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" onclick="runXray()">Check Artist</button></div>
     </div>
     <div id="xRes"></div>
   </div>
@@ -494,7 +522,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
     <div class="intel-hero">
       <div class="intel-hero-text">
         <h2>Scene Intelligence</h2>
-        <p>Spy on any venue, promoter or festival. See exactly which artists worked, what they drew, and what's available in your market right now.</p>
+        <p>See which artists worked for any venue, promoter or festival — and book them before anyone else does. Type a competitor's name to see their full booking history, what drew crowds, and who's available in your market right now.</p>
       </div>
     </div>
 
@@ -516,13 +544,22 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
 
   <!-- SHORTLIST -->
   <div class="tab-panel" id="panel-saved">
-    <div class="section-head"><h2>Your Shortlist</h2><button class="btn-ghost" onclick="exportCSV()">Export CSV</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h2 style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;margin:0">My Booking Pipeline</h2>
+        <div style="font-size:0.75rem;color:var(--text-dim);margin-top:2px">Artists you're considering. Add notes, log fees, mark outcomes. This is your private booking record.</div>
+      </div>
+      <button class="btn-ghost" onclick="exportCSV()">Export CSV</button>
+    </div>
     <div id="sList"></div>
   </div>
 
   <!-- REPORT -->
   <div class="tab-panel" id="panel-report">
-    <button class="btn btn-red" onclick="genReport()" id="rBtn">Generate Venue Intelligence Report</button>
+    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem;color:var(--text-dim)">
+      Generates a full breakdown of your venue's booking performance: best and worst nights, competitive landscape in your city, and your DNA calibration data. Useful for internal reviews or sharing with partners.
+    </div>
+    <button class="btn btn-red" onclick="genReport()" id="rBtn">Generate Report</button>
     <div id="rOut" style="margin-top:20px"></div>
   </div>
 </div>
@@ -534,6 +571,31 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
    ═══════════════════════════════════════════ */
 
 const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date contentUrl interestedCount venue{id name area{id name}} artists{id name}}}totalResults}}`;
+
+/* Confirmed working promoter query (probed 2026-04-04):
+   eventListings promoter ID filter is BROKEN — silently returns all 10,000 events.
+   The only working approach is querying the promoter object directly:
+   - LATEST  → upcoming events (max ~5)
+   - PREVIOUS → recent past (max ~10)
+   - ARCHIVE + year → full year (60 in 2025, 47 in 2024, 35 in 2023) */
+const RA_PROMOTER_Q=`query PromoterEvents($id:ID!,$type:EventQueryType!,$year:Int){
+  promoter(id:$id){
+    id name followerCount upcomingEventsCount
+    events(type:$type,year:$year){
+      id title date interestedCount
+      venue{id name}
+      artists{id name}
+    }
+  }
+}`;
+
+async function raPromoterQuery(id,type,year){
+  const r=await fetch('/api/ra/graphql',{method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({query:RA_PROMOTER_Q,variables:{id:String(id),type,year:year||null}})});
+  if(!r.ok)throw new Error('RA '+r.status);
+  return r.json();
+}
 const AREAS={barcelona:20,berlin:34,london:13,amsterdam:29,paris:44,lisbon:89,madrid:88,milan:108,hamburg:106,'new york':8,'los angeles':7,detroit:43,melbourne:100,tokyo:74,'sao paulo':154,'buenos aires':28,tbilisi:173,manchester:17,ibiza:25,brussels:37,copenhagen:42,stockholm:72,warsaw:84,prague:50,zurich:56,bangkok:142,seoul:152,lyon:71,marseille:48,munich:41,vienna:35,dublin:45,glasgow:36,birmingham:52,bristol:22,leeds:23,brighton:14,cologne:86,antwerp:58,rotterdam:107,munich:41};
 // Confirmed RA venue IDs scraped from ra.co/clubs URLs — used for exact venue matching.
 // Eliminates substring false-positives (e.g. "Fabric" matching "Fabric of Reality").
@@ -1016,22 +1078,56 @@ async function raWorldwideRelated(seedName){
     .sort((a,b)=>b.count-a.count)
     .slice(0,30);
 }
-/* Fetch all events for a specific RA promoter by ID — exact, no title-parsing needed.
-   Falls back to title-based search if promoter ID is unknown. */
-async function raBulkFetchByPromoter(promoterId, from, to, maxPages=20){
+/* Fetch all events for a promoter by RA ID.
+   Uses confirmed working GraphQL approach: LATEST + PREVIOUS + ARCHIVE per year.
+   The eventListings promoter filter is broken (returns all 10k events regardless of ID).
+   Returns {events, promoterName} — events deduplicated and sorted descending. */
+async function raBulkFetchByPromoter(promoterId, from, to){
   const events=[];
-  const gte=from instanceof Date?from.toISOString().slice(0,10):from;
-  const lte=to instanceof Date?to.toISOString().slice(0,10):to;
-  for(let p=1;p<=maxPages;p++){
-    const d=await ra({f:{promoters:{id:{eq:promoterId}},listingDate:{gte,lte}},fo:{},p,s:50});
-    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
-    for(const el of evs){
-      const ev=el.event||{};
-      events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+  const seen=new Set();
+  let promoterName='';
+
+  const fromStr=from instanceof Date?from.toISOString().slice(0,10):(from||'2000-01-01');
+  const toStr=to instanceof Date?to.toISOString().slice(0,10):(to||'2099-12-31');
+
+  const addEvents=(rawEvents)=>{
+    for(const ev of (rawEvents||[])){
+      if(!ev||seen.has(ev.id))continue;
+      const d=(ev.date||'').slice(0,10);
+      if(d<fromStr||d>toStr)continue;
+      seen.add(ev.id);
+      events.push({
+        date:d,
+        venue:(ev.venue||{}).name||'?',
+        venueId:(ev.venue||{}).id||null,
+        artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),
+        attending:ev.interestedCount||0,
+        title:ev.title||''
+      });
     }
-    if(p*50>=tot||!evs.length)break;
+  };
+
+  // LATEST — upcoming (max ~5)
+  try{const r=await raPromoterQuery(promoterId,'LATEST');
+    const p=r?.data?.promoter;
+    if(p){promoterName=p.name||'';addEvents(p.events);}
+  }catch(e){}
+
+  // PREVIOUS — most recent past (max ~10)
+  try{const r=await raPromoterQuery(promoterId,'PREVIOUS');
+    addEvents(r?.data?.promoter?.events);
+  }catch(e){}
+
+  // ARCHIVE — full year data, go back 3 years
+  const yr=new Date().getFullYear();
+  for(const year of [yr,yr-1,yr-2,yr-3]){
+    try{const r=await raPromoterQuery(promoterId,'ARCHIVE',year);
+      addEvents(r?.data?.promoter?.events);
+    }catch(e){}
   }
-  return events;
+
+  events.sort((a,b)=>b.date.localeCompare(a.date));
+  return {events,promoterName};
 }
 async function scSpotify(uuid){
   const d=await sc('/api/v2/artist/'+uuid+'/streaming/spotify');
@@ -1058,57 +1154,106 @@ function dnaValid(){
   return true;
 }
 
-/* Build DNA from venue's past 12 months of bookings.
-   Deep analysis: every artist → SC lookup for genres + Spotify listeners.
-   Also builds RA co-billing network for related artist discovery. */
+/* Build DNA from venue/promoter's past 3 years of bookings.
+   Promoters: uses RA promoter ID → ARCHIVE per year + LATEST + PREVIOUS (confirmed working).
+   Venues: uses RA venue ID from cache → name match fallback.
+   Genres: Last.fm (free, electronic-specific). SC only for X-Ray Spotify. */
 async function buildDNA(statusCb,artistCb){
   const p=P(),venueName=p.venue,city=p.city||'barcelona';
   const isPromoter=p.type==='promoter';
   if(!venueName){if(statusCb)statusCb('No venue/promoter set');return null}
 
-  if(statusCb)statusCb('Loading '+cityName()+' event history…');
-  const allEvents=await ensureCache();
-
-  // Extract events: promoters match on event title; venues match on venue ID then name
   let venueEvents=[];
+
   if(isPromoter){
     const pid=p.promoterId||raPromoterId(venueName);
-    if(pid){
-      // Primary path: fetch directly by RA promoter ID — works regardless of how events are titled
-      if(statusCb)statusCb('Fetching events by RA promoter ID '+pid+'…');
-      const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
-      const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
-      try{
-        venueEvents=await raBulkFetchByPromoter(pid,ago,fwd,20);
-        if(statusCb)statusCb('Promoter ID match: '+venueEvents.length+' events for "'+venueName+'"');
-      }catch(e){
-        if(statusCb)statusCb('ID fetch failed ('+e.message+'), falling back to title search…');
-      }
-    }
-    // Fallback: title-based + venue-name search when no ID known or ID fetch returned nothing
-    if(venueEvents.length<3){
+    if(!pid){
+      if(statusCb)statusCb('⚠ No RA Promoter ID — enter your ID in the venue pill to get accurate DNA');
+      // Still try title matching as last resort
+      if(statusCb)statusCb('Loading event history for title matching…');
+      const allEvents=await ensureCache();
       const pnorm=norm(venueName);
-      const titleMatches=allEvents.filter(ev=>ev.title&&norm(ev.title).includes(pnorm));
-      const newFromTitles=titleMatches.filter(e=>!venueEvents.some(v=>v.date===e.date&&v.venue===e.venue&&v.title===e.title));
-      if(newFromTitles.length){
-        venueEvents=[...venueEvents,...newFromTitles];
-        if(statusCb)statusCb('Title fallback: '+newFromTitles.length+' additional events matching "'+venueName+'"');
+      venueEvents=allEvents.filter(ev=>ev.title&&norm(ev.title).includes(pnorm));
+      if(statusCb)statusCb('Title match: '+venueEvents.length+' events (imprecise — add RA ID for accuracy)');
+    }else{
+      // Primary path — uses confirmed working RA GraphQL queries
+      // NEVER use eventListings with promoter filter — it returns all 10k events regardless of ID
+      if(statusCb)statusCb('Fetching your RA history (ID: '+pid+')…');
+      try{
+        // Verify promoter exists
+        const checkD=await raPromoterQuery(pid,'PREVIOUS');
+        const promoter=checkD?.data?.promoter;
+        if(!promoter?.id){
+          if(statusCb)statusCb('⚠ Promoter ID '+pid+' not found on RA — check ra.co/promoters/'+pid);
+          return null;
+        }
+        if(statusCb)statusCb('Found: '+promoter.name+' · '+promoter.followerCount+' followers · '+promoter.upcomingEventsCount+' upcoming');
+
+        // Collect events: PREVIOUS first (already fetched)
+        const seen=new Set();
+        const addEvs=(rawEvents)=>{
+          for(const ev of (rawEvents||[])){
+            if(!ev||seen.has(ev.id))continue;
+            seen.add(ev.id);
+            venueEvents.push({
+              date:(ev.date||'').slice(0,10),
+              venue:(ev.venue||{}).name||'?',
+              venueId:(ev.venue||{}).id||null,
+              artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),
+              attending:ev.interestedCount||0,
+              title:ev.title||''
+            });
+          }
+        };
+        addEvs(promoter.events); // PREVIOUS events
+
+        // ARCHIVE — 4 years back, track completeness
+        const nowYear=new Date().getFullYear();
+        let archiveYearsFetched=0;
+        let archiveYearsAttempted=0;
+        for(let yr=nowYear;yr>=nowYear-3;yr--){
+          archiveYearsAttempted++;
+          if(statusCb)statusCb('Fetching '+yr+'…');
+          try{
+            const d=await raPromoterQuery(pid,'ARCHIVE',yr);
+            const evs=d?.data?.promoter?.events||[];
+            addEvs(evs);
+            if(evs.length>0)archiveYearsFetched++;
+            if(statusCb)statusCb(yr+': '+evs.length+' events');
+          }catch(e){if(statusCb)statusCb(yr+' failed: '+e.message)}
+        }
+
+        // LATEST — upcoming
+        try{
+          const d=await raPromoterQuery(pid,'LATEST');
+          addEvs(d?.data?.promoter?.events);
+        }catch(e){}
+
+        venueEvents.sort((a,b)=>b.date.localeCompare(a.date));
+
+        // Completeness flag — warn if < 2 years of archive data
+        const dnaComplete=archiveYearsFetched>=2;
+        if(!dnaComplete&&statusCb){
+          statusCb('⚠ Only '+archiveYearsFetched+' of '+archiveYearsAttempted+' years fetched — DNA may be incomplete. Check ra.co/promoters/'+pid);
+        }
+        if(statusCb)statusCb((dnaComplete?'✓ ':'⚠ ')+venueEvents.length+' events for '+promoter.name+(dnaComplete?'':' (partial data)'));
+
+        // Store completeness on the profile object for display in pill
+        window._dnaBuildMeta={archiveYearsFetched,archiveYearsAttempted,dnaComplete,promoterName:promoter.name};
+
+      }catch(e){
+        if(statusCb)statusCb('Fetch failed: '+e.message);
+        return null;
       }
-      if(venueEvents.length<3){
-        const venueMatches=allEvents.filter(ev=>!venueEvents.includes(ev)&&ev.venue&&norm(ev.venue).includes(pnorm));
-        venueEvents=[...venueEvents,...venueMatches];
-        if(venueMatches.length&&statusCb)statusCb('Venue-name fallback: added '+venueMatches.length+' events');
-      }
-    }
-    if(venueEvents.length<5){
-      if(pid)if(statusCb)statusCb('⚠ Only '+venueEvents.length+' events via ID '+pid+' — verify at ra.co/promoters/'+pid);
-      else if(statusCb)statusCb('⚠ Only '+venueEvents.length+' events found. Find your RA promoter ID at ra.co/promoters and add it to the profile for exact results.');
     }
   }else{
+    // Venue path — use local cache with ID matching
+    if(statusCb)statusCb('Loading '+cityName()+' event history…');
+    const allEvents=await ensureCache();
     const confirmedId=raVenueId(venueName);
     if(confirmedId){
       venueEvents=allEvents.filter(ev=>ev.venueId&&String(ev.venueId)===String(confirmedId));
-      if(statusCb)statusCb('ID match ('+confirmedId+'): '+venueEvents.length+' events at '+venueName);
+      if(statusCb)statusCb('Venue ID match ('+confirmedId+'): '+venueEvents.length+' events at '+venueName);
     }
     if(!venueEvents.length){
       venueEvents=allEvents.filter(ev=>ev.venue&&ev.venue.toLowerCase()===venueName.toLowerCase());
@@ -1118,7 +1263,7 @@ async function buildDNA(statusCb,artistCb){
       }
       if(!venueEvents.length){
         venueEvents=allEvents.filter(ev=>ev.venue&&ev.venue.toLowerCase().includes(venueName.toLowerCase()));
-        if(venueEvents.length&&statusCb)statusCb('⚠ Substring match only — add venue ID to RA_VENUE_IDS for accuracy');
+        if(venueEvents.length&&statusCb)statusCb('⚠ Substring match — add venue ID to RA_VENUE_IDS for accuracy');
       }
       if(statusCb)statusCb('Name match: '+venueEvents.length+' events at '+venueName);
     }
@@ -1241,6 +1386,9 @@ async function buildDNA(statusCb,artistCb){
     secondDegree:[...secondDegreeSet],
     coBillNetwork:coBillNetwork.slice(0,30).map(c=>({name:c.name,coBills:c.totalCoBills,via:c.connectedTo.slice(0,3)})),
     profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl})),
+    // Completeness metadata
+    archiveYearsFetched:window._dnaBuildMeta?.archiveYearsFetched??null,
+    dnaComplete:window._dnaBuildMeta?.dnaComplete??true, // venues always complete via cache
   };
   setDNA(dna);
   if(statusCb)statusCb('DNA complete — '+profiles.length+' artists, '+coBillNetwork.length+' co-billing connections, '+sortedGenres.length+' genres');
@@ -1858,6 +2006,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     window.scrollTo({top:panel.offsetTop-80,behavior:'smooth'});
     // Load Intelligence tab on first visit
     if(b.dataset.tab==='intel')loadIntelTab();
+    // Always refresh context banners on tab switch
+    updateContextBanners();
+    // Sync the best available date to the newly activated tab
+    const bestDate=document.getElementById('eventDate')?.value||document.getElementById('routeDate')?.value||'';
+    if(bestDate)syncDateToAll(bestDate);
   }));
   renderSaved();renderSeeds();
   setObType('venue'); // initialise toggle state
@@ -1885,7 +2038,7 @@ function updateCityLabels(){
 
 /* ═══ ONBOARDING ═══ */
 /* Live RA promoter ID verifier — fires when user types in the ID field.
-   Fetches 3 recent events and shows artist names so user can confirm it's correct. */
+   Uses PREVIOUS to get recent events + promoter profile to confirm identity. */
 let _raIdVerifyTimer=null;
 async function verifyRaPromoterId(id){
   const statusEl=document.getElementById('obPromoterRaStatus');
@@ -1894,21 +2047,23 @@ async function verifyRaPromoterId(id){
   if(linkEl)linkEl.href='https://ra.co/promoters/'+id;
   if(statusEl){statusEl.textContent='Verifying…';statusEl.style.color='var(--text-faint)'}
   try{
-    const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
-    const events=await raBulkFetchByPromoter(id,ago,now,2); // just 2 pages to verify
-    if(!events.length){
-      if(statusEl){statusEl.textContent='⚠ No events found — check the ID';statusEl.style.color='var(--amber)'}
+    // Use PREVIOUS — fast, returns ~10 recent events
+    const d=await raPromoterQuery(id,'PREVIOUS');
+    const promoter=d?.data?.promoter;
+    if(!promoter?.id){
+      if(statusEl){statusEl.textContent='⚠ ID not found on RA — check ra.co/promoters/'+id;statusEl.style.color='var(--amber)'}
       return;
     }
-    // Show last 3 events as confirmation
-    const sample=events.slice(0,3).map(e=>`${fdate(e.date)}: ${e.artists.slice(0,2).join(', ')}`).join(' · ');
-    if(statusEl){statusEl.textContent='✓ '+events.length+' events — '+sample;statusEl.style.color='var(--green)'}
-    // Also fill name if empty
+    const events=promoter.events||[];
+    const sample=events.slice(0,3).map(e=>`${fdate(e.date||'')}: ${(e.artists||[]).slice(0,2).map(a=>a.name).join(', ')}`).join(' · ');
+    if(statusEl){
+      statusEl.textContent='✓ '+promoter.name+' · '+promoter.followerCount+' followers · '+sample;
+      statusEl.style.color='var(--green)';
+    }
+    // Auto-fill promoter name field from RA canonical name
     const nameInp=document.getElementById('obPromoterName');
-    if(nameInp&&!nameInp.value.trim()&&events[0]?.title){
-      // Try to extract promoter name from event title
-      const titleFirst=events[0].title.split(/\s+(presents?|with|feat|:)\s+/i)[0].trim();
-      if(titleFirst&&titleFirst.length>2&&titleFirst.length<50)nameInp.value=titleFirst;
+    if(nameInp&&!nameInp.value.trim()&&promoter.name){
+      nameInp.value=promoter.name;
     }
   }catch(e){
     if(statusEl){statusEl.textContent='Error: '+e.message;statusEl.style.color='var(--accent)'}
@@ -2084,7 +2239,13 @@ function showApp(){
     const dnaAgeDays=Math.floor(dnaAgeMs/(24*60*60*1000));
     const dnaAgeHrs=Math.floor(dnaAgeMs/(60*60*1000));
     const dnaAgeStr=dnaAgeDays>0?dnaAgeDays+'d':dnaAgeHrs>0?dnaAgeHrs+'h':'now';
-    dnaTag=' · <span style="color:var(--green);cursor:pointer" title="DNA built '+dnaAgeStr+' ago — click to rebuild" onclick="event.stopPropagation();rebuildDNA()">DNA ✓ <span style="font-family:var(--font-mono);font-size:0.5rem;opacity:0.65">'+dnaAgeStr+'</span></span>';
+    const isComplete=dna.dnaComplete!==false; // null/undefined = complete (venues), false = partial
+    const dnaColor=isComplete?'var(--green)':'var(--amber)';
+    const dnaIcon=isComplete?'✓':'⚠';
+    const dnaTitle=isComplete
+      ?'DNA built '+dnaAgeStr+' ago — click to rebuild'
+      :'Partial DNA ('+( dna.archiveYearsFetched||0)+' years) — click to rebuild';
+    dnaTag=' · <span style="color:'+dnaColor+';cursor:pointer" title="'+dnaTitle+'" onclick="event.stopPropagation();rebuildDNA()">DNA '+dnaIcon+' <span style="font-family:var(--font-mono);font-size:0.5rem;opacity:0.65">'+dnaAgeStr+'</span></span>';
   }else{
     dnaTag=' · <span style="color:var(--amber)" onclick="event.stopPropagation();rebuildDNA()" title="Click to build DNA">No DNA</span>';
   }
@@ -2094,6 +2255,7 @@ function showApp(){
   pill.innerHTML=typeTag+esc(p.venue)+' · '+esc(cityName())+dnaTag+countBadge+' ▾';
   if(wrap)wrap.style.display='inline-block';
   updateCityLabels();
+  updateContextBanners();
   // Background DNA build if missing or stale
   if(!dnaValid()&&p.venue){
     setTimeout(()=>rebuildDNA(true),2000);
@@ -2151,7 +2313,86 @@ function renderSeeds(){
 }
 function addSeed(n){const el=document.getElementById('seedInput'),ls=el.value.trim().split('\n').filter(Boolean);if(!ls.some(l=>l.toLowerCase()===n.toLowerCase())){ls.push(n);el.value=ls.join('\n')}}
 
-/* ═══ PROGRESS ═══ */
+/* ═══ GLOBAL DATE SYNC ═══
+   When user sets a date in any tab, propagate it everywhere.
+   This is the core UX fix — one date, all tools. */
+function syncDateToAll(val){
+  if(!val)return;
+  const fields=['eventDate','routeDate','scanDate','xDate'];
+  fields.forEach(id=>{const el=document.getElementById(id);if(el&&el.value!==val)el.value=val;});
+  // Update Discover display label
+  const disp=document.getElementById('eventDateDisplay');
+  if(disp&&val)disp.textContent=new Date(val+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+}
+
+/* ═══ CONTEXT BANNERS ═══
+   Every tab shows who you are and what DNA context you're operating in.
+   Called whenever profile changes or tab is activated. */
+function updateContextBanners(){
+  const p=P();
+  const dna=getDNA();
+  const hasDNA=dna&&dna.artistCount>0;
+  const venueName=p.venue||'';
+
+  // Discover context
+  const discoverCtx=document.getElementById('discoverContext');
+  if(discoverCtx&&venueName){
+    discoverCtx.style.display='block';
+    const nameEl=document.getElementById('discoverVenueName');
+    if(nameEl)nameEl.textContent=venueName+(p.city?' · '+p.city.charAt(0).toUpperCase()+p.city.slice(1):'');
+    const seedsEl=document.getElementById('discoverDNASeeds');
+    if(seedsEl){
+      if(hasDNA){
+        const topArtists=(dna.topArtists||dna.profiles||[]).slice(0,5).map(a=>a.name||a).join(', ');
+        const topGenres=(dna.topGenres||[]).slice(0,3).map(g=>g.genre||g).join(', ');
+        seedsEl.textContent='DNA: '+dna.artistCount+' artists booked · Top genres: '+(topGenres||'—')+' · Suggest seeds from: '+topArtists;
+      }else{
+        seedsEl.textContent='No DNA yet — results will not be personalised. Build DNA via the pill menu.';
+        seedsEl.style.color='var(--amber)';
+      }
+    }
+  }
+
+  // Routing context
+  const routingCtx=document.getElementById('routingContext');
+  if(routingCtx&&venueName){
+    routingCtx.style.display='block';
+    const nameEl=document.getElementById('routingVenueName');
+    if(nameEl)nameEl.textContent=venueName+(p.city?' · '+p.city.charAt(0).toUpperCase()+p.city.slice(1):'');
+    const ctxEl=document.getElementById('routingDNAContext');
+    if(ctxEl){
+      if(hasDNA){
+        const topGenres=(dna.topGenres||[]).slice(0,4).map(g=>g.genre||g).join(', ');
+        ctxEl.textContent='Results filtered to your DNA — '+dna.artistCount+' artists in network · Genres: '+(topGenres||'—');
+        ctxEl.style.color='var(--text-dim)';
+      }else{
+        ctxEl.textContent='⚠ No DNA — routing results will not be filtered by your scene. Build DNA first for best results.';
+        ctxEl.style.color='var(--amber)';
+      }
+    }
+  }
+}
+
+/* Pre-populate Discover seeds from DNA top artists */
+function loadDNASeedsIntoDiscover(){
+  const dna=getDNA();
+  if(!dna||!dna.artistCount){
+    alert('Build your DNA first — click the venue pill and select "Rebuild DNA".');
+    return;
+  }
+  const ta=document.getElementById('seedInput');
+  if(!ta)return;
+  // Use top artists from DNA sorted by RA attendance
+  const topArtists=(dna.topArtists||dna.profiles||[])
+    .sort((a,b)=>(b.raAvgAtt||b.bcn||0)-(a.raAvgAtt||a.bcn||0))
+    .slice(0,5)
+    .map(a=>a.name||a)
+    .filter(Boolean);
+  if(!topArtists.length){alert('No top artists found in DNA. Try rebuilding DNA.');return}
+  ta.value=topArtists.join('\n');
+  // Trigger chip render
+  ta.dispatchEvent(new Event('blur'));
+}
 function prog(lbl,pct,detail){const w=document.getElementById('dProg');w.classList.add('visible');if(lbl)document.getElementById('pLbl').textContent=lbl;if(pct!==null)document.getElementById('pFill').style.width=pct+'%';if(detail){const d=document.getElementById('pDet');d.innerHTML+='<div>'+detail+'</div>';const lines=d.querySelectorAll('div');if(lines.length>50)lines[0].remove();d.scrollTop=d.scrollHeight}}
 function progReset(){document.getElementById('dProg').classList.remove('visible');document.getElementById('pDet').innerHTML='';document.getElementById('pFill').style.width='0%'}
 function rteProg(lbl,pct,detail){const w=document.getElementById('rteProg');w.classList.add('visible');if(lbl)document.getElementById('rteLbl').textContent=lbl;document.getElementById('rteFill').style.width=pct+'%';if(detail){const d=document.getElementById('rteDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}}
@@ -2159,7 +2400,8 @@ function rteProgReset(){document.getElementById('rteProg').classList.remove('vis
 
 /* ═══ DISCOVER ═══ */
 async function runDiscover(){
-  const text=document.getElementById('seedInput').value.trim(),date=document.getElementById('eventDate').value,min=parseInt(document.getElementById('minBcn').value)||2000;
+  const text=document.getElementById('seedInput').value.trim(),date=document.getElementById('eventDate').value;
+  const maxResults=parseInt(document.getElementById('minBcn').value)||0; // 0 = all
   const backMo=parseInt(document.getElementById('filterBack').value)||7,fwdMo=parseInt(document.getElementById('filterFwd').value)||3;
   if(!text)return;
   const seedList=text.split('\n').map(s=>s.trim()).filter(Boolean);
@@ -2249,7 +2491,7 @@ async function runDiscover(){
     }
     if(genreSkipped)prog(null,95,genreSkipped+' artists excluded by genre filter (Last.fm)');
     else prog(null,95,'Genre data from Last.fm ✓');
-    const qual=wd.filter(a=>true); // no listener threshold in fusion mode — sort by DNA
+    const qual=wd.slice(0, maxResults>0?maxResults:wd.length); // cap by maxResults
 
     // Score and sort by DNA if available — use snapshot from search start to avoid race conditions
     const hasDNA=!!snapshotDNA?.artistCount;
@@ -2262,7 +2504,7 @@ async function runDiscover(){
       prog('Done! '+qual.length+' artists — sorted by circuit relevance',100);
     }
     // Pass diagnostic counts for empty state messaging
-    renderDiscover(qual,hasDNA,{total:cands.length,raExcluded:raX,sdExcluded:sdX,genreExcluded:genreSkipped,belowMin:wd.length-qual.length,minBcn:min});
+    renderDiscover(qual,hasDNA,{total:cands.length,raExcluded:raX,sdExcluded:sdX,genreExcluded:genreSkipped,belowMin:0});
   }catch(e){prog('Error: '+e.message,100)}
   btn.disabled=false;btn.textContent='Discover';
 }
@@ -2656,8 +2898,20 @@ async function runXray(){
 
 /* ═══ ROUTING ═══ */
 async function runRouting(){
-  const date=document.getElementById('routeDate').value;if(!date)return;
-  const userCity=(P().city||'barcelona').toLowerCase();
+  const date=document.getElementById('routeDate').value;
+  if(!date){
+    // Highlight the date field
+    const dateEl=document.getElementById('routeDate');
+    dateEl.style.borderColor='var(--accent)';dateEl.style.boxShadow='0 0 0 3px var(--accent-glow)';dateEl.focus();
+    setTimeout(()=>{dateEl.style.borderColor='';dateEl.style.boxShadow=''},2500);
+    return;
+  }
+  const p=P();
+  if(!p.venue){
+    document.getElementById('rteRes').innerHTML='<div class="empty">Complete your venue/promoter setup first — click Night Pulse in the header to begin.</div>';
+    return;
+  }
+  const userCity=(p.city||'barcelona').toLowerCase();
   const nearby=NEARBY_CITIES[userCity]||[];
   if(!nearby.length){document.getElementById('rteRes').innerHTML='<div class="empty">No nearby cities configured for '+cityName()+'.</div>';return}
   const backMo=parseInt(document.getElementById('rFilterBack').value)||7,fwdMo=parseInt(document.getElementById('rFilterFwd').value)||3;
@@ -2696,36 +2950,36 @@ async function runRouting(){
     const routingOpps=[];
     for(const[key,info] of nearbyArtists){if(!idxLookup(cityIdx,info.name)){routingOpps.push(info);rteProg(null,70,'✓ '+info.name+' — '+info.city+' '+fdate(info.date))}}
 
-    // Spotify for top 15
-    // Spotify + Genres for top candidates
-    rteProg('Fetching Spotify & genres…',80);
+    // Genre filter + DNA rank — Last.fm genres, no SC
+    rteProg('Filtering by genre and DNA fit…',80);
     const withData=[];
     const hasDNA=!!getDNA()?.artistCount;
-    for(let i=0;i<Math.min(routingOpps.length,15);i++){
-      const a=routingOpps[i];
-      try{
-        const sc_a=await scSearch(a.name);
-        if(sc_a){
-          const sp=await scSpotify(sc_a.uuid);a.bcn=sp.c;a.global=sp.g;a.uuid=sc_a.uuid;a.imageUrl=sc_a.imageUrl||'';
-          await enrichGenres(a);
-          // Genre filter
-          if(a.genres&&a.genres.length>0&&!genreAllowed(a.genres)){
-            rteProg(null,null,'✗ '+a.name+' — genre excluded');continue;
-          }
-        }
-        withData.push(a);
-      }catch(e){withData.push(a)}
+    const dna=getDNA();
+
+    // Get Last.fm genres in parallel for top candidates
+    const topCandidates=routingOpps.slice(0,30);
+    await Promise.all(topCandidates.map(async a=>{
+      try{await enrichGenresFromLastfm(a)}catch(e){}
+    }));
+
+    for(const a of routingOpps){
+      // Genre filter using Last.fm data
+      if(a.genres&&a.genres.length>0&&!genreAllowed(a.genres)){
+        rteProg(null,null,'✗ '+a.name+' — genre mismatch');
+        continue;
+      }
+      withData.push(a);
     }
-    for(let i=15;i<routingOpps.length;i++)withData.push(routingOpps[i]);
 
     // Score and sort by DNA if available
     if(hasDNA){
-      for(const a of withData)a._dna=dnaScore(a);
+      for(const a of withData)a._dna=dnaScore(a,dna);
       withData.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0));
       rteProg('Done! '+withData.length+' routing opportunities — sorted by DNA fit.',100);
     }else{
-      withData.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
-      rteProg('Done! '+withData.length+' routing opportunities.',100);
+      // Sort by RA interest at nearby show
+      withData.sort((a,b)=>(b.attending||0)-(a.attending||0));
+      rteProg('Done! '+withData.length+' routing opportunities — build DNA for personalised ranking.',100);
     }
     renderRouting(withData);
   }catch(e){rteProg('Error: '+e.message,100)}
@@ -3220,11 +3474,26 @@ async function loadIntelTab(){
   try{
     const venueCounts=new Map();
     for(const ev of allEvents)if(ev.venue&&ev.venue!=='?')venueCounts.set(ev.venue,(venueCounts.get(ev.venue)||0)+1);
-    const topVenues=[...venueCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12).map(v=>v[0]);
-    const knownPromoters=Object.keys(RA_PROMOTER_IDS).filter(k=>RA_PROMOTER_IDS[k]).map(k=>k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')).slice(0,8);
+
+    // Build competitor chips — venues with most events, excluding your own venue
+    const myVenue=norm(P().venue||'');
+    const topVenues=[...venueCounts.entries()]
+      .filter(([v])=>norm(v)!==myVenue&&v!=='?')
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,10)
+      .map(v=>v[0]);
+
+    // Known promoters from the map
+    const knownPromoters=Object.entries(RA_PROMOTER_IDS)
+      .filter(([k,id])=>id)
+      .map(([k])=>k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '))
+      .slice(0,6);
+
     const chips=[...new Set([...topVenues,...knownPromoters])].slice(0,16);
     const chipsEl=document.getElementById('intelQuickChips');
-    if(chipsEl)chipsEl.innerHTML=chips.map(v=>`<span class="intel-quick-chip" onclick="runIntel('${esc(v).replace(/'/g,"\\'")}')">${esc(v)}</span>`).join('');
+    if(chipsEl)chipsEl.innerHTML=
+      `<span style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint);padding:4px 0;flex-basis:100%">Quick scan →</span>`+
+      chips.map(v=>`<span class="intel-quick-chip" onclick="runIntel('${esc(v).replace(/'/g,"\\'")}')">${esc(v)}</span>`).join('');
   }catch(e){console.warn('Chips failed:',e);}
 }
 
@@ -3420,15 +3689,59 @@ function updateOutcome(name,outcome){const s=saved(),a=s.find(x=>x.name===name);
 
 function renderSaved(){
   const c=document.getElementById('sList'),s=saved(),cn=cityName();
-  if(!s.length){c.innerHTML='<div class="empty">No saved artists yet.</div>';return}
-  s.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
-  c.innerHTML=s.map(a=>{
-    const img=a.imageUrl&&a.imageUrl.length>10?`<img src="${esc(a.imageUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.outerHTML='<div style=\\'width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.8rem;color:var(--text-faint)\\'>${esc(a.name).charAt(0).toUpperCase()}</div>'">`:'<div style="width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.8rem;color:var(--text-faint)">'+(a.name?a.name.charAt(0).toUpperCase():'?')+'</div>';    return`<div class="saved-item"><div style="flex:1">
-      <div style="display:flex;align-items:center;gap:8px">${img}<h3>${esc(a.name)}</h3></div>
-      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin-top:4px">${cn}: ${a.bcn>0?fmt(a.bcn):'—'} · Global: ${fmt(a.g||0)}</div>
-      <textarea class="notes" placeholder="Add notes…" onchange="updateNotes('${esc(a.name).replace(/'/g,"\\'")}',this.value)">${esc(a.notes||'')}</textarea>
-      <div class="fee-row"><span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);text-transform:uppercase">Fee: €</span><input type="number" placeholder="0" value="${a.fee||''}" onchange="updateFee('${esc(a.name).replace(/'/g,"\\'")}',this.value)"><span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);margin-left:8px">Result:</span><button class="thumb-btn ${a.outcome==='up'?'active-up':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','up')">👍</button><button class="thumb-btn ${a.outcome==='down'?'active-down':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','down')">👎</button></div>
-    </div><div style="text-align:right"><div style="font-family:var(--font-head);font-weight:800;color:var(--accent);font-size:1.1rem">${a.bcn>0?fmt(a.bcn):'—'}</div><button class="btn-ghost" style="margin-top:8px;font-size:0.6rem;padding:3px 8px" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button></div></div>`}).join('');
+  if(!s.length){
+    c.innerHTML=`<div class="empty" style="text-align:left;padding:32px 20px">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:0.9rem;margin-bottom:8px">Your shortlist is empty</div>
+      <div style="font-size:0.82rem;color:var(--text-dim)">Save artists from Discover, Routing, Intelligence, or X-Ray. This becomes your booking pipeline.</div>
+    </div>`;
+    return;
+  }
+  // Sort by most recently saved
+  const sorted=[...s].sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
+  const dna=getDNA();const hasDNA=dna&&dna.artistCount>0;
+  const currentDate=document.getElementById('eventDate')?.value||document.getElementById('routeDate')?.value||'';
+
+  c.innerHTML=sorted.map(a=>{
+    const img=a.imageUrl&&a.imageUrl.length>10
+      ?`<img src="${esc(a.imageUrl)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.outerHTML='<div style=\\'width:40px;height:40px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.9rem;color:var(--text-faint)\\'>${esc(a.name).charAt(0).toUpperCase()}</div>'">`
+      :`<div style="width:40px;height:40px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.9rem;color:var(--text-faint)">${(a.name||'?').charAt(0).toUpperCase()}</div>`;
+
+    // DNA fit badge — network-only scoring since no Spotify in shortlist
+    let dnaBadge='';
+    if(hasDNA){
+      const ds=dnaScore({name:a.name,bcn:0,_networkOnly:true},dna);
+      if(ds&&ds.score>20)dnaBadge=`<span class="badge badge-${ds.score>=70?'green':ds.score>=50?'amber':'red'}" style="margin-left:6px;font-size:0.52rem">${ds.score} · ${ds.label}</span>`;
+    }
+
+    // Saved date
+    const savedAgo=a.at?Math.round((Date.now()-new Date(a.at))/(1000*60*60*24))+'d ago':'';
+
+    return`<div class="saved-item">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        ${img}
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <h3 style="margin:0">${esc(a.name)}</h3>${dnaBadge}
+            ${a.outcome==='up'?'<span style="font-size:0.8rem">👍</span>':a.outcome==='down'?'<span style="font-size:0.8rem">👎</span>':''}
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-top:2px">${savedAgo?'Saved '+savedAgo:''}</div>
+          <textarea class="notes" placeholder="Add notes, agent contact, offer status…" onchange="updateNotes('${esc(a.name).replace(/'/g,"\\'")}',this.value)">${esc(a.notes||'')}</textarea>
+          <div class="fee-row">
+            <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);text-transform:uppercase">Fee: €</span>
+            <input type="number" placeholder="0" value="${a.fee||''}" onchange="updateFee('${esc(a.name).replace(/'/g,"\\'")}',this.value)">
+            <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);margin-left:8px">Result:</span>
+            <button class="thumb-btn ${a.outcome==='up'?'active-up':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','up')">👍</button>
+            <button class="thumb-btn ${a.outcome==='down'?'active-down':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','down')">👎</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;padding-left:12px">
+        <button class="btn-ghost" style="font-size:0.6rem;padding:4px 10px;white-space:nowrap" onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ X-Ray</button>
+        <button class="btn-ghost" style="font-size:0.6rem;padding:4px 10px;white-space:nowrap" onclick="(()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab=intel]').classList.add('active');document.getElementById('panel-intel').classList.add('active');runIntel('${esc(a.name).replace(/'/g,"\\'")}');loadIntelTab()})()">🕵️ Intel</button>
+        <button class="btn-ghost" style="font-size:0.6rem;padding:4px 10px;white-space:nowrap;color:var(--accent)" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function exportCSV(){
