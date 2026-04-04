@@ -606,36 +606,55 @@ async function buildDNA(statusCb,artistCb){
   const allEvents=await ensureCache();
 
   // Extract events at this venue
-  const venueEvents=allEvents.filter(ev=>ev.venue&&ev.venue.toLowerCase().includes(venueName.toLowerCase()));
+  let venueEvents=allEvents.filter(ev=>ev.venue&&ev.venue.toLowerCase().includes(venueName.toLowerCase()));
   if(statusCb)statusCb('Found '+venueEvents.length+' events at '+venueName);
 
-  // Get unique artist names
+  if(!venueEvents.length){
+    // Try fuzzy match — venue name might be slightly different in RA
+    const venueNorm=norm(venueName);
+    const fuzzy=allEvents.filter(ev=>ev.venue&&norm(ev.venue).includes(venueNorm));
+    if(fuzzy.length){
+      venueEvents.push(...fuzzy);
+      if(statusCb)statusCb('Fuzzy match: found '+fuzzy.length+' events');
+    }
+  }
+
+  // Get unique artist names from venue events
   const artistSet=new Map();
   for(const ev of venueEvents)for(const a of ev.artists){const n=norm(a);if(n&&!artistSet.has(n))artistSet.set(n,a)}
   const artistNames=[...artistSet.values()];
   if(statusCb)statusCb(artistNames.length+' unique artists — analyzing…');
 
-  // Look up each artist on Soundcharts (deep: all of them)
+  // Build profiles — RA data first (always works), SC enrichment second (may fail)
   const profiles=[];
   for(let i=0;i<artistNames.length;i++){
     const name=artistNames[i];
-    if(statusCb&&i%3===0)statusCb('Analyzing '+(i+1)+'/'+artistNames.length+': '+name);
+    if(statusCb&&i%5===0)statusCb('Analyzing '+(i+1)+'/'+artistNames.length+': '+name);
+
+    // Start with RA-only profile (always available)
+    const raShows=venueEvents.filter(ev=>ev.artists.some(a=>norm(a)===norm(name)));
+    const avgAtt=raShows.length?Math.round(raShows.reduce((s,e)=>s+(e.attending||0),0)/raShows.length):0;
+    const profile={name,uuid:null,bcn:0,global:0,genres:[],imageUrl:'',raShows:raShows.length,raAvgAtt:avgAtt};
+
+    // Try SC enrichment (may fail if quota exhausted — that's OK)
     try{
       const a=await scSearch(name);
-      if(!a)continue;
-      const sp=await scSpotify(a.uuid);
-      let genres=[];
-      try{
-        const meta=await scMeta(a.uuid);
-        if(meta&&meta.genres)genres=meta.genres.map(g=>(g.name||g).toLowerCase());
-        else if(meta&&meta.mainGenre)genres=[(meta.mainGenre.name||meta.mainGenre).toLowerCase()];
-        if(meta&&meta.subGenres)genres=[...genres,...meta.subGenres.map(g=>(g.name||g).toLowerCase())];
-      }catch(e){}
-      const profile={name:a.name,uuid:a.uuid,bcn:sp.c,global:sp.g,genres,imageUrl:a.imageUrl||''};
-      profiles.push(profile);
-      // Visual callback: send artist image + name as they're analyzed
-      if(artistCb)artistCb(profile);
+      if(a){
+        profile.uuid=a.uuid;
+        profile.imageUrl=a.imageUrl||'';
+        profile.name=a.name; // use SC's canonical name
+        try{const sp=await scSpotify(a.uuid);profile.bcn=sp.c;profile.global=sp.g}catch(e){}
+        try{
+          const meta=await scMeta(a.uuid);
+          if(meta&&meta.genres)profile.genres=meta.genres.map(g=>(g.name||g).toLowerCase());
+          else if(meta&&meta.mainGenre)profile.genres=[(meta.mainGenre.name||meta.mainGenre).toLowerCase()];
+          if(meta&&meta.subGenres)profile.genres=[...profile.genres,...meta.subGenres.map(g=>(g.name||g).toLowerCase())];
+        }catch(e){}
+      }
     }catch(e){}
+
+    profiles.push(profile);
+    if(artistCb)artistCb(profile);
   }
   if(statusCb)statusCb('Building DNA from '+profiles.length+' artists…');
 
@@ -678,7 +697,7 @@ async function buildDNA(statusCb,artistCb){
   // Compute average attendance from venue events
   const atts=venueEvents.map(e=>e.attending||0).filter(a=>a>0);
   const avgAtt=atts.length?Math.round(atts.reduce((s,a)=>s+a,0)/atts.length):0;
-  const topArtists=profiles.sort((a,b)=>(b.bcn||0)-(a.bcn||0)).slice(0,5);
+  const topArtists=profiles.slice().sort((a,b)=>(b.bcn||b.raAvgAtt||0)-(a.bcn||a.raAvgAtt||0)).slice(0,5);
   const eventsPerMonth=venueEvents.length>0?Math.round(venueEvents.length/12*10)/10:0;
 
   const dna={
