@@ -15,28 +15,28 @@
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  --bg: #080808;
-  --surface: #111111;
-  --surface-2: #161616;
-  --border: #1e1e1e;
-  --border-hi: #2a2a2a;
+  --bg: #0a0a08;
+  --surface: #131310;
+  --surface-2: #1a1917;
+  --border: #262520;
+  --border-hi: #33322c;
 
-  --accent: #f59e0b;
-  --accent-dim: #7c4f06;
-  --accent-glow: rgba(245, 158, 11, 0.12);
+  --accent: #e8a912;
+  --accent-dim: #7c5a06;
+  --accent-glow: rgba(232, 169, 18, 0.10);
 
-  --green: #16a34a;
-  --green-dim: rgba(22, 163, 74, 0.12);
-  --amber: #f59e0b;
-  --amber-dim: rgba(245, 158, 11, 0.10);
-  --blue: #3b82f6;
-  --blue-dim: rgba(59, 130, 246, 0.12);
-  --red: #dc2626;
-  --red-dim: rgba(220, 38, 38, 0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34, 197, 94, 0.12);
+  --amber: #e8a912;
+  --amber-dim: rgba(232, 169, 18, 0.10);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96, 165, 250, 0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239, 68, 68, 0.12);
 
-  --text: #f5f0e8;
-  --text-dim: #7c7468;
-  --text-faint: #3d3830;
+  --text: #ece6d8;
+  --text-dim: #968e7e;
+  --text-faint: #524c40;
 
   --font-head: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --font-body: 'Inter', -apple-system, sans-serif;
@@ -304,23 +304,12 @@ select {
   background-position: right 12px center;
   padding-right: 32px;
 }
-input[type="date"] { color-scheme: dark; font-family: var(--font-mono); font-size: 0.9rem; }
-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6) sepia(1) saturate(3) hue-rotate(0deg); cursor: pointer; }
+input[type="date"] { color-scheme: dark; font-family: var(--font-mono); font-size: 0.9rem; position: absolute; opacity: 0; pointer-events: none; }
+input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
 input[type="number"] { font-family: var(--font-mono); }
 
 .date-wrap { position: relative; }
-.date-wrap .date-display {
-  position: absolute;
-  right: 40px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: var(--accent);
-  pointer-events: none;
-  letter-spacing: 0.3px;
-}
+.date-wrap .date-display { display: none; }
 
 .row { display: flex; gap: 14px; align-items: end; flex-wrap: wrap; }
 .row > * { flex: 1; min-width: 140px; }
@@ -1360,6 +1349,113 @@ input[type="number"] { font-family: var(--font-mono); }
 }
 
 /* ═══════════════════════════════════════════
+   CUSTOM DATE PICKER
+   ═══════════════════════════════════════════ */
+
+.np-dp-wrap { position: relative; }
+.np-dp-display {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.np-dp-display:hover { border-color: var(--accent); }
+.np-dp-has-value { color: var(--text); }
+
+.np-dp-cal {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 300;
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  padding: 16px;
+  min-width: 280px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+.np-dp-cal.np-dp-open { opacity: 1; transform: translateY(0); }
+
+.np-dp-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.np-dp-month {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.np-dp-arrow {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+.np-dp-arrow:hover { border-color: var(--accent); color: var(--accent); }
+
+.np-dp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.np-dp-dh {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-faint);
+  text-align: center;
+  padding: 4px 0 8px;
+  letter-spacing: 1px;
+}
+.np-dp-empty { padding: 8px; }
+.np-dp-day {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 8px 4px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.1s;
+}
+.np-dp-day:hover { background: var(--surface-2); color: var(--text); }
+.np-dp-sel {
+  background: var(--accent) !important;
+  color: #0a0a08 !important;
+  font-weight: 700;
+}
+.np-dp-today {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════
    CACHE LOADING BAR — overrides JS inline styles
    Thin amber accent line with scanning readout
    ═══════════════════════════════════════════ */
@@ -1482,16 +1578,16 @@ input[type="number"] { font-family: var(--font-mono); }
     <div id="discoverContext" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:var(--radius)">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
         <div>
-          <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Finding artists for <span id="discoverVenueName" style="color:var(--accent)"></span></div>
-          <div id="discoverDNASeeds" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-dim)"></div>
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.82rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Finding artists for <span id="discoverVenueName" style="color:var(--accent)"></span></div>
+          <div id="discoverDNASeeds" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-dim)"></div>
         </div>
-        <button class="btn-ghost" style="font-size:0.6rem" onclick="loadDNASeedsIntoDiscover()">↓ Use my top artists as seeds</button>
+        <button class="btn-ghost" onclick="loadDNASeedsIntoDiscover()">↓ Load my full booking history</button>
       </div>
     </div>
 
     <div class="input-group">
-      <label>Start from artists like…</label>
-      <div class="ac-wrap"><textarea id="seedInput" placeholder="e.g. Jayda G, Ben UFO, Palms Trax — one per line" rows="3"></textarea></div>
+      <label>Seed artists <span style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">— optional, leave empty to use your full DNA</span></label>
+      <div class="ac-wrap"><textarea id="seedInput" placeholder="Leave empty to auto-discover from your DNA, or type specific artists to narrow the search" rows="3"></textarea></div>
       <div id="seedH" style="margin-top:6px"></div>
     </div>
 
@@ -2598,7 +2694,7 @@ async function buildDNA(statusCb,artistCb){
 
   const atts=venueEvents.map(e=>e.attending||0).filter(a=>a>0);
   const avgAtt=atts.length?Math.round(atts.reduce((s,a)=>s+a,0)/atts.length):0;
-  const topArtists=profiles.slice().sort((a,b)=>(b.bcn||b.raAvgAtt||0)-(a.bcn||a.raAvgAtt||0)).slice(0,5);
+  const topArtists=profiles.slice().sort((a,b)=>(b.raShows||1)-(a.raShows||1)||(b.raAvgAtt||b.bcn||0)-(a.raAvgAtt||a.bcn||0)).slice(0,15);
   const eventsPerMonth=venueEvents.length>0?Math.round(venueEvents.length/12*10)/10:0;
 
   // Second-degree connections — load city cache only if needed, use venueEvents as fallback
@@ -2637,7 +2733,7 @@ async function buildDNA(statusCb,artistCb){
     scCoverageRatio,
     avgAttendance:avgAtt,
     eventsPerMonth,
-    topArtists:topArtists.map(a=>({name:a.name,bcn:a.bcn,imageUrl:a.imageUrl})),
+    topArtists:topArtists.map(a=>({name:a.name,bcn:a.bcn,imageUrl:a.imageUrl,raShows:a.raShows||1,raAvgAtt:a.raAvgAtt||0})),
     listenerRange:{
       min:listeners.length?listeners[0]:0,
       max:listeners.length?listeners[listeners.length-1]:0,
@@ -3951,14 +4047,18 @@ function loadDNASeedsIntoDiscover(){
   }
   const ta=document.getElementById('seedInput');
   if(!ta)return;
-  // Use top artists from DNA sorted by RA attendance
-  const topArtists=(dna.topArtists||dna.profiles||[])
-    .sort((a,b)=>(b.raAvgAtt||b.bcn||0)-(a.raAvgAtt||a.bcn||0))
-    .slice(0,5)
+  // Use ALL booked artists, weighted by booking frequency (raShows) not just attendance
+  // Artists booked 2+ times define your sound more than one-off headliners
+  const allProfiles=(dna.profiles||[]).slice();
+  // Sort by: repeat bookings first, then by RA average attendance as tiebreaker
+  allProfiles.sort((a,b)=>(b.raShows||1)-(a.raShows||1)||(b.raAvgAtt||b.bcn||0)-(a.raAvgAtt||a.bcn||0));
+  // Take up to 15 — enough to represent the full sound palette
+  const seedArtists=allProfiles
+    .slice(0,15)
     .map(a=>a.name||a)
     .filter(Boolean);
-  if(!topArtists.length){alert('No top artists found in DNA. Try rebuilding DNA.');return}
-  ta.value=topArtists.join('\n');
+  if(!seedArtists.length){alert('No artists found in DNA. Try rebuilding DNA.');return}
+  ta.value=seedArtists.join('\n');
   // Trigger chip render
   ta.dispatchEvent(new Event('blur'));
 }
@@ -3969,10 +4069,26 @@ function rteProgReset(){document.getElementById('rteProg').classList.remove('vis
 
 /* ═══ DISCOVER ═══ */
 async function runDiscover(){
-  const text=document.getElementById('seedInput').value.trim(),date=document.getElementById('eventDate').value;
+  let text=document.getElementById('seedInput').value.trim();
+  const date=document.getElementById('eventDate').value;
   const maxResults=parseInt(document.getElementById('minBcn').value)||0; // 0 = all
   const backMo=parseInt(document.getElementById('filterBack').value)||7,fwdMo=parseInt(document.getElementById('filterFwd').value)||3;
-  if(!text)return;
+  
+  // If no seeds typed, auto-load from DNA — use the full booking profile
+  if(!text){
+    const dna=getDNA();
+    if(dna&&dna.artistCount>0){
+      const allProfiles=(dna.profiles||[]).slice();
+      allProfiles.sort((a,b)=>(b.raShows||1)-(a.raShows||1)||(b.raAvgAtt||b.bcn||0)-(a.raAvgAtt||a.bcn||0));
+      const autoSeeds=allProfiles.slice(0,15).map(a=>a.name||a).filter(Boolean);
+      if(autoSeeds.length){
+        text=autoSeeds.join('\n');
+        document.getElementById('seedInput').value=text;
+        document.getElementById('seedInput').dispatchEvent(new Event('blur'));
+      }
+    }
+    if(!text)return;
+  }
   const seedList=text.split('\n').map(s=>s.trim()).filter(Boolean);
   saveSeeds(seedList);const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='Working…';
   progReset();document.getElementById('dRes').innerHTML='';const cn=cityName();
@@ -4197,6 +4313,7 @@ async function runScan(){
     for(const ev of otherEvents){
       const threat=eventThreat(ev,dna);
       ev._threat=threat;
+      ev.genreOverlap=threat.matchingGroups||[];
       if(threat.tier===1)tier1.push(ev);
       else if(threat.tier===2)tier2.push(ev);
       else if(threat.tier===3)tier3.push(ev);
@@ -5594,6 +5711,136 @@ function exportCSV(){
   const csv='Name,'+cityName()+' Spotify,Global Spotify,Fee,Outcome,Notes,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+','+(a.fee||'')+','+(a.outcome||'')+',"'+(a.notes||'').replace(/"/g,'""')+'",'+a.at).join('\n');
   const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='nightpulse-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
 }
+
+/* ═══════════════════════════════════════════
+   CUSTOM DATE PICKER — analog instrument aesthetic
+   Replaces native browser date picker
+   ═══════════════════════════════════════════ */
+(function(){
+  const DAYS=['MO','TU','WE','TH','FR','SA','SU'];
+  const MONTHS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  
+  function createPicker(input){
+    const wrap=document.createElement('div');
+    wrap.className='np-dp-wrap';
+    input.parentNode.insertBefore(wrap,input);
+    wrap.appendChild(input);
+    
+    // Display element showing DD/MM/YYYY
+    const display=document.createElement('div');
+    display.className='np-dp-display';
+    display.textContent='Select date';
+    wrap.insertBefore(display,input);
+    input.style.position='absolute';
+    input.style.opacity='0';
+    input.style.pointerEvents='none';
+    input.style.height='0';
+    input.style.padding='0';
+    input.style.border='0';
+    input.style.overflow='hidden';
+    
+    // Calendar dropdown
+    const cal=document.createElement('div');
+    cal.className='np-dp-cal';
+    cal.style.display='none';
+    wrap.appendChild(cal);
+    
+    let viewDate=new Date();
+    let isOpen=false;
+    
+    function formatDisplay(dateStr){
+      if(!dateStr)return 'Select date';
+      const d=new Date(dateStr+'T12:00:00');
+      const day=String(d.getDate()).padStart(2,'0');
+      const mon=MONTHS[d.getMonth()];
+      const yr=d.getFullYear();
+      const dow=['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+      return dow+' '+day+' '+mon+' '+yr;
+    }
+    
+    function render(){
+      const y=viewDate.getFullYear(),m=viewDate.getMonth();
+      const first=new Date(y,m,1);
+      const lastDay=new Date(y,m+1,0).getDate();
+      let startDay=first.getDay()-1;if(startDay<0)startDay=6; // Monday=0
+      
+      const selected=input.value;
+      const today=new Date().toISOString().slice(0,10);
+      
+      let h=`<div class="np-dp-nav">
+        <button type="button" class="np-dp-arrow" data-dir="-1">←</button>
+        <span class="np-dp-month">${MONTHS[m]} ${y}</span>
+        <button type="button" class="np-dp-arrow" data-dir="1">→</button>
+      </div>`;
+      h+=`<div class="np-dp-grid">`;
+      for(const d of DAYS)h+=`<div class="np-dp-dh">${d}</div>`;
+      for(let i=0;i<startDay;i++)h+=`<div class="np-dp-empty"></div>`;
+      for(let d=1;d<=lastDay;d++){
+        const ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        const cls=['np-dp-day'];
+        if(ds===selected)cls.push('np-dp-sel');
+        if(ds===today)cls.push('np-dp-today');
+        h+=`<div class="${cls.join(' ')}" data-date="${ds}">${d}</div>`;
+      }
+      h+=`</div>`;
+      cal.innerHTML=h;
+      
+      // Wire nav
+      cal.querySelectorAll('.np-dp-arrow').forEach(btn=>{
+        btn.onclick=e=>{e.stopPropagation();viewDate.setMonth(viewDate.getMonth()+parseInt(btn.dataset.dir));render()};
+      });
+      // Wire days
+      cal.querySelectorAll('.np-dp-day').forEach(el=>{
+        el.onclick=e=>{
+          e.stopPropagation();
+          input.value=el.dataset.date;
+          display.textContent=formatDisplay(el.dataset.date);
+          display.classList.add('np-dp-has-value');
+          close();
+          input.dispatchEvent(new Event('change'));
+        };
+      });
+    }
+    
+    function open(){
+      if(isOpen)return;
+      isOpen=true;
+      if(input.value){viewDate=new Date(input.value+'T12:00:00')}else{viewDate=new Date()}
+      render();
+      cal.style.display='block';
+      setTimeout(()=>cal.classList.add('np-dp-open'),10);
+    }
+    
+    function close(){
+      isOpen=false;
+      cal.classList.remove('np-dp-open');
+      setTimeout(()=>{cal.style.display='none'},150);
+    }
+    
+    display.onclick=e=>{e.stopPropagation();isOpen?close():open()};
+    document.addEventListener('click',e=>{if(isOpen&&!wrap.contains(e.target))close()});
+    
+    // Init display from existing value
+    if(input.value){display.textContent=formatDisplay(input.value);display.classList.add('np-dp-has-value')}
+    
+    // Watch for programmatic changes (syncDateToAll)
+    const origSet=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;
+    const origDesc=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+    // Use MutationObserver-like polling for synced updates
+    setInterval(()=>{
+      const cur=input.value;
+      if(cur&&display.textContent!==formatDisplay(cur)){
+        display.textContent=formatDisplay(cur);
+        display.classList.add('np-dp-has-value');
+      }
+    },500);
+  }
+  
+  // Initialize on all date inputs after DOM ready
+  setTimeout(()=>{
+    document.querySelectorAll('input[type="date"]').forEach(createPicker);
+  },200);
+})();
 </script>
 </body>
 </html>
