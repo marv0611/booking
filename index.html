@@ -5,292 +5,1354 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Night Pulse — Booking Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════════════════════
+   NIGHT PULSE — Analog Equipment Aesthetic
+   Amber backlight on deep black. Peter Saville precision.
+   No gradients. No shadows. No blur. No decoration.
+   ═══════════════════════════════════════════════════════ */
+
 :root {
-  --bg: #06060a; --surface: #0e0e13; --surface-2: #16161d;
-  --border: #1f1f28; --border-hi: #2e2e3a;
-  --text: #dbd8d0; --text-dim: #7d7a72; --text-faint: #4a4843;
-  --accent: #e84430; --accent-dim: #8a2a1e; --accent-glow: rgba(232,68,48,0.10);
-  --green: #2fb866; --green-dim: rgba(47,184,102,0.10);
-  --amber: #d4a017; --amber-dim: rgba(212,160,23,0.10);
-  --blue: #4a90c4; --blue-dim: rgba(74,144,196,0.10);
-  --font-head: 'Syne', sans-serif;
-  --font-body: 'Newsreader', Georgia, serif;
-  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  --radius: 10px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
-  --shadow-lg: 0 4px 12px rgba(0,0,0,0.4), 0 20px 60px rgba(0,0,0,0.3);
+  --bg: #080808;
+  --surface: #111111;
+  --surface-2: #161616;
+  --border: #1e1e1e;
+  --border-hi: #2a2a2a;
+
+  --accent: #f59e0b;
+  --accent-dim: #7c4f06;
+  --accent-glow: rgba(245, 158, 11, 0.12);
+
+  --green: #16a34a;
+  --green-dim: rgba(22, 163, 74, 0.12);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.10);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59, 130, 246, 0.12);
+  --red: #dc2626;
+  --red-dim: rgba(220, 38, 38, 0.12);
+
+  --text: #f5f0e8;
+  --text-dim: #7c7468;
+  --text-faint: #3d3830;
+
+  --font-head: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  --radius: 3px;
+  --radius-sm: 2px;
+
+  /* Legacy compat — JS references these via inline styles */
+  --shadow: none;
+  --shadow-lg: none;
 }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 15px; scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-::selection { background: var(--accent); color: #fff; }
-::-webkit-scrollbar { width: 5px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.55;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+::selection { background: var(--accent); color: #080808; }
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-hi); }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeInScale { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
 
-.shell { max-width: 980px; margin: 0 auto; padding: 0 28px; }
-header { padding: 28px 0 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; position: sticky; top: 0; z-index: 50; background: var(--bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.masthead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
-.masthead h1 { font-family: var(--font-head); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; }
-.masthead h1 b { color: var(--accent); font-weight: 800; }
-.tagline { font-style: italic; font-size: 0.78rem; color: var(--text-faint); letter-spacing: 0.2px; }
-.venue-pill { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
-.venue-pill:hover { border-color: var(--accent); color: var(--text); box-shadow: 0 0 12px var(--accent-glow); }
-.tabs { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+/* ── Keyframes ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInScale { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes mosaicPop { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════ */
+
+.shell { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+
+header {
+  padding: 20px 0 0;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 0 24px;
+}
+
+.logo {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1;
+}
+.logo span { color: var(--accent); }
+
+.tagline { display: none; /* removed — brutalist, no taglines */ }
+
+
+/* ═══════════════════════════════════════════
+   NAVIGATION — Two-tier visual hierarchy
+   ═══════════════════════════════════════════ */
+
+.tabs {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 24px;
+}
 .tabs::-webkit-scrollbar { display: none; }
-.tab-btn { font-family: var(--font-head); font-weight: 600; font-size: 0.72rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-faint); background: none; border: none; padding: 10px 16px 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.25s ease; white-space: nowrap; position: relative; }
+
+.tab-btn {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  background: none;
+  border: none;
+  padding: 10px 14px 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s;
+  white-space: nowrap;
+  position: relative;
+}
 .tab-btn:hover { color: var(--text-dim); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 20%; right: 20%; height: 2px; background: var(--accent); filter: blur(4px); opacity: 0.6; }
-.tab-panel { display: none; padding-bottom: 60px; animation: fadeIn 0.35s ease; }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Primary tabs — larger */
+.tab-btn[data-tab="discover"],
+.tab-btn[data-tab="routing"],
+.tab-btn[data-tab="scanner"] {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 10px 18px 12px;
+}
+
+/* Secondary tabs — smaller, dimmer */
+.tab-btn[data-tab="intel"],
+.tab-btn[data-tab="verify"],
+.tab-btn[data-tab="saved"],
+.tab-btn[data-tab="report"] {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+}
+
+
+/* ═══════════════════════════════════════════
+   TAB PANELS
+   ═══════════════════════════════════════════ */
+
+.tab-panel { display: none; padding: 24px 0 60px; animation: fadeIn 0.25s ease; }
 .tab-panel.active { display: block; }
 
-/* Inputs */
-.input-group { margin-bottom: 18px; }
-.input-group label { display: block; font-family: var(--font-head); font-weight: 600; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
-.input-group .hint { display: block; font-size: 0.72rem; color: var(--text-faint); margin-top: 5px; font-style: italic; }
-textarea, input[type="text"], input[type="date"], input[type="number"], select {
-  width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  color: var(--text); font-family: var(--font-body); font-size: 0.92rem; padding: 11px 14px; outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+
+/* ═══════════════════════════════════════════
+   VENUE SWITCHER
+   ═══════════════════════════════════════════ */
+
+.venue-pill {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 5px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
-textarea:focus, input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%237a776f' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
-input[type="date"] { color-scheme: dark; }
-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+.venue-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+.venue-switcher { position: relative; display: inline-block; }
+.venue-switcher-dd {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  min-width: 240px;
+  animation: slideDown 0.15s ease;
+}
+.venue-switcher-dd .vs-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: background 0.1s;
+}
+.venue-switcher-dd .vs-item:last-child { border-bottom: none; }
+.venue-switcher-dd .vs-item:hover { background: var(--surface-2); }
+.venue-switcher-dd .vs-item.active { color: var(--accent); }
+.venue-switcher-dd .vs-item .vs-city {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-faint);
+  font-weight: 400;
+  text-transform: none;
+}
+.venue-switcher-dd .vs-add { color: var(--text-dim); font-style: normal; }
+.venue-switcher-dd .vs-del {
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  padding: 2px 5px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.venue-switcher-dd .vs-del:hover { color: var(--red); background: var(--red-dim); }
+
+
+/* ═══════════════════════════════════════════
+   FORMS & INPUTS
+   ═══════════════════════════════════════════ */
+
+.input-group { margin-bottom: 18px; }
+.input-group label {
+  display: block;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.input-group .hint {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  margin-top: 5px;
+}
+
+textarea, input[type="text"], input[type="date"], input[type="number"], select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+textarea:focus, input:focus, select:focus {
+  border-color: var(--accent);
+}
+textarea {
+  resize: vertical;
+  min-height: 68px;
+  line-height: 1.6;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+select {
+  cursor: pointer;
+  appearance: none;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%237c7468' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+input[type="date"] { color-scheme: dark; font-family: var(--font-mono); font-size: 0.82rem; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6) sepia(1) saturate(3) hue-rotate(0deg); cursor: pointer; }
+input[type="number"] { font-family: var(--font-mono); }
+
 .date-wrap { position: relative; }
-.date-wrap .date-display { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); font-family: var(--font-head); font-weight: 600; font-size: 0.72rem; color: var(--accent); pointer-events: none; }
+.date-wrap .date-display {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.68rem;
+  color: var(--accent);
+  pointer-events: none;
+  letter-spacing: 0.3px;
+}
+
 .row { display: flex; gap: 14px; align-items: end; flex-wrap: wrap; }
 .row > * { flex: 1; min-width: 140px; }
 .row > .shrink { flex: 0 0 auto; }
 
-/* Buttons */
-.btn { font-family: var(--font-head); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; padding: 12px 26px; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
-.btn-red { background: var(--accent); color: #fff; }
-.btn-red:hover { background: #f04e3d; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,68,48,0.3); }
-.btn-red:active { transform: translateY(0); }
-.btn-red:disabled { background: var(--accent-dim); cursor: not-allowed; opacity: 0.5; transform: none; box-shadow: none; }
-.btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px 14px; font-size: 0.65rem; font-family: var(--font-head); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); transition: all 0.2s; }
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════ */
+
+.btn {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 11px 24px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  position: relative;
+}
+.btn-red {
+  background: var(--accent);
+  color: #080808;
+}
+.btn-red:hover { opacity: 0.85; }
+.btn-red:active { opacity: 0.7; }
+.btn-red:disabled {
+  background: var(--accent-dim);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  font-size: 0.62rem;
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: border-color 0.15s, color 0.15s;
+}
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Progress */
+
+/* ═══════════════════════════════════════════
+   PROGRESS BARS — VU meter thin
+   ═══════════════════════════════════════════ */
+
 .progress-wrap { margin: 20px 0; display: none; }
-.progress-wrap.visible { display: block; animation: slideDown 0.3s ease; }
-.progress-label { font-family: var(--font-head); font-weight: 600; font-size: 0.78rem; color: var(--text); margin-bottom: 8px; }
-.progress-bar { height: 3px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f06050, var(--accent)); background-size: 200% 100%; border-radius: 2px; transition: width 0.4s ease; width: 0%; animation: shimmer 2s linear infinite; }
-.progress-detail { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint); margin-top: 8px; max-height: 140px; overflow-y: auto; line-height: 1.9; }
+.progress-wrap.visible { display: block; animation: slideDown 0.2s ease; }
+.progress-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.progress-bar {
+  height: 2px;
+  background: #1a1a1a;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.progress-detail {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  margin-top: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+  line-height: 1.9;
+  letter-spacing: 0.2px;
+}
 
-/* Cards */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; transition: all 0.25s ease; }
-.card:hover { border-color: var(--border-hi); box-shadow: var(--shadow); }
-.card h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
-.stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
-.stat { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; min-width: 100px; transition: border-color 0.2s; }
+/* Routing progress */
+.rte-progress { margin: 20px 0; }
+.rte-log {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  margin-top: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+  line-height: 1.9;
+}
+
+
+/* ═══════════════════════════════════════════
+   CARDS & STATS
+   ═══════════════════════════════════════════ */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.card:hover { border-color: var(--border-hi); }
+.card h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.stat {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  min-width: 100px;
+  transition: border-color 0.15s;
+}
 .stat:hover { border-color: var(--border-hi); }
-.stat .sv { font-family: var(--font-head); font-weight: 800; font-size: 1.2rem; color: var(--accent); line-height: 1.1; }
-.stat .sl { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; }
+.stat .sv {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.stat .sl {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 4px;
+}
 
-/* Result items */
-.result-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.3s ease both; transition: background 0.15s; }
-.result-item:hover { background: var(--surface); margin: 0 -10px; padding: 14px 10px; border-radius: var(--radius); }
+
+/* ═══════════════════════════════════════════
+   RESULT ITEMS (Find Artists, Routing)
+   ═══════════════════════════════════════════ */
+
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  animation: fadeIn 0.2s ease both;
+  transition: background 0.1s;
+}
+.result-item:hover {
+  background: var(--surface);
+  margin: 0 -10px;
+  padding: 14px 10px;
+  border-radius: var(--radius);
+}
 .result-item:last-child { border-bottom: none; }
-.ri-rank { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--text-faint); width: 32px; text-align: center; flex-shrink: 0; }
+
+.ri-rank {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
 .result-item:nth-child(-n+3) .ri-rank { color: var(--accent); }
-.ri-img { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); flex-shrink: 0; object-fit: cover; border: 2px solid var(--border); transition: border-color 0.2s; }
+
+.ri-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
+}
 .result-item:hover .ri-img { border-color: var(--accent); }
-.ri-img-placeholder { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: 0.8rem; color: var(--text-faint); }
+
+.ri-img-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.ri-img-lazy {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
 .ri-info { flex: 1; min-width: 0; }
-.ri-info h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; }
+.ri-info h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
 .ri-info .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
-.ri-info .tag { font-family: var(--font-mono); font-size: 0.58rem; background: var(--surface-2); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; color: var(--text-dim); transition: all 0.15s; }
-.ri-info .tag:hover { border-color: var(--border-hi); }
-.ri-info .tag-routing { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
-.ri-info .ig-line { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); margin-top: 2px; }
+.ri-info .tag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  transition: border-color 0.1s;
+}
+.ri-info .tag:hover { border-color: var(--text-dim); }
+.ri-info .tag-routing {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.ri-info .ig-line {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
 .ri-actions { display: flex; gap: 5px; margin-top: 6px; }
-.ri-actions button { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; cursor: pointer; transition: all 0.2s; }
-.ri-actions button:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.ri-actions button {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.ri-actions button:hover { border-color: var(--accent); color: var(--accent); }
 .ri-actions button.saved { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
 .ri-number { text-align: right; flex-shrink: 0; }
-.ri-number .big { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--accent); line-height: 1; }
-.ri-number .sub { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; }
-.ri-number .dim { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-faint); }
+.ri-number .big {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.ri-number .sub {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ri-number .dim {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-faint);
+}
 
-/* Events */
-.ev-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: start; transition: background 0.15s; }
-.ev-item:hover { background: var(--surface); margin: 0 -8px; padding: 12px 8px; border-radius: var(--radius); }
-.ev-att { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; color: var(--accent); width: 50px; text-align: center; flex-shrink: 0; line-height: 1.2; }
-.ev-att .ev-lbl { font-family: var(--font-mono); font-size: 0.48rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.3px; }
+
+/* ═══════════════════════════════════════════
+   EVENT ITEMS (What's On, Scene Intel)
+   ═══════════════════════════════════════════ */
+
+.ev-item {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+  transition: background 0.1s;
+}
+.ev-item:hover {
+  background: var(--surface);
+  margin: 0 -8px;
+  padding: 12px 8px;
+  border-radius: var(--radius);
+}
+.ev-att {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent);
+  width: 50px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+.ev-att .ev-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
 .ev-detail { flex: 1; }
-.ev-detail .ev-v { font-family: var(--font-head); font-weight: 700; font-size: 0.88rem; }
-.ev-detail .ev-t { font-size: 0.8rem; color: var(--text-dim); }
-.ev-detail .ev-a { font-size: 0.73rem; color: var(--text-faint); margin-top: 2px; }
+.ev-detail .ev-v {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.ev-detail .ev-t { font-size: 0.78rem; color: var(--text-dim); }
+.ev-detail .ev-a { font-size: 0.72rem; color: var(--text-faint); margin-top: 2px; font-family: var(--font-body); }
 
-/* Onboarding */
-#onboarding { max-width: 520px; margin: 60px auto; animation: fadeInScale 0.5s ease; }
-#onboarding h2 { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; margin-bottom: 6px; letter-spacing: -0.3px; }
-#onboarding .sub { color: var(--text-dim); font-style: italic; margin-bottom: 28px; font-size: 0.88rem; line-height: 1.6; }
-.ob-dots { display: flex; gap: 8px; margin-bottom: 24px; }
-.ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s ease; }
-.ob-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+
+/* ═══════════════════════════════════════════
+   BADGES & TAGS
+   ═══════════════════════════════════════════ */
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  background: transparent;
+}
+.badge-green { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+.badge-red { color: var(--red); border-color: var(--red); background: var(--red-dim); }
+.badge-amber { color: var(--amber); border-color: var(--amber); background: var(--amber-dim); }
+.badge-blue { color: var(--blue); border-color: var(--blue); background: var(--blue-dim); }
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  background: transparent;
+}
+
+
+/* ═══════════════════════════════════════════
+   SECTION HEADS & MISC
+   ═══════════════════════════════════════════ */
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 28px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.section-head h2 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.section-head .count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.3px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+
+/* ═══════════════════════════════════════════
+   ONBOARDING
+   ═══════════════════════════════════════════ */
+
+#onboarding {
+  max-width: 480px;
+  margin: 80px auto;
+  animation: fadeIn 0.4s ease;
+}
+#onboarding h2 {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+#onboarding .sub {
+  color: var(--text-dim);
+  margin-bottom: 28px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  font-family: var(--font-body);
+}
+
+.ob-dots { display: flex; gap: 6px; margin-bottom: 24px; }
+.ob-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  background: var(--border);
+  transition: background 0.2s;
+}
+.ob-dot.active { background: var(--accent); }
+
 .ob-step { display: none; }
-.ob-step.active { display: block; animation: fadeIn 0.4s ease; }
+.ob-step.active { display: block; animation: fadeIn 0.3s ease; }
 
-/* DNA mosaic — artist avatars that pop in during analysis */
-@keyframes mosaicPop { from { opacity: 0; transform: scale(0.3) rotate(-10deg); } to { opacity: 1; transform: scale(1) rotate(0deg); } }
-.dna-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); animation: mosaicPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; transition: all 0.3s; cursor: default; }
-.dna-avatar:hover { border-color: var(--accent); transform: scale(1.15); z-index: 10; }
-.dna-avatar-ph { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: 0.65rem; color: var(--text-faint); animation: mosaicPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+/* DNA mosaic */
+.dna-mosaic {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 16px 0;
+  min-height: 60px;
+  justify-content: center;
+}
+.dna-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  animation: mosaicPop 0.3s ease both;
+  transition: border-color 0.2s;
+}
+.dna-avatar:hover { border-color: var(--accent); }
+.dna-avatar-ph {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  animation: mosaicPop 0.3s ease both;
+}
 
-/* Saved */
-.saved-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: start; gap: 14px; transition: all 0.2s; }
-.saved-item:hover { border-color: var(--border-hi); box-shadow: var(--shadow); }
-.saved-item h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; }
-.saved-item textarea { margin-top: 6px; min-height: 40px; font-size: 0.82rem; width: 100%; }
+/* DNA progress */
+.dna-progress { margin: 12px 0; }
+.dna-log {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  max-height: 70px;
+  overflow-y: auto;
+  margin-top: 8px;
+  line-height: 1.9;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
 
-/* Misc */
-.empty { text-align: center; padding: 60px 20px; color: var(--text-faint); font-style: italic; font-size: 0.88rem; }
-.section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-.section-head h2 { font-family: var(--font-head); font-weight: 700; font-size: 1rem; }
-.section-head .count { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); }
-.badge { display: inline-block; font-family: var(--font-mono); font-size: 0.58rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.2px; }
-.badge-green { background: var(--green-dim); color: var(--green); }
-.badge-red { background: var(--accent-glow); color: var(--accent); }
-.badge-amber { background: var(--amber-dim); color: var(--amber); }
-.badge-blue { background: var(--blue-dim); color: var(--blue); }
-.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
 
-/* Venue Switcher */
-.venue-switcher { position: relative; display: inline-block; }
-.venue-switcher-dd { position: absolute; top: calc(100% + 6px); right: 0; z-index: 200;
-  background: var(--surface); border: 1px solid var(--border-hi); border-radius: var(--radius);
-  min-width: 220px; box-shadow: var(--shadow-lg); animation: slideDown 0.2s ease; }
-.venue-switcher-dd .vs-item { display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border);
-  font-family: var(--font-head); font-weight: 600; font-size: 0.78rem; transition: background 0.1s; }
-.venue-switcher-dd .vs-item:last-child { border-bottom: none; }
-.venue-switcher-dd .vs-item:hover { background: var(--surface-2); }
-.venue-switcher-dd .vs-item.active { color: var(--accent); }
-.venue-switcher-dd .vs-item .vs-city { font-family: var(--font-mono); font-size: 0.6rem;
-  color: var(--text-faint); font-weight: 400; }
-.venue-switcher-dd .vs-add { color: var(--text-dim); font-style: italic; }
-.venue-switcher-dd .vs-del { font-size: 0.6rem; color: var(--text-faint); padding: 2px 5px;
-  border-radius: 3px; transition: all 0.15s; }
-.venue-switcher-dd .vs-del:hover { color: var(--accent); background: var(--accent-glow); }
+/* ═══════════════════════════════════════════
+   SEGMENT PICKER
+   ═══════════════════════════════════════════ */
 
-/* Autocomplete */
-.ac-wrap { position: relative; }
-.ac-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.ac-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border: 1px solid var(--border-hi); border-radius: 20px; padding: 3px 10px 3px 3px; font-family: var(--font-head); font-size: 0.72rem; font-weight: 600; color: var(--text); animation: fadeIn 0.2s ease; }
-.ac-chip img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
-.ac-chip .ac-chip-ph { width: 22px; height: 22px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.5rem; color: var(--text-faint); }
-.ac-chip .ac-chip-x { cursor: pointer; color: var(--text-faint); font-size: 0.7rem; margin-left: 2px; transition: color 0.15s; line-height: 1; }
-.ac-chip .ac-chip-x:hover { color: var(--accent); }
-.ac-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 100; background: var(--surface); border: 1px solid var(--border-hi); border-radius: var(--radius); margin-top: 4px; max-height: 260px; overflow-y: auto; box-shadow: var(--shadow-lg); display: none; }
-.ac-dropdown.open { display: block; animation: slideDown 0.2s ease; }
-.ac-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border); }
-.ac-item:last-child { border-bottom: none; }
-.ac-item:hover, .ac-item.selected { background: var(--surface-2); }
-.ac-item img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--surface-2); }
-.ac-item .ac-name { font-family: var(--font-head); font-weight: 600; font-size: 0.82rem; }
-.ac-item .ac-sub { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); }
-
-/* Filter controls — segmented picker */
-.filter-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 18px; }
-.filter-bar h4 { font-family: var(--font-head); font-weight: 600; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); margin-bottom: 12px; }
-.filter-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: start; }
-.filter-group { flex: 1; min-width: 200px; }
-.filter-group .fg-label { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-dim); margin-bottom: 8px; display: block; }
-.seg-picker { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-.seg-picker button { flex: 1; padding: 8px 4px; border: none; background: none; color: var(--text-faint); font-family: var(--font-mono); font-size: 0.65rem; cursor: pointer; transition: all 0.2s; position: relative; }
+.seg-picker {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.seg-picker button {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
 .seg-picker button:not(:last-child) { border-right: 1px solid var(--border); }
 .seg-picker button:hover { color: var(--text-dim); background: var(--surface); }
-.seg-picker button.active { background: var(--accent); color: #fff; font-weight: 600; }
-.seg-picker button .seg-sub { display: block; font-size: 0.5rem; opacity: 0.7; margin-top: 1px; }
+.seg-picker button.active { background: var(--accent); color: #080808; font-weight: 600; }
+.seg-picker button .seg-sub {
+  display: block;
+  font-size: 0.48rem;
+  opacity: 0.6;
+  margin-top: 1px;
+}
 
-/* Fee crowdsource */
-.fee-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
-.fee-row input[type="number"] { width: 100px; padding: 5px 8px; font-size: 0.78rem; }
-.fee-row .thumb-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-.fee-row .thumb-btn:hover { border-color: var(--border-hi); transform: scale(1.1); }
-.fee-row .thumb-btn.active-up { border-color: var(--green); background: var(--green-dim); }
-.fee-row .thumb-btn.active-down { border-color: var(--accent); background: var(--accent-glow); }
 
-/* Calendar — color-bar timeline cards */
-.cal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 6px; }
-.cal-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px 8px; text-align: center; transition: all 0.2s; cursor: default; position: relative; overflow: hidden; }
-.cal-cell::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--border); transition: background 0.2s; }
-.cal-cell:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-.cal-cell .cal-day { font-family: var(--font-head); font-weight: 600; font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.3px; }
-.cal-cell .cal-count { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; margin: 2px 0 0; line-height: 1.1; }
-.cal-cell .cal-label { font-family: var(--font-mono); font-size: 0.46rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.5px; }
+/* ═══════════════════════════════════════════
+   FILTER BAR
+   ═══════════════════════════════════════════ */
+
+.filter-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 18px;
+}
+.filter-bar h4 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  margin-bottom: 12px;
+}
+.filter-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: start; }
+.filter-group { flex: 1; min-width: 200px; }
+.filter-group .fg-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  display: block;
+}
+
+
+/* ═══════════════════════════════════════════
+   AUTOCOMPLETE
+   ═══════════════════════════════════════════ */
+
+.ac-wrap { position: relative; }
+.ac-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.ac-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3px 10px 3px 3px;
+  font-family: var(--font-head);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.ac-chip img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.ac-chip .ac-chip-ph {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.48rem;
+  color: var(--text-faint);
+}
+.ac-chip .ac-chip-x {
+  cursor: pointer;
+  color: var(--text-faint);
+  font-size: 0.65rem;
+  margin-left: 2px;
+  transition: color 0.1s;
+  line-height: 1;
+}
+.ac-chip .ac-chip-x:hover { color: var(--red); }
+
+.ac-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  margin-top: 2px;
+  max-height: 260px;
+  overflow-y: auto;
+  display: none;
+}
+.ac-dropdown.open { display: block; animation: slideDown 0.15s ease; }
+
+.ac-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border);
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item.selected { background: var(--surface-2); }
+.ac-item img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-2);
+}
+.ac-item .ac-name {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.ac-item .ac-sub {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-faint);
+}
+
+
+/* ═══════════════════════════════════════════
+   CONTEXT BANNERS
+   ═══════════════════════════════════════════ */
+
+.context-banner {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+
+/* ═══════════════════════════════════════════
+   CALENDAR GRID
+   ═══════════════════════════════════════════ */
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 4px;
+}
+.cal-cell {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 8px 8px;
+  text-align: center;
+  transition: border-color 0.15s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.cal-cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border);
+}
+.cal-cell:hover { border-color: var(--border-hi); }
+.cal-cell .cal-day {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.cal-cell .cal-count {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin: 2px 0 0;
+  line-height: 1.1;
+}
+.cal-cell .cal-label {
+  font-family: var(--font-mono);
+  font-size: 0.44rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
 .cal-good::before { background: var(--green); }
-.cal-good { border-color: rgba(47,184,102,0.2); }
+.cal-good { border-color: rgba(22,163,74,0.2); }
 .cal-good .cal-count { color: var(--green); }
 .cal-good .cal-day { color: var(--green); }
-.cal-bad::before { background: var(--accent); }
-.cal-bad { border-color: rgba(232,68,48,0.15); }
-.cal-bad .cal-count { color: var(--accent); }
-.cal-bad .cal-day { color: var(--accent); }
+.cal-bad::before { background: var(--red); }
+.cal-bad { border-color: rgba(220,38,38,0.15); }
+.cal-bad .cal-count { color: var(--red); }
+.cal-bad .cal-day { color: var(--red); }
 .cal-mid::before { background: var(--amber); }
-.cal-mid { border-color: rgba(212,160,23,0.12); }
+.cal-mid { border-color: rgba(245,158,11,0.12); }
 .cal-mid .cal-count { color: var(--amber); }
 
-/* Routing card */
-.routing-card { background: var(--amber-dim); border: 1px solid rgba(212,160,23,0.25); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-.routing-card .rc-icon { font-size: 1.2rem; }
+
+/* ═══════════════════════════════════════════
+   ROUTING CARD
+   ═══════════════════════════════════════════ */
+
+.routing-card {
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.routing-card .rc-icon { font-size: 1rem; }
 .routing-card .rc-info { flex: 1; font-size: 0.82rem; color: var(--text); }
-.routing-card .rc-city { font-family: var(--font-head); font-weight: 700; color: var(--amber); }
+.routing-card .rc-city { font-family: var(--font-head); font-weight: 700; color: var(--amber); text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* Tooltip */
+
+/* ═══════════════════════════════════════════
+   FEE ROW
+   ═══════════════════════════════════════════ */
+
+.fee-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.fee-row input[type="number"] { width: 100px; padding: 5px 8px; font-size: 0.78rem; }
+.fee-row .thumb-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s;
+}
+.fee-row .thumb-btn:hover { border-color: var(--text-dim); }
+.fee-row .thumb-btn.active-up { border-color: var(--green); background: var(--green-dim); }
+.fee-row .thumb-btn.active-down { border-color: var(--red); background: var(--red-dim); }
+
+
+/* ═══════════════════════════════════════════
+   TOOLTIP
+   ═══════════════════════════════════════════ */
+
 [data-tip] { position: relative; }
-[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--surface-2); border: 1px solid var(--border-hi); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.58rem; padding: 4px 10px; border-radius: 4px; white-space: nowrap; pointer-events: none; animation: fadeIn 0.15s ease; z-index: 200; }
+[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-2);
+  border: 1px solid var(--border-hi);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: fadeIn 0.1s ease;
+  z-index: 200;
+}
 
-/* Intelligence tab */
-.intel-hero { padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-.intel-hero h2 { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; margin-bottom: 4px; }
-.intel-hero p { font-size: 0.82rem; color: var(--text-dim); max-width: 600px; }
-.intel-search-wrap { display: flex; gap: 10px; margin-bottom: 14px; align-items: stretch; }
-.intel-entity-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
-.intel-entity-card h3 { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; margin-bottom: 2px; }
-.intel-entity-meta { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ═══════════════════════════════════════════
+   INTELLIGENCE TAB
+   ═══════════════════════════════════════════ */
+
+.intel-hero {
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.intel-hero h2 {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.intel-hero p {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  max-width: 600px;
+  line-height: 1.6;
+}
+.intel-hero-text {} /* structure hook */
+
+.intel-search-wrap {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  align-items: stretch;
+}
+.intel-entity-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.intel-entity-card h3 {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.intel-entity-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
 .intel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
 @media(max-width:640px){ .intel-grid { grid-template-columns: 1fr; } }
-.intel-block { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-.intel-block-title { font-family: var(--font-head); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-faint); margin-bottom: 12px; }
-.intel-artist-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; border-radius: 4px; }
+
+.intel-block {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.intel-block-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-faint);
+  margin-bottom: 12px;
+}
+.intel-artist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+  border-radius: var(--radius);
+}
 .intel-artist-row:last-child { border-bottom: none; }
 .intel-artist-row:hover { background: var(--surface); margin: 0 -6px; padding: 7px 6px; }
-.intel-artist-row .ia-att { font-family: var(--font-head); font-weight: 800; font-size: 0.95rem; color: var(--accent); width: 44px; text-align: right; flex-shrink: 0; }
-.intel-artist-row .ia-name { font-family: var(--font-head); font-weight: 600; font-size: 0.82rem; flex: 1; }
-.intel-artist-row .ia-meta { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-faint); }
-.intel-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 4px; overflow: hidden; }
-.intel-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.6s ease; }
-.momentum-card { background: var(--surface); border: 1px solid var(--border-hi); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 10px; }
-.momentum-card h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
-.momentum-arrow { display: inline-block; color: var(--green); font-size: 1rem; }
-.intel-quick-chip { font-family: var(--font-head); font-weight: 600; font-size: 0.68rem; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; cursor: pointer; color: var(--text-dim); transition: all 0.15s; white-space: nowrap; }
+.intel-artist-row .ia-att {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--accent);
+  width: 44px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.intel-artist-row .ia-name {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.82rem;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.intel-artist-row .ia-meta {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-faint);
+}
+
+.intel-bar { height: 2px; background: var(--border); margin-top: 4px; overflow: hidden; }
+.intel-bar-fill { height: 100%; background: var(--accent); transition: width 0.6s ease; }
+
+.momentum-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 10px;
+}
+.momentum-card h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.momentum-arrow { display: inline-block; color: var(--green); font-size: 0.9rem; }
+
+.intel-quick-chip {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.62rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 10px;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 .intel-quick-chip:hover { border-color: var(--accent); color: var(--accent); }
-.intel-avail-badge { font-family: var(--font-mono); font-size: 0.55rem; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+
+.intel-avail-badge {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
 .intel-avail-yes { background: var(--green-dim); color: var(--green); }
-.intel-avail-no { background: var(--accent-glow); color: var(--accent); }
-.intel-section-divider { font-family: var(--font-head); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); padding: 16px 0 8px; border-top: 1px solid var(--border); margin-top: 8px; }
+.intel-avail-no { background: var(--red-dim); color: var(--red); }
+
+.intel-section-divider {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  padding: 16px 0 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+
+/* ═══════════════════════════════════════════
+   SAVED / PIPELINE
+   ═══════════════════════════════════════════ */
+
+.saved-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 14px;
+  transition: border-color 0.15s;
+}
+.saved-item:hover { border-color: var(--border-hi); }
+.saved-item h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.saved-item textarea { margin-top: 6px; min-height: 40px; font-size: 0.78rem; width: 100%; }
+
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+
+@media(max-width:600px){
   .row { flex-direction: column; }
   .filter-row { flex-direction: column; gap: 12px; }
-  .stats { gap: 6px; }
+  .stats { gap: 4px; }
   .stat { min-width: 80px; padding: 8px 10px; }
   .masthead { flex-direction: column; gap: 8px; }
   header { position: relative; }
+  .tabs { padding: 0 12px; }
+  .masthead { padding: 0 12px; }
+  .tab-btn { padding: 8px 10px 10px; font-size: 0.6rem; }
+  .tab-btn[data-tab="discover"],
+  .tab-btn[data-tab="routing"],
+  .tab-btn[data-tab="scanner"] { font-size: 0.65rem; padding: 8px 12px 10px; }
 }
 </style>
 </head>
@@ -298,7 +1360,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
 <div class="shell">
   <header>
     <div class="masthead">
-      <div><h1>Night<b>Pulse</b></h1><div class="tagline">Booking intelligence for live music</div></div>
+      <div class="logo">NIGHT<span>PULSE</span></div>
       <div id="venueSwitcherWrap" style="display:none;position:relative">
         <div class="venue-pill" id="venuePill" onclick="toggleVenueSwitcher(event)" title="Switch venue or add new"></div>
       </div>
@@ -314,12 +1376,12 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
     </div>
   </header>
 
-  <!-- ONBOARDING -->
+  <!-- ═══ ONBOARDING ═══ -->
   <div id="onboarding">
-    <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div><div class="ob-dot" id="d4"></div></div>
+    <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3" style="display:none"></div><div class="ob-dot" id="d4" style="display:none"></div></div>
     <div class="ob-step active" id="ob1">
-      <h2>Welcome to Night Pulse</h2>
-      <div class="sub">Let's set up your profile in 60 seconds. Everything adapts to your market.</div>
+      <h2>Set Up Your DNA</h2>
+      <div class="sub">Night Pulse reads your booking history from Resident Advisor and builds an audience profile in 60 seconds. Everything calibrates automatically.</div>
       <div class="input-group"><label>I am a…</label>
         <div class="seg-picker" id="obTypePicker" style="max-width:300px">
           <button onclick="setObType('venue')" data-v="venue" class="active">Venue<span class="seg-sub">club / space</span></button>
@@ -344,71 +1406,69 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
         <label>Promoter / Party Name</label>
         <div class="ac-wrap"><input type="text" id="obPromoterName" placeholder="Start typing your promoter name…" autocomplete="off"></div>
         <span class="hint" id="promoterHint">Loading promoters…</span>
-
         <div style="margin-top:14px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">
-          <label style="font-family:var(--font-head);font-weight:700;font-size:0.78rem;margin-bottom:8px;display:block">RA Promoter ID <span style="color:var(--accent)">*</span> <span style="font-weight:400;color:var(--text-faint);font-size:0.7rem">— required for accurate DNA</span></label>
+          <label style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:block">RA Promoter ID <span style="color:var(--accent)">*</span> <span style="font-weight:400;color:var(--text-faint);font-size:0.65rem;text-transform:none;letter-spacing:0">— required for accurate DNA</span></label>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="number" id="obPromoterRaId" placeholder="e.g. 103095" style="max-width:160px;font-size:0.88rem;padding:8px 12px;font-family:var(--font-mono)">
-            <a id="obPromoterRaLink" href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--blue);text-decoration:none">Find my ID on RA →</a>
-            <span id="obPromoterRaStatus" style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint)"></span>
+            <input type="number" id="obPromoterRaId" placeholder="e.g. 103095" style="max-width:160px;font-size:0.82rem;padding:8px 12px;font-family:var(--font-mono)">
+            <a id="obPromoterRaLink" href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.6rem;color:var(--accent);text-decoration:none;letter-spacing:0.3px">Find my ID on RA →</a>
+            <span id="obPromoterRaStatus" style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint)"></span>
           </div>
-          <div style="font-size:0.72rem;color:var(--text-dim);margin-top:6px">Your ID is the number in your <b>ra.co/promoters/[ID]</b> URL. Without it, DNA is built from title matching only.</div>
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);margin-top:6px">Your ID is in your ra.co/promoters/[ID] URL</div>
         </div>
       </div>
-      <div class="input-group"><label>Capacity <span style="font-weight:400;font-size:0.8em;color:var(--text-faint)">(optional)</span></label><input type="number" id="obCap" placeholder="e.g. 400"></div>
-      <button class="btn btn-red" onclick="obGo(2)">Continue</button>
+      <div class="input-group"><label>Capacity <span style="font-weight:400;font-size:0.8em;color:var(--text-faint);text-transform:none;letter-spacing:0">(optional)</span></label><input type="number" id="obCap" placeholder="e.g. 400"></div>
+      <button class="btn btn-red" onclick="obDone()" style="margin-top:8px">Analyse My Bookings →</button>
     </div>
-    <div class="ob-step" id="ob2">
-      <h2>Your Booking DNA</h2>
-      <div class="sub">This teaches Night Pulse what works for your bookings.</div>
-      <div class="input-group"><label>3 artists that crushed it</label><div class="ac-wrap"><textarea id="obW" placeholder="One per line" rows="3"></textarea></div><span class="hint">Sold out, queues around the block, the ones you'd rebook tomorrow.</span></div>
-      <div class="input-group"><label>3 artists that underperformed</label><div class="ac-wrap"><textarea id="obL" placeholder="One per line" rows="3"></textarea></div><span class="hint">No judgment — this is how we calibrate.</span></div>
-      <button class="btn btn-red" onclick="obGo(3)">Continue</button>
-    </div>
-    <div class="ob-step" id="ob3">
-      <h2>Almost there</h2>
-      <div class="sub">Last details to calibrate results.</div>
-      <div class="input-group"><label>Headliner budget</label><select id="obB"><option value="0-3k">Under €3K</option><option value="3-6k" selected>€3K – €6K</option><option value="6-10k">€6K – €10K</option><option value="10k+">€10K+</option></select></div>
-      <div class="input-group"><label>Booking frequency</label><select id="obF"><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly" selected>Monthly</option><option value="few">A few times a year</option></select></div>
-      <button class="btn btn-red" onclick="obDone()">Launch Night Pulse</button>
-    </div>
+    <div class="ob-step" id="ob2" style="display:none"></div>
+    <div class="ob-step" id="ob3" style="display:none"></div>
     <div class="ob-step" id="ob4">
-      <h2 id="ob4Title">Analyzing Your Venue</h2>
-      <div class="sub" id="ob4Sub">Night Pulse is scanning your past 12 months of bookings to build your audience DNA.</div>
-      <div id="dnaMosaic" style="display:flex;flex-wrap:wrap;gap:4px;margin:16px 0;min-height:60px;justify-content:center"></div>
-      <div style="margin:12px 0">
+      <h2 id="ob4Title">Scanning Your History</h2>
+      <div class="sub" id="ob4Sub">Night Pulse is scanning your past bookings to build your audience DNA.</div>
+      <div id="dnaMosaic" class="dna-mosaic"></div>
+      <div class="dna-progress" id="dnaProgress">
         <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" id="dnaFill" style="width:0%"></div></div>
-        <div class="progress-label" id="dnaLbl" style="font-size:0.72rem;margin:0">Starting analysis…</div>
+        <div id="dnaLbl" style="font-family:var(--font-mono);font-weight:500;font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin:0">Initialising...</div>
       </div>
-      <div class="progress-detail" id="dnaDet" style="max-height:70px;overflow-y:auto;margin-top:8px"></div>
+      <div id="dnaDet" class="dna-log"></div>
       <div id="dnaSummary" style="display:none"></div>
     </div>
   </div>
 
-  <!-- DISCOVER -->
+  <!-- ═══ FIND ARTISTS ═══ -->
   <div class="tab-panel" id="panel-discover">
-    <!-- DNA context banner -->
-    <div id="discoverContext" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">
+    <div id="discoverContext" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:var(--radius)">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
         <div>
-          <div style="font-family:var(--font-head);font-weight:700;font-size:0.78rem;margin-bottom:4px">Finding artists for <span id="discoverVenueName" style="color:var(--accent)"></span></div>
-          <div id="discoverDNASeeds" style="font-size:0.75rem;color:var(--text-dim)"></div>
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Finding artists for <span id="discoverVenueName" style="color:var(--accent)"></span></div>
+          <div id="discoverDNASeeds" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-dim)"></div>
         </div>
-        <button class="btn-ghost" style="font-size:0.68rem;white-space:nowrap" onclick="loadDNASeedsIntoDiscover()">↓ Use my top artists as seeds</button>
+        <button class="btn-ghost" style="font-size:0.6rem" onclick="loadDNASeedsIntoDiscover()">↓ Use my top artists as seeds</button>
       </div>
     </div>
 
     <div class="input-group">
       <label>Start from artists like…</label>
-      <div class="ac-wrap"><textarea id="seedInput" placeholder="Type artists your crowd loves — one per line. Night Pulse finds who else fits your scene and is available on your date." rows="3"></textarea></div>
+      <div class="ac-wrap"><textarea id="seedInput" placeholder="e.g. Jayda G, Ben UFO, Palms Trax — one per line" rows="3"></textarea></div>
       <div id="seedH" style="margin-top:6px"></div>
     </div>
 
+    <div class="row" style="margin-bottom:18px">
+      <div class="input-group" style="margin:0">
+        <label>Your event date</label>
+        <div class="date-wrap">
+          <input type="date" id="eventDate" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
+          <span class="date-display" id="eventDateDisplay"></span>
+        </div>
+      </div>
+      <div class="input-group" style="margin:0;max-width:160px"><label>Max results</label><select id="minBcn" style="font-size:0.78rem"><option value="0">All matches</option><option value="20" selected>Top 20</option><option value="40">Top 40</option><option value="100">Top 100</option></select></div>
+      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="dBtn" onclick="runDiscover()">Find Artists</button></div>
+    </div>
+
     <div class="filter-bar">
-      <h4>Keep results fresh</h4>
+      <h4>Freshness Filters</h4>
       <div class="filter-row">
         <div class="filter-group">
-          <span class="fg-label">Only show artists who haven't played <span id="fCityD">city</span> in the last</span>
+          <span class="fg-label">Hasn't played <span id="fCityD">city</span> in last</span>
           <div class="seg-picker" id="segBack">
             <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
             <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
@@ -418,7 +1478,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
           <input type="hidden" id="filterBack" value="6">
         </div>
         <div class="filter-group">
-          <span class="fg-label">And not already booked in the next</span>
+          <span class="fg-label">Not booked for next</span>
           <div class="seg-picker" id="segFwd">
             <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
             <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
@@ -429,32 +1489,20 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
       </div>
     </div>
 
-    <div class="row">
-      <div class="input-group" style="margin:0">
-        <label>Your event date</label>
-        <div class="date-wrap">
-          <input type="date" id="eventDate" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
-          <span class="date-display" id="eventDateDisplay"></span>
-        </div>
-      </div>
-      <div class="input-group" style="margin:0;max-width:160px"><label>Max results</label><select id="minBcn" style="font-size:0.82rem"><option value="0">All matches</option><option value="20" selected>Top 20</option><option value="40">Top 40</option><option value="100">Top 100</option></select></div>
-      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="dBtn" onclick="runDiscover()">Find Artists</button></div>
-    </div>
     <div class="progress-wrap" id="dProg"><div class="progress-label" id="pLbl">Starting...</div><div class="progress-bar"><div class="progress-fill" id="pFill"></div></div><div class="progress-detail" id="pDet"></div></div>
     <div id="dRes"></div>
   </div>
 
-  <!-- ROUTING -->
+  <!-- ═══ ROUTING ═══ -->
   <div class="tab-panel" id="panel-routing">
-    <!-- DNA context banner -->
-    <div id="routingContext" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">
-      <div style="font-family:var(--font-head);font-weight:700;font-size:0.78rem;margin-bottom:2px">Routing for <span id="routingVenueName" style="color:var(--accent)"></span></div>
-      <div id="routingDNAContext" style="font-size:0.75rem;color:var(--text-dim)"></div>
+    <div id="routingContext" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:var(--radius)">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Routing for <span id="routingVenueName" style="color:var(--accent)"></span></div>
+      <div id="routingDNAContext" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-dim)"></div>
     </div>
     <div class="card" style="margin-bottom:18px">
       <h3 style="color:var(--amber);margin-bottom:2px">↗ Routing Deals</h3>
-      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:14px">Artists playing nearby cities the day before or after your date are already in the region — you can often book them for <strong>30–50% less</strong> than their normal fee. Night Pulse scans every city within range and shows you who's passing through.</p>
-      <div id="nearbyCities" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);margin-bottom:12px"></div>
+      <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim);margin-bottom:14px">Artists playing nearby cities ±1 day from your date are already in the region. Typically 30–50% off normal fees.</p>
+      <div id="nearbyCities" style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px"></div>
       <div class="row">
         <div class="input-group" style="margin:0"><label>Your Event Date</label><input type="date" id="routeDate" onchange="syncDateToAll(this.value)"></div>
         <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="rteBtn" onclick="runRouting()">Find Routing</button></div>
@@ -488,10 +1536,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
     <div id="rteRes"></div>
   </div>
 
-  <!-- WHAT'S ON -->
+  <!-- ═══ WHAT'S ON ═══ -->
   <div class="tab-panel" id="panel-scanner">
-    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem;color:var(--text-dim)">
-      Pick a date to see every event happening in your city — and which ones are competing directly for your audience. Your DNA tells you which events are a real threat vs harmless noise.
+    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px">
+      All events in your city on a given date — flagged by audience overlap with your DNA
     </div>
     <div class="row" style="margin-bottom:20px">
       <div class="input-group" style="margin:0"><label>Check a date</label><input type="date" id="scanDate" onchange="syncDateToAll(this.value)"></div>
@@ -500,10 +1548,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
     <div id="scanRes"></div>
   </div>
 
-  <!-- X-RAY -->
+  <!-- ═══ ARTIST CHECK ═══ -->
   <div class="tab-panel" id="panel-verify">
-    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem;color:var(--text-dim)">
-      Check any artist before making an offer. See their full history in your city, whether they're available on your date, and how they've performed at other venues.
+    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px">
+      Full history, availability, and performance for any artist in your city
     </div>
     <div class="row" style="margin-bottom:20px">
       <div class="input-group" style="margin:0"><label>Artist name</label>
@@ -517,47 +1565,65 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
     <div id="xRes"></div>
   </div>
 
-  <!-- INTELLIGENCE -->
+  <!-- ═══ SCENE INTEL ═══ -->
   <div class="tab-panel" id="panel-intel">
     <div class="intel-hero">
       <div class="intel-hero-text">
         <h2>Scene Intelligence</h2>
-        <p>See which artists worked for any venue, promoter or festival — and book them before anyone else does. Type a competitor's name to see their full booking history, what drew crowds, and who's available in your market right now.</p>
+        <p>Research any venue, promoter, or festival. See their top-performing artists, booking patterns, and who's available for you to poach.</p>
       </div>
     </div>
-
-    <!-- Search bar -->
     <div class="intel-search-wrap">
-      <input type="text" id="intelSearch" placeholder="Type any venue, promoter or festival — e.g. Brunch Electronik, Kala Festival, Input, Nitsa…" autocomplete="off" style="font-size:0.95rem;padding:14px 18px;flex:1">
+      <input type="text" id="intelSearch" placeholder="e.g. Nitsa, Brunch Electronik, Input, Razzmatazz…" autocomplete="off" style="font-size:0.88rem;padding:12px 14px;flex:1">
       <button class="btn btn-red" onclick="runIntel()" style="white-space:nowrap;flex-shrink:0">Analyse</button>
     </div>
-
-    <!-- Quick access chips -->
     <div id="intelQuickChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px"></div>
-
-    <!-- Momentum section — always visible -->
     <div id="intelMomentum" style="margin-bottom:24px"></div>
-
-    <!-- Main intel results -->
     <div id="intelRes"></div>
   </div>
 
-  <!-- SHORTLIST -->
+  <!-- ═══ MY PIPELINE ═══ -->
   <div class="tab-panel" id="panel-saved">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
       <div>
-        <h2 style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;margin:0">My Booking Pipeline</h2>
-        <div style="font-size:0.75rem;color:var(--text-dim);margin-top:2px">Artists you're considering. Add notes, log fees, mark outcomes. This is your private booking record.</div>
+        <h2 style="font-family:var(--font-head);font-weight:800;font-size:1rem;margin:0;text-transform:uppercase;letter-spacing:1px">My Booking Pipeline</h2>
+        <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-dim);margin-top:4px">Artists you're considering. Notes, fees, outcomes.</div>
       </div>
       <button class="btn-ghost" onclick="exportCSV()">Export CSV</button>
     </div>
     <div id="sList"></div>
   </div>
 
-  <!-- REPORT -->
+  <!-- ═══ REPORT ═══ -->
   <div class="tab-panel" id="panel-report">
-    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem;color:var(--text-dim)">
-      Generates a full breakdown of your venue's booking performance: best and worst nights, competitive landscape in your city, and your DNA calibration data. Useful for internal reviews or sharing with partners.
+    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px">
+      Booking performance breakdown — best/worst nights, competitive landscape, DNA calibration
+    </div>
+    <div style="margin-bottom:20px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Calibration Data <span style="font-weight:400;color:var(--text-faint);font-size:0.62rem;text-transform:none;letter-spacing:0">— optional, improves report accuracy</span></div>
+      <div class="row" style="gap:16px;flex-wrap:wrap">
+        <div class="input-group" style="margin:0;flex:1;min-width:200px">
+          <label style="font-size:0.62rem">Artists that crushed it</label>
+          <div class="ac-wrap"><textarea id="obW" placeholder="One per line — your best nights" rows="3" style="font-size:0.78rem"></textarea></div>
+        </div>
+        <div class="input-group" style="margin:0;flex:1;min-width:200px">
+          <label style="font-size:0.62rem">Artists that underperformed</label>
+          <div class="ac-wrap"><textarea id="obL" placeholder="One per line — nights that didn't land" rows="3" style="font-size:0.78rem"></textarea></div>
+        </div>
+      </div>
+      <div class="row" style="gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div class="input-group" style="margin:0">
+          <label style="font-size:0.62rem">Headliner budget</label>
+          <select id="obB" style="font-size:0.78rem"><option value="">Not set</option><option value="0-3k">Under €3K</option><option value="3-6k">€3K – €6K</option><option value="6-10k">€6K – €10K</option><option value="10k+">€10K+</option></select>
+        </div>
+        <div class="input-group" style="margin:0">
+          <label style="font-size:0.62rem">Booking frequency</label>
+          <select id="obF" style="font-size:0.78rem"><option value="">Not set</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Monthly</option><option value="few">A few times a year</option></select>
+        </div>
+        <div class="shrink" style="padding-bottom:1px;align-self:flex-end">
+          <button class="btn-ghost" style="font-size:0.62rem" onclick="saveReportCalibration()">Save calibration</button>
+        </div>
+      </div>
     </div>
     <button class="btn btn-red" onclick="genReport()" id="rBtn">Generate Report</button>
     <div id="rOut" style="margin-top:20px"></div>
@@ -570,7 +1636,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
    Single bulk-fetch architecture. No chunking.
    ═══════════════════════════════════════════ */
 
-const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date contentUrl interestedCount venue{id name area{id name}} artists{id name}}}totalResults}}`;
+const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date startTime contentUrl interestedCount venue{id name area{id name}} artists{id name} genres{id name}}}totalResults}}`;
 
 /* Confirmed working promoter query (probed 2026-04-04):
    eventListings promoter ID filter is BROKEN — silently returns all 10,000 events.
@@ -893,14 +1959,64 @@ async function lastfmTags(artistName){
 }
 async function lastfmSearch(query,limit=5){
   try{
-    const r=await fetch('/api/lastfm/search?artist='+encodeURIComponent(query)+'&limit='+limit);
+    const r=await fetch('/api/lastfm/search?artist='+encodeURIComponent(query)+'&limit='+limit*3); // fetch more, filter down
     if(!r.ok)return[];
     const d=await r.json();
-    return(d.results?.artistmatches?.artist||[]).map(a=>({name:a.name,imageUrl:(a.image||[]).find(i=>i.size==='large')?.['#text']||''}));
+    const all=(d.results?.artistmatches?.artist||[]);
+    const q=query.toLowerCase().trim();
+    // Filter: name must start with query OR query must be substring of name (for exact-ish matches)
+    // This removes Last.fm's fuzzy garbage like "Homebird" when searching "Lovebird"
+    const filtered=all.filter(a=>{
+      const n=(a.name||'').toLowerCase();
+      return n.startsWith(q)||n===q||(q.length>=4&&n.includes(q));
+    });
+    return filtered.slice(0,limit).map(a=>{
+      // Try extralarge first, then large, then any non-empty
+      const imgs=a.image||[];
+      const img=imgs.find(i=>i.size==='extralarge')
+        ||imgs.find(i=>i.size==='large')
+        ||imgs.find(i=>i['#text']&&i['#text'].length>10);
+      const url=img?.['#text']||'';
+      // Filter Last.fm placeholder (grey star)
+      const imageUrl=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')?url:'';
+      return{name:a.name,imageUrl,listeners:parseInt(a.listeners)||0};
+    });
   }catch(e){return[]}
 }
 
-/* ═══ MUSICBRAINZ API — free, label + genre intelligence ═══ */
+/* ═══ ARTIST IMAGE CACHE ═══
+   Shared image lookup for all parts of the app.
+   Source: Last.fm artist.getInfo (free, no quota).
+   Cache: sessionStorage per artist name to avoid repeat fetches. */
+const _imgCache=new Map();
+async function getArtistImage(name){
+  if(!name)return'';
+  const k='img_'+norm(name);
+  if(_imgCache.has(k))return _imgCache.get(k);
+  try{
+    const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
+    if(!r.ok){_imgCache.set(k,'');return''}
+    const d=await r.json();
+    const imgs=d?.artist?.image||[];
+    // Try largest size first, work down
+    const img=imgs.find(i=>i.size==='extralarge')
+      ||imgs.find(i=>i.size==='large')
+      ||imgs.find(i=>i['#text']&&i['#text'].length>10);
+    const url=img?.['#text']||'';
+    // Reject Last.fm placeholder (grey star icon)
+    const valid=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http')?url:'';
+    _imgCache.set(k,valid);
+    return valid;
+  }catch(e){_imgCache.set(k,'');return''}
+}
+
+/* Build a clean img tag with initials fallback */
+function artistImgTag(name,imageUrl,size=40){
+  const initial=(name||'?').charAt(0).toUpperCase();
+  const ph=`<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:${Math.round(size*0.35)}px;color:var(--text-faint);flex-shrink:0">${initial}</div>`;
+  if(!imageUrl||imageUrl.length<10)return ph;
+  return`<img src="${esc(imageUrl)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0" onerror="this.outerHTML='${ph.replace(/'/g,"\\'")}'">`;
+}
 async function mbArtistTags(artistName){
   try{
     const r=await fetch('/api/musicbrainz/artist?name='+encodeURIComponent(artistName));
@@ -934,7 +2050,7 @@ async function mbArtistTags(artistName){
    4. MusicBrainz label network (10%) — scene categorisation bonus
    No SC calls. Result: richer, more electronic-specific, zero quota cost. */
 async function fusionRelatedArtists(seedName, localEvents, limit=40){
-  const results=new Map(); // norm(name) → {name, score, sources}
+  const results=new Map();
 
   const addArtist=(name,score,source)=>{
     const n=norm(name);
@@ -942,29 +2058,35 @@ async function fusionRelatedArtists(seedName, localEvents, limit=40){
     if(!results.has(n))results.set(n,{name,score:0,sources:[]});
     const r=results.get(n);
     r.score+=score;
-    r.sources.push(source);
+    if(!r.sources.includes(source))r.sources.push(source);
   };
 
-  // Source 1: RA local co-billing (35 pts max per co-bill)
+  // Source 1: RA OFFICIAL related artists (60pts) — RA's own algorithm
+  // This is what shows at the bottom of every RA artist page.
+  // Built from RA's global event data + fan follow patterns.
+  // Highest weight: RA knows their own scene better than any other signal.
+  const raOfficial=await raOfficialRelated(seedName).catch(()=>[]);
+  for(const a of raOfficial)addArtist(a.name,60,'ra_official');
+
+  // Source 2: RA local co-billing (40pts max) — real lineups in YOUR city
   const localRel=raRelated(seedName,localEvents);
-  for(const r of localRel.slice(0,20))addArtist(r.name,Math.min(35,r.count*8),'ra_local');
+  for(const r of localRel.slice(0,25))addArtist(r.name,Math.min(40,r.count*10),'ra_local');
 
-  // Source 2: Last.fm similar (30 pts × match score)
+  // Source 3: RA worldwide co-billing (25pts max) — global circuit
+  const raGlobal=await raWorldwideRelated(seedName).catch(()=>[]);
+  for(const r of raGlobal.slice(0,25))addArtist(r.name,Math.min(25,r.count*6),'ra_global');
+
+  // Source 4: Last.fm similar (15pts max) — broad genre signal, lowest weight
+  // Useful for finding artists outside the live circuit but in the same sonic space
   const lfSimilar=await lastfmSimilar(seedName,50);
-  for(const a of lfSimilar)addArtist(a.name,Math.round(a.match*30),'lastfm');
+  for(const a of lfSimilar)addArtist(a.name,Math.round(a.match*15),'lastfm');
 
-  // Sources 3+4 run in parallel
-  const [raGlobal, mbData]=await Promise.all([
-    raWorldwideRelated(seedName).catch(()=>[]),
-    mbArtistTags(seedName).catch(()=>({tags:[],labels:[]})),
-  ]);
-
-  // Source 3: RA worldwide co-billing (25 pts max)
-  for(const r of raGlobal.slice(0,20))addArtist(r.name,Math.min(25,r.count*6),'ra_global');
-
-  // Source 4: MusicBrainz label bonus — artists on same label get +10
-  // (We can't easily enumerate label rosters here, but tags can boost genre matching)
-  // This is a lightweight pass — full label network is a future enhancement
+  // Cross-validation bonus: appearing in multiple sources = strong signal
+  for(const[,r] of results){
+    if(r.sources.length>=2)r.score+=15;
+    if(r.sources.length>=3)r.score+=15;
+    if(r.sources.includes('ra_official')&&r.sources.includes('ra_local'))r.score+=20; // RA official + local = very strong
+  }
 
   return[...results.values()]
     .sort((a,b)=>b.score-a.score)
@@ -1083,6 +2205,82 @@ async function raWorldwideRelated(seedName){
    Uses confirmed working GraphQL approach: LATEST + PREVIOUS + ARCHIVE per year.
    The eventListings promoter filter is broken (returns all 10k events regardless of ID).
    Returns {events, promoterName} — events deduplicated and sorted descending. */
+/* RA Official Related Artists — uses RA's own similarity algorithm.
+   This is what appears at the bottom of every RA artist page.
+   Built from RA's global event data + fan follow patterns.
+   
+   Strategy:
+   1. Find artist ID from local cache events (artists{id name} already in RA_Q)
+   2. If not in cache, derive slug (remove spaces/special chars, lowercase)
+   3. Call artist(id/slug).relatedArtists → confirmed working from probe */
+const _raArtistIdCache=new Map(); // norm(name) → RA artist ID
+
+function buildArtistIdIndex(events){
+  for(const ev of events){
+    // New format: artistIds is a name→id map on each event
+    if(ev.artistIds){
+      for(const[name,id] of Object.entries(ev.artistIds)){
+        const n=norm(name);
+        if(n&&id&&!_raArtistIdCache.has(n))_raArtistIdCache.set(n,String(id));
+      }
+    }
+    // Also index from artists array directly (legacy support)
+    for(const a of(ev.artists||[])){
+      const n=norm(a);
+      if(n&&!_raArtistIdCache.has(n)&&ev.artistIds?.[a]){
+        _raArtistIdCache.set(n,String(ev.artistIds[a]));
+      }
+    }
+  }
+}
+
+function nameToSlug(name){
+  // RA slug: remove spaces, special chars, lowercase — confirmed: "Ben UFO" → "benufo"
+  return name.toLowerCase().replace(/[^a-z0-9]/g,'');
+}
+
+const RA_ARTIST_Q=`query ArtistRelated($id:ID,$slug:String){
+  artist(id:$id,slug:$slug){
+    id name urlSafeName
+    relatedArtists{ id name urlSafeName }
+  }
+}`;
+
+async function raOfficialRelated(seedName){
+  // First build ID index from cache if not done
+  const cacheEvents=getCache()?.events||[];
+  if(cacheEvents.length&&_raArtistIdCache.size===0)buildArtistIdIndex(cacheEvents);
+
+  const sn=norm(seedName);
+  let artistId=_raArtistIdCache.get(sn)||null;
+  const slug=nameToSlug(seedName);
+
+  try{
+    // Try by ID first (most reliable), then by slug
+    const vars=artistId?{id:artistId}:{slug};
+    const r=await fetch('/api/ra/graphql',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({query:RA_ARTIST_Q,variables:vars})
+    });
+    const d=await r.json();
+    const artist=d?.data?.artist;
+    if(!artist)return[];
+
+    // Cache the ID for future calls
+    if(artist.id)_raArtistIdCache.set(sn,String(artist.id));
+
+    const related=Array.isArray(artist.relatedArtists)?artist.relatedArtists:[];
+    // Cache related artist IDs too — builds up the index organically
+    for(const ra of related){
+      if(ra.id&&ra.name)_raArtistIdCache.set(norm(ra.name),String(ra.id));
+    }
+    return related.map(a=>({name:a.name,id:a.id}));
+  }catch(e){
+    return[];
+  }
+}
+
 async function raBulkFetchByPromoter(promoterId, from, to){
   const events=[];
   const seen=new Set();
@@ -1102,8 +2300,11 @@ async function raBulkFetchByPromoter(promoterId, from, to){
         venue:(ev.venue||{}).name||'?',
         venueId:(ev.venue||{}).id||null,
         artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),
+        artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),
         attending:ev.interestedCount||0,
-        title:ev.title||''
+        title:ev.title||'',
+        startTime:ev.startTime||null,
+        genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)
       });
     }
   };
@@ -1201,8 +2402,11 @@ async function buildDNA(statusCb,artistCb){
               venue:(ev.venue||{}).name||'?',
               venueId:(ev.venue||{}).id||null,
               artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),
+              artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),
               attending:ev.interestedCount||0,
-              title:ev.title||''
+              title:ev.title||'',
+              startTime:ev.startTime||null,
+              genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)
             });
           }
         };
@@ -1367,6 +2571,17 @@ async function buildDNA(statusCb,artistCb){
     for(const r of rel.slice(0,10))secondDegreeSet.add(norm(r.name));
   }
 
+  // Compute RA genre groups from actual event genre tags — far more reliable than Last.fm
+  const raGenreCount=new Map();
+  for(const ev of venueEvents){
+    for(const g of(ev.genres||[])){
+      const gName=typeof g==='string'?g:g.name||'';
+      if(gName)raGenreCount.set(gName,(raGenreCount.get(gName)||0)+1);
+    }
+  }
+  const raTopGenres=[...raGenreCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name])=>name);
+  const raSceneGroupsSet=new Set(raTopGenres.map(g=>_genreGroupMap.get(g.toLowerCase())).filter(Boolean));
+
   const dna={
     city,
     venue:venueName,
@@ -1394,102 +2609,277 @@ async function buildDNA(statusCb,artistCb){
     },
     genres:genreWeights,
     topGenres:sortedGenres.slice(0,8).map(([g,w])=>({genre:g,weight:Math.round(w*100)})),
+    raTopGenres,                          // RA curated genre tags from your events
+    raSceneGroups:[...raSceneGroupsSet],  // e.g. ['house','disco','melodic']
     cloud:extendedCloud,
     secondDegree:[...secondDegreeSet],
     coBillNetwork:coBillNetwork.slice(0,30).map(c=>({name:c.name,coBills:c.totalCoBills,via:c.connectedTo.slice(0,3)})),
     profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl})),
-    // Completeness metadata
     archiveYearsFetched:window._dnaBuildMeta?.archiveYearsFetched??null,
-    dnaComplete:window._dnaBuildMeta?.dnaComplete??true, // venues always complete via cache
+    dnaComplete:window._dnaBuildMeta?.dnaComplete??true,
+    // Compact venue events for recency weighting + time-of-day fingerprint
+    _venueEvents:venueEvents.slice(0,200).map(ev=>({
+      date:ev.date,startTime:ev.startTime||null,attending:ev.attending,
+      artists:(ev.artists||[]).slice(0,5),genres:(ev.genres||[])
+    })),
   };
   setDNA(dna);
   if(statusCb)statusCb('DNA complete — '+profiles.length+' artists, '+coBillNetwork.length+' co-billing connections, '+sortedGenres.length+' genres');
   return dna;
 }
 
-/* Score a candidate artist against venue DNA (0-100).
-   Factors: listener fit (40pts), network overlap (40pts), seed-cloud bonus (20pts)
-   Accepts optional dna snapshot to avoid race conditions with background DNA rebuild.
-   Pass _networkOnly:true when no Spotify data is available (e.g. from Intelligence tab) — 
-   skips listener scoring and redistributes weight to network overlap. */
+/* ═══════════════════════════════════════════════════════════════════
+   UNIFIED SCENE INTELLIGENCE CORE
+   
+   Two functions used by every tab — same answer everywhere:
+   
+   sceneRelevance(name, dna) → how well does this artist fit your scene?
+   eventThreat(event, dna)   → is this event competition?
+   
+   Both are deterministic and pure — same inputs always = same output.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── RA GENRE TAXONOMY ──
+   RA's own curated genres for electronic music — far more precise than Last.fm.
+   Grouped by scene affinity so we can compute overlap intelligently. */
+const RA_GENRE_GROUPS={
+  techno:     ['Techno','Industrial / EBM','Noise','Hardcore'],
+  house:      ['House','Deep House','Tech House','Afro House','Organic House / Downtempo'],
+  melodic:    ['Melodic House & Techno','Progressive House','Electronica'],
+  minimal:    ['Minimal / Deep Tech'],
+  disco:      ['Disco / Funk','Nu Disco / Indie Dance'],
+  electronic: ['Electronica','Ambient','Experimental / Avant-garde'],
+  dnb:        ['Drum & Bass / Jungle','Breaks / Breakbeat / UK Bass'],
+  other:      ['Hip-Hop / R&B','Reggae / Dancehall','Latin / Tropical'],
+};
+
+// Flatten to norm→group map for O(1) lookup
+const _genreGroupMap=new Map();
+for(const[group,genres] of Object.entries(RA_GENRE_GROUPS)){
+  for(const g of genres)_genreGroupMap.set(g.toLowerCase(),group);
+}
+
+/* Get scene group(s) for an event's RA genres */
+function eventSceneGroups(raGenres){
+  const groups=new Set();
+  for(const g of(raGenres||[])){
+    const group=_genreGroupMap.get((g.name||g).toLowerCase());
+    if(group)groups.add(group);
+  }
+  return[...groups];
+}
+
+/* Parse start hour from RA startTime (ISO string) — used for time-of-day matching */
+function eventStartHour(startTime){
+  if(!startTime)return null;
+  try{return new Date(startTime).getHours()}catch{return null}
+}
+
+/* Is this event daytime (before 20:00)? */
+function isEventDaytime(startTime){
+  const h=eventStartHour(startTime);
+  return h!==null&&h>=10&&h<20;
+}
+
+/* Build DNA scene fingerprint — computed once, cached on dna object */
+function getDNAFingerprint(dna){
+  if(!dna)return null;
+  if(dna._fingerprint)return dna._fingerprint; // cached
+
+  // Artist sets for O(1) lookup
+  const bookedNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
+  const coBillMap=new Map();
+  for(const c of(dna.coBillNetwork||[]))coBillMap.set(norm(c.name),c.coBills||1);
+  const cloudNorms=new Set((dna.cloud||[]).map(n=>norm(n)));
+  const secondDegree=new Set(dna.secondDegree||[]);
+
+  // Genre fingerprint from DNA's top genres
+  // These come from Last.fm tags aggregated across all booked artists
+  const dnaGenres=new Set((dna.topGenres||[]).map(g=>(g.genre||g).toLowerCase()));
+
+  // Scene group fingerprint — which RA genre groups does this DNA represent?
+  // Prefer RA's own genre tags (raSceneGroups) over Last.fm-derived groups
+  const dnaSceneGroups=new Set();
+  if(dna.raSceneGroups&&dna.raSceneGroups.length){
+    // Use RA's curated genre classification — most accurate
+    for(const g of dna.raSceneGroups)dnaSceneGroups.add(g);
+  } else {
+    // Fall back to Last.fm-derived groups
+    for(const g of dnaGenres){
+      const group=_genreGroupMap.get(g);
+      if(group)dnaSceneGroups.add(group);
+    }
+  }
+
+  // Most recent bookings get 2× weight — your 2024 sound matters more than 2021
+  const now=Date.now();
+  const recentCutoff=now-365*24*60*60*1000; // 12 months
+  const recentArtists=new Set();
+  for(const ev of(dna._venueEvents||[])){
+    if(ev.date&&new Date(ev.date).getTime()>recentCutoff){
+      for(const a of(ev.artists||[]))recentArtists.add(norm(a));
+    }
+  }
+
+  // Daytime vs nighttime DNA — does this venue/promoter do daytime events?
+  let dnaIsDaytime=false;
+  if(dna._venueEvents&&dna._venueEvents.length){
+    const daytimeEvents=dna._venueEvents.filter(ev=>isEventDaytime(ev.startTime));
+    dnaIsDaytime=daytimeEvents.length/dna._venueEvents.length>0.4; // >40% daytime = daytime brand
+  }
+
+  const fp={bookedNorms,coBillMap,cloudNorms,secondDegree,dnaGenres,dnaSceneGroups,recentArtists,dnaIsDaytime};
+  dna._fingerprint=fp; // cache it
+  return fp;
+}
+
+/* ── ARTIST SCENE RELEVANCE ──
+   How well does an artist fit this venue/promoter's scene?
+   Returns {score:0-100, tier:1-4, reason, breakdown}
+   
+   Tier 1: Previously booked or top co-bill (score 80-100)
+   Tier 2: In co-billing network or circuit (score 55-79)
+   Tier 3: Genre/scene match but no direct connection (score 30-54)
+   Tier 4: No meaningful connection (score 0-29)              */
+function sceneRelevance(artistName, dna){
+  if(!dna||!dna.artistCount)return{score:50,tier:3,reason:'No DNA built yet',breakdown:{}};
+  const fp=getDNAFingerprint(dna);
+  const n=norm(artistName);
+  let score=0,tier=4,reason='',breakdown={};
+
+  // Tier 1: Direct DNA — you've booked them or they're a top co-bill
+  if(fp.bookedNorms.has(n)){
+    const isRecent=fp.recentArtists.has(n);
+    score=isRecent?100:85;
+    tier=1;
+    reason=isRecent?'Recently booked by you':'Previously booked by you';
+    breakdown={circuit:score,recency:isRecent?20:0};
+  } else if(fp.coBillMap.has(n)){
+    const bills=fp.coBillMap.get(n);
+    score=Math.min(78,50+bills*6); // 1 co-bill=56, 5 co-bills=80→capped at 78
+    tier=2;
+    reason='Co-billed ×'+bills+' with your artists';
+    breakdown={circuit:score};
+  }
+  // Tier 2: Extended network
+  else if(fp.cloudNorms.has(n)){
+    score=50;tier=2;reason='In your artist network';breakdown={circuit:50};
+  } else if(fp.secondDegree.has(n)){
+    score=38;tier=2;reason='2nd-degree connection';breakdown={circuit:38};
+  }
+
+  // Tier 3: No direct connection — try genre matching
+  if(tier===4){
+    // We don't have genre data for this artist at scoring time
+    // Genre matching happens at display time via enrichGenresFromLastfm
+    // So here we give a neutral score — it gets refined when genres load
+    score=20;tier=4;reason='Not in your network';breakdown={circuit:0};
+  }
+
+  const label=score>=80?'Your scene':score>=55?'Circuit match':score>=35?'Scene adjacent':'Outside scene';
+  return{score,tier,reason,label,breakdown};
+}
+
+/* ── EVENT THREAT CLASSIFICATION ──
+   Is this event competition for your audience?
+   
+   Uses RA's own genre tags (far better than Last.fm for events).
+   Also considers time-of-day — daytime vs nighttime audiences don't overlap.
+   
+   Returns {tier:1-4, score:0-100, reason, isCompetition:bool}
+   
+   Tier 1: Artist match — artist from your DNA on their lineup (certain)
+   Tier 2: Genre match — same RA genre groups as your DNA (strong signal)
+   Tier 3: Partial overlap — some genre match but not dominant (awareness)
+   Tier 4: No overlap — completely different scene (ignore)              */
+function eventThreat(event, dna){
+  if(!dna||!dna.artistCount)return{tier:4,score:0,reason:'No DNA',isCompetition:false};
+  const fp=getDNAFingerprint(dna);
+
+  // Time-of-day mismatch — daytime vs nighttime audiences don't compete
+  const eventIsDaytime=isEventDaytime(event.startTime);
+  const timeMismatch=fp.dnaIsDaytime!==eventIsDaytime&&(fp.dnaIsDaytime||eventIsDaytime);
+  // Note: if both are nighttime or both are daytime, no mismatch penalty
+
+  // Tier 1: Artist-level match — fastest and most precise
+  const artists=event.artists||[];
+  for(const a of artists){
+    const n=norm(a.name||a); // handle both string and object format
+    if(fp.bookedNorms.has(n)){
+      const score=timeMismatch?55:85;
+      return{tier:1,score,reason:'Played your venue: '+(a.name||a),isCompetition:true,timeMismatch};
+    }
+    if(fp.coBillMap.has(n)){
+      const score=timeMismatch?45:72;
+      return{tier:1,score,reason:'Shares lineups: '+(a.name||a),isCompetition:true,timeMismatch};
+    }
+    if(fp.cloudNorms.has(n)){
+      const score=timeMismatch?38:60;
+      return{tier:1,score,reason:'In your network: '+(a.name||a),isCompetition:!timeMismatch,timeMismatch};
+    }
+    if(fp.secondDegree.has(n)){
+      const score=timeMismatch?28:48;
+      return{tier:1,score,reason:'2nd-degree: '+(a.name||a),isCompetition:!timeMismatch,timeMismatch};
+    }
+  }
+
+  // Tier 2+3: Genre-level match using RA's curated genre tags
+  // genres is now an array of strings (e.g. ['Techno', 'House'])
+  const raGenreNames=(event.genres||[]).map(g=>typeof g==='string'?g:g.name||'');
+  const eventGroups=eventSceneGroups(raGenreNames);
+  if(eventGroups.length&&fp.dnaSceneGroups.size){
+    const matchingGroups=eventGroups.filter(g=>fp.dnaSceneGroups.has(g));
+    const overlapRatio=matchingGroups.length/Math.max(eventGroups.length,fp.dnaSceneGroups.size);
+
+    if(matchingGroups.length>=1&&overlapRatio>=0.4){
+      // Strong genre match
+      const baseScore=70;
+      const score=timeMismatch?Math.round(baseScore*0.6):baseScore;
+      const groups=matchingGroups.join(', ');
+      return{
+        tier:2,score,
+        reason:'Same scene: '+groups+(timeMismatch?' (different time of day)':''),
+        isCompetition:!timeMismatch,
+        timeMismatch,matchingGroups
+      };
+    } else if(matchingGroups.length>=1){
+      // Partial genre match
+      const baseScore=40;
+      const score=timeMismatch?Math.round(baseScore*0.5):baseScore;
+      return{
+        tier:3,score,
+        reason:'Partial overlap: '+matchingGroups[0]+(timeMismatch?' (different time)':''),
+        isCompetition:false,
+        timeMismatch,matchingGroups
+      };
+    }
+  }
+
+  // No RA genres on event — fall back to Last.fm genre data on artists if available
+  // (populated async via enrichGenresFromLastfm)
+  const lastfmGenres=(event.genres_lastfm||[]);
+  if(lastfmGenres.length&&fp.dnaGenres.size){
+    const matches=lastfmGenres.filter(g=>fp.dnaGenres.has(g.toLowerCase()));
+    if(matches.length>=1){
+      const score=timeMismatch?30:50;
+      return{tier:3,score,reason:'Genre adjacent: '+matches[0],isCompetition:false,timeMismatch};
+    }
+  }
+
+  return{tier:4,score:0,reason:'Different scene',isCompetition:false,timeMismatch:false};
+}
+
+/* Legacy wrapper — keeps existing callers working during transition */
 function dnaScore(candidate,dna){
   if(!dna)dna=getDNA();
   if(!dna||!dna.artistCount)return{score:50,flags:[],label:'No DNA'};
-  const networkOnly=candidate._networkOnly===true;
-
-  const lr=dna.listenerRange;
-  let listenerScore=0,networkScore=0;
-  const flags=[];
-
-  // --- Listener fit (0-40) — skipped when _networkOnly (no Spotify data available) ---
-  const bcn=candidate.bcn||0;
-  if(networkOnly){
-    listenerScore=0; // weight redistributed to network below
-  }else if(bcn>0&&lr.median>0){
-    if(bcn>=lr.p25&&bcn<=lr.p75){
-      listenerScore=40; // sweet spot
-    }else if(bcn>=lr.min&&bcn<=lr.max){
-      listenerScore=28;
-    }else if(bcn<lr.min){
-      const ratio=lr.min>0?bcn/lr.min:0;
-      listenerScore=Math.max(5,Math.round(28*ratio));
-      if(ratio<0.3)flags.push('Below typical range');
-    }else{
-      const ratio=lr.max>0?lr.max/bcn:0;
-      listenerScore=Math.max(5,Math.round(28*ratio));
-      if(ratio<0.3)flags.push('Above typical range');
-    }
-  }else{
-    listenerScore=15;
-  }
-
-  // --- Network overlap (0-40) — is this candidate in the co-billing network? ---
-  const candidateNorm=norm(candidate.name||'');
-  const cloudNorm=new Set((dna.cloud||[]).map(n=>norm(n)));
-  const profileNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
-  const coBillNorms=new Map();
-  for(const c of(dna.coBillNetwork||[]))coBillNorms.set(norm(c.name),c.coBills);
-
-  // In networkOnly mode, scale network up to 80pts (listener weight redistributed)
-  const netMax=networkOnly?80:40;
-  if(profileNorms.has(candidateNorm)){
-    networkScore=netMax; // played at this venue before!
-    flags.push('Previously booked');
-  }else if(coBillNorms.has(candidateNorm)){
-    const bills=coBillNorms.get(candidateNorm);
-    networkScore=Math.min(netMax,Math.round(netMax*0.375)+bills*5);
-  }else if(cloudNorm.has(candidateNorm)){
-    networkScore=Math.round(netMax*0.625);
-  }else{
-    networkScore=networkOnly?0:5; // unknown with no listener data = don't score
-  }
-
-  // --- Cloud bonus (0-20) — if the candidate was related to a seed that's in the venue cloud ---
-  let cloudBonus=0;
-  if(candidate.seeds&&dna.cloud){
-    for(const s of(candidate.seeds||[])){if(cloudNorm.has(norm(s)))cloudBonus=Math.min(cloudBonus+10,20)}
-  }
-  // Extra bonus if candidate has RA co-billing tag
-  if(candidate.raCoBills)cloudBonus=Math.min(cloudBonus+Math.min(candidate.raCoBills*3,15),20);
-
-  const score=Math.min(100,listenerScore+networkScore+cloudBonus);
-  let label='';
-  if(score>=75)label='Strong fit';
-  else if(score>=55)label='Good fit';
-  else if(score>=35)label='Possible';
-  else label='Unlikely';
-
-  // Flag low SC data coverage — listener range may be unreliable
-  if(dna.scCoverageRatio!=null&&dna.scCoverageRatio<0.2&&dna.scEnrichedCount<10){
-    flags.push('Listener range low-confidence ('+dna.scEnrichedCount+'/'+(dna.artistCount||'?')+' artists enriched)');
-  }
-  return{score,flags,label,listenerScore,networkScore,cloudBonus};
+  const rel=sceneRelevance(candidate.name||'',dna);
+  return{score:rel.score,flags:[],label:rel.label,listenerScore:0,networkScore:rel.score,cloudBonus:0};
 }
 
-/* Get genre info for a candidate (fetches from SC if not already present) */
+/* Get genre info for a candidate — Last.fm fallback when RA genres unavailable */
 async function enrichGenres(candidate){
   if(candidate.genres&&candidate.genres.length>0)return;
-  // Use Last.fm — free, electronic-specific, no SC needed
   await enrichGenresFromLastfm(candidate);
 }
 
@@ -1500,7 +2890,20 @@ const CACHE_MAX_AGE=12*60*60*1000; // 12 hours
 
 /* Get/set the event cache from localStorage */
 function getCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY))||null}catch{return null}}
-function setCache(data){try{localStorage.setItem(CACHE_KEY,JSON.stringify(data))}catch(e){console.warn('Cache write failed (storage full?)',e)}}
+function setCache(data){
+  // Clear old-format caches: artist objects instead of strings, or missing genres/startTime
+  if(data&&data.events&&data.events.length>0){
+    const sample=data.events[0];
+    if(typeof sample.artists?.[0]==='object'||sample.genres===undefined){
+      console.warn('Cache format outdated — clearing');
+      try{localStorage.removeItem(CACHE_KEY)}catch(e){}
+      return;
+    }
+  }
+  try{localStorage.setItem(CACHE_KEY,JSON.stringify(data))}catch(e){console.warn('Cache write failed (storage full?)',e)}
+  // Build artist ID index from fresh cache data
+  if(data&&data.events)setTimeout(()=>buildArtistIdIndex(data.events),100);
+}
 
 /* Is cache fresh, correct city, and has enough data? */
 function cacheValid(){
@@ -1509,6 +2912,12 @@ function cacheValid(){
   if(c.areaCode!==areaId())return false;
   if(Date.now()-c.ts>CACHE_MAX_AGE)return false;
   if(!c.events||c.events.length<500)return false; // Barcelona should have thousands — reject tiny caches
+  // Reject old format: missing genres/startTime or object artists
+  const s=c.events[0];
+  if(s&&(typeof s.artists?.[0]==='object'||s.genres===undefined)){
+    try{localStorage.removeItem(CACHE_KEY)}catch(e){}
+    return false;
+  }
   return true;
 }
 
@@ -1522,7 +2931,7 @@ async function raBulkFetch(areaCode, from, to, maxPages=60){
     const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
     for(const el of evs){
       const ev=el.event||{};
-      events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+      events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
     }
     if(p*50>=tot)break;
   }
@@ -1553,7 +2962,7 @@ async function ensureCache(force=false){
       // Parse first page
       for(const el of(first?.data?.eventListings?.data||[])){
         const ev=el.event||{};
-        events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+        events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
       }
       showCacheStatus('Loading events… 1/'+totalPages+' pages ('+total+' total)');
 
@@ -1569,7 +2978,7 @@ async function ensureCache(force=false){
           if(!d){failedPages.push(pageNums[i]);continue}
           for(const el of(d?.data?.eventListings?.data||[])){
             const ev=el.event||{};
-            events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+            events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
           }
         }
         showCacheStatus('Loading events… '+Math.min(batch+4,totalPages)+'/'+totalPages+' pages'+(failedPages.length?' ('+failedPages.length+' retrying)':'')); 
@@ -1579,7 +2988,7 @@ async function ensureCache(force=false){
             const d=await ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p,s:50});
             for(const el of(d?.data?.eventListings?.data||[])){
               const ev=el.event||{};
-              events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+              events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
             }
           }catch(e){}
         }
@@ -1687,17 +3096,29 @@ function setupAutocomplete(inputEl,onSelect){
   let timer=null,idx=-1;
   inputEl.addEventListener('input',()=>{
     clearTimeout(timer);const q=inputEl.value.trim();
-    if(q.length<3){dd.classList.remove('open');dd.innerHTML='';return}
+    if(q.length<2){dd.classList.remove('open');dd.innerHTML='';return}
     timer=setTimeout(async()=>{
       try{
         const res=await searchArtists(q,8);
-        // Deduplicate by normalized name
         const seen=new Set(),deduped=[];
         for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
-        dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div>${r.country?'<div class="ac-sub">'+esc(r.country)+'</div>':''}</div></div>`).join('');
+        // Render immediately with placeholder, then load images async
+        dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
+          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
+          <div><div class="ac-name">${esc(r.name)}</div><div class="ac-sub">${r.listeners?fmt(r.listeners)+' listeners':''}</div></div>
+        </div>`).join('');
         dd.classList.add('open');idx=-1;
         dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{onSelect(deduped[i]);dd.classList.remove('open');dd.innerHTML=''}));
+        // Load missing images deferred
+        deduped.forEach(async(r,i)=>{
+          if(r.imageUrl)return; // already have one
+          const url=await getArtistImage(r.name);
+          if(!url)return;
+          r.imageUrl=url;
+          const wrap2=dd.querySelector(`.ac-img-wrap[data-idx="${i}"]`);
+          if(wrap2)wrap2.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover">`;
+        });
       }catch(e){dd.classList.remove('open')}
     },300);
   });
@@ -1739,8 +3160,19 @@ function setupTextareaAC(ta){
         const seen=new Set(),deduped=[];
         for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
-        dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div>${r.country?'<div class="ac-sub">'+esc(r.country)+'</div>':''}</div></div>`).join('');
+        dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
+          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
+          <div><div class="ac-name">${esc(r.name)}</div><div class="ac-sub">${r.listeners?fmt(r.listeners)+' listeners':''}</div></div>
+        </div>`).join('');
         dd.classList.add('open');
+        // Load images async
+        deduped.forEach(async(r,i)=>{
+          if(r.imageUrl)return;
+          const url=await getArtistImage(r.name);
+          if(!url)return;
+          const w=dd.querySelector(`.ac-img-wrap[data-idx="${i}"]`);
+          if(w)w.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover">`;
+        });
         dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{
           const v=ta.value,c=ta.selectionStart,b=v.substring(0,c),n=b.lastIndexOf('\n');
           const pre=n>=0?v.substring(0,n+1):'';const aft=v.substring(c),anl=aft.indexOf('\n');
@@ -2014,6 +3446,16 @@ document.addEventListener('DOMContentLoaded',()=>{
     // Sync the best available date to the newly activated tab
     const bestDate=document.getElementById('eventDate')?.value||document.getElementById('routeDate')?.value||'';
     if(bestDate)syncDateToAll(bestDate);
+    // Pre-fill Report calibration from saved profile
+    if(b.dataset.tab==='report'){
+      const p=P();
+      const wEl=document.getElementById('obW');const lEl=document.getElementById('obL');
+      const bEl=document.getElementById('obB');const fEl=document.getElementById('obF');
+      if(wEl&&p.wins&&p.wins.length&&!wEl.value)wEl.value=p.wins.join('\n');
+      if(lEl&&p.losses&&p.losses.length&&!lEl.value)lEl.value=p.losses.join('\n');
+      if(bEl&&p.budget)bEl.value=p.budget;
+      if(fEl&&p.freq)fEl.value=p.freq;
+    }
   }));
   renderSaved();renderSeeds();
   setObType('venue'); // initialise toggle state
@@ -2118,7 +3560,12 @@ function obGo(n){
 async function obDone(){
   const _obType=document.getElementById('obType').value||'venue';
   const _obVenueName=_obType==='promoter'?document.getElementById('obPromoterName').value.trim():document.getElementById('obV').value.trim();
-  // Manual RA promoter ID overrides the hardcoded map
+  if(!_obVenueName){
+    const el=_obType==='promoter'?document.getElementById('obPromoterName'):document.getElementById('obV');
+    el.style.borderColor='var(--accent)';el.style.boxShadow='0 0 0 3px var(--accent-glow)';el.focus();
+    setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},2500);
+    return;
+  }
   const _manualRaId=_obType==='promoter'?parseInt(document.getElementById('obPromoterRaId')?.value)||null:null;
   const _resolvedPromoId=_manualRaId||(_obType==='promoter'?raPromoterId(_obVenueName):null);
   const _newProfile={
@@ -2128,25 +3575,23 @@ async function obDone(){
     promoterId:_resolvedPromoId,
     city:document.getElementById('obC').value,
     capacity:parseInt(document.getElementById('obCap').value)||0,
-    wins:document.getElementById('obW').value.split('\n').filter(Boolean).map(s=>s.trim()),
-    losses:document.getElementById('obL').value.split('\n').filter(Boolean).map(s=>s.trim()),
-    budget:document.getElementById('obB').value,
-    freq:document.getElementById('obF').value,
+    wins:[],losses:[],  // collected later in Report tab
+    budget:'',freq:'',
     created:new Date().toISOString()
   };
-  // Clear _adding flag before setP so the new key is set as active
   const _d=_getAllProfiles();if(_d&&_d._adding){delete _d._adding;_setAllProfiles(_d);}
   setP(_newProfile);
-  // Go to step 4: DNA analysis
-  obGo(4);
-  // Update heading based on type
+  // Go straight to DNA analysis — step 4
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ob4').classList.add('active');
+  for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i<=4);
   const _isPromo=_obType==='promoter';
   const _ob4Title=document.getElementById('ob4Title');
   const _ob4Sub=document.getElementById('ob4Sub');
-  if(_ob4Title)_ob4Title.textContent=_isPromo?'Analyzing Your Promoter History':'Analyzing Your Venue';
+  if(_ob4Title)_ob4Title.textContent=_isPromo?'Scanning Your History':'Scanning Your Venue';
   if(_ob4Sub)_ob4Sub.textContent=_isPromo
-    ?'Night Pulse is scanning events matching "'+_obVenueName+'" to build your booking DNA.'
-    :'Night Pulse is scanning your past 12 months of bookings to build your audience DNA.';
+    ?'Fetching every event you\'ve promoted from Resident Advisor — your top artists, busiest nights, and scene profile.'
+    :'Fetching your past 12 months of bookings from Resident Advisor to build your audience DNA.';
   const lbl=document.getElementById('dnaLbl'),fill=document.getElementById('dnaFill'),det=document.getElementById('dnaDet'),mosaic=document.getElementById('dnaMosaic');
   let step=0,avatarCount=0;
   const status=msg=>{step++;lbl.textContent=msg;fill.style.width=Math.min(95,step*3)+'%';det.innerHTML+='<div>'+msg+'</div>';det.scrollTop=det.scrollHeight};
@@ -2178,35 +3623,80 @@ async function obDone(){
     const dna=await buildDNA(status,artistVisual);
     fill.style.width='100%';
     if(dna&&dna.artistCount>0){
-      lbl.textContent='DNA complete ✓';
+      lbl.textContent='✓ Analysis complete';
+      fill.style.width='100%';
       const sum=document.getElementById('dnaSummary');
       sum.style.display='block';
-      const tg=dna.topGenres.slice(0,5).map(t=>'<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent)">'+esc(t.genre)+' '+t.weight+'%</span>').join(' ');
-      // Top booked artists with images
-      const topArtHtml=(dna.topArtists||[]).slice(0,5).map(a=>{
-        const hasImg=a.imageUrl&&a.imageUrl.trim().length>10&&!a.imageUrl.includes('undefined');
+
+      // Top genres as tags
+      const tg=dna.topGenres.slice(0,5).map(t=>`<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent)">${esc(t.genre||t)}</span>`).join(' ');
+
+      // Top 5 artists by RA attendance — the "wow" row
+      const topArtists=(dna.topArtists||dna.profiles||[])
+        .filter(a=>a.name)
+        .sort((a,b)=>(b.raAvgAtt||b.bcn||0)-(a.raAvgAtt||a.bcn||0))
+        .slice(0,5);
+
+      const topArtHtml=topArtists.map((a,i)=>{
+        const hasImg=a.imageUrl&&a.imageUrl.trim().length>10&&!a.imageUrl.includes('2a96cbd8b46e442fc41c2b86b821562f');
         const img=hasImg
-          ?`<img src="${esc(a.imageUrl)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.outerHTML='<div style=\\'width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.65rem;color:var(--text-faint)\\'>${esc(a.name).charAt(0).toUpperCase()}</div>'">`
-          :`<div style="width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.65rem;color:var(--text-faint)">${esc(a.name).charAt(0).toUpperCase()}</div>`;
-        return `<span style="display:inline-flex;align-items:center;gap:5px;margin:3px 4px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:3px 10px 3px 3px;font-size:0.72rem;font-family:var(--font-head);font-weight:600">${img}${esc(a.name)} <span style="font-family:var(--font-mono);font-size:0.55rem;color:var(--accent)">${fmt(a.bcn)}</span></span>`;
+          ?`<img src="${esc(a.imageUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.outerHTML='<div style=\\'width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.8rem;color:var(--text-faint)\\'>${a.name.charAt(0).toUpperCase()}</div>'">`
+          :`<div style="width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.8rem;color:var(--text-faint)">${a.name.charAt(0).toUpperCase()}</div>`;
+        const att=a.raAvgAtt||a.bcn||0;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);width:16px;text-align:right">${i+1}</div>
+          ${img}
+          <div style="flex:1">
+            <div style="font-family:var(--font-head);font-weight:700;font-size:0.85rem">${esc(a.name)}</div>
+            ${(a.genres||[]).slice(0,2).map(g=>`<span style="font-family:var(--font-mono);font-size:0.52rem;color:var(--text-faint)">${esc(g)}</span>`).join(' · ')}
+          </div>
+          ${att>0?`<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent);font-weight:700">${fmt(att)} <span style="color:var(--text-faint);font-size:0.52rem">RA interest</span></div>`:''}
+        </div>`;
       }).join('');
-      const coBillHtml=dna.coBillNetwork&&dna.coBillNetwork.length?
-        `<div style="margin-top:14px"><div style="font-family:var(--font-head);font-weight:600;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Artists in your orbit</div><div style="font-size:0.78rem;color:var(--text-dim);line-height:2">${dna.coBillNetwork.slice(0,10).map(c=>esc(c.name)+' <span style="font-family:var(--font-mono);font-size:0.52rem;color:var(--blue)">×'+c.coBills+'</span>').join(' · ')}</div></div>`:'';
-      sum.innerHTML=`<div class="card" style="margin-top:16px"><h3 style="color:var(--accent)">${dna.isPromoter?'Your Promoter DNA':'Your Venue DNA'}</h3>
-        ${dna.isPromoter&&dna.promoterId?`<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--green);margin-bottom:10px">✓ Fetched via RA promoter ID ${dna.promoterId} — exact match, no title-parsing</div>`:''}
-        ${dna.isPromoter&&!dna.promoterId?`<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--amber);margin-bottom:10px">⚠ No RA promoter ID — using title search. Add your ID from ra.co/promoters/[ID] for exact results.</div>`:''}
-        <div class="stats">
-          <div class="stat"><div class="sv">${dna.venueEvents}</div><div class="sl">${dna.isPromoter?'Events promoted':'Events / year'}</div></div>
-          <div class="stat"><div class="sv">${dna.eventsPerMonth||'—'}</div><div class="sl">Events / month</div></div>
-          <div class="stat"><div class="sv">${dna.avgAttendance?fmt(dna.avgAttendance):'—'}</div><div class="sl">Avg RA interest</div></div>
-          <div class="stat"><div class="sv">${dna.artistCount}</div><div class="sl">Artists booked</div></div>
-          <div class="stat"><div class="sv">${(dna.coBillNetwork||[]).length}</div><div class="sl">Network connections</div></div>
-        </div>
-        ${topArtHtml?'<div style="margin:12px 0"><div style="font-family:var(--font-head);font-weight:600;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Your biggest bookings</div>'+topArtHtml+'</div>':''}
-        ${tg?'<div style="margin:10px 0">'+tg+'</div>':''}
-        ${coBillHtml}
-        <button class="btn btn-red" style="margin-top:18px" onclick="showApp()">Enter Night Pulse</button>
-      </div>`;
+
+      // Co-billing network — who they consistently appear with
+      const coBillHtml=dna.coBillNetwork&&dna.coBillNetwork.length
+        ?`<div style="margin-top:16px">
+            <div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:8px">Artists in your orbit</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">${dna.coBillNetwork.slice(0,12).map(c=>`<span class="tag">${esc(c.name)} <span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--blue)">×${c.coBills}</span></span>`).join('')}</div>
+          </div>`:'';
+
+      sum.innerHTML=`
+        <div class="card" style="margin-top:16px;border-color:var(--accent)">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <div>
+              <h3 style="color:var(--accent);font-size:1.1rem;margin-bottom:4px">${esc(dna.venue||P().venue)}</h3>
+              <div style="font-size:0.78rem;color:var(--text-dim)">${dna.isPromoter?'Promoter':'Venue'} · ${cityName()}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:var(--font-head);font-weight:800;font-size:1.8rem;color:var(--text);line-height:1">${dna.artistCount}</div>
+              <div style="font-size:0.7rem;color:var(--text-dim)">artists booked</div>
+            </div>
+          </div>
+
+          ${dna.isPromoter&&dna.promoterId?`<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--green);margin-bottom:12px;padding:6px 10px;background:rgba(47,184,102,0.08);border-radius:4px">✓ Fetched via RA ID ${dna.promoterId} — exact data, no guessing</div>`:''}
+          ${dna.isPromoter&&!dna.promoterId?`<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--amber);margin-bottom:12px;padding:6px 10px;background:var(--amber-dim);border-radius:4px">⚠ No RA ID — using title search. Add your ID for exact results.</div>`:''}
+
+          <div class="stats" style="margin-bottom:16px">
+            <div class="stat"><div class="sv">${dna.venueEvents}</div><div class="sl">Events</div></div>
+            <div class="stat"><div class="sv">${dna.eventsPerMonth||'—'}</div><div class="sl">Per month</div></div>
+            <div class="stat"><div class="sv">${dna.avgAttendance?fmt(dna.avgAttendance):'—'}</div><div class="sl">Avg RA interest</div></div>
+            <div class="stat"><div class="sv">${(dna.coBillNetwork||[]).length}</div><div class="sl">Network size</div></div>
+          </div>
+
+          ${topArtists.length?`
+            <div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:4px">Your top bookings</div>
+            ${topArtHtml}
+          `:''}
+
+          ${tg?`<div style="margin-top:14px"><div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Your scene</div>${tg}</div>`:''}
+
+          ${coBillHtml}
+
+          <button class="btn btn-red" style="margin-top:20px;width:100%;font-size:0.95rem;padding:14px" onclick="showApp()">
+            Start Discovering Artists →
+          </button>
+        </div>`;
     }else{
       lbl.textContent='No booking history found — skipping DNA';
       const sum=document.getElementById('dnaSummary');sum.style.display='block';
@@ -2234,14 +3724,18 @@ function showApp(){
   const wrap=document.getElementById('venueSwitcherWrap');
   const dna=getDNA();
   const isPromoter=p.type==='promoter';
-  const typeTag=isPromoter?'<span style="font-family:var(--font-mono);font-size:0.55rem;background:var(--blue-dim);color:var(--blue);border-radius:4px;padding:1px 5px;margin-right:2px">PROMO</span>':'';
+  const venueName=p.venue||p.promoterName||'';
+  if(!venueName){wrap.style.display='none';return;} // don't show pill if no profile
+  const city=(p.city||'');
+  const cityLabel=city.charAt(0).toUpperCase()+city.slice(1);
+
   let dnaTag;
   if(dna&&dna.artistCount){
     const dnaAgeMs=Date.now()-(dna.ts||0);
     const dnaAgeDays=Math.floor(dnaAgeMs/(24*60*60*1000));
     const dnaAgeHrs=Math.floor(dnaAgeMs/(60*60*1000));
-    const dnaAgeStr=dnaAgeDays>0?dnaAgeDays+'d':dnaAgeHrs>0?dnaAgeHrs+'h':'now';
-    const isComplete=dna.dnaComplete!==false; // null/undefined = complete (venues), false = partial
+    const dnaAgeStr=dnaAgeDays>0?dnaAgeDays+'d':dnaAgeHrs>0?dnaAgeHrs+'h':'<1h';
+    const isComplete=dna.dnaComplete!==false;
     const dnaColor=isComplete?'var(--green)':'var(--amber)';
     const dnaIcon=isComplete?'✓':'⚠';
     const dnaTitle=isComplete
@@ -2252,14 +3746,14 @@ function showApp(){
     dnaTag=' · <span style="color:var(--amber)" onclick="event.stopPropagation();rebuildDNA()" title="Click to build DNA">No DNA</span>';
   }
   const allP=_getAllProfiles();
-  const vCount=allP&&allP.venues?Object.keys(allP.venues).length:1;
-  const countBadge=vCount>1?' <span style="background:var(--accent);color:#fff;border-radius:10px;padding:1px 5px;font-size:0.55rem;font-weight:700;vertical-align:middle">'+vCount+'</span>':'';
-  pill.innerHTML=typeTag+esc(p.venue)+' · '+esc(cityName())+dnaTag+countBadge+' ▾';
+  const vCount=allP&&allP.venues?Object.keys(allP.venues).filter(k=>allP.venues[k]?.venue).length:1;
+  const countBadge=vCount>1?` <span style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:1px 6px;font-size:0.55rem;font-weight:700;vertical-align:middle">${vCount}</span>`:'';
+  // Clean pill: "Drop Dance Society · Barcelona · DNA ✓ · ▾"
+  pill.innerHTML=esc(venueName)+' <span style="color:var(--text-faint)">·</span> '+esc(cityLabel)+dnaTag+countBadge+' <span style="opacity:0.4">▾</span>';
   if(wrap)wrap.style.display='inline-block';
   updateCityLabels();
   updateContextBanners();
-  // Background DNA build if missing or stale
-  if(!dnaValid()&&p.venue){
+  if(!dnaValid()&&venueName){
     setTimeout(()=>rebuildDNA(true),2000);
   }
 }
@@ -2291,17 +3785,47 @@ function toggleVenueSwitcher(e){
   const d=_getAllProfiles();if(!d)return;
   const dd=document.createElement('div');dd.id='npVenueSwitcherDd';dd.className='venue-switcher-dd';
   const active=d.active;
-  let html='';
-  for(const[key,prof] of Object.entries(d.venues||{})){
+  const venues=Object.entries(d.venues||{});
+
+  let html=`<div style="padding:10px 14px 6px;font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint)">Your profiles</div>`;
+
+  for(const[key,prof] of venues){
     const isActive=key===active;
-    html+='<div class="vs-item'+(isActive?' active':'')+'" onclick="switchVenue(\''+key+'\')">'+
-      '<div><div>'+esc(prof.venue||'Unnamed')+'</div><div class="vs-city">'+(prof.city||'')+'</div></div>'+
-      '<div style="display:flex;gap:6px;align-items:center">'+
-      (isActive?'<span style="color:var(--accent);font-size:0.65rem">active</span>':'')+
-      '<span class="vs-del" onclick="deleteVenue(\''+key+'\',event)" title="Remove">\u2715</span>'+
-      '</div></div>';
+    const name=prof.venue||(prof.promoterName)||'';
+    if(!name)continue; // skip empty profiles
+    const type=prof.type==='promoter'?'Promoter':'Venue';
+    const city=(prof.city||'').charAt(0).toUpperCase()+(prof.city||'').slice(1);
+    const dnaStatus=()=>{
+      try{
+        const dnaKey='np_dna_'+key;
+        const dna=JSON.parse(localStorage.getItem(dnaKey)||'null');
+        if(dna&&dna.artistCount)return`<span style="color:var(--green);font-size:0.55rem">DNA ✓ ${dna.artistCount} artists</span>`;
+        return`<span style="color:var(--text-faint);font-size:0.55rem">No DNA</span>`;
+      }catch{return''}
+    };
+
+    html+=`<div class="vs-item${isActive?' active':''}" onclick="switchVenue('${key}')">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</span>
+          ${isActive?'<span style="background:var(--accent);color:#fff;font-family:var(--font-mono);font-size:0.48rem;padding:1px 5px;border-radius:3px;font-weight:700">ACTIVE</span>':''}
+        </div>
+        <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-top:1px">${type} · ${city} · ${dnaStatus()}</div>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;flex-shrink:0">
+        ${!isActive?`<button class="vs-del" onclick="event.stopPropagation();deleteVenue('${key}',event)" title="Remove">✕</button>`:''}
+      </div>
+    </div>`;
   }
-  html+='<div class="vs-item vs-add" onclick="addVenueProfile()">+ Add venue</div>';
+
+  html+=`<div style="border-top:1px solid var(--border);margin:6px 0"></div>`;
+  html+=`<div class="vs-item vs-add" onclick="addVenueProfile()" style="color:var(--accent);font-weight:600">
+    <span style="font-size:1rem;margin-right:6px">+</span> Add another profile
+  </div>`;
+  html+=`<div class="vs-item" onclick="resetOb()" style="color:var(--text-faint);font-size:0.8rem;border-top:1px solid var(--border);margin-top:4px">
+    ⚙ Edit current profile
+  </div>`;
+
   dd.innerHTML=html;
   document.getElementById('venueSwitcherWrap').appendChild(dd);
   setTimeout(()=>document.addEventListener('click',()=>dd.remove(),{once:true}),10);
@@ -2513,7 +4037,10 @@ async function runDiscover(){
     // Score and sort by DNA if available — use snapshot from search start to avoid race conditions
     const hasDNA=!!snapshotDNA?.artistCount;
     if(hasDNA){
-      for(const a of qual)a._dna=dnaScore(a,snapshotDNA);
+      for(const a of qual){
+        a._dna=sceneRelevance(a.name,snapshotDNA);
+        a._dna.score=a._dna.score; // unified score
+      }
       qual.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0));
       prog('Done! '+qual.length+' artists — sorted by venue DNA fit',100);
     }else{
@@ -2554,23 +4081,39 @@ function renderDiscover(arts,hasDNA,diag){
   let h='<div class="section-head"><h2>Results</h2><span class="count">'+arts.length+' artists'+(hasDNA?' · sorted by DNA fit':' · by '+cn+' Spotify')+'</span></div>';
   arts.forEach((a,i)=>{
     const tags=a.seeds.map(s=>'<span class="tag">'+esc(s)+'</span>').join('');
-    const raBadge=a.raCoBills?'<span class="tag" style="background:var(--blue-dim);border-color:var(--blue);color:var(--blue)">RA co-billed ×'+a.raCoBills+'</span>':'';
+    const raBadge=a.raCoBills?'<span class="tag" style="background:var(--blue-dim);border-color:var(--blue);color:var(--blue)">RA ×'+a.raCoBills+'</span>':'';
     const sv=saved().some(s=>s.name===a.name);
-    const img=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
-    // DNA badge
+    // Image placeholder with data-name for async loading
+    const initial=esc(a.name).charAt(0).toUpperCase();
+    const img=a.imageUrl&&a.imageUrl.length>10
+      ?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${initial}</div>'">`
+      :`<div class="ri-img-placeholder ri-img-lazy" data-artist="${esc(a.name)}" data-idx="${i}">${initial}</div>`;
     let dnaBadge='';
     if(hasDNA&&a._dna){
       const d=a._dna,clr=d.score>=70?'green':d.score>=50?'amber':'red';
       dnaBadge=`<span class="badge badge-${clr}" style="margin-left:6px">${d.score} · ${d.label}</span>`;
-      if(d.flags.length)dnaBadge+=d.flags.map(f=>' <span style="font-family:var(--font-mono);font-size:0.55rem;color:var(--amber)">⚠ '+esc(f)+'</span>').join('');
     }
     const genreTags=(a.genres||[]).slice(0,3).map(g=>'<span class="tag" style="opacity:0.7">'+esc(g)+'</span>').join('');
+    const sourceBadge=a.sources?.includes('ra_official')
+      ?'<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent);font-size:0.5rem">RA related</span>'
+      :a.sources?.includes('ra_local')
+      ?'<span class="tag" style="background:var(--blue-dim);border-color:var(--blue);color:var(--blue);font-size:0.5rem">RA circuit</span>'
+      :'';
     h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
-      <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags">${tags}${raBadge}${genreTags}</div>
-        <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn},${a.global},'${a.uuid}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button></div>
-      </div><div class="ri-number"><div class="big">${fmt(a.bcn)}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global)} global</div></div></div>`;
+      <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags">${tags}${raBadge}${sourceBadge}${genreTags}</div>
+        <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn||0},${a.global||0},'','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ check</button></div>
+      </div><div class="ri-number"><div class="big">${a.fusionScore||a.score||'—'}</div><div class="sub">circuit score</div></div></div>`;
   });
   c.innerHTML=h;
+  // Load images asynchronously — don't block the render
+  c.querySelectorAll('.ri-img-lazy').forEach(async el=>{
+    const name=el.dataset.artist;
+    if(!name)return;
+    const url=await getArtistImage(name);
+    if(url&&el.isConnected){
+      el.outerHTML=`<img class="ri-img" src="${esc(url)}" alt="" onerror="this.className='ri-img-placeholder';this.textContent='${(name||'?').charAt(0).toUpperCase()}'">`;
+    }
+  });
 }
 
 /* ═══ DATE SCANNER ═══ */
@@ -2579,121 +4122,151 @@ async function runScan(){
   const c=document.getElementById('scanRes');
   c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Scanning '+fdate(date)+' in '+cityName()+'…</div>';
   try{
-    // Use cache if available, otherwise live fetch
     let all;
     const cache=getCache();
     if(cache&&cache.areaCode===areaId()){
       all=cache.events.filter(e=>e.date===date);
-      if(!all.length)all=await raBulkFetch(areaId(),date,date,15); // might be outside cache range
+      if(!all.length)all=await raBulkFetch(areaId(),date,date,15);
     }else{
       all=await raBulkFetch(areaId(),date,date,15);
     }
     if(!all.length){c.innerHTML='<div class="empty">No events found on '+fdate(date)+'</div>';return}
     all.sort((a,b)=>(b.attending||0)-(a.attending||0));
-    const totalAtt=all.reduce((s,e)=>s+(e.attending||0),0);
 
-    // DNA-powered direct competition detection
     const dna=getDNA();
     const hasDNA=dna&&dna.artistCount>0;
-    const userVenue=(P().venue||'').toLowerCase();
     const isPromoterMode=P().type==='promoter';
-    const direct=[], general=[];
-
-    // Exclude events at your own venue (skip for promoters — they operate across venues)
     const confirmedVenueId=isPromoterMode?null:raVenueId(P().venue||'');
+    const userVenue=(P().venue||'').toLowerCase();
+
     const isOwnVenue=ev=>{
       if(isPromoterMode)return false;
       if(confirmedVenueId&&ev.venueId)return String(ev.venueId)===String(confirmedVenueId);
       return ev.venue&&ev.venue.toLowerCase().includes(userVenue);
     };
+
+    const ownEvents=all.filter(isOwnVenue);
     const otherEvents=all.filter(ev=>!isOwnVenue(ev));
-    const ownEvents=all.filter(ev=>isOwnVenue(ev));
 
-    if(hasDNA){
-      // All sets precomputed — no O(n×m) scanning on every What's On call
-      const profileNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
-      const cloudNorm=new Set((dna.cloud||[]).map(n=>norm(n)));
-      const coBillNorms=new Set((dna.coBillNetwork||[]).map(c=>norm(c.name)));
-      const secondDegree=new Set(dna.secondDegree||[]); // precomputed during buildDNA
+    // ═══ COMPETITION CLASSIFICATION via unified eventThreat() ═══
+    const tier1=[],tier2=[],tier3=[],tier4=[];
 
-      for(const ev of otherEvents){
-        let isDirect=false,reason='';
-        for(const a of ev.artists){
-          const n=norm(a);
-          if(profileNorms.has(n)){isDirect=true;reason='Played your venue';break}
-          if(cloudNorm.has(n)){isDirect=true;reason='In your network';break}
-          if(coBillNorms.has(n)){isDirect=true;reason='Shares lineups';break}
-          if(secondDegree.has(n)){isDirect=true;reason='2nd-degree connection';break}
-        }
-        if(isDirect)direct.push({...ev,reason});
-        else general.push(ev);
-      }
-    }else{
-      general.push(...otherEvents);
+    for(const ev of otherEvents){
+      const threat=eventThreat(ev,dna);
+      ev._threat=threat;
+      if(threat.tier===1)tier1.push(ev);
+      else if(threat.tier===2)tier2.push(ev);
+      else if(threat.tier===3)tier3.push(ev);
+      else tier4.push(ev);
     }
 
-    // Competition ratings (exclude own events from count)
-    const compCount=otherEvents.length;
-    const overallLevel=compCount>15?'High':compCount>8?'Medium':'Low';
-    const overallClr=compCount>15?'var(--accent)':compCount>8?'var(--amber)':'var(--green)';
-    const directLevel=hasDNA?(direct.length>5?'High':direct.length>2?'Medium':direct.length>0?'Low':'None'):'—';
-    const directClr=direct.length>5?'var(--accent)':direct.length>2?'var(--amber)':direct.length>0?'var(--green)':'var(--green)';
+    // For events without RA genres, enrich async and re-render threat if needed
+    // (done after initial render so UI appears fast)
+    const noGenreEvents=otherEvents.filter(ev=>(!ev.genres||!ev.genres.length)&&ev._threat.tier>=3);
+    if(hasDNA&&noGenreEvents.length){
+      // Async enrich — will update display if tier changes
+      Promise.all(noGenreEvents.slice(0,20).map(async ev=>{
+        await enrichGenresFromLastfm(ev);
+        if(ev.genres&&ev.genres.length){
+          ev.genres_lastfm=ev.genres.map(g=>g.toLowerCase());
+        }
+      }));
+    }
 
-    let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2><span class="count">${all.length} events${ownEvents.length?' ('+ownEvents.length+' yours)':''}</span></div>
-      <div class="stats">
-        <div class="stat"><div class="sv">${compCount}</div><div class="sl">Competing events</div></div>
-        <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total RA interest</div></div>
-        <div class="stat"><div class="sv" style="color:${overallClr}">${overallLevel}</div><div class="sl">Overall competition</div></div>
-        ${hasDNA?`<div class="stat"><div class="sv" style="color:${directClr}">${directLevel}</div><div class="sl">Direct competition</div></div>`:''}
-        ${hasDNA?`<div class="stat"><div class="sv" style="color:var(--accent)">${direct.length}</div><div class="sl">Competing for your audience</div></div>`:''}
-      </div>`;
+    // Competition summary
+    const directCompetition=[...tier1,...tier2].filter(ev=>ev._threat.isCompetition);
+    const timeMismatchWarnings=[...tier1,...tier2].filter(ev=>ev._threat.timeMismatch);
+    const totalAtt=all.reduce((s,e)=>s+(e.attending||0),0);
 
-    // Show own venue events if any
+    const directLevel=directCompetition.length===0?'None':directCompetition.length<=2?'Low':directCompetition.length<=5?'Medium':'High';
+    const directClr=directCompetition.length===0?'var(--green)':directCompetition.length<=2?'var(--amber)':'var(--accent)';
+
+    let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2>
+      <span class="count">${all.length} events${ownEvents.length?' · '+ownEvents.length+' yours':''}</span></div>
+    <div class="stats">
+      <div class="stat"><div class="sv" style="color:${directClr}">${directLevel}</div><div class="sl">Direct competition</div></div>
+      <div class="stat"><div class="sv" style="color:${directClr}">${directCompetition.length}</div><div class="sl">Competing for your audience</div></div>
+      <div class="stat"><div class="sv">${tier4.length}</div><div class="sl">Different scene</div></div>
+      <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total RA interest</div></div>
+    </div>`;
+
+    // Own events
     if(ownEvents.length){
       h+=`<div class="card" style="border-color:var(--blue);margin-top:16px">
         <h3 style="color:var(--blue);margin-bottom:8px">Your Events</h3>`;
-      for(const ev of ownEvents)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${esc(ev.title)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--blue)">${ev.attending?fmt(ev.attending)+' RA interest':'—'}</span></div>`;
+      for(const ev of ownEvents)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem">
+        <div><div style="font-weight:600">${esc(ev.title)}</div><div style="font-size:0.75rem;color:var(--text-dim)">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div></div>
+        <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--blue);flex-shrink:0">${ev.attending?fmt(ev.attending)+' RA':'—'}</span></div>`;
       h+=`</div>`;
     }
 
-    // Direct competition section (DNA-powered)
-    if(hasDNA&&direct.length>0){
+    if(directCompetition.length){
       h+=`<div class="card" style="border-color:var(--accent);margin-top:16px">
-        <h3 style="color:var(--accent);margin-bottom:2px">Direct Competition</h3>
-        <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">Events targeting your audience — same genres, similar artists</p>`;
-      for(const ev of direct.sort((a,b)=>(b.attending||0)-(a.attending||0))){
-        h+=`<div class="ev-item"><div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">RA interest</div></div>
-          <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div>
-          <div class="ev-a">${esc(ev.artists.join(', '))}</div>
-          <div style="margin-top:3px"><span class="badge badge-red">${esc(ev.reason)}</span></div></div></div>`;
+        <h3 style="color:var(--accent);margin-bottom:2px">⚠ Direct Competition</h3>
+        <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">These events target the same audience — same artists or same genre${timeMismatchWarnings.length?' (some flagged different time-of-day)':''}</p>`;
+      for(const ev of directCompetition.sort((a,b)=>(b.attending||0)-(a.attending||0))){
+        const t=ev._threat;
+        const tierBadge=t.tier===1
+          ?`<span class="badge badge-red">${esc(t.reason)}</span>`
+          :`<span class="badge badge-amber">${esc(t.reason)}</span>`;
+        const timeBadge=t.timeMismatch?`<span class="badge" style="border-color:var(--text-faint);color:var(--text-faint);font-size:0.48rem">different time slot</span>`:'';
+        h+=`<div class="ev-item" style="border-left:3px solid ${t.tier===1?'var(--accent)':'var(--amber)'};padding-left:11px">
+          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">RA interest</div></div>
+          <div class="ev-detail">
+            <div class="ev-v">${esc(ev.venue)}</div>
+            <div class="ev-t">${esc(ev.title)}</div>
+            <div class="ev-a">${esc(ev.artists.map(a=>a.name||a).join(', '))}</div>
+            <div style="margin-top:4px">${tierBadge}${timeBadge}</div>
+          </div></div>`;
       }
       h+=`</div>`;
     }else if(hasDNA){
       h+=`<div class="card" style="border-color:var(--green);margin-top:16px">
-        <h3 style="color:var(--green);margin-bottom:2px">No Direct Competition</h3>
-        <p style="font-size:0.82rem;color:var(--text-dim)">No events on this date target your specific audience. Good date to book.</p></div>`;
+        <h3 style="color:var(--green);margin-bottom:4px">✓ Clear</h3>
+        <p style="font-size:0.82rem;color:var(--text-dim)">No events on this date target your audience. ${tier4.length>0?tier4.length+' events are different scenes entirely.':''} Good date to book.</p>
+        ${dna.topGenres?.length?`<div style="margin-top:8px;font-size:0.72rem;color:var(--text-faint)">Your scene: ${dna.topGenres.slice(0,4).map(g=>g.genre||g).join(' · ')}</div>`:''}
+      </div>`;
     }else{
       h+=`<div class="card" style="margin-top:16px;border-color:var(--amber)">
-        <p style="font-size:0.82rem;color:var(--amber)">Build your Venue DNA to see direct competition analysis. <span style="cursor:pointer;text-decoration:underline" onclick="rebuildDNA()">Build now</span></p></div>`;
+        <p style="font-size:0.82rem;color:var(--amber)">Build DNA to see genre-aware competition analysis. <span style="cursor:pointer;text-decoration:underline" onclick="rebuildDNA()">Build now</span></p></div>`;
     }
 
-    // Overall events
-    h+=`<div style="margin-top:20px"><div class="section-head"><h2>All Events</h2><span class="count">${all.length} total</span></div>`;
+    // Awareness tier (partial overlap, large events)
+    if(tier3.length){
+      h+=`<div style="margin-top:20px"><div class="section-head"><h2>Awareness</h2>
+        <span class="count">${tier3.length} events · partial genre overlap</span></div>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Large events with some audience overlap — worth knowing about but not direct threats.</p>`;
+      for(const ev of tier3.slice(0,4)){
+        h+=`<div class="ev-item">
+          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">RA interest</div></div>
+          <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div>
+          <div class="ev-a">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div>
+          ${ev.genreOverlap.length?`<div style="margin-top:3px"><span class="tag" style="opacity:0.6;font-size:0.55rem">partial: ${ev.genreOverlap.join(', ')}</span></div>`:''}
+          </div></div>`;
+      }
+      h+=`</div>`;
+    }
+
+    h+=`<div style="margin-top:20px">
+      <div class="section-head"><h2>All Events</h2><span class="count">${all.length} total · different scenes included</span></div>`;
     for(const ev of all){
-      const isDirect=hasDNA&&direct.some(d=>d.title===ev.title&&d.venue===ev.venue);
-      h+=`<div class="ev-item"${isDirect?' style="border-left:3px solid var(--accent);padding-left:11px"':''}>
+      const t=ev._threat;
+      const isOwn=ownEvents.some(d=>d.title===ev.title&&d.venue===ev.venue);
+      const borderStyle=t&&t.tier===1&&t.isCompetition?'border-left:3px solid var(--accent);padding-left:11px':t&&t.tier===2&&t.isCompetition?'border-left:3px solid var(--amber);padding-left:11px':'';
+      const badge=isOwn?'<span class="badge" style="font-size:0.48rem;border-color:var(--blue);color:var(--blue)">YOURS</span>':t&&t.tier===1&&t.isCompetition?'<span class="badge badge-red" style="font-size:0.48rem">DIRECT</span>':t&&t.tier===2&&t.isCompetition?'<span class="badge badge-amber" style="font-size:0.48rem">GENRE</span>':'';
+      h+=`<div class="ev-item"${borderStyle?' style="'+borderStyle+'"':''}>
         <div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">RA interest</div></div>
-        <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}${isDirect?' <span class="badge badge-red" style="font-size:0.5rem">DIRECT</span>':''}</div>
-        <div class="ev-t">${esc(ev.title)}</div><div class="ev-a">${esc(ev.artists.join(', '))}</div></div></div>`;
+        <div class="ev-detail">
+          <div class="ev-v">${esc(ev.venue)} ${badge}</div>
+          <div class="ev-t">${esc(ev.title)}</div>
+          <div class="ev-a">${esc((ev.artists||[]).map(a=>a.name||a).slice(0,3).join(', '))}</div>
+          ${(ev.genres||[]).length?`<div style="margin-top:2px">${ev.genres.map(g=>`<span class="tag" style="font-size:0.5rem;opacity:0.6">${esc(g.name||g)}</span>`).join('')}</div>`:''}
+        </div></div>`;
     }
     h+=`</div>`;
-
-    // Adjacent day threat radar placeholder
-    h+=`<div id="adjacentThreats" style="margin-top:20px"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning day before &amp; after for threats…</div></div>`;
+    h+=`<div id="adjacentThreats" style="margin-top:20px"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning adjacent days…</div></div>`;
 
     c.innerHTML=h;
-
-    // Run adjacent day scan async (don't block main render)
     scanAdjacentThreats(date);
   }catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>'}
 }
@@ -2731,10 +4304,6 @@ async function scanAdjacentThreats(dateStr){
     const threats=[];
 
     const classifyAdjacentEvents=async(events,dayLabel,dayDate)=>{
-      const cloudNorm=hasDNA?new Set((dna.cloud||[]).map(n=>norm(n))):new Set();
-      const profileNorms=hasDNA?new Set((dna.profiles||[]).map(p=>norm(p.name))):new Set();
-      const coBillNorms=hasDNA?new Set((dna.coBillNetwork||[]).map(c=>norm(c.name))):new Set();
-      const secondDegree=hasDNA?new Set(dna.secondDegree||[]):new Set(); // precomputed in buildDNA
       const uv=(P().venue||'').toLowerCase();
 
       for(const ev of events){
@@ -2744,13 +4313,8 @@ async function scanAdjacentThreats(dateStr){
         let isDirect=false,reason='';
 
         if(hasDNA){
-          for(const a of ev.artists){
-            const n=norm(a);
-            if(profileNorms.has(n)){isDirect=true;reason='Played your venue';break}
-            if(cloudNorm.has(n)){isDirect=true;reason='In your network';break}
-            if(coBillNorms.has(n)){isDirect=true;reason='Shares lineups';break}
-            if(secondDegree.has(n)){isDirect=true;reason='2nd-degree connection';break}
-          }
+          const threat=eventThreat(ev,dna);
+          if(threat.tier<=2&&threat.isCompetition){isDirect=true;reason=threat.reason}
         }
 
         if(att>=ATT_THRESHOLD||(isDirect&&att>=DIRECT_ATT_THRESHOLD)){
@@ -2916,7 +4480,6 @@ async function runXray(){
 async function runRouting(){
   const date=document.getElementById('routeDate').value;
   if(!date){
-    // Highlight the date field
     const dateEl=document.getElementById('routeDate');
     dateEl.style.borderColor='var(--accent)';dateEl.style.boxShadow='0 0 0 3px var(--accent-glow)';dateEl.focus();
     setTimeout(()=>{dateEl.style.borderColor='';dateEl.style.boxShadow=''},2500);
@@ -2927,117 +4490,235 @@ async function runRouting(){
     document.getElementById('rteRes').innerHTML='<div class="empty">Complete your venue/promoter setup first — click Night Pulse in the header to begin.</div>';
     return;
   }
+
+  const dna=getDNA();
+  const hasDNA=!!(dna&&dna.artistCount);
+
+  if(!hasDNA){
+    document.getElementById('rteRes').innerHTML=`<div class="card" style="border-color:var(--amber)">
+      <h3 style="color:var(--amber);margin-bottom:6px">DNA Required for Routing</h3>
+      <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.6">Routing Deals works by finding artists from <strong>your scene</strong> who are playing nearby cities on your date. To know which artists are "your scene," Night Pulse needs your DNA.<br><br>
+      Click the venue pill above → Rebuild DNA, then come back.</p>
+    </div>`;
+    return;
+  }
+
   const userCity=(p.city||'barcelona').toLowerCase();
   const nearby=NEARBY_CITIES[userCity]||[];
   if(!nearby.length){document.getElementById('rteRes').innerHTML='<div class="empty">No nearby cities configured for '+cityName()+'.</div>';return}
-  const backMo=parseInt(document.getElementById('rFilterBack').value)||7,fwdMo=parseInt(document.getElementById('rFilterFwd').value)||3;
+
+  const backMo=parseInt(document.getElementById('rFilterBack').value)||6;
+  const fwdMo=parseInt(document.getElementById('rFilterFwd').value)||3;
   const btn=document.getElementById('rteBtn');btn.disabled=true;btn.textContent='Scanning…';
   rteProgReset();document.getElementById('rteRes').innerHTML='';
 
   try{
-    // Day before and day after only (not same day — that's YOUR date)
     const center=new Date(date),dayB=new Date(center),dayA=new Date(center);
     dayB.setDate(center.getDate()-1);dayA.setDate(center.getDate()+1);
-    const dates=[dayB.toISOString().slice(0,10),dayA.toISOString().slice(0,10)];
+    const dayBStr=dayB.toISOString().slice(0,10);
+    const dayAStr=dayA.toISOString().slice(0,10);
+    const scanDates=[dayBStr,dayAStr];
 
-    rteProg('Scanning nearby cities…',5);
-    const nearbyArtists=new Map();
+    // ═══ STEP 1: Build YOUR scene artist pool from DNA ═══
+    // This is the key insight: start from artists YOU'D actually book,
+    // not from whoever happens to be playing nearby.
+    rteProg('Building your scene pool from DNA…',5);
+
+    const scenePool=new Map(); // norm(name) → {name, relevance, reason}
+
+    // Layer 1: Artists you've directly booked
+    const yourArtists=(dna.profiles||[]).map(p=>p.name).filter(Boolean);
+    for(const name of yourArtists){
+      const rel=sceneRelevance(name,dna);
+      scenePool.set(norm(name),{name,relevance:rel.score,reason:rel.reason});
+    }
+    rteProg(null,8,yourArtists.length+' artists from your booking history');
+
+    // Layer 2: Co-billing network
+    const coBilled=(dna.coBillNetwork||[]);
+    for(const c of coBilled){
+      const n=norm(c.name);
+      if(!scenePool.has(n)){
+        const rel=sceneRelevance(c.name,dna);
+        scenePool.set(n,{name:c.name,relevance:rel.score,reason:rel.reason});
+      }
+    }
+    rteProg(null,12,coBilled.length+' co-billed artists added');
+
+    // Layer 3: RA official related artists for your top 5 DNA artists
+    // RA's own similarity algorithm — exactly what shows on their artist pages
+    const topDnaArtists=yourArtists.slice(0,5);
+    rteProg('Fetching RA related artists for your top bookings…',15);
+    let raRelatedCount=0;
+    for(const seedName of topDnaArtists){
+      try{
+        const related=await raOfficialRelated(seedName);
+        for(const r of related){
+          const n=norm(r.name);
+          if(!scenePool.has(n)){
+            const rel=sceneRelevance(r.name,dna);
+            scenePool.set(n,{name:r.name,relevance:rel.score,reason:rel.reason||('RA related to '+seedName)});
+            raRelatedCount++;
+          }
+        }
+        rteProg(null,null,'RA related for '+seedName+': '+related.length+' artists');
+      }catch(e){}
+    }
+    rteProg(null,30,'Scene pool: '+scenePool.size+' artists ('+raRelatedCount+' from RA related)');
+
+    // ═══ STEP 2: Scan nearby cities for those dates ═══
+    rteProg('Scanning '+nearby.length+' nearby cities…',35);
+    // Map: norm(artistName) → {name, city, date, venue, attending, title}
+    const nearbyEvents=new Map();
+
     for(let ci=0;ci<nearby.length;ci++){
       const ncity=nearby[ci],nArea=AREAS[ncity];if(!nArea)continue;
-      rteProg('Scanning '+ncity+'…',5+Math.round((ci/nearby.length)*35));
-      for(const dt of dates){
+      rteProg('Scanning '+ncity+'…',35+Math.round((ci/nearby.length)*30));
+      for(const dt of scanDates){
         try{
           const events=await raBulkFetch(nArea,dt,dt,6);
-          for(const ev of events)for(const a of ev.artists){const n=norm(a);if(n&&!nearbyArtists.has(n))nearbyArtists.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending})}
+          for(const ev of events){
+            for(const a of ev.artists){
+              const n=norm(a);
+              if(n&&!nearbyEvents.has(n)){
+                nearbyEvents.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending||0,title:ev.title||''});
+              }
+            }
+          }
         }catch(e){}
       }
-      rteProg(null,null,'✓ '+ncity);
     }
-    rteProg(nearbyArtists.size+' artists found nearby',45);
+    rteProg(nearbyEvents.size+' artists found in nearby cities',65);
 
-    // City exclusion from cache (instant)
-    rteProg('Checking '+cityName()+' exclusion…',50);
+    // ═══ STEP 3: Intersect — which scene artists are actually nearby? ═══
+    rteProg('Finding your artists in the region…',70);
+    const matches=[];
+
+    // Check artists from your scene pool against nearby events
+    for(const[n,sceneArtist] of scenePool){
+      const nearby=nearbyEvents.get(n);
+      if(nearby){
+        matches.push({
+          ...nearby,
+          relevance:sceneArtist.relevance,
+          reason:sceneArtist.reason,
+          _sceneArtist:true
+        });
+      }
+    }
+
+    // ═══ STEP 4: City exclusion — already booked in your city? ═══
+    rteProg('Checking '+cityName()+' exclusion…',75);
     const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
     exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
     const cityEvents=await getCityEvents(exFrom,exTo);
     const cityIdx=buildIndex(cityEvents);
-    rteProg(null,65,cityIdx.size+' artists in exclusion window');
 
     const routingOpps=[];
-    for(const[key,info] of nearbyArtists){if(!idxLookup(cityIdx,info.name)){routingOpps.push(info);rteProg(null,70,'✓ '+info.name+' — '+info.city+' '+fdate(info.date))}}
-
-    // Genre filter + DNA rank — Last.fm genres, no SC
-    rteProg('Filtering by genre and DNA fit…',80);
-    const withData=[];
-    const hasDNA=!!getDNA()?.artistCount;
-    const dna=getDNA();
-
-    // Get Last.fm genres in parallel for top candidates
-    const topCandidates=routingOpps.slice(0,30);
-    await Promise.all(topCandidates.map(async a=>{
-      try{await enrichGenresFromLastfm(a)}catch(e){}
-    }));
-
-    for(const a of routingOpps){
-      // Genre filter using Last.fm data
-      if(a.genres&&a.genres.length>0&&!genreAllowed(a.genres)){
-        rteProg(null,null,'✗ '+a.name+' — genre mismatch');
+    for(const m of matches){
+      if(idxLookup(cityIdx,m.name)){
+        rteProg(null,null,'✗ '+m.name+' — already booked in '+cityName());
         continue;
       }
-      withData.push(a);
+      routingOpps.push(m);
     }
 
-    // Score and sort by DNA if available
-    if(hasDNA){
-      for(const a of withData)a._dna=dnaScore(a,dna);
-      withData.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0));
-      rteProg('Done! '+withData.length+' routing opportunities — sorted by DNA fit.',100);
-    }else{
-      // Sort by RA interest at nearby show
-      withData.sort((a,b)=>(b.attending||0)-(a.attending||0));
-      rteProg('Done! '+withData.length+' routing opportunities — build DNA for personalised ranking.',100);
-    }
-    renderRouting(withData);
-  }catch(e){rteProg('Error: '+e.message,100)}
+    // Also look for scene-adjacent artists in nearby cities NOT in pool
+    // (catches artists who co-billed with nearby artists but aren't in DNA)
+    // Sort by relevance score descending
+    routingOpps.sort((a,b)=>(b.relevance||0)-(a.relevance||0)||(b.attending||0)-(a.attending||0));
+
+    rteProg('Done! '+routingOpps.length+' routing opportunities from your scene.',100);
+    renderRouting(routingOpps,{hasDNA,scenePoolSize:scenePool.size});
+
+  }catch(e){rteProg('Error: '+e.message,100);console.error(e)}
   btn.disabled=false;btn.textContent='Find Routing';
 }
 
-function renderRouting(arts){
+function renderRouting(arts, meta={}){
   const c=document.getElementById('rteRes'),cn=cityName();
-  const hasDNA=!!getDNA()?.artistCount;
-  if(!arts.length){c.innerHTML='<div class="empty">No routing opportunities found.</div>';return}
-  let h='<div class="section-head"><h2>Routing Opportunities</h2><span class="count">'+arts.length+' artists'+(hasDNA?' · sorted by DNA fit':'')+'</span></div>';
-  h+='<p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px;font-style:italic">Artists playing nearby — already in the region, likely lower fees.</p>';
+  const {hasDNA,scenePoolSize}=meta;
+
+  if(!arts.length){
+    c.innerHTML=`<div class="card" style="border-color:var(--border)">
+      <h3 style="margin-bottom:8px">No routing opportunities found</h3>
+      <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.6">
+        None of the ${scenePoolSize||0} artists in your scene pool were playing nearby cities on this date.<br><br>
+        <strong>Try:</strong> A different date · Check that nearby cities are configured · Rebuild DNA to expand your scene pool
+      </p>
+    </div>`;
+    return;
+  }
+
+  const byReason={
+    booked:arts.filter(a=>a.reason?.includes('booked')),
+    coBilled:arts.filter(a=>a.reason?.includes('Co-billed')),
+    raRelated:arts.filter(a=>a.reason?.includes('RA related')),
+  };
+
+  let h=`<div class="section-head">
+    <h2>Routing Opportunities</h2>
+    <span class="count">${arts.length} artists from your scene · nearby ±1 day</span>
+  </div>
+  <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:4px;line-height:1.5">
+    These artists are <strong>already in your scene</strong> and playing nearby — day before or after your date.
+    Already in the region means <strong>30–50% lower fees</strong> and a motivated booking conversation.
+  </p>
+  <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-bottom:20px">
+    Scene pool: ${scenePoolSize||0} artists · ${byReason.booked.length} you've booked · ${byReason.coBilled.length} co-billed · ${byReason.raRelated.length} RA related
+  </div>`;
+
   arts.forEach((a,i)=>{
     const sv=saved().some(s=>s.name===a.name);
-    const img=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
-    // DNA badge
-    let dnaBadge='';
-    if(hasDNA&&a._dna){
-      const d=a._dna,clr=d.score>=70?'green':d.score>=50?'amber':'red';
-      dnaBadge=`<span class="badge badge-${clr}" style="margin-left:6px">${d.score} · ${d.label}</span>`;
-      if(d.flags.length)dnaBadge+=d.flags.map(f=>' <span style="font-family:var(--font-mono);font-size:0.55rem;color:var(--amber)">⚠ '+esc(f)+'</span>').join('');
-    }
-    const genreTags=(a.genres||[]).slice(0,2).map(g=>'<span class="tag" style="opacity:0.7">'+esc(g)+'</span>').join('');
-    // Routing urgency: days between nearby show and target date
-    const _tDate=document.getElementById('routeDate').value;
-    const _nDate=new Date(a.date);
-    const _tDateObj=_tDate?new Date(_tDate):null;
-    const _daysDiff=_tDateObj?Math.round((_tDateObj-_nDate)/(1000*60*60*24)):null;
-    const _urgTag=_daysDiff===null?'':Math.abs(_daysDiff)<=7
-      ?'<span class="tag" style="background:rgba(47,184,102,0.15);border-color:var(--green);color:var(--green)">⚡ Same week — ideal</span>'
-      :Math.abs(_daysDiff)<=30?'<span class="tag" style="background:var(--amber-dim);border-color:var(--amber);color:var(--amber)">'+Math.abs(_daysDiff)+'d apart — good</span>'
-      :'<span class="tag" style="opacity:0.45">'+Math.abs(_daysDiff)+'d apart</span>';
-    // Infer headliner vs support from event title
-    const _isHead=!(a.title||'').toLowerCase().match(/\b(with|feat|b2b|vs\.?|support)\b/);
-    const _roleTag=_isHead?'':'<span class="tag" style="opacity:0.55;font-size:0.58rem">support/lineup</span>';
-    h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
-      <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags"><span class="tag tag-routing">↗ ${esc(a.city)} · ${fdate(a.date)}</span><span class="tag">${esc(a.venue)}</span>${_urgTag}${_roleTag}${genreTags}</div>
-        ${a.attending?'<div style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint);margin-top:2px">'+fmt(a.attending)+' RA interest at nearby show</div>':''}
-        <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn||0},${a.global||0},'${a.uuid||''}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button></div>
-      </div><div class="ri-number"><div class="big">${(a.bcn||0)>0?fmt(a.bcn):'—'}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global||0)} global</div></div></div>`;
+    const initial=(a.name||'?').charAt(0).toUpperCase();
+    const img=a.imageUrl&&a.imageUrl.length>10
+      ?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${initial}</div>'">`
+      :`<div class="ri-img-placeholder ri-img-lazy" data-artist="${esc(a.name)}">${initial}</div>`;
+
+    // Relevance badge — why is this artist here?
+    const rel=a.relevance||0;
+    const relColor=rel>=100?'var(--accent)':rel>=75?'var(--green)':rel>=60?'var(--blue)':'var(--text-faint)';
+    const relBadge=`<span class="badge" style="margin-left:6px;background:transparent;border-color:${relColor};color:${relColor}">${esc(a.reason||'In your scene')}</span>`;
+
+    // Date context
+    const targetDate=document.getElementById('routeDate').value;
+    const daysDiff=targetDate?Math.round((new Date(targetDate)-new Date(a.date))/(1000*60*60*24)):null;
+    const dayLabel=daysDiff===1?'Night before':daysDiff===-1?'Night after':'±'+Math.abs(daysDiff||0)+'d';
+    const dayColor=Math.abs(daysDiff||0)<=1?'var(--green)':'var(--amber)';
+
+    h+=`<div class="result-item" style="animation-delay:${i*30}ms">
+      <div class="ri-rank">${i+1}</div>
+      ${img}
+      <div class="ri-info">
+        <h3>${esc(a.name)}${relBadge}</h3>
+        <div class="tags">
+          <span class="tag" style="color:${dayColor};border-color:${dayColor};background:transparent">⚡ ${dayLabel} · ${esc(a.city)}</span>
+          <span class="tag">${esc(a.venue)}</span>
+          ${a.attending>0?`<span class="tag" style="opacity:0.6">${fmt(a.attending)} RA interest there</span>`:''}
+        </div>
+        <div class="ri-actions">
+          <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
+          <button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ check artist</button>
+          <button onclick="(()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab=intel]').classList.add('active');document.getElementById('panel-intel').classList.add('active');runIntel('${esc(a.name).replace(/'/g,"\\'")}');loadIntelTab()})()">🕵 intel</button>
+        </div>
+      </div>
+      <div class="ri-number">
+        <div class="big" style="font-size:1.1rem;color:${relColor}">${rel}</div>
+        <div class="sub">relevance</div>
+        <div class="dim">${fdate(a.date)}</div>
+      </div>
+    </div>`;
   });
+
   c.innerHTML=h;
+
+  // Load images async
+  c.querySelectorAll('.ri-img-lazy').forEach(async el=>{
+    const name=el.dataset.artist;
+    if(!name)return;
+    const url=await getArtistImage(name);
+    if(url&&el.isConnected)el.outerHTML=`<img class="ri-img" src="${esc(url)}" alt="" onerror="this.className='ri-img-placeholder';this.textContent='${(name||'?').charAt(0).toUpperCase()}'">`;
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3267,7 +4948,7 @@ function artistAvailableInWindow(artistName, events, backMo=6, fwdMo=3){
   const an=norm(artistName);
   for(const ev of events){
     if(ev.date<fromStr||ev.date>toStr)continue;
-    if(ev.artists&&ev.artists.some(a=>norm(a)===an)){
+    if(ev.artists&&ev.artists.some(a=>norm(a.name||a)===an)){
       const daysAgo=Math.round((now-new Date(ev.date))/(1000*60*60*24));
       return{date:ev.date,venue:ev.venue,daysAgo};
     }
@@ -3350,8 +5031,8 @@ function renderIntelEntity(profile, allEvents){
     for(const ev of profile.upcoming.slice(0,4)){
       h+=`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:0.8rem">
         <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--amber);margin-bottom:2px">${fdate(ev.date)}</div>
-        <div style="font-family:var(--font-head);font-weight:600;font-size:0.78rem">${esc(ev.title||ev.artists.slice(0,2).join(', '))}</div>
-        <div style="color:var(--text-faint);font-size:0.7rem">${esc(ev.artists.slice(0,3).join(' · '))}</div>
+        <div style="font-family:var(--font-head);font-weight:600;font-size:0.78rem">${esc(ev.title||ev.artists.slice(0,2).map(a=>a.name||a).join(', '))}</div>
+        <div style="color:var(--text-faint);font-size:0.7rem">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(' · '))}</div>
       </div>`;
     }
     h+=`</div>`;
@@ -3667,6 +5348,17 @@ function setupIntelAC(){
   document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
 }
 
+function saveReportCalibration(){
+  const p=P();
+  const wins=document.getElementById('obW')?.value.split('\n').filter(Boolean).map(s=>s.trim())||[];
+  const losses=document.getElementById('obL')?.value.split('\n').filter(Boolean).map(s=>s.trim())||[];
+  const budget=document.getElementById('obB')?.value||'';
+  const freq=document.getElementById('obF')?.value||'';
+  setP({...p,wins,losses,budget,freq});
+  const btn=document.querySelector('[onclick="saveReportCalibration()"]');
+  if(btn){btn.textContent='✓ Saved';setTimeout(()=>btn.textContent='Save calibration',2000)}
+}
+
 /* ═══ REPORT ═══ */
 async function genReport(){
   const p=P(),c=document.getElementById('rOut'),btn=document.getElementById('rBtn'),cn=cityName();
@@ -3687,7 +5379,7 @@ async function genReport(){
         :p.venue&&ev.venue.toLowerCase()===p.venue.toLowerCase();
       if(isOwnVenueEv)venueEv.push(ev);
     }
-    const vArt=new Set();for(const ev of venueEv)for(const a of ev.artists)vArt.add(a);
+    const vArt=new Set();for(const ev of venueEv)for(const a of ev.artists)vArt.add(a.name||a);
 
     // DNA wins/losses analysis — use Last.fm for genre tags (no SC needed)
     let wH='',lH='',wN=0,lN=0;
@@ -3718,10 +5410,10 @@ async function genReport(){
       const worst=evWithAtt.slice(-5).reverse();
       const avgAtt=Math.round(evWithAtt.reduce((s,e)=>s+e.attending,0)/evWithAtt.length);
       h+=`<div class="card"><h3 style="color:var(--green)">Best Nights</h3><p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:8px">Avg RA interest: ${fmt(avgAtt)}</p>`;
-      for(const ev of best)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--green)">${fmt(ev.attending)}</span></div>`;
+      for(const ev of best)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--green)">${fmt(ev.attending)}</span></div>`;
       h+=`</div>`;
       h+=`<div class="card"><h3 style="color:var(--amber)">Quietest Nights</h3>`;
-      for(const ev of worst)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--amber)">${fmt(ev.attending)}</span></div>`;
+      for(const ev of worst)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--amber)">${fmt(ev.attending)}</span></div>`;
       h+=`</div>`;
     }
 
