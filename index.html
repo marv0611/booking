@@ -443,6 +443,20 @@ const NEARBY_CITIES={
   amsterdam:['berlin','london','brussels','paris','copenhagen','hamburg','cologne','zurich','manchester','antwerp','rotterdam','munich','barcelona'],
   paris:['london','amsterdam','brussels','berlin','barcelona','lyon','marseille','zurich','milan','lisbon','manchester','dublin','cologne'],
 };
+// Genre filters — only keep artists matching these genres
+const RA_GENRES_KEEP=new Set(['acid','acid house','afro house','ambient','baile funk','balearic','club','dancehall','deep house','disco','electro','electronica','experimental','funk','funk / soul','funk/soul','soul','garage','house','italo disco','jazz','jungle','minimal','minimal techno','progressive house','tech house','techno','uk funky']);
+const SC_GENRES_KEEP=new Set(['electronic','dance','r&b/soul','r&b','soul']);
+function genreAllowed(genres){
+  if(!genres||!genres.length)return true; // no genre info = let through
+  for(const g of genres){
+    const gl=g.toLowerCase();
+    if(SC_GENRES_KEEP.has(gl)||RA_GENRES_KEEP.has(gl))return true;
+    for(const k of RA_GENRES_KEEP)if(gl.includes(k)||k.includes(gl))return true;
+    for(const k of SC_GENRES_KEEP)if(gl.includes(k)||k.includes(gl))return true;
+  }
+  return false;
+}
+
 // localStorage keys (kept as 'libro_*' for backwards compatibility with existing data)
 const PK='libro_p',SK='libro_s',HK='libro_h',LK='libro_log',FK='libro_fees',DK='libro_dna';
 const P=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch{return{}}};
@@ -485,13 +499,11 @@ async function scRelated(uuid){const d=await sc('/api/v2/artist/'+uuid+'/related
    This is more accurate for booking because it's based on real co-billing patterns. */
 function raRelated(seedName,events){
   const sn=norm(seedName);
-  const coArtists=new Map(); // norm(name) → {name, count, events:[]}
+  const coArtists=new Map();
 
   for(const ev of events){
-    // Does this event feature the seed?
     const hasSeed=ev.artists.some(a=>norm(a)===sn||(sn.length>=5&&norm(a).length>=5&&(norm(a).includes(sn)||sn.includes(norm(a)))));
     if(!hasSeed)continue;
-    // Every other artist on this event is "related"
     for(const a of ev.artists){
       const n=norm(a);
       if(n===sn)continue;
@@ -502,8 +514,62 @@ function raRelated(seedName,events){
       if(entry.events.length<3)entry.events.push({date:ev.date,venue:ev.venue});
     }
   }
-  // Sort by co-billing frequency and return top 30
   return [...coArtists.values()].sort((a,b)=>b.count-a.count).slice(0,30);
+}
+
+/* RA worldwide artist search — find an artist's events globally, extract co-billed artists.
+   This is the killer feature: real touring-circuit connections, not algorithm guesses. */
+async function raWorldwideRelated(seedName){
+  const coArtists=new Map();
+  const sn=norm(seedName);
+  // Search RA for events worldwide that feature this artist name in the title or lineup
+  // We search the last 12 months + next 6 months across ALL areas (no area filter)
+  const now=new Date();
+  const ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+  const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
+  const gte=ago.toISOString().slice(0,10),lte=fwd.toISOString().slice(0,10);
+
+  try{
+    // Fetch worldwide events (no area filter = global)
+    for(let p=1;p<=8;p++){
+      const d=await ra({f:{listingDate:{gte,lte}},fo:{},p,s:50});
+      const evs=d?.data?.eventListings?.data||[];
+      const tot=d?.data?.eventListings?.totalResults||0;
+      for(const el of evs){
+        const ev=el.event||{};
+        const artists=(ev.artists||[]).map(a=>a.name||'').filter(Boolean);
+        const hasSeed=artists.some(a=>norm(a)===sn||(sn.length>=5&&norm(a).length>=5&&(norm(a).includes(sn)||sn.includes(norm(a)))));
+        if(!hasSeed)continue;
+        const venue=(ev.venue||{}).name||'?';
+        const area=((ev.venue||{}).area||{}).name||'?';
+        const date=(ev.date||'').slice(0,10);
+        for(const a of artists){
+          const n=norm(a);if(n===sn||n.length<2)continue;
+          if(!coArtists.has(n))coArtists.set(n,{name:a,count:0,cities:new Set()});
+          const entry=coArtists.get(n);
+          entry.count++;
+          entry.cities.add(area);
+        }
+      }
+      if(p*50>=tot)break;
+    }
+  }catch(e){console.warn('RA worldwide search failed:',e)}
+
+  // Also search the local city cache for this artist
+  const localEvents=getCache()?.events||[];
+  const localRelated=raRelated(seedName,localEvents);
+  for(const r of localRelated){
+    const n=norm(r.name);
+    if(!coArtists.has(n))coArtists.set(n,{name:r.name,count:0,cities:new Set()});
+    const entry=coArtists.get(n);
+    entry.count+=r.count;
+    entry.cities.add(cityName());
+  }
+
+  return [...coArtists.values()]
+    .map(c=>({...c,cities:[...c.cities]}))
+    .sort((a,b)=>b.count-a.count)
+    .slice(0,30);
 }
 async function scSpotify(uuid){
   const d=await sc('/api/v2/artist/'+uuid+'/streaming/spotify');
@@ -1229,8 +1295,9 @@ async function runDiscover(){
         const scCount=rel.length;
         for(const r of rel){if(resolved.some(x=>x.uuid===r.uuid))continue;if(!cmap.has(r.uuid))cmap.set(r.uuid,{name:r.name,uuid:r.uuid,imageUrl:r.imageUrl||'',seeds:[],source:'sc'});cmap.get(r.uuid).seeds.push(s.seed)}
 
-        // RA co-billing related (from cached events)
-        const raRel=raRelated(s.name,allEvents);
+        // RA worldwide co-billing — search globally for this seed's touring connections
+        prog(null,18,'Searching RA worldwide for '+s.name+'…');
+        const raRel=await raWorldwideRelated(s.name);
         let raAdded=0;
         for(const r of raRel){
           // Check if already in cmap by name match
@@ -1285,15 +1352,23 @@ async function runDiscover(){
     prog('Fetching Spotify & genre data…',70);
     const wd=[];
     const hasDNA=!!getDNA()?.artistCount;
+    let genreSkipped=0;
     for(let i=0;i<afterSD.length;i++){
       const c=afterSD[i];
       try{
         const s=await scSpotify(c.uuid);c.bcn=s.c;c.global=s.g;
-        // Fetch genres for DNA scoring
-        if(hasDNA)await enrichGenres(c);
+        // Fetch genres for filtering + DNA scoring
+        await enrichGenres(c);
+        // Genre filter: skip artists outside our genre scope
+        if(c.genres&&c.genres.length>0&&!genreAllowed(c.genres)){
+          genreSkipped++;
+          prog(null,70+Math.round((i/afterSD.length)*25),'✗ '+c.name+' — genre excluded ('+c.genres.slice(0,2).join(', ')+')');
+          continue;
+        }
         wd.push(c);if(s.c>0)prog(null,70+Math.round((i/afterSD.length)*25),'✓ '+c.name+' '+fmt(s.c)+' '+cn)
       }catch(e){c.bcn=0;c.global=0;wd.push(c)}
     }
+    if(genreSkipped)prog(null,95,genreSkipped+' artists excluded by genre filter');
     const qual=wd.filter(a=>(a.bcn||0)>=min);
 
     // Score and sort by DNA if available, else by Spotify
@@ -1693,7 +1768,18 @@ async function runRouting(){
     const hasDNA=!!getDNA()?.artistCount;
     for(let i=0;i<Math.min(routingOpps.length,15);i++){
       const a=routingOpps[i];
-      try{const sc_a=await scSearch(a.name);if(sc_a){const sp=await scSpotify(sc_a.uuid);a.bcn=sp.c;a.global=sp.g;a.uuid=sc_a.uuid;a.imageUrl=sc_a.imageUrl||'';if(hasDNA)await enrichGenres(a)}withData.push(a)}catch(e){withData.push(a)}
+      try{
+        const sc_a=await scSearch(a.name);
+        if(sc_a){
+          const sp=await scSpotify(sc_a.uuid);a.bcn=sp.c;a.global=sp.g;a.uuid=sc_a.uuid;a.imageUrl=sc_a.imageUrl||'';
+          await enrichGenres(a);
+          // Genre filter
+          if(a.genres&&a.genres.length>0&&!genreAllowed(a.genres)){
+            rteProg(null,null,'✗ '+a.name+' — genre excluded');continue;
+          }
+        }
+        withData.push(a);
+      }catch(e){withData.push(a)}
     }
     for(let i=15;i<routingOpps.length;i++)withData.push(routingOpps[i]);
 
