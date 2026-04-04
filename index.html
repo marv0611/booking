@@ -697,7 +697,8 @@ function raPromoterId(name){
    Returns the ID if known, null if not. Case-insensitive. */
 function raVenueId(name){
   if(!name)return null;
-  // Partial match for venues with slight name variations
+  const k=name.toLowerCase().trim();
+  if(RA_VENUE_IDS[k]!=null)return RA_VENUE_IDS[k];
   for(const[key,id] of Object.entries(RA_VENUE_IDS)){
     if(k.includes(key)||key.includes(k))return id;
   }
@@ -1286,27 +1287,37 @@ async function buildDNA(statusCb,artistCb){
     const avgAtt=raShows.length?Math.round(raShows.reduce((s,e)=>s+(e.attending||0),0)/raShows.length):0;
     const profile={name,uuid:null,bcn:0,global:0,genres:[],imageUrl:'',raShows:raShows.length,raAvgAtt:avgAtt};
 
-    // Last.fm genres — free, no quota, electronic-specific (replaces SC genre data)
+    // Last.fm info — gets genres AND image in one call (free, no quota)
     try{
-      const tags=await lastfmTags(name);
-      if(tags.length)profile.genres=tags;
+      const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
+      if(r.ok){
+        const d=await r.json();
+        const artist=d?.artist;
+        if(artist){
+          // Tags/genres
+          const tags=(artist.tags?.tag||[]).map(t=>t.name.toLowerCase()).slice(0,8);
+          if(tags.length)profile.genres=tags;
+          // Image — Last.fm returns array by size: small/medium/large/extralarge/mega
+          const imgs=artist.image||[];
+          const img=imgs.find(i=>i.size==='extralarge')||imgs.find(i=>i.size==='large')||imgs[imgs.length-1];
+          const imgUrl=img?.['#text']||'';
+          // Last.fm uses a placeholder image for unknown artists — filter it out
+          if(imgUrl&&!imgUrl.includes('2a96cbd8b46e442fc41c2b86b821562f'))profile.imageUrl=imgUrl;
+        }
+      }
     }catch(e){}
-
-    // SC Spotify listeners — optional, only if we have a uuid
-    // Skip SC search entirely — too many calls, not electronic-specific
-    // Spotify data will be fetched on-demand in X-Ray only
-    // (DNA scoring uses raAvgAtt as proxy when bcn=0)
 
     profiles.push(profile);
     if(artistCb)artistCb(profile);
   }
   if(statusCb)statusCb('Building DNA from '+profiles.length+' artists (Last.fm genres)…');
 
-  // Build RA co-billing network: for each venue artist, find who they share lineups with
+  // Build RA co-billing network: for each booked artist, find who they share lineups with
+  // Uses venueEvents (the promoter/venue's own events) — always defined, works for both paths
   if(statusCb)statusCb('Mapping RA co-billing network…');
-  const coBillMap=new Map(); // norm(name) → {name, totalCoBills, connectedTo:[]}
+  const coBillMap=new Map();
   for(const prof of profiles){
-    const related=raRelated(prof.name,allEvents);
+    const related=raRelated(prof.name,venueEvents);
     for(const r of related){
       const n=norm(r.name);
       if(!coBillMap.has(n))coBillMap.set(n,{name:r.name,totalCoBills:0,connectedTo:[]});
@@ -1315,7 +1326,6 @@ async function buildDNA(statusCb,artistCb){
       entry.connectedTo.push(prof.name);
     }
   }
-  // Top co-billed artists not already in direct venue bookings
   const venueNorms=new Set(profiles.map(p=>norm(p.name)));
   const coBillNetwork=[...coBillMap.values()]
     .filter(c=>!venueNorms.has(norm(c.name)))
@@ -1326,7 +1336,6 @@ async function buildDNA(statusCb,artistCb){
   const listeners=profiles.map(p=>p.bcn).filter(v=>v>0).sort((a,b)=>a-b);
   const globals=profiles.map(p=>p.global).filter(v=>v>0).sort((a,b)=>a-b);
   const median=arr=>arr.length?arr[Math.floor(arr.length/2)]:0;
-  // Track how many artists got SC data — listener range is only reliable when coverage is high
   const scEnrichedCount=listeners.length;
   const scCoverageRatio=profiles.length>0?scEnrichedCount/profiles.length:0;
 
@@ -1337,21 +1346,24 @@ async function buildDNA(statusCb,artistCb){
   for(const[g,c] of Object.entries(genreCounts))genreWeights[g]=c/totalGenreTags;
   const sortedGenres=Object.entries(genreWeights).sort((a,b)=>b[1]-a[1]);
 
-  // Artist cloud (names for reference) + co-billing extended cloud
   const cloud=profiles.map(p=>p.name).slice(0,30);
   const extendedCloud=[...cloud,...coBillNetwork.slice(0,20).map(c=>c.name)];
 
-  // Compute average attendance from venue events
   const atts=venueEvents.map(e=>e.attending||0).filter(a=>a>0);
   const avgAtt=atts.length?Math.round(atts.reduce((s,a)=>s+a,0)/atts.length):0;
   const topArtists=profiles.slice().sort((a,b)=>(b.bcn||b.raAvgAtt||0)-(a.bcn||a.raAvgAtt||0)).slice(0,5);
   const eventsPerMonth=venueEvents.length>0?Math.round(venueEvents.length/12*10)/10:0;
 
-  // Precompute second-degree connections — stored so What's On never recomputes this O(n×m) scan
+  // Second-degree connections — load city cache only if needed, use venueEvents as fallback
   if(statusCb)statusCb('Computing second-degree connections…');
   const secondDegreeSet=new Set();
+  let cacheForSecondDegree=venueEvents; // use own events as base — always works
+  try{
+    const cached=await ensureCache();
+    if(cached&&cached.length>venueEvents.length)cacheForSecondDegree=cached;
+  }catch(e){} // cache load failure is non-fatal — venueEvents still works
   for(const c of coBillNetwork.slice(0,20)){
-    const rel=raRelated(c.name,allEvents);
+    const rel=raRelated(c.name,cacheForSecondDegree);
     for(const r of rel.slice(0,10))secondDegreeSet.add(norm(r.name));
   }
 
@@ -1477,17 +1489,8 @@ function dnaScore(candidate,dna){
 /* Get genre info for a candidate (fetches from SC if not already present) */
 async function enrichGenres(candidate){
   if(candidate.genres&&candidate.genres.length>0)return;
-  if(!candidate.uuid)return;
-  try{
-    const meta=await scMeta(candidate.uuid);
-    if(meta){
-      const genres=[];
-      if(meta.genres)genres.push(...meta.genres.map(g=>(g.name||g).toLowerCase()));
-      else if(meta.mainGenre)genres.push((meta.mainGenre.name||meta.mainGenre).toLowerCase());
-      if(meta.subGenres)genres.push(...meta.subGenres.map(g=>(g.name||g).toLowerCase()));
-      candidate.genres=[...new Set(genres)];
-    }
-  }catch(e){}
+  // Use Last.fm — free, electronic-specific, no SC needed
+  await enrichGenresFromLastfm(candidate);
 }
 
 /* ═══ CACHED RA ENGINE ═══ */
@@ -2027,7 +2030,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 function updateCityLabels(){
   const cn=cityName(),city=(P().city||'barcelona').toLowerCase();
   document.querySelectorAll('#fCityD,#fCityR').forEach(el=>el.textContent=cn);
-  const ml=document.getElementById('minLabel');if(ml)ml.textContent=cn.slice(0,3).toUpperCase();
   // Show nearby cities in routing panel
   const nc=document.getElementById('nearbyCities');
   if(nc){
@@ -2411,13 +2413,28 @@ async function runDiscover(){
   const snapshotDNA=getDNA();
 
   try{
-    // Step 1: resolve seeds
+    // Step 1: resolve seeds — use Last.fm search + RA cache (no SC)
     prog('Resolving seeds…',5);
     const resolved=[];
     for(const seed of seedList){
-      try{const a=await scSearch(seed);if(a){resolved.push({name:a.name||seed,uuid:a.uuid,imageUrl:a.imageUrl||'',seed});prog(null,10,'✓ '+seed)}else prog(null,10,'✗ '+seed+' — not found')}catch(e){prog(null,10,'✗ '+seed+' — '+e.message)}
+      try{
+        // Try Last.fm first for canonical name + image
+        const lfResults=await lastfmSearch(seed,1);
+        if(lfResults.length){
+          const a=lfResults[0];
+          resolved.push({name:a.name||seed,uuid:null,imageUrl:a.imageUrl||'',seed});
+          prog(null,10,'✓ '+seed);
+        }else{
+          // Fall back to RA cache name (always works if artist has played locally)
+          resolved.push({name:seed,uuid:null,imageUrl:'',seed});
+          prog(null,10,'✓ '+seed+' (from seeds)');
+        }
+      }catch(e){
+        resolved.push({name:seed,uuid:null,imageUrl:'',seed});
+        prog(null,10,'✓ '+seed);
+      }
     }
-    if(!resolved.length){prog('No seeds found.',10);btn.disabled=false;btn.textContent='Discover';return}
+    if(!resolved.length){prog('No seeds found.',10);btn.disabled=false;btn.textContent='Find Artists';return}
 
     // Step 2: related artists — fusion engine (RA co-billing + Last.fm + RA worldwide)
     // Zero SC calls here. SC only used later for Spotify listener counts in X-Ray.
@@ -2520,12 +2537,11 @@ function renderDiscover(arts,hasDNA,diag){
       const parts=[];
       if(diag.raExcluded>0)parts.push(diag.raExcluded+' excluded — already played '+cn+' in your window');
       if(diag.sdExcluded>0)parts.push(diag.sdExcluded+' excluded — booked same day worldwide');
-      if(diag.genreExcluded>0)parts.push(diag.genreExcluded+' excluded — genre mismatch');
-      if(diag.belowMin>0)parts.push(diag.belowMin+' excluded — below '+fmt(diag.minBcn)+' '+cn+' Spotify threshold');
+      if(diag.genreExcluded>0)parts.push(diag.genreExcluded+' excluded — genre mismatch (Last.fm)');
       if(diag.total===0)reason='No related artists found. Try different or broader seed artists.';
-      else if(parts.length){reason='<strong>'+diag.total+' candidates found, all filtered out:</strong><br>'+parts.join('<br>');
-        if(diag.belowMin>0)action='<button class="btn-ghost" style="margin-top:12px;font-size:0.68rem" onclick="document.getElementById(\'minBcn\').value=500;runDiscover()">Retry with 500 min listeners</button>';
-        else if(diag.raExcluded>0)action='<button class="btn-ghost" style="margin-top:12px;font-size:0.68rem" onclick="setPicker(\'segBack\',\'filterBack\',3);runDiscover()">Retry with 3-month window</button>';
+      else if(parts.length){
+        reason='<strong>'+diag.total+' candidates found, all filtered out:</strong><br>'+parts.join('<br>');
+        if(diag.raExcluded>0)action='<button class="btn-ghost" style="margin-top:12px;font-size:0.68rem" onclick="setPicker(\'segBack\',\'filterBack\',3);runDiscover()">Retry with 3-month window</button>';
       }
     }
     c.innerHTML=`<div class="empty" style="text-align:left;padding:32px 20px;line-height:1.8;font-style:normal">
@@ -3030,6 +3046,39 @@ function renderRouting(arts){
    ═══════════════════════════════════════════════════════════ */
 
 /* Build a full profile for a venue or promoter from cache events */
+/* Build entity profile directly from a known event list (no name matching needed).
+   Used for promoters fetched via RA ID when their events don't appear in city cache. */
+function buildEntityProfileFromEvents(name, events){
+  if(!events||!events.length)return null;
+  const artistMap=new Map();
+  for(const ev of events){
+    for(const a of (ev.artists||[])){
+      const an=norm(a);
+      if(!artistMap.has(an))artistMap.set(an,{name:a,shows:0,totalAtt:0,maxAtt:0,dates:[],venues:new Set()});
+      const rec=artistMap.get(an);
+      rec.shows++;rec.totalAtt+=ev.attending||0;
+      if((ev.attending||0)>rec.maxAtt)rec.maxAtt=ev.attending||0;
+      rec.dates.push(ev.date);rec.venues.add(ev.venue||'?');
+    }
+  }
+  const artists=[...artistMap.values()].sort((a,b)=>b.maxAtt-a.maxAtt||b.shows-a.shows);
+  const sorted=[...events].sort((a,b)=>(b.attending||0)-(a.attending||0));
+  const chronological=[...events].sort((a,b)=>a.date.localeCompare(b.date));
+  const mid=Math.floor(chronological.length/2);
+  const avgFirst=mid?chronological.slice(0,mid).reduce((s,e)=>s+(e.attending||0),0)/mid:0;
+  const avgSecond=chronological.slice(mid).length?chronological.slice(mid).reduce((s,e)=>s+(e.attending||0),0)/chronological.slice(mid).length:0;
+  const upcoming=events.filter(e=>e.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.date.localeCompare(b.date));
+  return{
+    name,totalEvents:events.length,
+    avgAtt:events.length?Math.round(events.reduce((s,e)=>s+(e.attending||0),0)/events.length):0,
+    peakAtt:sorted[0]?.attending||0,
+    trend:avgSecond>avgFirst*1.1?'up':avgSecond<avgFirst*0.9?'down':'flat',
+    avgPerMonth:Math.round(events.length/12*10)/10,
+    artists,repeats:artists.filter(a=>a.shows>=2).slice(0,5),
+    upcoming:upcoming.slice(0,5),topEvent:sorted[0]||null,
+  };
+}
+
 function buildEntityProfile(name, events){
   const isVenue=!name.includes(' ') || raVenueId(name) || events.some(e=>norm(e.venue)===norm(name));
   // Gather this entity's events
@@ -3207,7 +3256,8 @@ function computeMomentum(events, minShows=3){
   return momentum.sort((a,b)=>b.ratio-a.ratio).slice(0,10);
 }
 
-/* Check if artist is available (not in city cache in exclusion window) */
+/* Check if artist is available in booking window.
+   Returns {date, venue, daysAgo} if BOOKED (conflict), null if AVAILABLE. */
 function artistAvailableInWindow(artistName, events, backMo=6, fwdMo=3){
   const now=new Date();
   const from=new Date(now);from.setMonth(now.getMonth()-backMo);
@@ -3217,9 +3267,12 @@ function artistAvailableInWindow(artistName, events, backMo=6, fwdMo=3){
   const an=norm(artistName);
   for(const ev of events){
     if(ev.date<fromStr||ev.date>toStr)continue;
-    if(ev.artists.some(a=>norm(a)===an))return false;
+    if(ev.artists&&ev.artists.some(a=>norm(a)===an)){
+      const daysAgo=Math.round((now-new Date(ev.date))/(1000*60*60*24));
+      return{date:ev.date,venue:ev.venue,daysAgo};
+    }
   }
-  return true;
+  return null; // null = available, object = conflict found
 }
 
 /* ── RENDER INTELLIGENCE RESULTS ── */
@@ -3442,18 +3495,58 @@ function renderMomentum(momentum, allEvents){
 
 /* ── MAIN INTEL RUNNER ── */
 async function runIntel(targetName){
-  const name=targetName||document.getElementById('intelSearch').value.trim();
+  const name=(targetName||document.getElementById('intelSearch')?.value||'').trim();
   if(!name)return;
-  document.getElementById('intelSearch').value=name;
+  const inp=document.getElementById('intelSearch');
+  if(inp)inp.value=name;
   const c=document.getElementById('intelRes');
-  c.innerHTML=`<div class="empty" style="padding:20px"><span class="spinner"></span> Analysing ${esc(name)}…</div>`;
+  c.innerHTML=`<div class="empty" style="padding:24px 20px"><span class="spinner"></span> Loading ${esc(name)}…</div>`;
 
   try{
-    const allEvents=await ensureCache();
-    const profile=buildEntityProfile(name,allEvents);
+    // Ensure city cache is loaded first
+    const allEvents=await ensureCache().catch(()=>[]);
+
+    // Try to find entity in cache
+    let profile=buildEntityProfile(name,allEvents);
+
+    // If not found in cache, check if it's a known promoter and fetch directly from RA
+    if(!profile){
+      const pid=raPromoterId(name);
+      if(pid){
+        c.innerHTML=`<div class="empty" style="padding:24px 20px"><span class="spinner"></span> Fetching ${esc(name)} from RA (ID: ${pid})…</div>`;
+        try{
+          const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+          const promoterEvents=await raBulkFetchByPromoter(pid,ago,now,10);
+          if(promoterEvents.length){
+            profile=buildEntityProfile(name,[...allEvents,...promoterEvents]);
+            // If still not matching by name, force-build from promoterEvents directly
+            if(!profile&&promoterEvents.length){
+              profile=buildEntityProfileFromEvents(name,promoterEvents);
+            }
+          }
+        }catch(e){}
+      }
+    }
+
+    if(!profile){
+      c.innerHTML=`<div style="padding:24px 20px">
+        <div style="font-family:var(--font-head);font-weight:700;font-size:0.9rem;margin-bottom:8px">"${esc(name)}" not found</div>
+        <div style="font-size:0.82rem;color:var(--text-dim);line-height:1.6;margin-bottom:16px">
+          This name doesn't match any venue or promoter in ${cityName()}'s recent event history.
+          <br><br>Try:
+          <ul style="margin:8px 0 0 16px;padding:0">
+            <li>A venue name — e.g. "Input", "Nitsa", "Apolo"</li>
+            <li>A promoter name — e.g. "Brunch Electronik", "Polyglot", "Output"</li>
+            <li>Check spelling or try a shorter version of the name</li>
+          </ul>
+        </div>
+        <div style="font-size:0.78rem;color:var(--text-faint)">Cache: ${allEvents.length} events loaded for ${cityName()}</div>
+      </div>`;
+      return;
+    }
     renderIntelEntity(profile,allEvents);
   }catch(e){
-    c.innerHTML=`<div class="empty">Error: ${esc(e.message)}</div>`;
+    c.innerHTML=`<div class="empty" style="padding:20px;color:var(--accent)">Error: ${esc(e.message)}</div>`;
   }
 }
 
@@ -3536,37 +3629,42 @@ async function runXrayEnhanced(name, date, allEvents){
 /* ═══ INTELLIGENCE SEARCH AUTOCOMPLETE ══ */
 function setupIntelAC(){
   const inp=document.getElementById('intelSearch');if(!inp)return;
-  // Wrap the bare input in an ac-wrap for dropdown positioning
-  const acWrap=document.createElement('div');
-  acWrap.className='ac-wrap';
-  acWrap.style.cssText='position:relative;flex:1;min-width:0';
-  inp.parentNode.insertBefore(acWrap,inp);
-  acWrap.appendChild(inp);
-  inp.style.width='100%';
-  let dd=document.createElement('div');dd.className='ac-dropdown';acWrap.appendChild(dd);
-
+  // Enter key fires runIntel
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();runIntel()}});
+  // Autocomplete from cache
+  const wrap=inp.closest('.intel-search-wrap')||inp.parentElement;
+  let dd=wrap.querySelector('.ac-dropdown');
+  if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
   let timer=null;
   inp.addEventListener('input',()=>{
-    clearTimeout(timer);const q=inp.value.trim().toLowerCase();
+    clearTimeout(timer);
+    const q=inp.value.trim().toLowerCase();
     if(q.length<2){dd.classList.remove('open');dd.innerHTML='';return}
     timer=setTimeout(async()=>{
       const allEvents=getCache()?.events||[];
-      // Build combined list: venues + known promoters
-      const venueCounts=new Map();
-      for(const ev of allEvents)if(ev.venue&&ev.venue!=='?')venueCounts.set(ev.venue,(venueCounts.get(ev.venue)||0)+1);
-      const venues=[...venueCounts.entries()].filter(([v])=>v.toLowerCase().includes(q)).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([v,c])=>({name:v,count:c,type:'venue'}));
-      const promos=Object.keys(RA_PROMOTER_IDS).filter(k=>k.includes(q)&&RA_PROMOTER_IDS[k]).slice(0,3).map(k=>({name:k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '),type:'promoter'}));
-      const results=[...venues,...promos].slice(0,8);
-      if(!results.length){dd.classList.remove('open');dd.innerHTML='';return}
-      dd.innerHTML=results.map((r,i)=>`<div class="ac-item" data-idx="${i}">
-        <div><div class="ac-name">${esc(r.name)}</div><div class="ac-sub">${r.type==='venue'?(r.count+' events'):'Promoter'}</div></div>
+      // Build venue list from cache
+      const venueMap=new Map();
+      for(const ev of allEvents)if(ev.venue&&ev.venue!=='?')venueMap.set(norm(ev.venue),ev.venue);
+      const venues=[...venueMap.values()].filter(v=>v.toLowerCase().includes(q));
+      // Add known promoters
+      const promos=Object.entries(RA_PROMOTER_IDS)
+        .filter(([k])=>k.includes(q))
+        .map(([k,id])=>({name:k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '),id,isPromoter:true}));
+      const items=[
+        ...promos.map(p=>({label:p.name,sub:'Promoter · ID '+p.id,value:p.name})),
+        ...venues.slice(0,6).map(v=>({label:v,sub:'Venue',value:v}))
+      ].slice(0,8);
+      if(!items.length){dd.classList.remove('open');return}
+      dd.innerHTML=items.map((it,i)=>`<div class="ac-item" data-idx="${i}">
+        <div><div class="ac-name">${esc(it.label)}</div><div class="ac-sub">${esc(it.sub)}</div></div>
       </div>`).join('');
       dd.classList.add('open');
-      dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{inp.value=results[i].name;dd.classList.remove('open');dd.innerHTML='';runIntel(results[i].name)}));
+      dd.querySelectorAll('.ac-item').forEach((el,i)=>el.addEventListener('click',()=>{
+        inp.value=items[i].value;dd.classList.remove('open');dd.innerHTML='';runIntel(items[i].value);
+      }));
     },200);
   });
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!dd.classList.contains('open'))runIntel()});
-  document.addEventListener('click',e=>{if(!acWrap.contains(e.target))dd.classList.remove('open')});
+  document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
 }
 
 /* ═══ REPORT ═══ */
@@ -3591,11 +3689,24 @@ async function genReport(){
     }
     const vArt=new Set();for(const ev of venueEv)for(const a of ev.artists)vArt.add(a);
 
-    // DNA analysis
-    let wH='',lH='',wAvg=0,lAvg=0,wN=0,lN=0;
-    for(const name of(p.wins||[]).slice(0,3)){try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);wH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){wAvg+=s.c;wN++}}}catch(e){}}
-    for(const name of(p.losses||[]).slice(0,3)){try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);lH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){lAvg+=s.c;lN++}}}catch(e){}}
-    if(wN)wAvg=Math.round(wAvg/wN);if(lN)lAvg=Math.round(lAvg/lN);
+    // DNA wins/losses analysis — use Last.fm for genre tags (no SC needed)
+    let wH='',lH='',wN=0,lN=0;
+    for(const name of(p.wins||[]).slice(0,3)){
+      try{
+        const tags=await lastfmTags(name);
+        const genre=tags.slice(0,2).join(', ')||'—';
+        wH+=`<div class="stat"><div class="sv" style="font-size:0.7rem">${esc(genre)}</div><div class="sl">${esc(name)}</div></div>`;
+        wN++;
+      }catch(e){}
+    }
+    for(const name of(p.losses||[]).slice(0,3)){
+      try{
+        const tags=await lastfmTags(name);
+        const genre=tags.slice(0,2).join(', ')||'—';
+        lH+=`<div class="stat"><div class="sv" style="font-size:0.7rem">${esc(genre)}</div><div class="sl">${esc(name)}</div></div>`;
+        lN++;
+      }catch(e){}
+    }
     const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
     let h=`<div class="card"><h3 style="color:var(--accent)">Venue Profile</h3><div class="stats"><div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div><div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div><div class="stat"><div class="sv">${p.capacity||'—'}</div><div class="sl">Capacity</div></div><div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${cn} events/year</div></div></div></div>`;
@@ -3615,10 +3726,9 @@ async function genReport(){
     }
 
     if(wH||lH){
-      h+=`<div class="card"><h3>Booking DNA</h3>`;
-      if(wH)h+=`<p style="font-size:0.78rem;color:var(--green);margin-bottom:8px;font-family:var(--font-head);font-weight:600">✓ Wins — avg ${fmt(wAvg)} ${cn} Spotify</p><div class="stats">${wH}</div>`;
-      if(lH)h+=`<p style="font-size:0.78rem;color:var(--amber);margin:12px 0 8px;font-family:var(--font-head);font-weight:600">✗ Losses — avg ${fmt(lAvg)} ${cn} Spotify</p><div class="stats">${lH}</div>`;
-      if(wAvg>0&&lAvg>0){const t=Math.round((wAvg+lAvg)/2);h+=`<div style="margin-top:14px;padding:12px 16px;background:var(--accent-glow);border:1px solid var(--accent);border-radius:var(--radius)"><p style="font-size:0.85rem;line-height:1.6"><strong style="color:var(--accent)">Insight:</strong> Wins avg <strong>${fmt(wAvg)}</strong>, losses avg <strong>${fmt(lAvg)}</strong>. Target above <strong style="color:var(--accent)">${fmt(t)}</strong> ${cn} Spotify.</p></div>`}
+      h+=`<div class="card"><h3>Booking DNA — Genre Profile</h3>`;
+      if(wH)h+=`<p style="font-size:0.78rem;color:var(--green);margin-bottom:8px;font-family:var(--font-head);font-weight:600">✓ What worked</p><div class="stats">${wH}</div>`;
+      if(lH)h+=`<p style="font-size:0.78rem;color:var(--amber);margin:12px 0 8px;font-family:var(--font-head);font-weight:600">✗ What didn't land</p><div class="stats">${lH}</div>`;
       h+=`</div>`;
     }
 
@@ -3638,7 +3748,7 @@ async function genReport(){
     // Calendar
     h+=`<div class="card"><h3 style="color:var(--blue)">Calendar</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Fri/Sat competition next 3 months:</p><div id="calGrid"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning…</div></div></div>`;
 
-    h+=`<div class="card"><h3>Recommendations</h3><ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)"><li>Target <strong style="color:var(--accent)">${wAvg>0?fmt(wAvg)+'+':'2K+'}</strong> ${cn} Spotify</li><li>Use <strong>Routing</strong> for cheaper bookings</li><li>Use <strong>What's On</strong> before committing dates</li><li>Use <strong>X-Ray</strong> before making offers</li></ul></div>`;
+    h+=`<div class="card"><h3>Recommendations</h3><ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)"><li>Use <strong>Routing Deals</strong> for cheaper bookings — artists already near ${cn}</li><li>Use <strong>What's On</strong> before committing to dates</li><li>Use <strong>Artist Check</strong> before making offers</li><li>Use <strong>Scene Intel</strong> to track what's working for competitors</li></ul></div>`;
 
     c.innerHTML=h;btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';
     loadCalendar();
