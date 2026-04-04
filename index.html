@@ -222,7 +222,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
       </div>
       <div class="input-group"><label>Venue Name</label>
         <div class="ac-wrap"><input type="text" id="obV" placeholder="Start typing your venue name…" autocomplete="off"></div>
-        <span class="hint">Search RA venues — we'll match your events automatically.</span>
+        <span class="hint" id="venueHint">Loading venues from RA…</span>
       </div>
       <div class="input-group"><label>Capacity</label><input type="number" id="obCap" placeholder="e.g. 400"></div>
       <button class="btn btn-red" onclick="obGo(2)">Continue</button>
@@ -321,7 +321,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
 
 <script>
 /* ═══════════════════════════════════════════
-   LIBRO v4 — Full Feature Build
+   LIBRO v5 — Clean Rebuild
+   Single bulk-fetch architecture. No chunking.
    ═══════════════════════════════════════════ */
 
 const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date contentUrl interestedCount venue{id name area{id name}} artists{id name}}}totalResults}}`;
@@ -332,14 +333,6 @@ const NEARBY_CITIES={
   london:['amsterdam','paris','brussels','manchester'],
   amsterdam:['berlin','london','brussels','paris','copenhagen'],
   paris:['london','amsterdam','brussels','berlin','barcelona'],
-  madrid:['barcelona','lisbon','paris'],
-  lisbon:['madrid','barcelona'],
-  milan:['barcelona','paris','zurich'],
-  'new york':['los angeles','detroit'],
-  'los angeles':['new york'],
-  detroit:['new york'],
-  tokyo:['seoul'],
-  seoul:['tokyo'],
 };
 const PK='libro_p',SK='libro_s',HK='libro_h',LK='libro_log',FK='libro_fees';
 const P=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch{return{}}};
@@ -359,7 +352,11 @@ const cityName=()=>{const c=P().city||'barcelona';return c.split(' ').map(w=>w.c
 const fdate=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 
 /* ═══ API LAYER ═══ */
-async function ra(v){const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:RA_Q,variables:v})});if(!r.ok)throw new Error('RA '+r.status);return r.json()}
+async function ra(v){
+  const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:RA_Q,variables:v})});
+  if(!r.ok)throw new Error('RA error '+r.status);
+  return r.json();
+}
 async function sc(path){const r=await fetch('/api/soundcharts'+path);if(!r.ok)throw new Error('SC '+r.status);return r.json()}
 async function scSearch(name){const d=await sc('/api/v2/artist/search/'+encodeURIComponent(name)+'?limit=1');return d.items?.length?d.items[0]:null}
 async function scSearchMulti(query,limit=5){const d=await sc('/api/v2/artist/search/'+encodeURIComponent(query)+'?limit='+limit);return d.items||[]}
@@ -371,258 +368,224 @@ async function scSpotify(uuid){
   const cp=(i.cityPlots||[]).find(c=>c.cityName&&c.cityName.toLowerCase().includes(city));
   return{g:i.value||0,c:cp?cp.value||0:0};
 }
-async function scInstagram(uuid){
-  try{
-    const d=await sc('/api/v2/artist/'+uuid+'/social/instagram');
-    const i=(d.items||[])[0];if(!i)return{ig:0,igCountry:0,igCity:0};
-    const city=(P().city||'barcelona').toLowerCase();
-    const country=city==='barcelona'||city==='madrid'||city==='ibiza'?'spain':city==='berlin'?'germany':city==='london'||city==='manchester'?'united kingdom':city==='amsterdam'?'netherlands':city==='paris'?'france':city==='lisbon'?'portugal':city==='milan'?'italy':'';
-    let igCountry=0,igCity=0;
-    if(i.countryPlots){const cp=i.countryPlots.find(c=>c.countryName&&c.countryName.toLowerCase()===country);if(cp)igCountry=cp.value||0}
-    if(i.cityPlots){const cp=i.cityPlots.find(c=>c.cityName&&c.cityName.toLowerCase().includes(city));if(cp)igCity=cp.value||0}
-    return{ig:i.value||0,igCountry,igCity};
-  }catch(e){return{ig:0,igCountry:0,igCity:0}}
+
+/* ═══ CACHED RA ENGINE ═══ */
+
+const CACHE_KEY='libro_ra_cache';
+const CACHE_MAX_AGE=12*60*60*1000; // 12 hours
+
+/* Get/set the event cache from localStorage */
+function getCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY))||null}catch{return null}}
+function setCache(data){try{localStorage.setItem(CACHE_KEY,JSON.stringify(data))}catch(e){console.warn('Cache write failed (storage full?)',e)}}
+
+/* Is cache fresh and for the right city? */
+function cacheValid(){
+  const c=getCache();
+  if(!c)return false;
+  if(c.areaCode!==areaId())return false;
+  if(Date.now()-c.ts>CACHE_MAX_AGE)return false;
+  return true;
 }
 
-/* ═══ RA LIVE CHECKS ═══ */
-
-/* Helper: generate date chunks covering a range. chunkMonths controls granularity. */
-function dateChunks(fromDate, toDate, chunkMonths=1){
-  const chunks=[];
-  let cur=new Date(fromDate);
-  while(cur<toDate){
-    const end=new Date(cur);end.setMonth(end.getMonth()+chunkMonths);
-    if(end>toDate)chunks.push([cur.toISOString().slice(0,10),toDate.toISOString().slice(0,10)]);
-    else chunks.push([cur.toISOString().slice(0,10),end.toISOString().slice(0,10)]);
-    cur=end;
-  }
-  return chunks;
-}
-
-/* Helper: match artist name with fuzzy logic */
-function nameMatch(n, target){
-  return n===target||(target.length>=5&&n.includes(target))||(n.length>=5&&target.includes(n));
-}
-
-/* Scan RA area for an artist within a date range, in 2-month chunks.
-   Returns first hit: {hit:true, date, venue, attending} or {hit:false} */
-async function raScanArea(name, areaCode, fromDate, toDate){
-  const target=norm(name);
-  const chunks=dateChunks(fromDate, toDate, 2);
-  for(const [gte,lte] of chunks){
-    for(let p=1;p<=20;p++){
-      const d=await ra({f:{areas:{eq:areaCode},listingDate:{gte,lte}},fo:{},p,s:50});
-      const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
-      for(const el of evs){const ev=el.event||{};
-        for(const ar of(ev.artists||[])){const n=norm(ar.name||'');
-          if(nameMatch(n,target))
-            return{hit:true,date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',attending:ev.interestedCount||0};
-      }}
-      if(p*50>=tot)break;
+/* Fetch all events for area+dateRange from RA. Raw fetch, no caching. */
+async function raBulkFetch(areaCode, from, to, maxPages=60){
+  const events=[];
+  const gte=from instanceof Date?from.toISOString().slice(0,10):from;
+  const lte=to instanceof Date?to.toISOString().slice(0,10):to;
+  for(let p=1;p<=maxPages;p++){
+    const d=await ra({f:{areas:{eq:areaCode},listingDate:{gte,lte}},fo:{},p,s:50});
+    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
+    for(const el of evs){
+      const ev=el.event||{};
+      events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
     }
+    if(p*50>=tot)break;
   }
-  return{hit:false};
+  return events;
 }
 
-/* Collect ALL appearances of an artist in an area, in 3-month chunks for thoroughness */
-async function raCollectShows(name, areaCode, fromDate, toDate){
-  const target=norm(name), shows=[];
-  const chunks=dateChunks(fromDate, toDate, 3);
-  for(const [gte,lte] of chunks){
-    for(let p=1;p<=20;p++){
-      const d=await ra({f:{areas:{eq:areaCode},listingDate:{gte,lte}},fo:{},p,s:50});
-      const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
-      for(const el of evs){const ev=el.event||{};
-        for(const ar of(ev.artists||[])){const n=norm(ar.name||'');
-          if(nameMatch(n,target))
-            shows.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',title:ev.title||'',att:ev.interestedCount||0});
-      }}
-      if(p*50>=tot)break;
-    }
+/* Build or refresh the city event cache (12mo back + 6mo forward). 
+   Shows a status bar at the top while loading. */
+let _cachePromise=null;
+async function ensureCache(force=false){
+  if(!force&&cacheValid())return getCache().events;
+  // Prevent duplicate parallel fetches
+  if(_cachePromise)return _cachePromise;
+  _cachePromise=(async()=>{
+    showCacheStatus('Loading '+cityName()+' event data…');
+    try{
+      const now=new Date();
+      const ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+      const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
+      const events=await raBulkFetch(areaId(),ago,fwd,80);
+      setCache({areaCode:areaId(),ts:Date.now(),events});
+      showCacheStatus(events.length+' events cached ✓',true);
+      return events;
+    }catch(e){
+      showCacheStatus('Cache failed: '+e.message,true);
+      return getCache()?.events||[];
+    }finally{_cachePromise=null}
+  })();
+  return _cachePromise;
+}
+
+/* Tiny status bar for cache loading */
+function showCacheStatus(msg,autoHide){
+  let bar=document.getElementById('cacheBar');
+  if(!bar){
+    bar=document.createElement('div');bar.id='cacheBar';
+    bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999;background:var(--surface-2);border-bottom:1px solid var(--border);padding:6px 20px;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);text-align:center;transition:opacity 0.3s';
+    document.body.prepend(bar);
   }
-  // Deduplicate by date+venue
+  bar.textContent=msg;bar.style.opacity='1';
+  if(autoHide)setTimeout(()=>{bar.style.opacity='0';setTimeout(()=>bar.remove(),300)},2000);
+}
+
+/* Get cached events filtered to a date range. Instant, no API calls. */
+function getCachedEvents(from,to){
+  const c=getCache();if(!c)return[];
+  const gte=from instanceof Date?from.toISOString().slice(0,10):from;
+  const lte=to instanceof Date?to.toISOString().slice(0,10):to;
+  return c.events.filter(e=>e.date>=gte&&e.date<=lte);
+}
+
+/* Get city events for a range — uses cache for past, live fetch for gaps */
+async function getCityEvents(from,to){
+  await ensureCache();
+  return getCachedEvents(from,to);
+}
+
+/* Build norm(name)→{name,date,venue,attending} index */
+function buildIndex(events){
+  const idx=new Map();
+  for(const ev of events)for(const a of ev.artists){const n=norm(a);if(n&&!idx.has(n))idx.set(n,{name:a,date:ev.date,venue:ev.venue,attending:ev.attending})}
+  return idx;
+}
+
+/* Lookup artist in index — exact then fuzzy */
+function idxLookup(idx,name){
+  const t=norm(name);
+  if(idx.has(t))return idx.get(t);
+  if(t.length>=5)for(const[k,v] of idx)if(k.length>=5&&(k.includes(t)||t.includes(k)))return v;
+  return null;
+}
+
+/* Extract all shows for an artist from events */
+function extractShows(events,name){
+  const t=norm(name),shows=[];
+  for(const ev of events)for(const a of ev.artists){
+    const n=norm(a);
+    if(n===t||(n.length>=5&&t.length>=5&&(n.includes(t)||t.includes(n)))){shows.push({date:ev.date,venue:ev.venue,title:ev.title,att:ev.attending});break}
+  }
   const seen=new Set();
-  const unique=shows.filter(s=>{const k=s.date+'|'+s.venue;if(seen.has(k))return false;seen.add(k);return true});
-  unique.sort((a,b)=>b.date.localeCompare(a.date));
-  return unique;
+  return shows.filter(s=>{const k=s.date+'|'+s.venue;if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>b.date.localeCompare(a.date));
 }
 
-/* Check if artist has played / is booked in user's city within exclusion window */
-async function raCity(name,eventDate,backMonths,fwdMonths){
-  backMonths=backMonths||parseInt(document.getElementById('filterBack')?.value)||7;
-  fwdMonths=fwdMonths||parseInt(document.getElementById('filterFwd')?.value)||3;
-  const anchor=new Date(eventDate);
-  const from=new Date(anchor);from.setMonth(anchor.getMonth()-backMonths);
-  const to=new Date(anchor);to.setMonth(anchor.getMonth()+fwdMonths);
-  return raScanArea(name, areaId(), from, to);
-}
-
-/* Same but for a specific area code (used by routing) */
-async function raCityCustom(name,eventDate,areaCode,backMonths,fwdMonths){
-  const anchor=new Date(eventDate);
-  const from=new Date(anchor);from.setMonth(anchor.getMonth()-backMonths);
-  const to=new Date(anchor);to.setMonth(anchor.getMonth()+fwdMonths);
-  return raScanArea(name, areaCode, from, to);
-}
-
-/* Full show history: 2 years back + 6 months forward, month-by-month */
-async function raHistory(name){
-  const now=new Date();
-  const ago=new Date(now);ago.setFullYear(now.getFullYear()-2);
-  const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
-  return raCollectShows(name, areaId(), ago, fwd);
+/* Worldwide same-day index — always live (different cities each time) */
+async function raWorldwide(dateStr){
+  const idx=new Map();
+  for(let p=1;p<=10;p++){
+    const d=await ra({f:{listingDate:{gte:dateStr,lte:dateStr}},fo:{},p,s:50});
+    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
+    for(const el of evs){const ev=el.event||{};
+      for(const a of(ev.artists||[])){const n=norm(a.name||'');if(n&&!idx.has(n))idx.set(n,{venue:(ev.venue||{}).name||'?',area:((ev.venue||{}).area||{}).name||'?'})}}
+    if(p*50>=tot)break;
+  }
+  return idx;
 }
 
 /* ═══ AUTOCOMPLETE ═══ */
-let acTimer=null,acIdx=-1;
 function setupAutocomplete(inputEl,onSelect){
   const wrap=inputEl.closest('.ac-wrap');
   let dd=wrap.querySelector('.ac-dropdown');
   if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
-
+  let timer=null,idx=-1;
   inputEl.addEventListener('input',()=>{
-    clearTimeout(acTimer);
-    const q=inputEl.value.trim();
+    clearTimeout(timer);const q=inputEl.value.trim();
     if(q.length<3){dd.classList.remove('open');dd.innerHTML='';return}
-    acTimer=setTimeout(async()=>{
+    timer=setTimeout(async()=>{
       try{
-        const results=await scSearchMulti(q,5);
-        if(!results.length){dd.classList.remove('open');dd.innerHTML='';return}
-        dd.innerHTML=results.map((r,i)=>{
-          const img=r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:`<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);flex-shrink:0"></div>`;
-          return`<div class="ac-item" data-idx="${i}">${img}<div><div class="ac-name">${esc(r.name)}</div></div></div>`;
-        }).join('');
-        dd.classList.add('open');
-        acIdx=-1;
-        dd.querySelectorAll('.ac-item').forEach((item,i)=>{
-          item.addEventListener('click',()=>{
-            onSelect(results[i]);
-            dd.classList.remove('open');dd.innerHTML='';
-          });
-        });
+        const res=await scSearchMulti(q,5);
+        if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
+        dd.innerHTML=res.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div></div></div>`).join('');
+        dd.classList.add('open');idx=-1;
+        dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{onSelect(res[i]);dd.classList.remove('open');dd.innerHTML=''}));
       }catch(e){dd.classList.remove('open')}
     },300);
   });
-
-  inputEl.addEventListener('keydown',e=>{
-    const items=dd.querySelectorAll('.ac-item');
-    if(!items.length)return;
-    if(e.key==='ArrowDown'){e.preventDefault();acIdx=Math.min(acIdx+1,items.length-1);items.forEach((it,i)=>it.classList.toggle('selected',i===acIdx))}
-    else if(e.key==='ArrowUp'){e.preventDefault();acIdx=Math.max(acIdx-1,0);items.forEach((it,i)=>it.classList.toggle('selected',i===acIdx))}
-    else if(e.key==='Enter'&&acIdx>=0){e.preventDefault();items[acIdx].click()}
-    else if(e.key==='Escape'){dd.classList.remove('open')}
-  });
-
+  inputEl.addEventListener('keydown',e=>{const its=dd.querySelectorAll('.ac-item');if(!its.length)return;if(e.key==='ArrowDown'){e.preventDefault();idx=Math.min(idx+1,its.length-1);its.forEach((it,i)=>it.classList.toggle('selected',i===idx))}else if(e.key==='ArrowUp'){e.preventDefault();idx=Math.max(idx-1,0);its.forEach((it,i)=>it.classList.toggle('selected',i===idx))}else if(e.key==='Enter'&&idx>=0){e.preventDefault();its[idx].click()}else if(e.key==='Escape')dd.classList.remove('open')});
   document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
 }
 
-/* ═══ VENUE AUTOCOMPLETE (RA) ═══ */
-let venueAcTimer=null;
-function setupVenueAutocomplete(){
-  const inputEl=document.getElementById('obV');
-  const wrap=inputEl.closest('.ac-wrap');
+/* Seed textarea autocomplete — works per-line */
+function setupSeedAC(){
+  const ta=document.getElementById('seedInput'),wrap=ta.closest('.ac-wrap');
   let dd=wrap.querySelector('.ac-dropdown');
   if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
+  let timer=null;
+  ta.addEventListener('input',()=>{
+    clearTimeout(timer);
+    const val=ta.value,cp=ta.selectionStart,before=val.substring(0,cp);
+    const nl=before.lastIndexOf('\n');
+    const line=(nl>=0?before.substring(nl+1):before).trim();
+    if(line.length<3){dd.classList.remove('open');dd.innerHTML='';return}
+    timer=setTimeout(async()=>{
+      try{
+        const res=await scSearchMulti(line,5);
+        if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
+        dd.innerHTML=res.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div></div></div>`).join('');
+        dd.classList.add('open');
+        dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{
+          const v=ta.value,c=ta.selectionStart,b=v.substring(0,c),n=b.lastIndexOf('\n');
+          const pre=n>=0?v.substring(0,n+1):'';const aft=v.substring(c),anl=aft.indexOf('\n');
+          ta.value=pre+res[i].name+(anl>=0?aft.substring(anl):'');
+          dd.classList.remove('open');dd.innerHTML='';ta.focus();
+        }));
+      }catch(e){dd.classList.remove('open')}
+    },300);
+  });
+  ta.addEventListener('keydown',e=>{const its=dd.querySelectorAll('.ac-item');if(!its.length||!dd.classList.contains('open'))return;if(e.key==='ArrowDown'){e.preventDefault();const c=[...its].findIndex(x=>x.classList.contains('selected'));const i=Math.min(c+1,its.length-1);its.forEach((it,j)=>it.classList.toggle('selected',j===i))}else if(e.key==='ArrowUp'){e.preventDefault();const c=[...its].findIndex(x=>x.classList.contains('selected'));its.forEach((it,j)=>it.classList.toggle('selected',j===Math.max(c-1,0)))}else if(e.key==='Enter'){const sel=dd.querySelector('.ac-item.selected');if(sel){e.preventDefault();sel.click()}}else if(e.key==='Escape')dd.classList.remove('open')});
+  document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
+}
 
-  inputEl.addEventListener('input',()=>{
-    clearTimeout(venueAcTimer);
-    const q=inputEl.value.trim();
+/* Venue autocomplete from cached event data */
+function setupVenueAC(){
+  const inp=document.getElementById('obV'),wrap=inp.closest('.ac-wrap'),sel=document.getElementById('obC');
+  let dd=wrap.querySelector('.ac-dropdown');
+  if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
+  // Load cache for selected city
+  const loadForCity=async()=>{
+    const area=AREAS[sel.value]||20;
+    // Use cache if available, otherwise quick fetch
+    const c=getCache();
+    let events;
+    if(c&&c.areaCode===area){events=c.events}
+    else{
+      const h=document.getElementById('venueHint');if(h)h.textContent='Loading venues…';
+      const now=new Date(),ago=new Date(now);ago.setMonth(now.getMonth()-6);
+      events=await raBulkFetch(area,ago,now,10);
+    }
+    const map=new Map();
+    for(const ev of events)if(ev.venue&&ev.venue!=='?')map.set(ev.venue,{name:ev.venue});
+    venueCache=[...map.values()].sort((a,b)=>a.name.localeCompare(b.name));
+    const h=document.getElementById('venueHint');if(h)h.textContent=venueCache.length+' venues — start typing.';
+  };
+  loadForCity();
+  sel.addEventListener('change',()=>{venueCache=null;loadForCity()});
+  let timer=null;
+  inp.addEventListener('input',()=>{
+    clearTimeout(timer);const q=inp.value.trim().toLowerCase();
     if(q.length<2){dd.classList.remove('open');dd.innerHTML='';return}
-    venueAcTimer=setTimeout(async()=>{
-      try{
-        const citySelect=document.getElementById('obC');
-        const areaCode=AREAS[citySelect.value]||20;
-        // Search RA for venues in this city
-        const venueQ=`query V($f:VenueFilterInput,$p:Int,$s:Int){venues(filters:$f,pageSize:$s,page:$p){data{id name area{id name} contentUrl}totalResults}}`;
-        const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:venueQ,variables:{f:{areas:{eq:areaCode},name:{includes:q}},p:1,s:8}})});
-        if(!r.ok)throw new Error('RA '+r.status);
-        const data=await r.json();
-        const venues=data?.data?.venues?.data||[];
-        if(!venues.length){dd.classList.remove('open');dd.innerHTML='';return}
-        dd.innerHTML=venues.map((v,i)=>`<div class="ac-item" data-idx="${i}"><div><div class="ac-name">${esc(v.name)}</div><div class="ac-sub">${esc((v.area||{}).name||'')}</div></div></div>`).join('');
-        dd.classList.add('open');
-        dd.querySelectorAll('.ac-item').forEach((item,i)=>{
-          item.addEventListener('click',()=>{
-            inputEl.value=venues[i].name;
-            inputEl._selectedVenue=venues[i];
-            dd.classList.remove('open');dd.innerHTML='';
-          });
-        });
-      }catch(e){
-        // If RA venue search fails, silently allow freetext
-        dd.classList.remove('open');
-      }
-    },400);
+    timer=setTimeout(()=>{
+      if(!venueCache)return;
+      const m=venueCache.filter(v=>v.name.toLowerCase().includes(q)).slice(0,8);
+      if(!m.length){dd.classList.remove('open');dd.innerHTML='';return}
+      dd.innerHTML=m.map((v,i)=>`<div class="ac-item" data-idx="${i}"><div><div class="ac-name">${esc(v.name)}</div></div></div>`).join('');
+      dd.classList.add('open');
+      dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{inp.value=m[i].name;dd.classList.remove('open');dd.innerHTML=''}));
+    },150);
   });
-
-  inputEl.addEventListener('keydown',e=>{
-    const items=dd.querySelectorAll('.ac-item');
-    if(!items.length)return;
-    if(e.key==='ArrowDown'){e.preventDefault();const idx=Math.min(([...items].findIndex(x=>x.classList.contains('selected'))||0)+1,items.length-1);items.forEach((it,i)=>it.classList.toggle('selected',i===idx))}
-    else if(e.key==='ArrowUp'){e.preventDefault();const idx=Math.max(([...items].findIndex(x=>x.classList.contains('selected'))||0)-1,0);items.forEach((it,i)=>it.classList.toggle('selected',i===idx))}
-    else if(e.key==='Enter'){e.preventDefault();const sel=dd.querySelector('.ac-item.selected')||dd.querySelector('.ac-item');if(sel)sel.click()}
-    else if(e.key==='Escape'){dd.classList.remove('open')}
-  });
-
-  document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
-}
-
-/* ═══ SEED TEXTAREA AUTOCOMPLETE ═══ */
-let seedAcTimer=null;
-function setupSeedAutocomplete(){
-  const textarea=document.getElementById('seedInput');
-  const wrap=textarea.closest('.ac-wrap');
-  let dd=wrap.querySelector('.ac-dropdown');
-  if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
-
-  textarea.addEventListener('input',()=>{
-    clearTimeout(seedAcTimer);
-    // Get current line being typed
-    const val=textarea.value;
-    const cursorPos=textarea.selectionStart;
-    const beforeCursor=val.substring(0,cursorPos);
-    const lastNewline=beforeCursor.lastIndexOf('\n');
-    const currentLine=(lastNewline>=0?beforeCursor.substring(lastNewline+1):beforeCursor).trim();
-
-    if(currentLine.length<3){dd.classList.remove('open');dd.innerHTML='';return}
-    seedAcTimer=setTimeout(async()=>{
-      try{
-        const results=await scSearchMulti(currentLine,5);
-        if(!results.length){dd.classList.remove('open');dd.innerHTML='';return}
-        dd.innerHTML=results.map((r,i)=>{
-          const img=r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:`<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);flex-shrink:0"></div>`;
-          return`<div class="ac-item" data-idx="${i}">${img}<div><div class="ac-name">${esc(r.name)}</div></div></div>`;
-        }).join('');
-        dd.classList.add('open');
-        dd.querySelectorAll('.ac-item').forEach((item,i)=>{
-          item.addEventListener('click',()=>{
-            // Replace current line with selected artist name
-            const val2=textarea.value;
-            const cp=textarea.selectionStart;
-            const before=val2.substring(0,cp);
-            const lastNl=before.lastIndexOf('\n');
-            const prefix=lastNl>=0?val2.substring(0,lastNl+1):'';
-            const after=val2.substring(cp);
-            const afterNewline=after.indexOf('\n');
-            const suffix=afterNewline>=0?after.substring(afterNewline):'';
-            textarea.value=prefix+results[i].name+suffix;
-            dd.classList.remove('open');dd.innerHTML='';
-            textarea.focus();
-          });
-        });
-      }catch(e){dd.classList.remove('open')}
-    },300);
-  });
-
-  textarea.addEventListener('keydown',e=>{
-    const items=dd.querySelectorAll('.ac-item');
-    if(!items.length||!dd.classList.contains('open'))return;
-    if(e.key==='ArrowDown'){e.preventDefault();const cur=[...items].findIndex(x=>x.classList.contains('selected'));const idx=Math.min(cur+1,items.length-1);items.forEach((it,i)=>it.classList.toggle('selected',i===idx))}
-    else if(e.key==='ArrowUp'){e.preventDefault();const cur=[...items].findIndex(x=>x.classList.contains('selected'));const idx=Math.max(cur<=0?0:cur-1,0);items.forEach((it,i)=>it.classList.toggle('selected',i===idx))}
-    else if(e.key==='Enter'){const sel=dd.querySelector('.ac-item.selected');if(sel){e.preventDefault();sel.click()}}
-    else if(e.key==='Escape'){dd.classList.remove('open')}
-  });
-
+  inp.addEventListener('keydown',e=>{const its=dd.querySelectorAll('.ac-item');if(!its.length||!dd.classList.contains('open'))return;if(e.key==='Enter'){e.preventDefault();const s=dd.querySelector('.ac-item.selected')||dd.querySelector('.ac-item');if(s)s.click()}else if(e.key==='Escape')dd.classList.remove('open')});
   document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
 }
 
@@ -640,23 +603,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     b.classList.add('active');document.getElementById('panel-'+b.dataset.tab).classList.add('active');
   }));
   renderSaved();renderSeeds();
-
-  // Setup autocomplete on X-Ray input
-  setupAutocomplete(document.getElementById('xIn'),(artist)=>{
-    document.getElementById('xIn').value=artist.name;
-    document.getElementById('xIn')._selectedArtist=artist;
-  });
-
-  // Setup seed textarea autocomplete
-  setupSeedAutocomplete();
-
-  // Setup venue autocomplete on onboarding
-  setupVenueAutocomplete();
-
-  // Update city labels
+  setupAutocomplete(document.getElementById('xIn'),a=>{document.getElementById('xIn').value=a.name});
+  setupSeedAC();
+  setupVenueAC();
   updateCityLabels();
+  // Pre-load event cache in background
+  if(P().venue)ensureCache();
 });
-
 function updateCityLabels(){
   const cn=cityName();
   document.querySelectorAll('#fCityD,#fCityR').forEach(el=>el.textContent=cn);
@@ -666,11 +619,18 @@ function updateCityLabels(){
 /* ═══ ONBOARDING ═══ */
 function obGo(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));document.getElementById('ob'+n).classList.add('active');for(let i=1;i<=3;i++)document.getElementById('d'+i).classList.toggle('active',i<=n)}
 function obDone(){
-  const cityVal=document.getElementById('obC').value.toLowerCase();
-  setP({venue:document.getElementById('obV').value.trim(),city:cityVal,capacity:parseInt(document.getElementById('obCap').value)||0,wins:document.getElementById('obW').value.split('\n').filter(Boolean).map(s=>s.trim()),losses:document.getElementById('obL').value.split('\n').filter(Boolean).map(s=>s.trim()),budget:document.getElementById('obB').value,freq:document.getElementById('obF').value,created:new Date().toISOString()});
+  setP({venue:document.getElementById('obV').value.trim(),city:document.getElementById('obC').value,capacity:parseInt(document.getElementById('obCap').value)||0,wins:document.getElementById('obW').value.split('\n').filter(Boolean).map(s=>s.trim()),losses:document.getElementById('obL').value.split('\n').filter(Boolean).map(s=>s.trim()),budget:document.getElementById('obB').value,freq:document.getElementById('obF').value,created:new Date().toISOString()});
   showApp();
 }
-function showApp(){document.getElementById('onboarding').style.display='none';document.getElementById('mainTabs').style.display='flex';document.getElementById('panel-discover').classList.add('active');const p=P(),pill=document.getElementById('venuePill');pill.textContent=p.venue+' · '+p.city;pill.style.display='inline-block';updateCityLabels()}
+function showApp(){
+  document.getElementById('onboarding').style.display='none';
+  document.getElementById('mainTabs').style.display='flex';
+  document.getElementById('panel-discover').classList.add('active');
+  const p=P(),pill=document.getElementById('venuePill');
+  pill.textContent=p.venue+' · '+cityName();
+  pill.style.display='inline-block';
+  updateCityLabels();
+}
 function resetOb(){if(confirm('Reconfigure venue?')){localStorage.removeItem(PK);location.reload()}}
 
 /* ═══ SEED HISTORY ═══ */
@@ -682,580 +642,349 @@ function renderSeeds(){
 function addSeed(n){const el=document.getElementById('seedInput'),ls=el.value.trim().split('\n').filter(Boolean);if(!ls.some(l=>l.toLowerCase()===n.toLowerCase())){ls.push(n);el.value=ls.join('\n')}}
 
 /* ═══ PROGRESS ═══ */
-function prog(lbl,pct,detail){
-  const w=document.getElementById('dProg');w.classList.add('visible');
-  if(lbl)document.getElementById('pLbl').textContent=lbl;
-  document.getElementById('pFill').style.width=pct+'%';
-  if(detail){const d=document.getElementById('pDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}
-}
+function prog(lbl,pct,detail){const w=document.getElementById('dProg');w.classList.add('visible');if(lbl)document.getElementById('pLbl').textContent=lbl;document.getElementById('pFill').style.width=pct+'%';if(detail){const d=document.getElementById('pDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}}
 function progReset(){document.getElementById('dProg').classList.remove('visible');document.getElementById('pDet').innerHTML='';document.getElementById('pFill').style.width='0%'}
-function rteProg(lbl,pct,detail){
-  const w=document.getElementById('rteProg');w.classList.add('visible');
-  if(lbl)document.getElementById('rteLbl').textContent=lbl;
-  document.getElementById('rteFill').style.width=pct+'%';
-  if(detail){const d=document.getElementById('rteDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}
-}
+function rteProg(lbl,pct,detail){const w=document.getElementById('rteProg');w.classList.add('visible');if(lbl)document.getElementById('rteLbl').textContent=lbl;document.getElementById('rteFill').style.width=pct+'%';if(detail){const d=document.getElementById('rteDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}}
 function rteProgReset(){document.getElementById('rteProg').classList.remove('visible');document.getElementById('rteDet').innerHTML='';document.getElementById('rteFill').style.width='0%'}
 
 /* ═══ DISCOVER ═══ */
 async function runDiscover(){
   const text=document.getElementById('seedInput').value.trim(),date=document.getElementById('eventDate').value,min=parseInt(document.getElementById('minBcn').value)||2000;
-  const backMo=parseInt(document.getElementById('filterBack').value)||7;
-  const fwdMo=parseInt(document.getElementById('filterFwd').value)||3;
+  const backMo=parseInt(document.getElementById('filterBack').value)||7,fwdMo=parseInt(document.getElementById('filterFwd').value)||3;
   if(!text)return;
   const seedList=text.split('\n').map(s=>s.trim()).filter(Boolean);
-  saveSeeds(seedList);addLog({type:'search',seeds:seedList,date,city:P().city});
-  const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='Working…';
-  progReset();document.getElementById('dRes').innerHTML='';
+  saveSeeds(seedList);const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='Working…';
+  progReset();document.getElementById('dRes').innerHTML='';const cn=cityName();
 
-  const cn=cityName();
-  prog('Resolving seeds on Soundcharts…',5);
-  const resolved=[];
-  for(const seed of seedList){
-    try{const a=await scSearch(seed);if(a){resolved.push({name:a.name||seed,uuid:a.uuid,imageUrl:a.imageUrl||'',seed});prog(null,10,'✓ '+seed+(a.imageUrl?' 📷':''))}else prog(null,10,'✗ '+seed+' not found')}
-    catch(e){prog(null,10,'✗ '+seed+' — '+e.message)}
-  }
-  if(!resolved.length){prog('No seeds found. Check spelling.',10);btn.disabled=false;btn.textContent='Discover';return}
-
-  prog('Finding related artists…',20);
-  const cmap=new Map();
-  for(const s of resolved){
-    try{const rel=await scRelated(s.uuid);prog(null,25,s.name+': '+rel.length+' related');
-      for(const r of rel){if(resolved.some(x=>x.uuid===r.uuid))continue;if(!cmap.has(r.uuid))cmap.set(r.uuid,{name:r.name,uuid:r.uuid,imageUrl:r.imageUrl||'',seeds:[]});cmap.get(r.uuid).seeds.push(s.seed)}
-    }catch(e){prog(null,25,s.name+': '+e.message)}
-  }
-  const cands=Array.from(cmap.values());prog(cands.length+' candidates found',30);
-
-  prog('Checking '+cn+' availability ('+backMo+'mo back / '+fwdMo+'mo forward)…',35);
-  let raX=0;const afterRA=[];
-  for(let i=0;i<cands.length;i++){
-    const c=cands[i],pct=35+Math.round((i/cands.length)*20);
-    try{const r=await raCity(c.name,date,backMo,fwdMo);
-      if(r.hit){raX++;prog(null,pct,'✗ '+c.name+' — '+r.date+' @ '+r.venue+(r.attending?' ('+r.attending+' going)':''))}
-      else afterRA.push(c);
-    }catch(e){afterRA.push(c)}
-  }
-  prog(raX+' excluded, '+afterRA.length+' remain',55);
-
-  prog('Checking worldwide conflicts on '+date+'…',60);
-  let sdX=0;const afterSD=[],wn=new Map();
   try{
-    for(let p=1;p<=20;p++){
-      const d=await ra({f:{listingDate:{gte:date,lte:date}},fo:{},p,s:50});
-      const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
-      for(const el of evs){const ev=el.event||{};for(const a of(ev.artists||[]))wn.set(norm(a.name||''),{v:(ev.venue||{}).name,a:((ev.venue||{}).area||{}).name})}
-      if(p*50>=tot)break;
+    // Step 1: resolve seeds
+    prog('Resolving seeds…',5);
+    const resolved=[];
+    for(const seed of seedList){
+      try{const a=await scSearch(seed);if(a){resolved.push({name:a.name||seed,uuid:a.uuid,imageUrl:a.imageUrl||'',seed});prog(null,10,'✓ '+seed)}else prog(null,10,'✗ '+seed+' — not found')}catch(e){prog(null,10,'✗ '+seed+' — '+e.message)}
     }
-    prog(null,65,wn.size+' artists playing worldwide');
-  }catch(e){prog(null,65,'Worldwide check failed')}
+    if(!resolved.length){prog('No seeds found.',10);btn.disabled=false;btn.textContent='Discover';return}
 
-  for(const c of afterRA){
-    const t=norm(c.name);let blocked=false;
-    for(const[k,v] of wn){const lr=Math.min(k.length,t.length)/Math.max(k.length,t.length);
-      if(k===t||(t.length>=5&&lr>0.6&&k.includes(t))||(k.length>=5&&lr>0.6&&t.includes(k))){sdX++;prog(null,70,'✗ '+c.name+' — '+v.v+' ('+v.a+')');blocked=true;break}}
-    if(!blocked)afterSD.push(c);
-  }
-  prog(sdX+' same-day conflicts, '+afterSD.length+' remain',70);
+    // Step 2: related artists
+    prog('Finding related artists…',15);
+    const cmap=new Map();
+    for(const s of resolved){
+      try{const rel=await scRelated(s.uuid);prog(null,20,s.name+': '+rel.length+' related');
+        for(const r of rel){if(resolved.some(x=>x.uuid===r.uuid))continue;if(!cmap.has(r.uuid))cmap.set(r.uuid,{name:r.name,uuid:r.uuid,imageUrl:r.imageUrl||'',seeds:[]});cmap.get(r.uuid).seeds.push(s.seed)}
+      }catch(e){prog(null,20,s.name+': error')}
+    }
+    const cands=Array.from(cmap.values());prog(cands.length+' candidates',25);
 
-  prog('Fetching Spotify + Instagram data…',75);
-  const wd=[];
-  for(let i=0;i<afterSD.length;i++){
-    const c=afterSD[i],pct=75+Math.round((i/afterSD.length)*15);
-    try{
-      const s=await scSpotify(c.uuid);c.bcn=s.c;c.global=s.g;
-      const ig=await scInstagram(c.uuid);c.ig=ig.ig;c.igCountry=ig.igCountry;c.igCity=ig.igCity;
-      wd.push(c);if(s.c>0)prog(null,pct,'✓ '+c.name+' '+fmt(s.c)+' '+cn+(ig.ig?' · IG '+fmt(ig.ig):''));
-    }catch(e){c.bcn=0;c.global=0;c.ig=0;c.igCountry=0;c.igCity=0;wd.push(c)}
-  }
-  const qual=wd.filter(a=>(a.bcn||0)>=min);qual.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
-  prog('Done! '+qual.length+' artists above '+fmt(min)+' '+cn+' Spotify',100);
-  renderDiscover(qual);btn.disabled=false;btn.textContent='Discover';
+    // Step 3: city exclusion from cache (instant)
+    prog('Checking '+cn+' availability…',30);
+    const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
+    exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
+    const cityEvents=await getCityEvents(exFrom,exTo);
+    const cityIdx=buildIndex(cityEvents);
+    prog(null,45,cityIdx.size+' artists in exclusion window');
+
+    let raX=0;const afterRA=[];
+    for(const c of cands){const hit=idxLookup(cityIdx,c.name);if(hit){raX++;prog(null,50,'✗ '+c.name+' — '+fdate(hit.date)+' @ '+hit.venue)}else afterRA.push(c)}
+    prog(raX+' excluded, '+afterRA.length+' remain',50);
+
+    // Step 4: worldwide same-day
+    prog('Checking worldwide conflicts…',55);
+    const wwIdx=await raWorldwide(date);
+    prog(null,60,wwIdx.size+' artists worldwide on '+fdate(date));
+    let sdX=0;const afterSD=[];
+    for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' — '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
+    prog(sdX+' same-day conflicts, '+afterSD.length+' remain',65);
+
+    // Step 5: Spotify
+    prog('Fetching Spotify data…',70);
+    const wd=[];
+    for(let i=0;i<afterSD.length;i++){
+      const c=afterSD[i];
+      try{const s=await scSpotify(c.uuid);c.bcn=s.c;c.global=s.g;wd.push(c);if(s.c>0)prog(null,70+Math.round((i/afterSD.length)*25),'✓ '+c.name+' '+fmt(s.c)+' '+cn)}
+      catch(e){c.bcn=0;c.global=0;wd.push(c)}
+    }
+    const qual=wd.filter(a=>(a.bcn||0)>=min);qual.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
+    prog('Done! '+qual.length+' artists above '+fmt(min),100);
+    renderDiscover(qual);
+  }catch(e){prog('Error: '+e.message,100)}
+  btn.disabled=false;btn.textContent='Discover';
 }
 
 function renderDiscover(arts){
   const c=document.getElementById('dRes'),cn=cityName();
   if(!arts.length){c.innerHTML='<div class="empty">No artists passed all filters. Try different seeds or lower the threshold.</div>';return}
-  let h='<div class="section-head"><h2>Results</h2><span class="count">'+arts.length+' artists · by local Spotify</span></div>';
+  let h='<div class="section-head"><h2>Results</h2><span class="count">'+arts.length+' artists · by '+cn+' Spotify</span></div>';
   arts.forEach((a,i)=>{
     const tags=a.seeds.map(s=>'<span class="tag">'+esc(s)+'</span>').join('');
     const sv=saved().some(s=>s.name===a.name);
-    const imgH=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
-    const igLine=a.ig?`<div class="ig-line">IG: ${fmt(a.ig)} global${a.igCountry?' · '+getCountryLabel()+': '+fmt(a.igCountry):''}${a.igCity?' · '+cn+': '+fmt(a.igCity):''}</div>`:'';
-    h+=`<div class="result-item" style="animation-delay:${i*30}ms">
-      <div class="ri-rank">${i+1}</div>
-      ${imgH}
-      <div class="ri-info"><h3>${esc(a.name)}</h3><div class="tags">${tags}</div>${igLine}
-        <div class="ri-actions">
-          <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn},${a.global},'${a.uuid}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
-          <button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
-        </div>
-      </div>
-      <div class="ri-number"><div class="big">${fmt(a.bcn)}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global)} global</div></div>
-    </div>`;
+    const img=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
+    h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
+      <div class="ri-info"><h3>${esc(a.name)}</h3><div class="tags">${tags}</div>
+        <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn},${a.global},'${a.uuid}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button></div>
+      </div><div class="ri-number"><div class="big">${fmt(a.bcn)}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global)} global</div></div></div>`;
   });
   c.innerHTML=h;
-}
-
-function getCountryLabel(){
-  const city=(P().city||'barcelona').toLowerCase();
-  if(['barcelona','madrid','ibiza'].includes(city))return'Spain';
-  if(city==='berlin')return'Germany';
-  if(['london','manchester'].includes(city))return'UK';
-  if(city==='amsterdam')return'Netherlands';
-  if(city==='paris')return'France';
-  if(city==='lisbon')return'Portugal';
-  if(city==='milan')return'Italy';
-  return'Country';
 }
 
 /* ═══ DATE SCANNER ═══ */
 async function runScan(){
   const date=document.getElementById('scanDate').value;if(!date)return;
   const c=document.getElementById('scanRes');
-  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Scanning '+date+' in '+cityName()+'…</div>';
-  const all=[];
-  try{for(let p=1;p<=15;p++){
-    const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:date,lte:date}},fo:{},p,s:50});
-    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
-    all.push(...evs);if(p*50>=tot)break;
-  }}catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>';return}
-
-  if(!all.length){c.innerHTML='<div class="empty">No events found on '+date+'</div>';return}
-  all.sort((a,b)=>((b.event||{}).interestedCount||0)-((a.event||{}).interestedCount||0));
-
-  const totalAtt=all.reduce((s,el)=>s+((el.event||{}).interestedCount||0),0);
-  const danger=all.length>15?'High':all.length>8?'Medium':'Low';
-  const dclr=all.length>15?'var(--red)':all.length>8?'var(--amber)':'var(--green)';
-
-  let h=`<div class="section-head"><h2>${fdate(new Date(date))} in ${cityName()}</h2><span class="count">${all.length} events</span></div>
-    <div class="stats">
-      <div class="stat"><div class="sv">${all.length}</div><div class="sl">Events</div></div>
-      <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total attending</div></div>
-      <div class="stat"><div class="sv" style="color:${dclr}">${danger}</div><div class="sl">Competition level</div></div>
-    </div>`;
-
-  for(const el of all){
-    const ev=el.event||{},v=(ev.venue||{}).name||'?',t=ev.title||'',ar=(ev.artists||[]).map(a=>a.name).join(', '),att=ev.interestedCount||0;
-    h+=`<div class="ev-item">
-      <div class="ev-att">${att>0?fmt(att):'—'}<div class="ev-lbl">going</div></div>
-      <div class="ev-detail"><div class="ev-v">${esc(v)}</div><div class="ev-t">${esc(t)}</div><div class="ev-a">${esc(ar)}</div></div>
-    </div>`;
-  }
-  c.innerHTML=h;
+  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Scanning '+fdate(date)+' in '+cityName()+'…</div>';
+  try{
+    // Use cache if available, otherwise live fetch
+    let all;
+    const c=getCache();
+    if(c&&c.areaCode===areaId()){
+      all=c.events.filter(e=>e.date===date);
+      if(!all.length)all=await raBulkFetch(areaId(),date,date,15); // might be outside cache range
+    }else{
+      all=await raBulkFetch(areaId(),date,date,15);
+    }
+    if(!all.length){c.innerHTML='<div class="empty">No events found on '+fdate(date)+'</div>';return}
+    all.sort((a,b)=>(b.attending||0)-(a.attending||0));
+    const totalAtt=all.reduce((s,e)=>s+(e.attending||0),0);
+    const danger=all.length>15?'High':all.length>8?'Medium':'Low';
+    const dclr=all.length>15?'var(--red)':all.length>8?'var(--amber)':'var(--green)';
+    let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2><span class="count">${all.length} events</span></div>
+      <div class="stats"><div class="stat"><div class="sv">${all.length}</div><div class="sl">Events</div></div><div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total attending</div></div><div class="stat"><div class="sv" style="color:${dclr}">${danger}</div><div class="sl">Competition</div></div></div>`;
+    for(const ev of all)h+=`<div class="ev-item"><div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">going</div></div><div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div><div class="ev-a">${esc(ev.artists.join(', '))}</div></div></div>`;
+    c.innerHTML=h;
+  }catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>'}
 }
 
 /* ═══ X-RAY ═══ */
-function goXray(name){
-  document.getElementById('xIn').value=name;
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelector('[data-tab="verify"]').classList.add('active');
-  document.getElementById('panel-verify').classList.add('active');
-  runXray();
-}
+function goXray(name){document.getElementById('xIn').value=name;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab="verify"]').classList.add('active');document.getElementById('panel-verify').classList.add('active');runXray()}
 
 async function runXray(){
   const name=document.getElementById('xIn').value.trim();if(!name)return;
-  const date=document.getElementById('eventDate').value;
+  const date=document.getElementById('eventDate').value,cn=cityName();
   const c=document.getElementById('xRes');
   c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Analyzing '+esc(name)+'…</div>';
 
-  let scD=null,sp={g:0,c:0},ig={ig:0,igCountry:0,igCity:0},cityC={hit:false},shows=[];
-  try{scD=await scSearch(name);if(scD){sp=await scSpotify(scD.uuid);ig=await scInstagram(scD.uuid)}}catch(e){}
-  shows=await raHistory(name);
-  cityC=await raCity(name,date);
-
-  // Same-day check (worldwide, paginate fully)
-  let sdC={hit:false};
   try{
-    const target=norm(name);
-    for(let p=1;p<=20;p++){
-      const d=await ra({f:{listingDate:{gte:date,lte:date}},fo:{},p,s:50});
-      const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
-      for(const el of evs){const ev=el.event||{};
-        for(const ar of(ev.artists||[])){const n=norm(ar.name||'');
-          if(nameMatch(n,target))
-            sdC={hit:true,venue:(ev.venue||{}).name||'?',area:((ev.venue||{}).area||{}).name||'?'};
-      }}
-      if(sdC.hit||p*50>=tot)break;
+    // Soundcharts
+    let scD=null,sp={g:0,c:0};
+    try{scD=await scSearch(name);if(scD)sp=await scSpotify(scD.uuid)}catch(e){}
+
+    // Show history from cache (instant — no API calls)
+    const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+    const fwd=new Date(now);fwd.setMonth(now.getMonth()+3);
+    const cityEvents=await getCityEvents(ago,fwd);
+    const shows=extractShows(cityEvents,name);
+
+    // City conflict from shows
+    const backMo=parseInt(document.getElementById('filterBack')?.value)||7,fwdMo=parseInt(document.getElementById('filterFwd')?.value)||3;
+    const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
+    exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
+    let cityC={hit:false};
+    for(const s of shows){const sd=new Date(s.date);if(sd>=exFrom&&sd<=exTo){cityC={hit:true,date:s.date,venue:s.venue,attending:s.att};break}}
+
+    // Worldwide same-day
+    const wwIdx=await raWorldwide(date);
+    let sdC={hit:false};const wwHit=idxLookup(wwIdx,name);
+    if(wwHit)sdC={hit:true,venue:wwHit.venue,area:wwHit.area};
+
+    const blocked=cityC.hit||sdC.hit;
+    let lastTxt='Never played '+cn;
+    if(shows.length){const m=Math.round((new Date()-new Date(shows[0].date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(shows[0].date)+')'}
+    const imgH=scD?.imageUrl?`<img src="${esc(scD.imageUrl)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-right:14px" onerror="this.style.display='none'">`:'';
+
+    let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start"><div style="display:flex;align-items:center">${imgH}<div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div style="font-size:0.78rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div></div><span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span></div>
+      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--red)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--red)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day</div></div></div>`;
+    if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${fdate(cityC.date)} @ ${esc(cityC.venue)}</p>`;
+    if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">⚠ Same day: ${esc(sdC.venue)} (${esc(sdC.area)})</p>`;
+    if(shows.length){
+      h+=`<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px"><div style="font-family:var(--font-head);font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);margin-bottom:8px">${cn} show history</div>`;
+      for(const s of shows.slice(0,5))h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${fdate(s.date)} — ${esc(s.venue)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--red)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'—'}</span></div>`;
+      h+=`</div>`;
     }
-  }catch(e){}
-
-  const blocked=cityC.hit||sdC.hit;
-  const cn=cityName();
-  let lastTxt='Never played '+cn;
-  if(shows.length){const m=Math.round((new Date()-new Date(shows[0].date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(new Date(shows[0].date))+')'}
-
-  const imgH=scD?.imageUrl?`<img src="${esc(scD.imageUrl)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-right:14px" onerror="this.style.display='none'">`:'';
-
-  let h=`<div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:start">
-      <div style="display:flex;align-items:center">${imgH}<div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div class="meta" style="font-size:0.78rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div></div>
-      <span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} Spotify</div></div>
-      <div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div>
-      <div class="stat"><div class="sv" style="color:${cityC.hit?'var(--red)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div>
-      <div class="stat"><div class="sv" style="color:${sdC.hit?'var(--red)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day</div></div>
-    </div>`;
-
-  // Instagram data
-  if(ig.ig>0){
-    h+=`<div style="margin-top:4px;padding:8px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">
-      <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim)">Instagram: <strong style="color:var(--text)">${fmt(ig.ig)}</strong> global`;
-    if(ig.igCountry)h+=` · <strong style="color:var(--text)">${fmt(ig.igCountry)}</strong> ${getCountryLabel()}`;
-    if(ig.igCity)h+=` · <strong style="color:var(--red)">${fmt(ig.igCity)}</strong> ${cn}`;
-    h+=`</span></div>`;
-  }
-
-  if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${esc(cityC.date)} @ ${esc(cityC.venue)}</p>`;
-  if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">⚠ Same day: ${esc(sdC.venue)} (${esc(sdC.area)})</p>`;
-
-  if(shows.length){
-    h+=`<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
-      <div style="font-family:var(--font-head);font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);margin-bottom:8px">${cn} show history &amp; upcoming (2yr back / 6mo forward)</div>`;
-    for(const s of shows.slice(0,8))
-      h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)">
-        <span>${esc(s.date)} — ${esc(s.venue)}</span>
-        <span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--red)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'—'}</span></div>`;
-    h+=`</div>`;
-  }
-
-  h+=`<div style="margin-top:14px"><button class="btn-ghost" onclick="saveArtist('${esc(scD?.name||name).replace(/'/g,"\\'")}',${sp.c},${sp.g},'${scD?.uuid||''}','${esc(scD?.imageUrl||'').replace(/'/g,"\\'")}')">+ Add to shortlist</button></div></div>`;
-  c.innerHTML=h;
+    h+=`<div style="margin-top:14px"><button class="btn-ghost" onclick="saveArtist('${esc(scD?.name||name).replace(/'/g,"\\'")}',${sp.c},${sp.g},'${scD?.uuid||''}','${esc(scD?.imageUrl||'').replace(/'/g,"\\'")}')">+ Add to shortlist</button></div></div>`;
+    c.innerHTML=h;
+  }catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>'}
 }
 
-/* ═══ ROUTING DETECTION ═══ */
+/* ═══ ROUTING ═══ */
 async function runRouting(){
   const date=document.getElementById('routeDate').value;if(!date)return;
   const userCity=(P().city||'barcelona').toLowerCase();
   const nearby=NEARBY_CITIES[userCity]||[];
-  if(!nearby.length){document.getElementById('rteRes').innerHTML='<div class="empty">No nearby cities configured for '+cityName()+'. Contact support to add routing data.</div>';return}
-  const backMo=parseInt(document.getElementById('rFilterBack').value)||7;
-  const fwdMo=parseInt(document.getElementById('rFilterFwd').value)||3;
-
+  if(!nearby.length){document.getElementById('rteRes').innerHTML='<div class="empty">No nearby cities configured for '+cityName()+'.</div>';return}
+  const backMo=parseInt(document.getElementById('rFilterBack').value)||7,fwdMo=parseInt(document.getElementById('rFilterFwd').value)||3;
   const btn=document.getElementById('rteBtn');btn.disabled=true;btn.textContent='Scanning…';
   rteProgReset();document.getElementById('rteRes').innerHTML='';
 
-  // Build date range: day before, day of, day after
-  const center=new Date(date);
-  const dayBefore=new Date(center);dayBefore.setDate(center.getDate()-1);
-  const dayAfter=new Date(center);dayAfter.setDate(center.getDate()+1);
-  const dates=[dayBefore.toISOString().slice(0,10),date,dayAfter.toISOString().slice(0,10)];
+  try{
+    // Day before, day of, day after
+    const center=new Date(date),dayB=new Date(center),dayA=new Date(center);
+    dayB.setDate(center.getDate()-1);dayA.setDate(center.getDate()+1);
+    const dates=[dayB.toISOString().slice(0,10),date,dayA.toISOString().slice(0,10)];
 
-  rteProg('Scanning '+nearby.length+' nearby cities over 3 days…',5);
-
-  // Collect all artists from nearby cities
-  const nearbyArtists=new Map(); // name -> {city, date, venue, attending}
-  for(let ci=0;ci<nearby.length;ci++){
-    const ncity=nearby[ci];
-    const nArea=AREAS[ncity];
-    if(!nArea)continue;
-    const pct=5+Math.round((ci/nearby.length)*40);
-    rteProg('Scanning '+ncity+'…',pct);
-
-    for(const dt of dates){
-      try{
-        for(let pg=1;pg<=5;pg++){
-          const d=await ra({f:{areas:{eq:nArea},listingDate:{gte:dt,lte:dt}},fo:{},p:pg,s:50});
-          const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
-          for(const el of evs){const ev=el.event||{};
-            for(const ar of(ev.artists||[])){
-              const aname=ar.name||'';
-              if(aname&&!nearbyArtists.has(norm(aname))){
-                nearbyArtists.set(norm(aname),{name:aname,city:ncity,date:dt,venue:(ev.venue||{}).name||'?',attending:ev.interestedCount||0});
-              }
-            }
-          }
-          if(pg*50>=tot)break;
-        }
-      }catch(e){rteProg(null,pct,'⚠ Error scanning '+ncity+' on '+dt)}
-    }
-    rteProg(null,pct,'✓ '+ncity+': '+[...nearbyArtists.values()].filter(a=>a.city===ncity).length+' artists');
-  }
-
-  rteProg(nearbyArtists.size+' total artists found nearby. Filtering availability…',50);
-
-  // Check which of these artists are available in user's city
-  const routingOpps=[];
-  let checked=0;
-  for(const[key,info] of nearbyArtists){
-    checked++;
-    const pct=50+Math.round((checked/nearbyArtists.size)*30);
-    try{
-      const cityCheck=await raCity(info.name,date,backMo,fwdMo);
-      if(!cityCheck.hit){
-        routingOpps.push(info);
-        rteProg(null,pct,'✓ '+info.name+' — routing from '+info.city+' ('+info.date+')');
+    rteProg('Scanning nearby cities…',5);
+    const nearbyArtists=new Map();
+    for(let ci=0;ci<nearby.length;ci++){
+      const ncity=nearby[ci],nArea=AREAS[ncity];if(!nArea)continue;
+      rteProg('Scanning '+ncity+'…',5+Math.round((ci/nearby.length)*35));
+      for(const dt of dates){
+        try{
+          const events=await raBulkFetch(nArea,dt,dt,3);
+          for(const ev of events)for(const a of ev.artists){const n=norm(a);if(n&&!nearbyArtists.has(n))nearbyArtists.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending})}
+        }catch(e){}
       }
-    }catch(e){
-      // On error, include them as potential
-      routingOpps.push(info);
+      rteProg(null,null,'✓ '+ncity);
     }
-  }
+    rteProg(nearbyArtists.size+' artists found nearby',45);
 
-  rteProg('Fetching Spotify data for '+routingOpps.length+' routing opportunities…',82);
+    // City exclusion from cache (instant)
+    rteProg('Checking '+cityName()+' exclusion…',50);
+    const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
+    exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
+    const cityEvents=await getCityEvents(exFrom,exTo);
+    const cityIdx=buildIndex(cityEvents);
+    rteProg(null,65,cityIdx.size+' artists in exclusion window');
 
-  // Fetch Spotify for surviving artists
-  const withData=[];
-  for(let i=0;i<Math.min(routingOpps.length,40);i++){
-    const a=routingOpps[i];
-    const pct=82+Math.round((i/Math.min(routingOpps.length,40))*15);
-    try{
-      const sc_a=await scSearch(a.name);
-      if(sc_a){
-        const sp=await scSpotify(sc_a.uuid);
-        a.bcn=sp.c;a.global=sp.g;a.uuid=sc_a.uuid;a.imageUrl=sc_a.imageUrl||'';
-        if(sp.c>0)rteProg(null,pct,'✓ '+a.name+': '+fmt(sp.c)+' '+cityName()+' Spotify');
-      }
-      withData.push(a);
-    }catch(e){withData.push(a)}
-  }
+    const routingOpps=[];
+    for(const[key,info] of nearbyArtists){if(!idxLookup(cityIdx,info.name)){routingOpps.push(info);rteProg(null,70,'✓ '+info.name+' — '+info.city+' '+fdate(info.date))}}
 
-  withData.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
-  rteProg('Done! '+withData.length+' routing opportunities found.',100);
-  renderRouting(withData);
+    // Spotify for top 15
+    rteProg('Fetching Spotify…',80);
+    const withData=[];
+    for(let i=0;i<Math.min(routingOpps.length,15);i++){
+      const a=routingOpps[i];
+      try{const sc_a=await scSearch(a.name);if(sc_a){const sp=await scSpotify(sc_a.uuid);a.bcn=sp.c;a.global=sp.g;a.uuid=sc_a.uuid;a.imageUrl=sc_a.imageUrl||''}withData.push(a)}catch(e){withData.push(a)}
+    }
+    for(let i=15;i<routingOpps.length;i++)withData.push(routingOpps[i]);
+    withData.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
+    rteProg('Done! '+withData.length+' routing opportunities.',100);
+    renderRouting(withData);
+  }catch(e){rteProg('Error: '+e.message,100)}
   btn.disabled=false;btn.textContent='Find Routing';
 }
 
 function renderRouting(arts){
   const c=document.getElementById('rteRes'),cn=cityName();
-  if(!arts.length){c.innerHTML='<div class="empty">No routing opportunities found for this date. Try a different date.</div>';return}
-  let h='<div class="section-head"><h2>Routing Opportunities</h2><span class="count">'+arts.length+' artists · by '+cn+' Spotify demand</span></div>';
-  h+='<p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px;font-style:italic">These artists are playing nearby cities around your date — they\'re already in the region and likely available at lower fees.</p>';
-
+  if(!arts.length){c.innerHTML='<div class="empty">No routing opportunities found.</div>';return}
+  let h='<div class="section-head"><h2>Routing Opportunities</h2><span class="count">'+arts.length+' artists</span></div>';
+  h+='<p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px;font-style:italic">Artists playing nearby — already in the region, likely lower fees.</p>';
   arts.forEach((a,i)=>{
     const sv=saved().some(s=>s.name===a.name);
-    const imgH=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
-    h+=`<div class="result-item" style="animation-delay:${i*30}ms">
-      <div class="ri-rank">${i+1}</div>
-      ${imgH}
-      <div class="ri-info"><h3>${esc(a.name)}</h3>
-        <div class="tags"><span class="tag tag-routing">↗ ${esc(a.city)} · ${esc(a.date)}</span><span class="tag">${esc(a.venue)}</span></div>
-        ${a.attending?'<div style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint);margin-top:2px">'+fmt(a.attending)+' going to '+esc(a.city)+' show</div>':''}
-        <div class="ri-actions">
-          <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn||0},${a.global||0},'${a.uuid||''}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
-          <button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
-        </div>
-      </div>
-      <div class="ri-number"><div class="big">${(a.bcn||0)>0?fmt(a.bcn):'—'}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global||0)} global</div></div>
-    </div>`;
+    const img=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
+    h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
+      <div class="ri-info"><h3>${esc(a.name)}</h3><div class="tags"><span class="tag tag-routing">↗ ${esc(a.city)} · ${fdate(a.date)}</span><span class="tag">${esc(a.venue)}</span></div>
+        ${a.attending?'<div style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint);margin-top:2px">'+fmt(a.attending)+' going</div>':''}
+        <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn||0},${a.global||0},'${a.uuid||''}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button></div>
+      </div><div class="ri-number"><div class="big">${(a.bcn||0)>0?fmt(a.bcn):'—'}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global||0)} global</div></div></div>`;
   });
   c.innerHTML=h;
 }
 
 /* ═══ REPORT ═══ */
 async function genReport(){
-  const p=P(),c=document.getElementById('rOut'),btn=document.getElementById('rBtn');
+  const p=P(),c=document.getElementById('rOut'),btn=document.getElementById('rBtn'),cn=cityName();
   btn.disabled=true;btn.textContent='Generating…';
-  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Pulling data from RA + Soundcharts…</div>';
-  const cn=cityName();
+  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Pulling data…</div>';
 
-  const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
-  const fromS=ago.toISOString().slice(0,10),toS=now.toISOString().slice(0,10);
-  let totalEv=0,venueEv=[],venues={};
+  try{
+    const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+    const cityEvents=await getCityEvents(ago,now);
+    const totalEv=cityEvents.length;
+    const venues={};const venueEv=[];
+    for(const ev of cityEvents){venues[ev.venue]=(venues[ev.venue]||0)+1;if(p.venue&&ev.venue.toLowerCase().includes(p.venue.toLowerCase()))venueEv.push(ev)}
+    const vArt=new Set();for(const ev of venueEv)for(const a of ev.artists)vArt.add(a);
 
-  try{for(let pg=1;pg<=30;pg++){
-    const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:fromS,lte:toS}},fo:{},p:pg,s:50});
-    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;totalEv=tot;
-    for(const el of evs){const ev=el.event||{};const vn=(ev.venue||{}).name||'?';venues[vn]=(venues[vn]||0)+1;
-      if(p.venue&&vn.toLowerCase().includes(p.venue.toLowerCase()))venueEv.push(el)}
-    if(pg*50>=tot)break;
-  }}catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>';btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';return}
+    // DNA analysis
+    let wH='',lH='',wAvg=0,lAvg=0,wN=0,lN=0;
+    for(const name of(p.wins||[]).slice(0,3)){try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);wH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){wAvg+=s.c;wN++}}}catch(e){}}
+    for(const name of(p.losses||[]).slice(0,3)){try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);lH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){lAvg+=s.c;lN++}}}catch(e){}}
+    if(wN)wAvg=Math.round(wAvg/wN);if(lN)lAvg=Math.round(lAvg/lN);
+    const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
-  const vArt=new Set();
-  for(const el of venueEv)(el.event?.artists||[]).forEach(a=>vArt.add(a.name));
+    let h=`<div class="card"><h3 style="color:var(--red)">Venue Profile</h3><div class="stats"><div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div><div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div><div class="stat"><div class="sv">${p.capacity||'—'}</div><div class="sl">Capacity</div></div><div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${cn} events/year</div></div></div></div>`;
 
-  let wH='',lH='',wAvg=0,lAvg=0,wN=0,lN=0;
-  for(const name of(p.wins||[]).slice(0,3)){
-    try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);wH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){wAvg+=s.c;wN++}}}catch(e){}}
-  for(const name of(p.losses||[]).slice(0,3)){
-    try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);lH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){lAvg+=s.c;lN++}}}catch(e){}}
-  if(wN)wAvg=Math.round(wAvg/wN);if(lN)lAvg=Math.round(lAvg/lN);
-
-  const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
-
-  let h=`<div class="card"><h3 style="color:var(--red)">Venue Profile</h3>
-    <div class="stats">
-      <div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div>
-      <div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div>
-      <div class="stat"><div class="sv">${p.capacity||'—'}</div><div class="sl">Capacity</div></div>
-      <div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${cn} events/year</div></div>
-    </div></div>`;
-
-  if(wH||lH){
-    h+=`<div class="card"><h3>Booking DNA Analysis</h3>`;
-    if(wH) h+=`<p style="font-size:0.78rem;color:var(--green);margin-bottom:8px;font-family:var(--font-head);font-weight:600">✓ Wins — avg ${fmt(wAvg)} ${cn} Spotify</p><div class="stats">${wH}</div>`;
-    if(lH) h+=`<p style="font-size:0.78rem;color:var(--amber);margin:12px 0 8px;font-family:var(--font-head);font-weight:600">✗ Losses — avg ${fmt(lAvg)} ${cn} Spotify</p><div class="stats">${lH}</div>`;
-    if(wAvg>0&&lAvg>0){
-      const threshold=Math.round((wAvg+lAvg)/2);
-      h+=`<div style="margin-top:14px;padding:12px 16px;background:var(--red-glow);border:1px solid var(--red);border-radius:var(--radius)">
-        <p style="font-size:0.85rem;line-height:1.6"><strong style="color:var(--red)">Insight:</strong> Your wins average <strong>${fmt(wAvg)}</strong> local Spotify listeners. Your losses average <strong>${fmt(lAvg)}</strong>. Target artists above <strong style="color:var(--red)">${fmt(threshold)}</strong> ${cn} Spotify listeners.</p></div>`;
+    if(wH||lH){
+      h+=`<div class="card"><h3>Booking DNA</h3>`;
+      if(wH)h+=`<p style="font-size:0.78rem;color:var(--green);margin-bottom:8px;font-family:var(--font-head);font-weight:600">✓ Wins — avg ${fmt(wAvg)} ${cn} Spotify</p><div class="stats">${wH}</div>`;
+      if(lH)h+=`<p style="font-size:0.78rem;color:var(--amber);margin:12px 0 8px;font-family:var(--font-head);font-weight:600">✗ Losses — avg ${fmt(lAvg)} ${cn} Spotify</p><div class="stats">${lH}</div>`;
+      if(wAvg>0&&lAvg>0){const t=Math.round((wAvg+lAvg)/2);h+=`<div style="margin-top:14px;padding:12px 16px;background:var(--red-glow);border:1px solid var(--red);border-radius:var(--radius)"><p style="font-size:0.85rem;line-height:1.6"><strong style="color:var(--red)">Insight:</strong> Wins avg <strong>${fmt(wAvg)}</strong>, losses avg <strong>${fmt(lAvg)}</strong>. Target above <strong style="color:var(--red)">${fmt(t)}</strong> ${cn} Spotify.</p></div>`}
+      h+=`</div>`;
     }
+
+    h+=`<div class="card"><h3 style="color:var(--red)">Competitive Landscape</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Top venues (12 months):</p>`;
+    for(const[name,count] of topV){const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase());h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem${isU?';color:var(--red);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--font-mono);font-size:0.7rem">${count}</span></div>`}
     h+=`</div>`;
-  }
 
-  h+=`<div class="card"><h3 style="color:var(--red)">Competitive Landscape</h3>
-    <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Top venues in ${cn} by event count (last 12 months):</p>`;
-  for(const[name,count] of topV){
-    const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase());
-    h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem${isU?';color:var(--red);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--font-mono);font-size:0.7rem">${count} events</span></div>`;
-  }
-  h+=`</div>`;
-
-  // Fee intelligence from crowdsourced data
-  const feeData=fees();
-  const feeEntries=Object.values(feeData).filter(f=>f.fee>0);
-  if(feeEntries.length>=2){
-    const spotifyBuckets={};
-    for(const f of feeEntries){
-      const bucket=f.bcn<1000?'<1K':f.bcn<3000?'1-3K':f.bcn<5000?'3-5K':f.bcn<10000?'5-10K':'10K+';
-      if(!spotifyBuckets[bucket])spotifyBuckets[bucket]=[];
-      spotifyBuckets[bucket].push(f.fee);
+    // Fee intelligence
+    const feeData=fees(),feeEntries=Object.values(feeData).filter(f=>f.fee>0);
+    if(feeEntries.length>=2){
+      const buckets={};for(const f of feeEntries){const b=f.bcn<1000?'<1K':f.bcn<3000?'1-3K':f.bcn<5000?'3-5K':f.bcn<10000?'5-10K':'10K+';if(!buckets[b])buckets[b]=[];buckets[b].push(f.fee)}
+      h+=`<div class="card"><h3 style="color:var(--amber)">Fee Intelligence</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">${feeEntries.length} data points:</p>`;
+      for(const[b,fs] of Object.entries(buckets)){const mn=Math.min(...fs),mx=Math.max(...fs);h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim)">${b} Spotify</span><span style="font-family:var(--font-head);font-weight:700;color:var(--amber)">€${mn.toLocaleString()}${mx!==mn?' – €'+mx.toLocaleString():''}</span><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint)">${fs.length}pts</span></div>`}
+      h+=`</div>`;
     }
-    h+=`<div class="card"><h3 style="color:var(--amber)">Fee Intelligence</h3>
-      <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Based on ${feeEntries.length} data points from your bookings:</p>`;
-    for(const[bucket,fees_arr] of Object.entries(spotifyBuckets)){
-      const min=Math.min(...fees_arr),max=Math.max(...fees_arr);
-      h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem">
-        <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim)">${bucket} ${cn} Spotify</span>
-        <span style="font-family:var(--font-head);font-weight:700;color:var(--amber)">€${min.toLocaleString()}${max!==min?' – €'+max.toLocaleString():''}</span>
-        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint)">${fees_arr.length} data point${fees_arr.length>1?'s':''}</span></div>`;
-    }
-    h+=`</div>`;
-  }
 
-  // Calendar opportunities
-  h+=`<div class="card"><h3 style="color:var(--blue)">Calendar Opportunities</h3>
-    <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Friday/Saturday competition for the next 3 months:</p>
-    <div id="calGrid"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning calendar…</div></div></div>`;
+    // Calendar
+    h+=`<div class="card"><h3 style="color:var(--blue)">Calendar</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Fri/Sat competition next 3 months:</p><div id="calGrid"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning…</div></div></div>`;
 
-  h+=`<div class="card"><h3>Recommendation</h3>
-    <p style="font-size:0.88rem;line-height:1.7">Based on your ${cn} venue with ${p.capacity||'?'} capacity and ${p.budget} budget:</p>
-    <ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)">
-      <li>Target artists with <strong style="color:var(--red)">${wAvg>0?fmt(wAvg)+'+':'2K+'}</strong> local Spotify listeners</li>
-      <li>Use the <strong>Routing</strong> tab to find artists already touring nearby</li>
-      <li>Use <strong>What's On</strong> to check competing events before committing to a date</li>
-      <li>Use <strong>X-Ray</strong> to verify any artist before making an offer</li>
-    </ul></div>`;
+    h+=`<div class="card"><h3>Recommendations</h3><ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)"><li>Target <strong style="color:var(--red)">${wAvg>0?fmt(wAvg)+'+':'2K+'}</strong> ${cn} Spotify</li><li>Use <strong>Routing</strong> for cheaper bookings</li><li>Use <strong>What's On</strong> before committing dates</li><li>Use <strong>X-Ray</strong> before making offers</li></ul></div>`;
 
-  c.innerHTML=h;btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';
-
-  // Async: load calendar data
-  loadCalendar();
+    c.innerHTML=h;btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';
+    loadCalendar();
+  }catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>';btn.disabled=false;btn.textContent='Generate Venue Intelligence Report'}
 }
 
 async function loadCalendar(){
-  const grid=document.getElementById('calGrid');
-  if(!grid)return;
-  const results=[];
-  const now=new Date();
+  const grid=document.getElementById('calGrid');if(!grid)return;
+  const now=new Date(),end=new Date(now);end.setMonth(end.getMonth()+3);
   const friSats=[];
+  const cur=new Date(now);cur.setDate(cur.getDate()+1);
+  while(cur<=end){if(cur.getDay()===5||cur.getDay()===6)friSats.push(new Date(cur));cur.setDate(cur.getDate()+1)}
 
-  // Collect all Fri/Sat for next 3 months properly
-  const endDate=new Date(now);endDate.setMonth(endDate.getMonth()+3);
-  const cursor=new Date(now);cursor.setDate(cursor.getDate()+1); // start tomorrow
-  while(cursor<=endDate){
-    const dow=cursor.getDay();
-    if(dow===5||dow===6)friSats.push(new Date(cursor));
-    cursor.setDate(cursor.getDate()+1);
-  }
-
+  const results=[];
   for(const dt of friSats.slice(0,20)){
     const ds=dt.toISOString().slice(0,10);
-    try{
-      const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:ds,lte:ds}},fo:{},p:1,s:1});
-      const tot=d?.data?.eventListings?.totalResults||0;
-      results.push({date:dt,ds,count:tot,dow:dt.getDay()===5?'Fri':'Sat'});
-    }catch(e){results.push({date:dt,ds,count:0,dow:dt.getDay()===5?'Fri':'Sat'})}
+    try{const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:ds,lte:ds}},fo:{},p:1,s:1});results.push({date:dt,ds,count:d?.data?.eventListings?.totalResults||0,dow:dt.getDay()===5?'Fri':'Sat'})}
+    catch(e){results.push({date:dt,ds,count:0,dow:dt.getDay()===5?'Fri':'Sat'})}
   }
-
-  if(!results.length){grid.innerHTML='<div class="empty">Could not load calendar data.</div>';return}
-
+  if(!results.length){grid.innerHTML='<div class="empty">No data.</div>';return}
   const counts=results.map(r=>r.count).filter(c=>c>0);
   const avg=counts.length?counts.reduce((a,b)=>a+b,0)/counts.length:10;
   const low=avg*0.6,high=avg*1.4;
-
-  // Sort by count ascending for best/worst
   const sorted=[...results].sort((a,b)=>a.count-b.count);
-  const best=sorted.slice(0,3);
-  const worst=sorted.slice(-3).reverse();
 
-  let h='<div style="margin-bottom:16px">';
-  h+='<div style="font-family:var(--font-head);font-weight:600;font-size:0.72rem;color:var(--green);text-transform:uppercase;margin-bottom:6px">Best dates (low competition)</div>';
-  for(const r of best){
-    h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--green)">${r.count} events</span></div>`;
-  }
-  h+='</div><div>';
-  h+='<div style="font-family:var(--font-head);font-weight:600;font-size:0.72rem;color:var(--red);text-transform:uppercase;margin-bottom:6px">Busiest dates (avoid)</div>';
-  for(const r of worst){
-    h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--red)">${r.count} events</span></div>`;
-  }
-  h+='</div>';
-
-  h+='<div style="margin-top:16px"><div class="cal-grid">';
-  for(const r of results){
-    const cls=r.count<=low?'cal-good':r.count>=high?'cal-bad':'cal-mid';
-    h+=`<div class="cal-cell ${cls}">
-      <div class="cal-day">${r.dow} ${r.date.getDate()} ${r.date.toLocaleDateString('en-GB',{month:'short'})}</div>
-      <div class="cal-count">${r.count}</div>
-      <div class="cal-label">events</div>
-    </div>`;
-  }
-  h+='</div></div>';
-  grid.innerHTML=h;
+  let h='<div style="margin-bottom:16px"><div style="font-family:var(--font-head);font-weight:600;font-size:0.72rem;color:var(--green);text-transform:uppercase;margin-bottom:6px">Best dates</div>';
+  for(const r of sorted.slice(0,3))h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--green)">${r.count} events</span></div>`;
+  h+='</div><div><div style="font-family:var(--font-head);font-weight:600;font-size:0.72rem;color:var(--red);text-transform:uppercase;margin-bottom:6px">Busiest dates</div>';
+  for(const r of sorted.slice(-3).reverse())h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.82rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--red)">${r.count} events</span></div>`;
+  h+='</div><div style="margin-top:16px"><div class="cal-grid">';
+  for(const r of results){const cls=r.count<=low?'cal-good':r.count>=high?'cal-bad':'cal-mid';h+=`<div class="cal-cell ${cls}"><div class="cal-day">${r.dow} ${r.date.getDate()} ${r.date.toLocaleDateString('en-GB',{month:'short'})}</div><div class="cal-count">${r.count}</div><div class="cal-label">events</div></div>`}
+  h+='</div></div>';grid.innerHTML=h;
 }
 
-/* ═══ SAVED / SHORTLIST ═══ */
+/* ═══ SHORTLIST ═══ */
 function saveArtist(name,bcn,g,uuid,imageUrl){const s=saved();if(s.some(x=>x.name===name))return;s.push({name,bcn,g,uuid,imageUrl:imageUrl||'',notes:'',fee:0,outcome:'',at:new Date().toISOString()});setSaved(s);renderSaved();addLog({type:'save',name,bcn})}
 function removeSaved(name){setSaved(saved().filter(s=>s.name!==name));renderSaved()}
 function updateNotes(name,notes){const s=saved(),a=s.find(x=>x.name===name);if(a){a.notes=notes;setSaved(s)}}
-function updateFee(name,fee){
-  const s=saved(),a=s.find(x=>x.name===name);
-  if(a){a.fee=parseInt(fee)||0;setSaved(s)}
-  // Also store in fee intelligence
-  if(a&&a.fee>0){const f=fees();f[name]={fee:a.fee,bcn:a.bcn||0,name,ts:Date.now()};setFees(f)}
-}
-function updateOutcome(name,outcome){
-  const s=saved(),a=s.find(x=>x.name===name);
-  if(a){a.outcome=a.outcome===outcome?'':outcome;setSaved(s)}
-  // Also update in fee data
-  const f=fees();if(f[name]){f[name].outcome=a?a.outcome:'';setFees(f)}
-  renderSaved();
-}
+function updateFee(name,fee){const s=saved(),a=s.find(x=>x.name===name);if(a){a.fee=parseInt(fee)||0;setSaved(s)}if(a&&a.fee>0){const f=fees();f[name]={fee:a.fee,bcn:a.bcn||0,name,ts:Date.now()};setFees(f)}}
+function updateOutcome(name,outcome){const s=saved(),a=s.find(x=>x.name===name);if(a){a.outcome=a.outcome===outcome?'':outcome;setSaved(s)}const f=fees();if(f[name]){f[name].outcome=a?a.outcome:'';setFees(f)}renderSaved()}
 
 function renderSaved(){
   const c=document.getElementById('sList'),s=saved(),cn=cityName();
-  if(!s.length){c.innerHTML='<div class="empty">No saved artists yet. Use Discover or X-Ray to add artists.</div>';return}
+  if(!s.length){c.innerHTML='<div class="empty">No saved artists yet.</div>';return}
   s.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
   c.innerHTML=s.map(a=>{
-    const imgH=a.imageUrl?`<img src="${esc(a.imageUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid var(--border)" onerror="this.style.display='none'">`:'';
-    return`<div class="saved-item">
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:8px">${imgH}<h3>${esc(a.name)}</h3></div>
-        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin-top:4px">${cn}: ${a.bcn>0?fmt(a.bcn):'—'} · Global: ${fmt(a.g||0)}</div>
-        <textarea class="notes" placeholder="Add notes…" onchange="updateNotes('${esc(a.name).replace(/'/g,"\\'")}',this.value)">${esc(a.notes||'')}</textarea>
-        <div class="fee-row">
-          <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);text-transform:uppercase">Fee paid: €</span>
-          <input type="number" placeholder="0" value="${a.fee||''}" onchange="updateFee('${esc(a.name).replace(/'/g,"\\'")}',this.value)">
-          <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);text-transform:uppercase;margin-left:8px">Result:</span>
-          <button class="thumb-btn ${a.outcome==='up'?'active-up':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','up')" title="Success">👍</button>
-          <button class="thumb-btn ${a.outcome==='down'?'active-down':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','down')" title="Flop">👎</button>
-        </div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-family:var(--font-head);font-weight:800;color:var(--red);font-size:1.1rem">${a.bcn>0?fmt(a.bcn):'—'}</div>
-        <button class="btn-ghost" style="margin-top:8px;font-size:0.6rem;padding:3px 8px" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button>
-      </div>
-    </div>`}).join('');
+    const img=a.imageUrl?`<img src="${esc(a.imageUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'">`:'';
+    return`<div class="saved-item"><div style="flex:1">
+      <div style="display:flex;align-items:center;gap:8px">${img}<h3>${esc(a.name)}</h3></div>
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin-top:4px">${cn}: ${a.bcn>0?fmt(a.bcn):'—'} · Global: ${fmt(a.g||0)}</div>
+      <textarea class="notes" placeholder="Add notes…" onchange="updateNotes('${esc(a.name).replace(/'/g,"\\'")}',this.value)">${esc(a.notes||'')}</textarea>
+      <div class="fee-row"><span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);text-transform:uppercase">Fee: €</span><input type="number" placeholder="0" value="${a.fee||''}" onchange="updateFee('${esc(a.name).replace(/'/g,"\\'")}',this.value)"><span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-faint);margin-left:8px">Result:</span><button class="thumb-btn ${a.outcome==='up'?'active-up':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','up')">👍</button><button class="thumb-btn ${a.outcome==='down'?'active-down':''}" onclick="updateOutcome('${esc(a.name).replace(/'/g,"\\'")}','down')">👎</button></div>
+    </div><div style="text-align:right"><div style="font-family:var(--font-head);font-weight:800;color:var(--red);font-size:1.1rem">${a.bcn>0?fmt(a.bcn):'—'}</div><button class="btn-ghost" style="margin-top:8px;font-size:0.6rem;padding:3px 8px" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button></div></div>`}).join('');
 }
 
 function exportCSV(){
   const s=saved();if(!s.length)return;
-  const csv='Name,'+cityName()+' Spotify,Global Spotify,Fee Paid,Outcome,Notes,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+','+(a.fee||'')+','+(a.outcome||'')+',"'+(a.notes||'').replace(/"/g,'""')+'",'+a.at).join('\n');
-  const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');
-  l.href=u;l.download='libro-shortlist-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
+  const csv='Name,'+cityName()+' Spotify,Global Spotify,Fee,Outcome,Notes,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+','+(a.fee||'')+','+(a.outcome||'')+',"'+(a.notes||'').replace(/"/g,'""')+'",'+a.at).join('\n');
+  const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='libro-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
 }
 </script>
 </body>
