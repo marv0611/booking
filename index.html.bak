@@ -51,7 +51,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; }
+html { font-size: 15px; scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -67,9 +67,6 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
 
-button:focus { outline: none; }
-button::-moz-focus-inner { border: 0; }
-
 /* ── Keyframes ── */
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -84,10 +81,10 @@ button::-moz-focus-inner { border: 0; }
    LAYOUT
    ═══════════════════════════════════════════ */
 
-.shell { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.shell { max-width: 940px; margin: 0 auto; padding: 0 24px; }
 
 header {
-  padding: 24px 0 0;
+  padding: 20px 0 0;
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -99,15 +96,15 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
-  padding: 0 40px;
+  margin-bottom: 16px;
+  padding: 0 24px;
 }
 
 .logo {
   font-family: var(--font-head);
   font-weight: 800;
-  font-size: 1.5rem;
-  letter-spacing: 3px;
+  font-size: 1.35rem;
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--text);
   line-height: 1;
@@ -127,20 +124,20 @@ header {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 0 40px;
+  padding: 0 24px;
 }
 .tabs::-webkit-scrollbar { display: none; }
 
 .tab-btn {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text-faint);
   background: none;
   border: none;
-  padding: 12px 18px 14px;
+  padding: 10px 14px 12px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: color 0.2s;
@@ -148,7 +145,6 @@ header {
   position: relative;
 }
 .tab-btn:hover { color: var(--text-dim); }
-.tab-btn:focus { outline: none; }
 .tab-btn.active {
   color: var(--accent);
   border-bottom-color: var(--accent);
@@ -158,9 +154,9 @@ header {
 .tab-btn[data-tab="discover"],
 .tab-btn[data-tab="routing"],
 .tab-btn[data-tab="scanner"] {
-  font-size: 1.2rem;
+  font-size: 0.75rem;
   font-weight: 800;
-  padding: 12px 22px 14px;
+  padding: 10px 18px 12px;
 }
 
 /* Secondary tabs — smaller, dimmer */
@@ -168,9 +164,9 @@ header {
 .tab-btn[data-tab="verify"],
 .tab-btn[data-tab="saved"],
 .tab-btn[data-tab="report"] {
-  font-size: 0.92rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 1.8px;
 }
 
 
@@ -178,7 +174,7 @@ header {
    TAB PANELS
    ═══════════════════════════════════════════ */
 
-.tab-panel { display: none; padding: 28px 0 60px; animation: fadeIn 0.25s ease; }
+.tab-panel { display: none; padding: 24px 0 60px; animation: fadeIn 0.25s ease; }
 .tab-panel.active { display: block; }
 
 
@@ -188,7 +184,7 @@ header {
 
 .venue-pill {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.62rem;
   font-weight: 500;
   color: var(--text-dim);
   background: var(--surface);
@@ -223,7 +219,7 @@ header {
   border-bottom: 1px solid var(--border);
   font-family: var(--font-head);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.78rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   transition: background 0.1s;
@@ -233,14 +229,14 @@ header {
 .venue-switcher-dd .vs-item.active { color: var(--accent); }
 .venue-switcher-dd .vs-item .vs-city {
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: 0.58rem;
   color: var(--text-faint);
   font-weight: 400;
   text-transform: none;
 }
 .venue-switcher-dd .vs-add { color: var(--text-dim); font-style: normal; }
 .venue-switcher-dd .vs-del {
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   color: var(--text-faint);
   padding: 2px 5px;
   border-radius: var(--radius-sm);
@@ -253,23 +249,23 @@ header {
    FORMS & INPUTS
    ═══════════════════════════════════════════ */
 
-.input-group { margin-bottom: 20px; }
+.input-group { margin-bottom: 18px; }
 .input-group label {
   display: block;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.62rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .input-group .hint {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-faint);
-  margin-top: 6px;
+  margin-top: 5px;
 }
 
 textarea, input[type="text"], input[type="date"], input[type="number"], select {
@@ -279,8 +275,8 @@ textarea, input[type="text"], input[type="date"], input[type="number"], select {
   border-radius: var(--radius);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  padding: 12px 14px;
+  font-size: 0.88rem;
+  padding: 10px 12px;
   outline: none;
   transition: border-color 0.15s;
 }
@@ -289,22 +285,22 @@ textarea:focus, input:focus, select:focus {
 }
 textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 68px;
   line-height: 1.6;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
 }
 select {
   cursor: pointer;
   appearance: none;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%237c7468' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 32px;
 }
-input[type="date"] { color-scheme: dark; font-family: var(--font-mono); font-size: 0.9rem; }
+input[type="date"] { color-scheme: dark; font-family: var(--font-mono); font-size: 0.82rem; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6) sepia(1) saturate(3) hue-rotate(0deg); cursor: pointer; }
 input[type="number"] { font-family: var(--font-mono); }
 
@@ -316,7 +312,7 @@ input[type="number"] { font-family: var(--font-mono); }
   transform: translateY(-50%);
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.68rem;
   color: var(--accent);
   pointer-events: none;
   letter-spacing: 0.3px;
@@ -334,10 +330,10 @@ input[type="number"] { font-family: var(--font-mono); }
 .btn {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 0.92rem;
+  font-size: 0.72rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding: 13px 28px;
+  padding: 11px 24px;
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
@@ -360,8 +356,8 @@ input[type="number"] { font-family: var(--font-mono); }
   background: transparent;
   color: var(--text-dim);
   border: 1px solid var(--border);
-  padding: 8px 16px;
-  font-size: 0.72rem;
+  padding: 7px 14px;
+  font-size: 0.62rem;
   font-family: var(--font-head);
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -382,7 +378,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .progress-label {
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   color: var(--text-dim);
   margin-bottom: 8px;
   letter-spacing: 0.3px;
@@ -401,10 +397,10 @@ input[type="number"] { font-family: var(--font-mono); }
 }
 .progress-detail {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   color: var(--text-faint);
   margin-top: 8px;
-  max-height: 140px;
+  max-height: 120px;
   overflow-y: auto;
   line-height: 1.9;
   letter-spacing: 0.2px;
@@ -414,7 +410,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .rte-progress { margin: 20px 0; }
 .rte-log {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   color: var(--text-faint);
   margin-top: 8px;
   max-height: 120px;
@@ -457,13 +453,13 @@ input[type="number"] { font-family: var(--font-mono); }
 .stat .sv {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   color: var(--accent);
   line-height: 1.1;
 }
 .stat .sl {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.52rem;
   color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -552,14 +548,14 @@ input[type="number"] { font-family: var(--font-mono); }
 .ri-info h3 {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 1.6rem;
+  font-size: 0.92rem;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 .ri-info .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
 .ri-info .tag {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.55rem;
   background: transparent;
   border: 1px solid var(--border);
   padding: 1px 6px;
@@ -574,7 +570,7 @@ input[type="number"] { font-family: var(--font-mono); }
 }
 .ri-info .ig-line {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.58rem;
   color: var(--text-faint);
   margin-top: 2px;
 }
@@ -582,7 +578,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .ri-actions { display: flex; gap: 5px; margin-top: 6px; }
 .ri-actions button {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.55rem;
   color: var(--text-dim);
   background: none;
   border: 1px solid var(--border);
@@ -600,20 +596,20 @@ input[type="number"] { font-family: var(--font-mono); }
 .ri-number .big {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   color: var(--accent);
   line-height: 1;
 }
 .ri-number .sub {
   font-family: var(--font-mono);
-  font-size: 0.88rem;
+  font-size: 0.52rem;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 .ri-number .dim {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.55rem;
   color: var(--text-faint);
 }
 
@@ -648,7 +644,7 @@ input[type="number"] { font-family: var(--font-mono); }
 }
 .ev-att .ev-lbl {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.45rem;
   color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -672,7 +668,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .badge {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.55rem;
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   font-weight: 500;
@@ -688,7 +684,7 @@ input[type="number"] { font-family: var(--font-mono); }
 
 .tag {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.55rem;
   border: 1px solid var(--border);
   padding: 1px 6px;
   border-radius: var(--radius-sm);
@@ -712,13 +708,13 @@ input[type="number"] { font-family: var(--font-mono); }
 .section-head h2 {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.88rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 .section-head .count {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   color: var(--text-dim);
 }
 
@@ -749,14 +745,14 @@ input[type="number"] { font-family: var(--font-mono); }
    ═══════════════════════════════════════════ */
 
 #onboarding {
-  max-width: 580px;
-  margin: 60px auto;
+  max-width: 480px;
+  margin: 80px auto;
   animation: fadeIn 0.4s ease;
 }
 #onboarding h2 {
   font-family: var(--font-head);
   font-weight: 800;
-  font-size: 1.7rem;
+  font-size: 1.4rem;
   margin-bottom: 6px;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -812,7 +808,7 @@ input[type="number"] { font-family: var(--font-mono); }
   justify-content: center;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   color: var(--text-faint);
   animation: mosaicPop 0.3s ease both;
 }
@@ -850,7 +846,7 @@ input[type="number"] { font-family: var(--font-mono); }
   background: none;
   color: var(--text-faint);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.65rem;
   cursor: pointer;
   transition: all 0.15s;
   position: relative;
@@ -860,7 +856,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .seg-picker button.active { background: var(--accent); color: #080808; font-weight: 600; }
 .seg-picker button .seg-sub {
   display: block;
-  font-size: 0.6rem;
+  font-size: 0.48rem;
   opacity: 0.6;
   margin-top: 1px;
 }
@@ -880,7 +876,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .filter-bar h4 {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 0.72rem;
+  font-size: 0.58rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--text-faint);
@@ -912,7 +908,7 @@ input[type="number"] { font-family: var(--font-mono); }
   border-radius: var(--radius);
   padding: 3px 10px 3px 3px;
   font-family: var(--font-head);
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text);
   letter-spacing: 0.3px;
@@ -989,7 +985,7 @@ input[type="number"] { font-family: var(--font-mono); }
 }
 .ac-item .ac-sub {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.58rem;
   color: var(--text-faint);
 }
 
@@ -1055,7 +1051,7 @@ input[type="number"] { font-family: var(--font-mono); }
 }
 .cal-cell .cal-label {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.44rem;
   color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -1131,7 +1127,7 @@ input[type="number"] { font-family: var(--font-mono); }
   border: 1px solid var(--border-hi);
   color: var(--text-dim);
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.55rem;
   padding: 4px 10px;
   border-radius: var(--radius);
   white-space: nowrap;
@@ -1228,7 +1224,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .intel-artist-row .ia-att {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.88rem;
   color: var(--accent);
   width: 44px;
   text-align: right;
@@ -1261,7 +1257,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .momentum-card h3 {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.88rem;
   margin-bottom: 2px;
   display: flex;
   align-items: center;
@@ -1274,7 +1270,7 @@ input[type="number"] { font-family: var(--font-mono); }
 .intel-quick-chip {
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 0.75rem;
+  font-size: 0.62rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1290,7 +1286,7 @@ input[type="number"] { font-family: var(--font-mono); }
 
 .intel-avail-badge {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.52rem;
   padding: 2px 6px;
   border-radius: var(--radius-sm);
   font-weight: 500;
@@ -1351,51 +1347,12 @@ input[type="number"] { font-family: var(--font-mono); }
   .stat { min-width: 80px; padding: 8px 10px; }
   .masthead { flex-direction: column; gap: 8px; }
   header { position: relative; }
-  .tabs { padding: 0 20px; }
-  .masthead { padding: 0 20px; }
+  .tabs { padding: 0 12px; }
+  .masthead { padding: 0 12px; }
   .tab-btn { padding: 8px 10px 10px; font-size: 0.6rem; }
   .tab-btn[data-tab="discover"],
   .tab-btn[data-tab="routing"],
   .tab-btn[data-tab="scanner"] { font-size: 0.65rem; padding: 8px 12px 10px; }
-}
-
-/* ═══════════════════════════════════════════
-   CACHE LOADING BAR — overrides JS inline styles
-   Thin amber accent line with scanning readout
-   ═══════════════════════════════════════════ */
-
-#cacheBar {
-  background: var(--bg) !important;
-  border-bottom: none !important;
-  padding: 0 !important;
-  height: 24px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-family: var(--font-mono) !important;
-  font-size: 0.58rem !important;
-  font-weight: 500 !important;
-  color: var(--accent) !important;
-  letter-spacing: 1.5px !important;
-  text-transform: uppercase !important;
-  overflow: hidden !important;
-}
-
-/* Animated amber scan line beneath the bar */
-#cacheBar::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 30%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  animation: cacheScan 1.8s ease-in-out infinite;
-}
-
-@keyframes cacheScan {
-  0% { left: -30%; }
-  100% { left: 100%; }
 }
 </style>
 </head>
