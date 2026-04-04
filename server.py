@@ -19,8 +19,8 @@ PORT = 8000
 # Soundcharts credentials (upgrade to paid for Instagram city/country data)
 SC_BASE = "https://customer.api.soundcharts.com"
 SC_HDRS = {
-    "x-app-id": os.environ.get("SC_APP_ID", "DROP-API2_EB90B74F"),
-    "x-api-key": os.environ.get("SC_API_KEY", "522cf4373a70c456"),
+    "x-app-id": os.environ.get("SC_APP_ID", "NEJNJ-API_CE1B9ACA"),
+    "x-api-key": os.environ.get("SC_API_KEY", "b3b12614c22b60d1"),
 }
 
 # RA GraphQL
