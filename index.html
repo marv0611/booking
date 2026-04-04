@@ -327,11 +327,11 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
           <span class="fg-label">Hasn't played <span id="fCityD">city</span> in last</span>
           <div class="seg-picker" id="segBack">
             <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('segBack','filterBack',7)" data-v="7" class="active">7<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">7<span class="seg-sub">months</span></button>
             <button onclick="setPicker('segBack','filterBack',12)" data-v="12">12<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('segBack','filterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',9)" data-v="9">18<span class="seg-sub">months</span></button>
           </div>
-          <input type="hidden" id="filterBack" value="7">
+          <input type="hidden" id="filterBack" value="6">
         </div>
         <div class="filter-group">
           <span class="fg-label">Not booked for next</span>
@@ -371,11 +371,11 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
           <span class="fg-label">Hasn't played <span id="fCityR">city</span> in last</span>
           <div class="seg-picker" id="rSegBack">
             <button onclick="setPicker('rSegBack','rFilterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('rSegBack','rFilterBack',7)" data-v="7" class="active">7<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('rSegBack','rFilterBack',6)" data-v="6" class="active">7<span class="seg-sub">months</span></button>
             <button onclick="setPicker('rSegBack','rFilterBack',12)" data-v="12">12<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('rSegBack','rFilterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('rSegBack','rFilterBack',9)" data-v="9">18<span class="seg-sub">months</span></button>
           </div>
-          <input type="hidden" id="rFilterBack" value="7">
+          <input type="hidden" id="rFilterBack" value="6">
         </div>
         <div class="filter-group">
           <span class="fg-label">Not booked for next</span>
@@ -1477,56 +1477,73 @@ async function runScan(){
     // DNA-powered direct competition detection
     const dna=getDNA();
     const hasDNA=dna&&dna.artistCount>0;
+    const userVenue=(P().venue||'').toLowerCase();
     const direct=[], general=[];
+
+    // Exclude events at your own venue
+    const otherEvents=all.filter(ev=>!ev.venue||!ev.venue.toLowerCase().includes(userVenue));
+    const ownEvents=all.filter(ev=>ev.venue&&ev.venue.toLowerCase().includes(userVenue));
 
     if(hasDNA){
       // Build lookup sets from DNA
-      const cloudNorm=new Set((dna.cloud||[]).map(n=>norm(n)));
-      // Also build set of all artists in DNA profiles
       const profileNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
-      // Co-billing network names
+      const cloudNorm=new Set((dna.cloud||[]).map(n=>norm(n)));
       const coBillNorms=new Set((dna.coBillNetwork||[]).map(c=>norm(c.name)));
+      // Build second-degree set: artists connected TO the co-billing network
+      const allCacheEvents=getCache()?.events||[];
+      const secondDegree=new Set();
+      for(const c of(dna.coBillNetwork||[]).slice(0,20)){
+        const rel=raRelated(c.name,allCacheEvents);
+        for(const r of rel.slice(0,10))secondDegree.add(norm(r.name));
+      }
 
-      for(const ev of all){
+      for(const ev of otherEvents){
         let isDirect=false,reason='';
         for(const a of ev.artists){
           const n=norm(a);
-          // 1. Artist has played your venue
           if(profileNorms.has(n)){isDirect=true;reason='Played your venue';break}
-          // 2. Artist is in extended cloud (includes co-billing network)
           if(cloudNorm.has(n)){isDirect=true;reason='In your network';break}
-          // 3. Artist is in co-billing network
           if(coBillNorms.has(n)){isDirect=true;reason='Shares lineups';break}
+          if(secondDegree.has(n)){isDirect=true;reason='2nd-degree connection';break}
         }
-        // 4. Check if any artist on this event shares lineups with venue artists (live check from cache)
+        // Live co-billing check: does ANY artist share even 1 lineup with a venue artist?
         if(!isDirect){
-          const allCacheEvents=getCache()?.events||[];
           for(const a of ev.artists){
             const related=raRelated(a,allCacheEvents);
-            // If this artist has co-billed with any venue artist, it's a competitor
             const venueOverlap=related.filter(r=>profileNorms.has(norm(r.name)));
-            if(venueOverlap.length>=2){isDirect=true;reason='Co-bills with '+venueOverlap[0].name;break}
+            if(venueOverlap.length>=1){isDirect=true;reason='Co-bills with '+venueOverlap[0].name;break}
           }
         }
         if(isDirect)direct.push({...ev,reason});
         else general.push(ev);
       }
+    }else{
+      general.push(...otherEvents);
     }
 
-    // Competition ratings
-    const overallLevel=all.length>15?'High':all.length>8?'Medium':'Low';
-    const overallClr=all.length>15?'var(--accent)':all.length>8?'var(--amber)':'var(--green)';
+    // Competition ratings (exclude own events from count)
+    const compCount=otherEvents.length;
+    const overallLevel=compCount>15?'High':compCount>8?'Medium':'Low';
+    const overallClr=compCount>15?'var(--accent)':compCount>8?'var(--amber)':'var(--green)';
     const directLevel=hasDNA?(direct.length>5?'High':direct.length>2?'Medium':direct.length>0?'Low':'None'):'—';
     const directClr=direct.length>5?'var(--accent)':direct.length>2?'var(--amber)':direct.length>0?'var(--green)':'var(--green)';
 
-    let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2><span class="count">${all.length} events</span></div>
+    let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2><span class="count">${all.length} events${ownEvents.length?' ('+ownEvents.length+' yours)':''}</span></div>
       <div class="stats">
-        <div class="stat"><div class="sv">${all.length}</div><div class="sl">Total events</div></div>
+        <div class="stat"><div class="sv">${compCount}</div><div class="sl">Competing events</div></div>
         <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total attending</div></div>
         <div class="stat"><div class="sv" style="color:${overallClr}">${overallLevel}</div><div class="sl">Overall competition</div></div>
         ${hasDNA?`<div class="stat"><div class="sv" style="color:${directClr}">${directLevel}</div><div class="sl">Direct competition</div></div>`:''}
         ${hasDNA?`<div class="stat"><div class="sv" style="color:var(--accent)">${direct.length}</div><div class="sl">Competing for your audience</div></div>`:''}
       </div>`;
+
+    // Show own venue events if any
+    if(ownEvents.length){
+      h+=`<div class="card" style="border-color:var(--blue);margin-top:16px">
+        <h3 style="color:var(--blue);margin-bottom:8px">Your Events</h3>`;
+      for(const ev of ownEvents)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${esc(ev.title)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--blue)">${ev.attending?fmt(ev.attending)+' going':'—'}</span></div>`;
+      h+=`</div>`;
+    }
 
     // Direct competition section (DNA-powered)
     if(hasDNA&&direct.length>0){
@@ -1606,8 +1623,11 @@ async function scanAdjacentThreats(dateStr){
       const cloudNorm=hasDNA?new Set((dna.cloud||[]).map(n=>norm(n))):new Set();
       const profileNorms=hasDNA?new Set((dna.profiles||[]).map(p=>norm(p.name))):new Set();
       const coBillNorms=hasDNA?new Set((dna.coBillNetwork||[]).map(c=>norm(c.name))):new Set();
+      const uv=(P().venue||'').toLowerCase();
 
       for(const ev of events){
+        // Skip own venue
+        if(ev.venue&&ev.venue.toLowerCase().includes(uv))continue;
         const att=ev.attending||0;
         let isDirect=false,reason='';
 
@@ -1620,7 +1640,6 @@ async function scanAdjacentThreats(dateStr){
           }
         }
 
-        // Include if: big event (any genre, 500+) OR direct competitor (any attendance)
         if(att>=ATT_THRESHOLD||(isDirect&&att>=DIRECT_ATT_THRESHOLD)){
           threats.push({...ev,dayLabel,dayDate,isDirect,reason,isBig:att>=ATT_THRESHOLD});
         }
@@ -1889,6 +1908,20 @@ async function genReport(){
     const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
     let h=`<div class="card"><h3 style="color:var(--accent)">Venue Profile</h3><div class="stats"><div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div><div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div><div class="stat"><div class="sv">${p.capacity||'—'}</div><div class="sl">Capacity</div></div><div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${cn} events/year</div></div></div></div>`;
+
+    // Best and worst attending nights
+    const evWithAtt=venueEv.filter(e=>e.attending>0).sort((a,b)=>b.attending-a.attending);
+    if(evWithAtt.length>=2){
+      const best=evWithAtt.slice(0,5);
+      const worst=evWithAtt.slice(-5).reverse();
+      const avgAtt=Math.round(evWithAtt.reduce((s,e)=>s+e.attending,0)/evWithAtt.length);
+      h+=`<div class="card"><h3 style="color:var(--green)">Best Nights</h3><p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:8px">Avg RA attendance: ${fmt(avgAtt)}</p>`;
+      for(const ev of best)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--green)">${fmt(ev.attending)}</span></div>`;
+      h+=`</div>`;
+      h+=`<div class="card"><h3 style="color:var(--amber)">Quietest Nights</h3>`;
+      for(const ev of worst)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--amber)">${fmt(ev.attending)}</span></div>`;
+      h+=`</div>`;
+    }
 
     if(wH||lH){
       h+=`<div class="card"><h3>Booking DNA</h3>`;
