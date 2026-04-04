@@ -1,0 +1,349 @@
+{
+  "generated": "2026-04-05T00:46:55.513347",
+  "range": [
+    "2025-04-05",
+    "2026-04-05"
+  ],
+  "method": "Real promoter IDs from RA GraphQL event.promoters field. Real venue IDs. Full event fetch, no sampling.",
+  "definition": {
+    "customer": "Venue or promoter with 12+ events in trailing 12 months, deduplicated where same entity appears as both",
+    "market": "City with 1000+ events/year"
+  },
+  "summary": {
+    "cities": 1,
+    "total_events": 13791,
+    "venues_12plus": 130,
+    "promoters_12plus": 99,
+    "overlap_12plus": 25,
+    "customers_12plus": 204,
+    "customers_20plus": 130
+  },
+  "cities": [
+    {
+      "city": "Berlin",
+      "key": "berlin",
+      "country": "Germany",
+      "area_id": 34,
+      "events_12m": 13791,
+      "is_market": true,
+      "events_fetched": 10000,
+      "unique_artists": 11473,
+      "avg_events_per_night": 39.4,
+      "venues_with_events": 856,
+      "venues_12plus": 130,
+      "venues_20plus": 98,
+      "venues_50plus": 55,
+      "promoters_with_events": 2296,
+      "promoters_12plus": 99,
+      "promoters_20plus": 57,
+      "promoters_50plus": 28,
+      "overlap_12plus": 25,
+      "customers_12plus": 204,
+      "customers_20plus": 130,
+      "top_venues": [
+        {
+          "id": "23370",
+          "name": "Minimal Bar",
+          "events": 261
+        },
+        {
+          "id": "208127",
+          "name": "TBA",
+          "events": 244
+        },
+        {
+          "id": "28354",
+          "name": "://about blank",
+          "events": 208
+        },
+        {
+          "id": "17071",
+          "name": "Lokschuppen Berlin",
+          "events": 204
+        },
+        {
+          "id": "10546",
+          "name": "KitKatClub",
+          "events": 193
+        },
+        {
+          "id": "57853",
+          "name": "Crack Bellmer",
+          "events": 178
+        },
+        {
+          "id": "77598",
+          "name": "Klunkerkranich",
+          "events": 168
+        },
+        {
+          "id": "6949",
+          "name": "Club der Visionaere",
+          "events": 167
+        },
+        {
+          "id": "184646",
+          "name": "OXI",
+          "events": 162
+        },
+        {
+          "id": "187744",
+          "name": "\u00c6DEN",
+          "events": 162
+        },
+        {
+          "id": "5494",
+          "name": "Tresor / Globus",
+          "events": 157
+        },
+        {
+          "id": "8009",
+          "name": "Golden Gate",
+          "events": 151
+        },
+        {
+          "id": "107593",
+          "name": "Der Wei\u00dfe Hase",
+          "events": 149
+        },
+        {
+          "id": "5031",
+          "name": "Berghain | Panorama Bar | S\u00e4ule",
+          "events": 146
+        },
+        {
+          "id": "73618",
+          "name": "AVA Club",
+          "events": 146
+        },
+        {
+          "id": "11809",
+          "name": "Solar",
+          "events": 130
+        },
+        {
+          "id": "185172",
+          "name": "RSO.BERLIN",
+          "events": 127
+        },
+        {
+          "id": "99161",
+          "name": "Kater",
+          "events": 125
+        },
+        {
+          "id": "8957",
+          "name": "Paloma",
+          "events": 124
+        },
+        {
+          "id": "18924",
+          "name": "M-BIA",
+          "events": 122
+        },
+        {
+          "id": "15611",
+          "name": "Eschschloraque",
+          "events": 122
+        },
+        {
+          "id": "78234",
+          "name": "Humboldthain Club",
+          "events": 119
+        },
+        {
+          "id": "141987",
+          "name": "OST",
+          "events": 117
+        },
+        {
+          "id": "51972",
+          "name": "Gretchen",
+          "events": 117
+        },
+        {
+          "id": "75457",
+          "name": "OHM",
+          "events": 116
+        },
+        {
+          "id": "8556",
+          "name": "Renate",
+          "events": 116
+        },
+        {
+          "id": "175191",
+          "name": "Bulbul Berlin",
+          "events": 113
+        },
+        {
+          "id": "145577",
+          "name": "arkaoda Berlin",
+          "events": 113
+        },
+        {
+          "id": "6950",
+          "name": "Ritter Butzke",
+          "events": 108
+        },
+        {
+          "id": "222563",
+          "name": "Giri",
+          "events": 107
+        }
+      ],
+      "top_promoters": [
+        {
+          "id": "30973",
+          "name": "mini.mal elektrokneipe",
+          "events": 257
+        },
+        {
+          "id": "29098",
+          "name": "CDV",
+          "events": 190
+        },
+        {
+          "id": "61016",
+          "name": "Der Wei\u00dfe Hase",
+          "events": 149
+        },
+        {
+          "id": "70881",
+          "name": "Klunkerkranich",
+          "events": 148
+        },
+        {
+          "id": "34887",
+          "name": "Sensorium",
+          "events": 147
+        },
+        {
+          "id": "1039",
+          "name": "OstGut GmbH",
+          "events": 146
+        },
+        {
+          "id": "8711",
+          "name": "Tresor Club",
+          "events": 146
+        },
+        {
+          "id": "63291",
+          "name": "Golden Gate",
+          "events": 146
+        },
+        {
+          "id": "9094",
+          "name": "Lokschuppen Berlin",
+          "events": 128
+        },
+        {
+          "id": "13285",
+          "name": "://about blank",
+          "events": 123
+        },
+        {
+          "id": "52501",
+          "name": "Kater",
+          "events": 120
+        },
+        {
+          "id": "102021",
+          "name": "Renate Club",
+          "events": 109
+        },
+        {
+          "id": "132089",
+          "name": "giriberlino",
+          "events": 109
+        },
+        {
+          "id": "9481",
+          "name": "Ritter Butzke",
+          "events": 107
+        },
+        {
+          "id": "48504",
+          "name": "Crack Bellmer",
+          "events": 106
+        },
+        {
+          "id": "50036",
+          "name": "RSO.BERLIN",
+          "events": 100
+        },
+        {
+          "id": "55584",
+          "name": "Good Day Berlin Kultur und Veranstaltungen GmbH",
+          "events": 96
+        },
+        {
+          "id": "110848",
+          "name": "InsomniaBerlin",
+          "events": 89
+        },
+        {
+          "id": "4075",
+          "name": "Sameheads",
+          "events": 88
+        },
+        {
+          "id": "98410",
+          "name": "OXI Events",
+          "events": 84
+        },
+        {
+          "id": "42875",
+          "name": "Promenaden Eck",
+          "events": 81
+        },
+        {
+          "id": "110655",
+          "name": "OST ",
+          "events": 78
+        },
+        {
+          "id": "60483",
+          "name": "Birgit & Bier",
+          "events": 77
+        },
+        {
+          "id": "84707",
+          "name": "VOID",
+          "events": 63
+        },
+        {
+          "id": "28296",
+          "name": "maik balke",
+          "events": 63
+        },
+        {
+          "id": "117390",
+          "name": "M-BIA Event Promotion",
+          "events": 56
+        },
+        {
+          "id": "79283",
+          "name": "arkaoda Berlin",
+          "events": 54
+        },
+        {
+          "id": "11078",
+          "name": "Else Events",
+          "events": 53
+        },
+        {
+          "id": "117673",
+          "name": "Crunch Tapes",
+          "events": 42
+        },
+        {
+          "id": "102845",
+          "name": "Symbiotikka / Too Much Entertainment",
+          "events": 39
+        }
+      ]
+    }
+  ]
+}

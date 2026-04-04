@@ -1,0 +1,2 @@
+city,country,events_12m,avg_events_per_night,venues_with_events,venues_12plus,venues_20plus,venues_50plus,promoters_with_events,promoters_12plus,promoters_20plus,promoters_50plus,overlap_12plus,customers_12plus,customers_20plus,unique_artists
+Berlin,Germany,13791,39.4,856,130,98,55,2296,99,57,28,25,204,130,11473

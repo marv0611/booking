@@ -17,7 +17,7 @@ import urllib.error
 import urllib.parse
 from pathlib import Path
 
-PORT = 8000
+PORT = int(os.environ.get("PORT", 8000))
 
 # Soundcharts — used ONLY for Spotify city listener counts (X-Ray)
 SC_BASE = "https://customer.api.soundcharts.com"
@@ -221,7 +221,7 @@ class LibroHandler(http.server.SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     os.chdir(Path(__file__).parent)
     with http.server.HTTPServer(("", PORT), LibroHandler) as httpd:
-        print("LIBRO running -> http://localhost:" + str(PORT))
+        print("NIGHT PULSE running -> http://localhost:" + str(PORT))
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

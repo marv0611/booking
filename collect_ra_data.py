@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
 """
-Night Pulse — RA Data Collector v2
-====================================
-Uses correct RA GraphQL query names (discovered via schema introspection).
+Night Pulse — Market Sizing (v4 FINAL)
+========================================
+Real promoter IDs from RA events. No heuristics. No page cap.
 
-Queries:
-  venues(areaId)    → registered venues per city
-  promoters(areaId) → registered promoters per city
-  eventListings     → 12-month event count (splits date range to beat 10K cap)
+Every event on RA has:
+  - venue { id name }     → who hosted it
+  - promoters { id name } → who booked it
+  - artists { id name }   → who played
+
+A customer = venue or promoter that booked 12+ events in trailing 12 months.
+A market = city with 1,000+ events/year.
 
 Usage:
-  python3 collect_ra_data.py --city berlin         # single city test
-  python3 collect_ra_data.py --top 10              # top 10 cities
-  python3 collect_ra_data.py --top 10 --deep       # with venue/artist breakdown
-  python3 collect_ra_data.py                       # all 78 cities
+  python3 collect_ra_data.py --city berlin         # ~5 min
+  python3 collect_ra_data.py --top 10              # ~60 min
+  python3 collect_ra_data.py                       # all qualifying cities
 """
 
-import json, csv, time, sys, argparse, math
+import json, csv, time, argparse
 from datetime import datetime, timedelta
 from collections import Counter
 from urllib.request import Request, urlopen
@@ -24,178 +26,181 @@ from urllib.error import HTTPError
 
 API = "http://localhost:8000/api/ra/graphql"
 DELAY = 1.2
+PAGE_SIZE = 50
 
 TODAY = datetime.now()
-DATE_12M_AGO = (TODAY - timedelta(days=365)).strftime("%Y-%m-%d")
-DATE_TODAY = TODAY.strftime("%Y-%m-%d")
+DATE_START = (TODAY - timedelta(days=365)).strftime("%Y-%m-%d")
+DATE_END = TODAY.strftime("%Y-%m-%d")
 
-Q_VENUES_LIST = 'query { venues(areaId: %d, limit: 500) { id name } }'
-Q_PROMOTERS_LIST = 'query { promoters(areaId: %d, limit: 500) { id name } }'
-
-Q_EVENTS_COUNT = """
-query ($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
-  eventListings(filters: $filters, page: $page, pageSize: $pageSize) {
-    totalResults
-  }
-}"""
-
-Q_EVENTS_DETAIL = """
+Q_EVENTS = """
 query ($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
   eventListings(filters: $filters, page: $page, pageSize: $pageSize) {
     data {
       event {
         id title date
         venue { id name }
+        promoters { id name }
         artists { id name }
-        genres { name }
-        interestedCount
       }
     }
     totalResults
   }
 }"""
 
+Q_COUNT = """
+query ($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
+  eventListings(filters: $filters, page: $page, pageSize: $pageSize) {
+    totalResults
+  }
+}"""
 
-def post_raw(query_str):
-    payload = json.dumps({"query": query_str}).encode()
+
+def post(query, variables):
+    payload = json.dumps({"query": query, "variables": variables}).encode()
     req = Request(API, data=payload, headers={"Content-Type": "application/json"})
     try:
-        with urlopen(req, timeout=20) as resp:
+        with urlopen(req, timeout=30) as resp:
             return json.loads(resp.read())
     except HTTPError as e:
         if e.code == 429:
-            time.sleep(10)
-            return post_raw(query_str)
-        return None
-    except:
-        return None
-
-
-def post(query, variables=None):
-    payload = json.dumps({"query": query, "variables": variables or {}}).encode()
-    req = Request(API, data=payload, headers={"Content-Type": "application/json"})
-    try:
-        with urlopen(req, timeout=20) as resp:
-            return json.loads(resp.read())
-    except HTTPError as e:
-        if e.code == 429:
-            time.sleep(10)
+            print("      ⚠ Rate limited, waiting 15s...")
+            time.sleep(15)
             return post(query, variables)
         return None
-    except:
+    except Exception as e:
+        print(f"      ✗ {e}")
         return None
 
 
-def get_venues(area_id):
-    resp = post_raw(Q_VENUES_LIST % area_id)
-    if resp and "data" in resp and resp["data"].get("venues"):
-        return resp["data"]["venues"]
-    return None
-
-
-def get_promoters(area_id):
-    resp = post_raw(Q_PROMOTERS_LIST % area_id)
-    if resp and "data" in resp and resp["data"].get("promoters"):
-        return resp["data"]["promoters"]
-    return None
-
-
-def get_events_count(area_id, date_from, date_to):
+def get_event_count(area_id, date_from=DATE_START, date_to=DATE_END):
     v = {"filters": {"areas": {"eq": area_id}, "listingDate": {"gte": date_from, "lte": date_to}}, "page": 1, "pageSize": 1}
-    resp = post(Q_EVENTS_COUNT, v)
-    if resp and "data" in resp:
-        return resp["data"]["eventListings"]["totalResults"]
-    return None
-
-
-def get_true_event_count(area_id):
-    total = get_events_count(area_id, DATE_12M_AGO, DATE_TODAY)
-    if total is None:
-        return None
+    resp = post(Q_COUNT, v)
+    if not resp or "data" not in resp:
+        return 0
+    total = resp["data"]["eventListings"]["totalResults"]
     if total < 10000:
         return total
-    print(f"    ↳ Hit 10K cap, splitting into quarters...")
-    real = 0
-    base = datetime.strptime(DATE_12M_AGO, "%Y-%m-%d")
-    for q in range(4):
-        qs = (base + timedelta(days=q * 91)).strftime("%Y-%m-%d")
-        qe = (base + timedelta(days=(q + 1) * 91 - 1)).strftime("%Y-%m-%d")
-        if q == 3:
-            qe = DATE_TODAY
+    d1 = datetime.strptime(date_from, "%Y-%m-%d")
+    d2 = datetime.strptime(date_to, "%Y-%m-%d")
+    mid = d1 + (d2 - d1) / 2
+    mid_str = mid.strftime("%Y-%m-%d")
+    time.sleep(DELAY)
+    left = get_event_count(area_id, date_from, mid_str)
+    time.sleep(DELAY)
+    right = get_event_count(area_id, (mid + timedelta(days=1)).strftime("%Y-%m-%d"), date_to)
+    return left + right
+
+
+def fetch_all_events(area_id, total):
+    """Fetch ALL events. No page cap."""
+    events = []
+    pages = (total // PAGE_SIZE) + 1
+
+    for page in range(1, pages + 1):
+        v = {
+            "filters": {"areas": {"eq": area_id}, "listingDate": {"gte": DATE_START, "lte": DATE_END}},
+            "page": page, "pageSize": PAGE_SIZE,
+        }
+        resp = post(Q_EVENTS, v)
+        if resp and "data" in resp:
+            batch = [item["event"] for item in resp["data"]["eventListings"].get("data", []) if item.get("event")]
+            events.extend(batch)
+            if not batch:
+                break
+        else:
+            break
+        if page % 50 == 0:
+            print(f"      ... {len(events):,}/{total:,} events")
         time.sleep(DELAY)
-        qc = get_events_count(area_id, qs, qe) or 0
-        if qc >= 10000:
-            print(f"    ↳ Q{q+1} also capped, splitting months...")
-            mc = 0
-            qb = datetime.strptime(qs, "%Y-%m-%d")
-            for m in range(3):
-                ms = (qb + timedelta(days=m * 30)).strftime("%Y-%m-%d")
-                me = (qb + timedelta(days=(m + 1) * 30 - 1)).strftime("%Y-%m-%d")
-                if m == 2: me = qe
-                time.sleep(DELAY)
-                mc += get_events_count(area_id, ms, me) or 0
-            qc = mc
-        real += qc
-    return real
+
+    return events
 
 
-def get_event_page(area_id, page=1):
-    v = {"filters": {"areas": {"eq": area_id}, "listingDate": {"gte": DATE_12M_AGO, "lte": DATE_TODAY}}, "page": page, "pageSize": 50}
-    resp = post(Q_EVENTS_DETAIL, v)
-    if resp and "data" in resp:
-        ls = resp["data"]["eventListings"]
-        return [i["event"] for i in ls.get("data", []) if i.get("event")], ls.get("totalResults", 0)
-    return [], 0
-
-
-def analyze_events(area_id, max_pages=4):
-    evts = []
-    total = 0
-    for p in range(1, max_pages + 1):
-        e, total = get_event_page(area_id, p)
-        evts.extend(e)
-        if len(evts) >= total or not e: break
-        time.sleep(DELAY)
-    if not evts: return {}
-    ratio = total / max(len(evts), 1)
-    vm = {}
-    for e in evts:
+def analyze_city(events):
+    # Venues: count events per venue ID
+    venue_events = Counter()
+    venue_names = {}
+    for e in events:
         v = e.get("venue") or {}
         vid = v.get("id")
         if vid:
-            vm.setdefault(vid, 0)
-            vm[vid] += 1
-    vc = [c * ratio for c in vm.values()]
+            venue_events[vid] += 1
+            venue_names[vid] = v.get("name", "")
+
+    # Promoters: count events per promoter ID (REAL, from RA data)
+    promoter_events = Counter()
+    promoter_names = {}
+    for e in events:
+        for p in e.get("promoters") or []:
+            pid = p.get("id")
+            if pid:
+                promoter_events[pid] += 1
+                promoter_names[pid] = p.get("name", "")
+
+    # Artists
     artists = set()
-    for e in evts:
+    for e in events:
         for a in e.get("artists") or []:
-            if a.get("id"): artists.add(a["id"])
-    brands = Counter()
-    for e in evts:
-        t = (e.get("title") or "").strip()
-        for sep in [":", " presents ", " w/ ", " x ", " | ", " — ", " at ", " @ "]:
-            if sep in t:
-                b = t.split(sep)[0].strip()
-                if 2 < len(b) < 50: brands[b.lower()] += 1
-                break
-    genres = Counter()
-    for e in evts:
-        for g in e.get("genres") or []:
-            n = g.get("name", "").strip()
-            if n: genres[n] += 1
-    att = [e.get("interestedCount", 0) or 0 for e in evts if (e.get("interestedCount") or 0) > 0]
+            if a.get("id"):
+                artists.add(a["id"])
+
+    # Competition density
+    night_counts = Counter()
+    for e in events:
+        d = (e.get("date") or "")[:10]
+        if d:
+            night_counts[d] += 1
+    nights = list(night_counts.values())
+
+    # Venue segmentation
+    v_total = len(venue_events)
+    v_12 = sum(1 for c in venue_events.values() if c >= 12)
+    v_20 = sum(1 for c in venue_events.values() if c >= 20)
+    v_50 = sum(1 for c in venue_events.values() if c >= 50)
+
+    # Promoter segmentation (REAL IDs, not heuristics)
+    p_total = len(promoter_events)
+    p_12 = sum(1 for c in promoter_events.values() if c >= 12)
+    p_20 = sum(1 for c in promoter_events.values() if c >= 20)
+    p_50 = sum(1 for c in promoter_events.values() if c >= 50)
+
+    # Overlap: promoters that are also venues (same entity, e.g. RSO.BERLIN)
+    # These shouldn't be double-counted
+    venue_name_set = set(n.lower().strip() for n in venue_names.values())
+    promoter_name_set = set(n.lower().strip() for n in promoter_names.values())
+    overlap_names = venue_name_set & promoter_name_set
+    # Count overlapping entities that are 12+ on BOTH sides
+    overlap_12 = 0
+    for pid, pname in promoter_names.items():
+        if pname.lower().strip() in overlap_names:
+            if promoter_events[pid] >= 12:
+                # Check if corresponding venue is also 12+
+                for vid, vname in venue_names.items():
+                    if vname.lower().strip() == pname.lower().strip() and venue_events[vid] >= 12:
+                        overlap_12 += 1
+                        break
+
     return {
-        "sample_size": len(evts),
-        "unique_venues_sample": len(vm),
-        "venues_12plus": sum(1 for c in vc if c >= 12),
-        "venues_20plus": sum(1 for c in vc if c >= 20),
-        "venues_50plus": sum(1 for c in vc if c >= 50),
-        "unique_artists_sample": len(artists),
-        "brand_promoters_found": len(brands),
-        "brands_12plus": sum(1 for c in brands.values() if c * ratio >= 12),
-        "brands_20plus": sum(1 for c in brands.values() if c * ratio >= 20),
-        "top_genre": genres.most_common(1)[0][0] if genres else "N/A",
-        "avg_attendance": round(sum(att) / max(len(att), 1)) if att else 0,
+        "events_fetched": len(events),
+        "unique_artists": len(artists),
+        "avg_events_per_night": round(sum(nights) / max(len(nights), 1), 1) if nights else 0,
+        # Venues
+        "venues_with_events": v_total,
+        "venues_12plus": v_12,
+        "venues_20plus": v_20,
+        "venues_50plus": v_50,
+        # Promoters (REAL from RA)
+        "promoters_with_events": p_total,
+        "promoters_12plus": p_12,
+        "promoters_20plus": p_20,
+        "promoters_50plus": p_50,
+        # Deduplicated total
+        "overlap_12plus": overlap_12,
+        "customers_12plus": v_12 + p_12 - overlap_12,
+        "customers_20plus": v_20 + p_20 - overlap_12,  # conservative dedup
+        # Lists
+        "top_venues": [{"id": vid, "name": venue_names.get(vid, ""), "events": c} for vid, c in venue_events.most_common(30)],
+        "top_promoters": [{"id": pid, "name": promoter_names.get(pid, ""), "events": c} for pid, c in promoter_events.most_common(30)],
     }
 
 
@@ -212,11 +217,11 @@ def load_cities(fp="ra_area_ids.json"):
 
 
 def main():
-    pa = argparse.ArgumentParser()
+    pa = argparse.ArgumentParser(description="Night Pulse — Market Sizing v4")
     pa.add_argument("--top", type=int)
     pa.add_argument("--city", type=str)
-    pa.add_argument("--deep", action="store_true")
     pa.add_argument("--ids-file", default="ra_area_ids.json")
+    pa.add_argument("--min-events", type=int, default=1000)
     args = pa.parse_args()
 
     cities = load_cities(args.ids_file)
@@ -226,76 +231,116 @@ def main():
         cities = cities[:args.top]
 
     if not cities:
-        print("No cities found."); return
+        print("No cities found.")
+        return
 
-    # Test
-    aid0 = cities[0]["area_id"]
-    print(f"Testing on {cities[0]['name']}...")
+    print(f"Testing proxy...")
+    test = get_event_count(cities[0]["area_id"])
+    if not test:
+        print("✗ Cannot reach proxy. Run: python3 server.py")
+        return
+    print(f"✓ {cities[0]['name']}: {test:,} events/year")
 
-    print("  venues query...")
-    vtest = get_venues(aid0)
-    v_ok = vtest is not None
-    print(f"  {'✓' if v_ok else '✗'} venues: {len(vtest) if vtest else 'failed'}")
-    time.sleep(DELAY)
-
-    print("  promoters query...")
-    ptest = get_promoters(aid0)
-    p_ok = ptest is not None
-    print(f"  {'✓' if p_ok else '✗'} promoters: {len(ptest) if ptest else 'failed'}")
-    time.sleep(DELAY)
-
-    n = len(cities)
-    calls = n * (1 + int(v_ok) + int(p_ok) + (4 if args.deep else 0))
-    print(f"\n{'='*60}")
-    print(f"  {n} cities | ~{calls * DELAY / 60:.1f} min")
-    print(f"  {DATE_12M_AGO} → {DATE_TODAY}")
-    print(f"{'='*60}\n")
+    print(f"\n{'='*65}")
+    print(f"  NIGHT PULSE — REAL MARKET SIZE")
+    print(f"  {len(cities)} cities | {DATE_START} → {DATE_END}")
+    print(f"  Using REAL promoter IDs from RA (not title heuristics)")
+    print(f"  Fetching ALL events (no page cap)")
+    print(f"{'='*65}\n")
 
     results = []
-    for i, c in enumerate(cities, 1):
-        aid = c["area_id"]
-        print(f"[{i}/{n}] {c['name']}...")
-        row = {"city": c["name"], "key": c["key"], "country": c["country"], "area_id": aid}
-        row["events_12m"] = get_true_event_count(aid)
-        time.sleep(DELAY)
-        if v_ok:
-            vl = get_venues(aid)
-            row["ra_venues"] = len(vl) if vl else 0
-            time.sleep(DELAY)
-        if p_ok:
-            pl = get_promoters(aid)
-            row["ra_promoters"] = len(pl) if pl else 0
-            time.sleep(DELAY)
-        if args.deep:
-            row.update(analyze_events(aid))
-        ev = row.get("events_12m") or 0
-        print(f"    → events={ev:,}  venues={row.get('ra_venues','?')}  promoters={row.get('ra_promoters','?')}")
+    for i, city in enumerate(cities, 1):
+        aid = city["area_id"]
+        name = city["name"]
+        print(f"[{i}/{len(cities)}] {name}...")
+
+        total = get_event_count(aid)
+        print(f"    {total:,} events")
+
+        if total < args.min_events:
+            print(f"    ⊘ Below threshold")
+            results.append({"city": name, "key": city["key"], "country": city["country"], "events_12m": total, "is_market": False})
+            continue
+
+        events = fetch_all_events(aid, total)
+        print(f"    {len(events):,} fetched")
+        analysis = analyze_city(events)
+
+        row = {"city": name, "key": city["key"], "country": city["country"], "area_id": aid, "events_12m": total, "is_market": True}
+        row.update(analysis)
+
+        v = analysis["venues_12plus"]
+        p = analysis["promoters_12plus"]
+        o = analysis["overlap_12plus"]
+        c = analysis["customers_12plus"]
+        print(f"    → {v} venues + {p} promoters - {o} overlap = {c} customers (12+/yr)")
+        print(f"    → {analysis['avg_events_per_night']} events/night")
         results.append(row)
 
-    # Write
-    all_keys = []
-    for r in results:
-        for k in r:
-            if k not in all_keys: all_keys.append(k)
-    with open("ra_market_data.csv", "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=all_keys, extrasaction="ignore")
-        w.writeheader()
-        w.writerows(sorted(results, key=lambda r: r.get("events_12m") or 0, reverse=True))
-    with open("ra_market_data.json", "w") as f:
-        json.dump({"collected": datetime.now().isoformat(), "range": [DATE_12M_AGO, DATE_TODAY],
-                    "totals": {"events": sum(r.get("events_12m") or 0 for r in results),
-                               "venues": sum(r.get("ra_venues") or 0 for r in results) if v_ok else "?",
-                               "promoters": sum(r.get("ra_promoters") or 0 for r in results) if p_ok else "?"},
-                    "data": results}, f, indent=2, default=str)
+    market = [r for r in results if r.get("is_market")]
 
-    te = sum(r.get("events_12m") or 0 for r in results)
-    print(f"\n{'='*60}")
-    print(f"  {n} cities | {te:,} events/year")
-    if v_ok: print(f"  {sum(r.get('ra_venues',0) for r in results):,} venues")
-    if p_ok: print(f"  {sum(r.get('ra_promoters',0) for r in results):,} promoters")
-    print(f"{'='*60}")
-    print(f"\n✓ ra_market_data.csv + ra_market_data.json")
-    print(f"Upload both back to Claude.")
+    # CSV
+    csv_keys = ["city", "country", "events_12m", "avg_events_per_night",
+                "venues_with_events", "venues_12plus", "venues_20plus", "venues_50plus",
+                "promoters_with_events", "promoters_12plus", "promoters_20plus", "promoters_50plus",
+                "overlap_12plus", "customers_12plus", "customers_20plus", "unique_artists"]
+    with open("night_pulse_tam.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=csv_keys, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(sorted(market, key=lambda r: r.get("events_12m", 0), reverse=True))
+    print(f"\n✓ night_pulse_tam.csv")
+
+    # JSON
+    total_ev = sum(r.get("events_12m", 0) for r in market)
+    total_v12 = sum(r.get("venues_12plus", 0) for r in market)
+    total_p12 = sum(r.get("promoters_12plus", 0) for r in market)
+    total_o12 = sum(r.get("overlap_12plus", 0) for r in market)
+    total_c12 = total_v12 + total_p12 - total_o12
+    total_c20 = sum(r.get("customers_20plus", 0) for r in market)
+
+    with open("night_pulse_tam.json", "w") as f:
+        json.dump({
+            "generated": datetime.now().isoformat(),
+            "range": [DATE_START, DATE_END],
+            "method": "Real promoter IDs from RA GraphQL event.promoters field. Real venue IDs. Full event fetch, no sampling.",
+            "definition": {
+                "customer": "Venue or promoter with 12+ events in trailing 12 months, deduplicated where same entity appears as both",
+                "market": f"City with {args.min_events}+ events/year",
+            },
+            "summary": {
+                "cities": len(market),
+                "total_events": total_ev,
+                "venues_12plus": total_v12,
+                "promoters_12plus": total_p12,
+                "overlap_12plus": total_o12,
+                "customers_12plus": total_c12,
+                "customers_20plus": total_c20,
+            },
+            "cities": results,
+        }, f, indent=2, default=str)
+    print(f"✓ night_pulse_tam.json")
+
+    print(f"\n{'='*65}")
+    print(f"  YOUR REAL MARKET")
+    print(f"{'='*65}")
+    print(f"  Cities:                  {len(market)}")
+    print(f"  Events/year:             {total_ev:,}")
+    print(f"  Active venues (12+/yr):  {total_v12}")
+    print(f"  Active promoters (12+/yr): {total_p12}")
+    print(f"  Overlap (same entity):   -{total_o12}")
+    print(f"  ─────────────────────────────────────")
+    print(f"  CUSTOMERS (12+/yr):      {total_c12}")
+    print(f"  POWER (20+/yr):          {total_c20}")
+    print(f"{'='*65}")
+
+    for r in sorted(market, key=lambda x: x.get("customers_12plus", 0), reverse=True):
+        v = r.get("venues_12plus", 0)
+        p = r.get("promoters_12plus", 0)
+        c = r.get("customers_12plus", 0)
+        print(f"  {r['city']:<20} {r['events_12m']:>6,} events  {v:>3}v + {p:>3}p = {c:>4} customers  {r.get('avg_events_per_night',0):>5}/night")
+
+    print(f"\nUpload night_pulse_tam.csv + night_pulse_tam.json to Claude.")
+
 
 if __name__ == "__main__":
     main()
