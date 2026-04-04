@@ -1563,9 +1563,9 @@ input[type="number"] { font-family: var(--font-mono); }
       <div class="input-group">
         <label>3 artists that define your sound</label>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px">1</span><input type="text" id="obSoundArtist1" placeholder="e.g. Kerri Chandler" autocomplete="off" style="flex:1"></div>
-          <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px">2</span><input type="text" id="obSoundArtist2" placeholder="e.g. CC:DISCO!" autocomplete="off" style="flex:1"></div>
-          <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px">3</span><input type="text" id="obSoundArtist3" placeholder="e.g. Antal" autocomplete="off" style="flex:1"></div>
+          <div class="ac-wrap" style="display:flex;align-items:center;gap:10px;position:relative"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px;flex-shrink:0">1</span><input type="text" id="obSoundArtist1" placeholder="e.g. Kerri Chandler" autocomplete="off" style="flex:1"></div>
+          <div class="ac-wrap" style="display:flex;align-items:center;gap:10px;position:relative"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px;flex-shrink:0">2</span><input type="text" id="obSoundArtist2" placeholder="e.g. CC:DISCO!" autocomplete="off" style="flex:1"></div>
+          <div class="ac-wrap" style="display:flex;align-items:center;gap:10px;position:relative"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px;flex-shrink:0">3</span><input type="text" id="obSoundArtist3" placeholder="e.g. Antal" autocomplete="off" style="flex:1"></div>
         </div>
         <span class="hint">These anchor your discovery engine and competition detection</span>
       </div>
@@ -1574,20 +1574,21 @@ input[type="number"] { font-family: var(--font-mono); }
         <div id="obPriorityRank" style="display:flex;flex-direction:column;gap:6px">
           <div class="priority-item" draggable="true" data-priority="discover" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:grab;user-select:none;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">1</span>
-            <span style="font-size:0.85rem;font-weight:600">Discovering new artists</span>
-            <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-left:auto">drag to reorder</span>
+            <span style="font-size:0.85rem;font-weight:600;flex:1">Discovering new artists</span>
+            <span style="color:var(--text-faint);font-size:1rem;cursor:grab;padding:0 4px;line-height:1" title="Drag to reorder">⠿</span>
           </div>
           <div class="priority-item" draggable="true" data-priority="competition" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:grab;user-select:none;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">2</span>
-            <span style="font-size:0.85rem;font-weight:600">Avoiding competition</span>
-            <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-left:auto">drag to reorder</span>
+            <span style="font-size:0.85rem;font-weight:600;flex:1">Avoiding competition</span>
+            <span style="color:var(--text-faint);font-size:1rem;cursor:grab;padding:0 4px;line-height:1" title="Drag to reorder">⠿</span>
           </div>
           <div class="priority-item" draggable="true" data-priority="routing" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:grab;user-select:none;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">3</span>
-            <span style="font-size:0.85rem;font-weight:600">Finding routing deals</span>
-            <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-left:auto">drag to reorder</span>
+            <span style="font-size:0.85rem;font-weight:600;flex:1">Finding routing deals</span>
+            <span style="color:var(--text-faint);font-size:1rem;cursor:grab;padding:0 4px;line-height:1" title="Drag to reorder">⠿</span>
           </div>
         </div>
+        <span class="hint">Drag items up or down to set your priorities</span>
       </div>
       <button class="btn btn-red" onclick="obStep2SoundDone()" style="margin-top:12px;width:100%;padding:14px;font-size:0.95rem">Next →</button>
     </div>
@@ -1595,16 +1596,25 @@ input[type="number"] { font-family: var(--font-mono); }
     <!-- STEP 3: COMPETITION (promoter only) -->
     <div class="ob-step" id="ob3" style="display:none">
       <h2>Your Competition</h2>
-      <div class="sub">Tag up to 5 competitors. The more we know, the sharper your threat detection.</div>
+      <div class="sub">Tag up to 5 competitors — venues or promoters. Enter their RA ID and we'll verify them instantly.</div>
       <div class="input-group">
-        <label>Competitor Promoters</label>
+        <label>My Competition</label>
         <div id="obCompetitorList"></div>
         <div style="display:flex;gap:8px;align-items:end;margin-top:8px">
-          <div style="flex:1"><input type="text" id="obCompetitorName" placeholder="Competitor name" autocomplete="off" style="font-size:0.85rem"></div>
-          <div style="width:140px"><input type="number" id="obCompetitorRaId" placeholder="RA ID" style="font-size:0.85rem;font-family:var(--font-mono)"></div>
-          <button type="button" class="btn-ghost" onclick="_addCompetitor()" style="padding:10px 14px;white-space:nowrap">+ Add</button>
+          <div style="width:160px">
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">RA ID</div>
+            <input type="number" id="obCompetitorRaId" placeholder="e.g. 72357" style="font-size:0.85rem;font-family:var(--font-mono);width:100%">
+          </div>
+          <div style="flex:1">
+            <div id="obCompVerifyStatus" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-faint);margin-bottom:4px;min-height:1.1em"></div>
+            <input type="text" id="obCompetitorName" placeholder="Name will auto-fill from RA" autocomplete="off" style="font-size:0.85rem" readonly>
+          </div>
+          <button type="button" class="btn-ghost" id="obCompAddBtn" onclick="_addCompetitor()" style="padding:10px 14px;white-space:nowrap;opacity:0.4;pointer-events:none">+ Add</button>
         </div>
-        <span class="hint">Name + RA Promoter ID for precise tracking (up to 5)</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
+          <span class="hint" style="margin:0">Enter a promoter or venue RA ID (up to 5)</span>
+          <a href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent);text-decoration:none;white-space:nowrap">Find IDs on RA →</a>
+        </div>
       </div>
       <div class="input-group">
         <label>Your Genre Focus</label>
@@ -2198,20 +2208,30 @@ async function scSpotifyOnly(name){
 }
 
 /* ═══ LAST.FM API — free, no quota, electronic-aware similarity ═══ */
+const _lfSimilarCache=new Map();
 async function lastfmSimilar(artistName,limit=50){
+  const ck='lfs_'+norm(artistName)+'_'+limit;
+  if(_lfSimilarCache.has(ck))return _lfSimilarCache.get(ck);
   try{
     const r=await fetch('/api/lastfm/similar?artist='+encodeURIComponent(artistName)+'&limit='+limit);
     if(!r.ok)return[];
     const d=await r.json();
-    return(d.similarartists?.artist||[]).map(a=>({name:a.name,match:parseFloat(a.match)||0,source:'lastfm'}));
+    const result=(d.similarartists?.artist||[]).map(a=>({name:a.name,match:parseFloat(a.match)||0,source:'lastfm'}));
+    _lfSimilarCache.set(ck,result);
+    return result;
   }catch(e){return[]}
 }
+const _lfTagsCache=new Map();
 async function lastfmTags(artistName){
+  const ck='lft_'+norm(artistName);
+  if(_lfTagsCache.has(ck))return _lfTagsCache.get(ck);
   try{
     const r=await fetch('/api/lastfm/tags?artist='+encodeURIComponent(artistName));
     if(!r.ok)return[];
     const d=await r.json();
-    return(d.toptags?.tag||[]).map(t=>t.name.toLowerCase()).slice(0,8);
+    const result=(d.toptags?.tag||[]).map(t=>t.name.toLowerCase()).slice(0,8);
+    _lfTagsCache.set(ck,result);
+    return result;
   }catch(e){return[]}
 }
 async function lastfmSearch(query,limit=5){
@@ -2244,27 +2264,62 @@ async function lastfmSearch(query,limit=5){
 /* ═══ ARTIST IMAGE CACHE ═══
    Shared image lookup for all parts of the app.
    Source: Last.fm artist.getInfo (free, no quota).
-   Cache: sessionStorage per artist name to avoid repeat fetches. */
+   Cache: sessionStorage per artist name to avoid repeat fetches.
+   Concurrency: max 3 parallel requests to avoid flooding the server. */
 const _imgCache=new Map();
+const _imgInflight=new Map(); // dedup parallel requests for same artist
+let _imgActive=0;
+const _IMG_MAX_CONCURRENT=3;
+const _imgQueue=[];
+
+// Hydrate from sessionStorage on load
+try{
+  const stored=sessionStorage.getItem('np_img_cache');
+  if(stored){const m=JSON.parse(stored);for(const[k,v] of Object.entries(m))_imgCache.set(k,v)}
+}catch(e){}
+
+function _imgCacheSave(){
+  try{
+    const obj={};for(const[k,v] of _imgCache)obj[k]=v;
+    sessionStorage.setItem('np_img_cache',JSON.stringify(obj));
+  }catch(e){}
+}
+
 async function getArtistImage(name){
   if(!name)return'';
   const k='img_'+norm(name);
   if(_imgCache.has(k))return _imgCache.get(k);
-  try{
-    const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
-    if(!r.ok){_imgCache.set(k,'');return''}
-    const d=await r.json();
-    const imgs=d?.artist?.image||[];
-    // Try largest size first, work down
-    const img=imgs.find(i=>i.size==='extralarge')
-      ||imgs.find(i=>i.size==='large')
-      ||imgs.find(i=>i['#text']&&i['#text'].length>10);
-    const url=img?.['#text']||'';
-    // Reject Last.fm placeholder (grey star icon)
-    const valid=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http')?url:'';
-    _imgCache.set(k,valid);
-    return valid;
-  }catch(e){_imgCache.set(k,'');return''}
+  // Dedup: if already fetching this artist, wait for that result
+  if(_imgInflight.has(k))return _imgInflight.get(k);
+  
+  const promise=new Promise(resolve=>{
+    const doFetch=async()=>{
+      _imgActive++;
+      try{
+        const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
+        if(!r.ok){_imgCache.set(k,'');resolve('');return}
+        const d=await r.json();
+        const imgs=d?.artist?.image||[];
+        const img=imgs.find(i=>i.size==='extralarge')
+          ||imgs.find(i=>i.size==='large')
+          ||imgs.find(i=>i['#text']&&i['#text'].length>10);
+        const url=img?.['#text']||'';
+        const valid=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http')?url:'';
+        _imgCache.set(k,valid);
+        _imgCacheSave();
+        resolve(valid);
+      }catch(e){_imgCache.set(k,'');resolve('')}
+      finally{
+        _imgActive--;
+        _imgInflight.delete(k);
+        if(_imgQueue.length)(_imgQueue.shift())();
+      }
+    };
+    if(_imgActive<_IMG_MAX_CONCURRENT)doFetch();
+    else _imgQueue.push(doFetch);
+  });
+  _imgInflight.set(k,promise);
+  return promise;
 }
 
 /* Build a clean img tag with initials fallback */
@@ -2376,13 +2431,22 @@ function raCacheSearch(query,limit=8){
   return[...found.values()];
 }
 
-/* Search artists — Last.fm first (better electronic coverage), RA cache fallback */
+/* Search artists — RA cache first (instant), Last.fm fallback (network) */
 async function searchArtists(query,limit=8){
+  // Try local cache first — instant, no network
+  const local=raCacheSearch(query,limit);
+  if(local.length>=Math.min(3,limit))return local;
+  // Supplement with Last.fm for broader coverage
   try{
     const results=await lastfmSearch(query,limit);
-    if(results.length)return results;
+    if(results.length){
+      // Merge: Last.fm results first (have images/listeners), then local-only
+      const seen=new Set(results.map(r=>norm(r.name)));
+      for(const l of local){if(!seen.has(norm(l.name))){results.push(l);seen.add(norm(l.name))}}
+      return results.slice(0,limit);
+    }
   }catch(e){}
-  return raCacheSearch(query,limit);
+  return local;
 }
 
 // Legacy SC functions kept for X-Ray Spotify data only
@@ -2413,9 +2477,11 @@ function raRelated(seedName,events){
 
 /* RA worldwide artist search — find an artist's events globally, extract co-billed artists.
    Uses RA's artists filter to target this specific artist rather than scanning random global pages. */
+const _raWorldwideCache=new Map();
 async function raWorldwideRelated(seedName){
-  const coArtists=new Map();
   const sn=norm(seedName);
+  if(_raWorldwideCache.has(sn))return _raWorldwideCache.get(sn);
+  const coArtists=new Map();
   const now=new Date();
   const ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
   const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
@@ -2442,21 +2508,12 @@ async function raWorldwideRelated(seedName){
     }
   }catch(e){console.warn('RA worldwide search failed:',e)}
 
-  // Also search the local city cache for this artist
-  const localEvents=getCache()?.events||[];
-  const localRelated=raRelated(seedName,localEvents);
-  for(const r of localRelated){
-    const n=norm(r.name);
-    if(!coArtists.has(n))coArtists.set(n,{name:r.name,count:0,cities:new Set()});
-    const entry=coArtists.get(n);
-    entry.count+=r.count;
-    entry.cities.add(cityName());
-  }
-
-  return [...coArtists.values()]
+  const result=[...coArtists.values()]
     .map(c=>({...c,cities:[...c.cities]}))
     .sort((a,b)=>b.count-a.count)
     .slice(0,30);
+  _raWorldwideCache.set(sn,result);
+  return result;
 }
 /* Fetch all events for a promoter by RA ID.
    Uses confirmed working GraphQL approach: LATEST + PREVIOUS + ARCHIVE per year.
@@ -2504,8 +2561,10 @@ const RA_ARTIST_Q=`query ArtistRelated($id:ID,$slug:String){
 }`;
 
 /* Fetch RA follower count for a single artist by ID or slug */
+const _raFollowerCache=new Map();
 async function raArtistFollowers(name){
   const sn=norm(name);
+  if(_raFollowerCache.has(sn))return _raFollowerCache.get(sn);
   let artistId=_raArtistIdCache.get(sn)||null;
   const slug=nameToSlug(name);
   try{
@@ -2516,16 +2575,20 @@ async function raArtistFollowers(name){
     });
     const d=await r.json();
     const artist=d?.data?.artist;
-    if(!artist)return null;
+    if(!artist){_raFollowerCache.set(sn,null);return null}
     if(artist.id)_raArtistIdCache.set(sn,String(artist.id));
     // Distinguish: followerCount=0 (real, has profile) vs undefined (field missing)
-    if(artist.followerCount===undefined||artist.followerCount===null)return null;
+    if(artist.followerCount===undefined||artist.followerCount===null){_raFollowerCache.set(sn,null);return null}
+    _raFollowerCache.set(sn,artist.followerCount);
     return artist.followerCount;
   }catch(e){return null}
 }
 
 /* ═══ BEATPORT GENRE ENRICHMENT ═══ */
+const _bpGenreCache=new Map();
 async function beatportArtistGenres(artistName){
+  const ck=norm(artistName);
+  if(_bpGenreCache.has(ck))return _bpGenreCache.get(ck);
   try{
     // Step 1: search for artist on Beatport
     const sr=await fetch('/api/beatport/search?q='+encodeURIComponent(artistName));
@@ -2541,12 +2604,17 @@ async function beatportArtistGenres(artistName){
     const gr=await fetch('/api/beatport/artist/'+match.id+'/genres');
     if(!gr.ok)return null;
     const gd=await gr.json();
-    return{beatportId:match.id,genres:gd.genres||{},subgenres:gd.subgenres||{},trackCount:gd.tracks||0};
+    const result={beatportId:match.id,genres:gd.genres||{},subgenres:gd.subgenres||{},trackCount:gd.tracks||0};
+    _bpGenreCache.set(ck,result);
+    return result;
   }catch(e){return null}
 }
 
 /* ═══ TRAXSOURCE GENRE ENRICHMENT ═══ */
+const _tsGenreCache=new Map();
 async function traxsourceArtistGenres(artistName){
+  const ck=norm(artistName);
+  if(_tsGenreCache.has(ck))return _tsGenreCache.get(ck);
   try{
     const sr=await fetch('/api/traxsource/search?q='+encodeURIComponent(artistName));
     if(!sr.ok)return null;
@@ -2559,16 +2627,20 @@ async function traxsourceArtistGenres(artistName){
     const gr=await fetch('/api/traxsource/artist/'+match.id+'/genres');
     if(!gr.ok)return null;
     const gd=await gr.json();
-    return{traxsourceId:match.id,genres:gd.genres||{}};
+    const result={traxsourceId:match.id,genres:gd.genres||{}};
+    _tsGenreCache.set(ck,result);
+    return result;
   }catch(e){return null}
 }
 
+const _raOfficialCache=new Map();
 async function raOfficialRelated(seedName){
+  const sn=norm(seedName);
+  if(_raOfficialCache.has(sn))return _raOfficialCache.get(sn);
   // First build ID index from cache if not done
   const cacheEvents=getCache()?.events||[];
   if(cacheEvents.length&&_raArtistIdCache.size===0)buildArtistIdIndex(cacheEvents);
 
-  const sn=norm(seedName);
   let artistId=_raArtistIdCache.get(sn)||null;
   const slug=nameToSlug(seedName);
 
@@ -2592,7 +2664,9 @@ async function raOfficialRelated(seedName){
     for(const ra of related){
       if(ra.id&&ra.name)_raArtistIdCache.set(norm(ra.name),String(ra.id));
     }
-    return related.map(a=>({name:a.name,id:a.id}));
+    const result=related.map(a=>({name:a.name,id:a.id}));
+    _raOfficialCache.set(sn,result);
+    return result;
   }catch(e){
     return[];
   }
@@ -2818,7 +2892,12 @@ async function buildDNA(statusCb,artistCb){
     const profile={name,uuid:null,bcn:0,global:0,genres:[],imageUrl:'',raShows:raShows.length,raAvgAtt:avgAtt};
 
     // Last.fm info — gets genres AND image in one call (free, no quota)
+    // Uses the shared image cache to avoid duplicate fetches later
+    const lfk='img_'+norm(name);
     try{
+      let lfData=null;
+      // Check if we already have cached image data — if so, skip the fetch for image
+      // but still need genres, so fetch if no genre data cached
       const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
       if(r.ok){
         const d=await r.json();
@@ -2827,15 +2906,19 @@ async function buildDNA(statusCb,artistCb){
           // Tags/genres
           const tags=(artist.tags?.tag||[]).map(t=>t.name.toLowerCase()).slice(0,8);
           if(tags.length)profile.genres=tags;
-          // Image — Last.fm returns array by size: small/medium/large/extralarge/mega
+          // Image — populate the shared image cache so getArtistImage() never re-fetches
           const imgs=artist.image||[];
           const img=imgs.find(i=>i.size==='extralarge')||imgs.find(i=>i.size==='large')||imgs[imgs.length-1];
           const imgUrl=img?.['#text']||'';
-          // Last.fm uses a placeholder image for unknown artists — filter it out
-          if(imgUrl&&!imgUrl.includes('2a96cbd8b46e442fc41c2b86b821562f'))profile.imageUrl=imgUrl;
-        }
-      }
-    }catch(e){}
+          if(imgUrl&&!imgUrl.includes('2a96cbd8b46e442fc41c2b86b821562f')){
+            profile.imageUrl=imgUrl;
+            _imgCache.set(lfk,imgUrl);
+          }else{
+            _imgCache.set(lfk,'');
+          }
+        }else{_imgCache.set(lfk,'')}
+      }else{_imgCache.set(lfk,'')}
+    }catch(e){_imgCache.set(lfk,'')}
 
     profiles.push(profile);
     if(artistCb)artistCb(profile);
@@ -3132,6 +3215,7 @@ async function buildDNA(statusCb,artistCb){
     })),
   };
   setDNA(dna);
+  _imgCacheSave(); // persist all artist images discovered during DNA build
   if(statusCb)statusCb('DNA complete — '+profiles.length+' artists, '+coBillNetwork.length+' co-billing connections, '+sortedGenres.length+' genres');
   return dna;
 }
@@ -3580,16 +3664,8 @@ async function ensureCache(force=false){
 
 /* Tiny status bar for cache loading */
 function showCacheStatus(msg,autoHide){
-  // Don't show cache bar during onboarding or if no profile
-  if(!P().venue&&!document.getElementById('ob4')?.classList.contains('active'))return;
-  let bar=document.getElementById('cacheBar');
-  if(!bar){
-    bar=document.createElement('div');bar.id='cacheBar';
-    bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999;background:var(--surface-2);border-bottom:1px solid var(--border);padding:6px 20px;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);text-align:center;transition:opacity 0.3s';
-    document.body.prepend(bar);
-  }
-  bar.textContent=msg;bar.style.opacity='1';
-  if(autoHide)setTimeout(()=>{bar.style.opacity='0';setTimeout(()=>bar.remove(),300)},2000);
+  // Cache loading is invisible to the user — magic happens behind the scenes
+  console.log('[Cache] '+msg);
 }
 
 /* Get cached events filtered to a date range. Instant, no API calls. */
@@ -3645,7 +3721,9 @@ function extractShows(events,name){
 }
 
 /* Worldwide same-day index — always live (different cities each time) */
+const _raWorldwideDateCache=new Map();
 async function raWorldwide(dateStr){
+  if(_raWorldwideDateCache.has(dateStr))return _raWorldwideDateCache.get(dateStr);
   const idx=new Map();
   for(let p=1;p<=20;p++){
     const d=await ra({f:{listingDate:{gte:dateStr,lte:dateStr}},fo:{},p,s:50});
@@ -3654,6 +3732,7 @@ async function raWorldwide(dateStr){
       for(const a of(ev.artists||[])){const n=norm(a.name||'');if(n&&!idx.has(n))idx.set(n,{venue:(ev.venue||{}).name||'?',area:((ev.venue||{}).area||{}).name||'?'})}}
     if(p*50>=tot)break;
   }
+  _raWorldwideDateCache.set(dateStr,idx);
   return idx;
 }
 
@@ -3922,8 +4001,7 @@ function setupPromoterAC() {
     const extra = titleList.filter(p => !verifiedNorms.has(norm(p.name)));
     const fullList = [...verifiedPromoters, ...extra];
 
-    if (hint) hint.textContent =
-      verifiedPromoters.length + ' verified promoters + ' + extra.length + ' from event history. Start typing.';
+    if (hint) hint.textContent = 'Start typing or enter your RA Promoter ID below.';
 
     if (_promoterACListening) return;
     _promoterACListening = true;
@@ -4037,6 +4115,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   setupVenueAC();
   setupIntelAC();
   setupRaIdVerifier();
+  // Sound anchor autocomplete — wire up all 3 artist inputs in onboarding step 2
+  for(let i=1;i<=3;i++){
+    const el=document.getElementById('obSoundArtist'+i);
+    if(el){
+      const w=el.parentElement;
+      if(!w.classList.contains('ac-wrap')){w.classList.add('ac-wrap');w.style.position='relative'}
+      setupAutocomplete(el,a=>{el.value=a.name});
+    }
+  }
   updateCityLabels();
   if(P().venue){
     ensureCache(); // pre-warm cache for active venue's city
@@ -4094,6 +4181,21 @@ async function verifyRaPromoterId(id){
       _prefetchedPromoterEvents=evts;
       console.log('[Prefetch] '+evts.length+' events ready');
     }).catch(()=>{_prefetchedPromoterEvents=null});
+    // Also start pre-warming the city cache in background
+    const obCity=(document.getElementById('obC')?.value||'barcelona').toLowerCase();
+    const cityArea=AREAS[obCity]||20;
+    const existingCache=getCache();
+    if(!existingCache||existingCache.areaCode!==cityArea){
+      console.log('[Prefetch] Pre-warming city cache for '+obCity);
+      const _now=new Date(),_ago=new Date(_now);_ago.setFullYear(_now.getFullYear()-1);
+      const _fwd=new Date(_now);_fwd.setMonth(_now.getMonth()+6);
+      raBulkFetch(cityArea,_ago,_fwd,40).then(evts=>{
+        if(evts.length>100){
+          setCache({events:evts,ts:Date.now(),areaCode:cityArea,count:evts.length});
+          console.log('[Prefetch] City cache ready: '+evts.length+' events');
+        }
+      }).catch(()=>{});
+    }
   }catch(e){
     if(statusEl){statusEl.textContent='Error: '+e.message;statusEl.style.color='var(--accent)'}
   }
@@ -4124,6 +4226,7 @@ function setObType(type){
     _promoterACListening=false; // reset so it re-wires with fresh list
     setupPromoterAC();
     setupRaIdVerifier();
+    _setupCompetitorVerifier();
   }
 }
 
@@ -4203,19 +4306,61 @@ function _setupChipInput(inputId,chipsId){
   });
 }
 
-/* Add a competitor (name + optional RA ID) */
+/* Add a competitor (ID-first flow — name auto-filled from RA verification) */
+let _compVerifyTimer=null;
+function _setupCompetitorVerifier(){
+  const idInp=document.getElementById('obCompetitorRaId');
+  if(!idInp||idInp._compVerifierBound)return;
+  idInp._compVerifierBound=true;
+  idInp.addEventListener('input',()=>{
+    clearTimeout(_compVerifyTimer);
+    const val=parseInt(idInp.value)||0;
+    const status=document.getElementById('obCompVerifyStatus');
+    const nameInp=document.getElementById('obCompetitorName');
+    const addBtn=document.getElementById('obCompAddBtn');
+    if(!val){
+      if(status)status.textContent='';
+      if(nameInp){nameInp.value='';nameInp.placeholder='Name will auto-fill from RA'}
+      if(addBtn){addBtn.style.opacity='0.4';addBtn.style.pointerEvents='none'}
+      return;
+    }
+    if(status){status.textContent='Verifying…';status.style.color='var(--text-faint)'}
+    _compVerifyTimer=setTimeout(async()=>{
+      try{
+        // Try as promoter first
+        const d=await raPromoterQuery(val,'PREVIOUS');
+        const promoter=d?.data?.promoter;
+        if(promoter?.id){
+          const name=promoter.name||'Unknown';
+          if(nameInp){nameInp.value=name;nameInp.placeholder=''}
+          if(status){status.innerHTML='✓ <span style="color:var(--green)">'+esc(name)+'</span> confirmed';status.style.color='var(--green)'}
+          if(addBtn){addBtn.style.opacity='1';addBtn.style.pointerEvents='auto'}
+          return;
+        }
+      }catch(e){}
+      // If promoter lookup fails, still allow adding with manual name
+      if(status){status.textContent='Not found as promoter — enter name manually';status.style.color='var(--amber)'}
+      if(nameInp){nameInp.readOnly=false;nameInp.placeholder='Enter name manually';nameInp.focus()}
+      if(addBtn){addBtn.style.opacity='1';addBtn.style.pointerEvents='auto'}
+    },600);
+  });
+}
+
 function _addCompetitor(){
   const nameInp=document.getElementById('obCompetitorName');
   const idInp=document.getElementById('obCompetitorRaId');
   const list=document.getElementById('obCompetitorList');
+  const status=document.getElementById('obCompVerifyStatus');
+  const addBtn=document.getElementById('obCompAddBtn');
   if(!nameInp||!list)return;
   const name=nameInp.value.trim();
-  if(!name)return;
   const raId=idInp?parseInt(idInp.value)||null:null;
+  if(!name&&!raId)return;
+  if(!name){if(status){status.textContent='Enter RA ID first';status.style.color='var(--amber)'}return}
   
   // Check limit
   if(list.querySelectorAll('.competitor-entry').length>=5){
-    alert('Maximum 5 competitors');return;
+    if(status){status.textContent='Maximum 5 competitors';status.style.color='var(--amber)'}return;
   }
   
   const entry=document.createElement('div');
@@ -4224,12 +4369,16 @@ function _addCompetitor(){
   entry.dataset.name=name;
   entry.dataset.raId=raId||'';
   entry.innerHTML='<span style="flex:1;font-family:var(--font-head);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">'+esc(name)+'</span>'
-    +(raId?'<span style="color:var(--accent);font-size:0.72rem">ID '+raId+'</span>':'<span style="color:var(--text-faint);font-size:0.72rem">No ID</span>')
+    +(raId?'<a href="https://ra.co/promoters/'+raId+'" target="_blank" style="color:var(--accent);font-size:0.72rem;text-decoration:none">ID '+raId+' ↗</a>':'<span style="color:var(--text-faint);font-size:0.72rem">No ID</span>')
     +'<span style="cursor:pointer;color:var(--text-faint);padding:2px 6px" onclick="this.parentElement.remove()">×</span>';
   list.appendChild(entry);
-  nameInp.value='';
+  
+  // Reset inputs
+  if(nameInp){nameInp.value='';nameInp.readOnly=true;nameInp.placeholder='Name will auto-fill from RA'}
   if(idInp)idInp.value='';
-  nameInp.focus();
+  if(status)status.textContent='';
+  if(addBtn){addBtn.style.opacity='0.4';addBtn.style.pointerEvents='none'}
+  idInp.focus();
 }
 
 /* Helper: genre toggle buttons */
@@ -4270,6 +4419,7 @@ function obStep2SoundDone(){
     document.getElementById('ob3').style.display='';
     document.getElementById('ob3').classList.add('active');
     for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(dot)dot.classList.toggle('active',i<=3);}
+    _setupCompetitorVerifier();
   }else{
     _startDNABuild();
   }
