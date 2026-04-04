@@ -11,13 +11,13 @@
   --bg: #08080a; --surface: #111114; --surface-2: #19191d;
   --border: #252528; --border-hi: #35353a;
   --text: #d8d4cc; --text-dim: #7a776f; --text-faint: #4a4843;
-  --red: #c23c2a; --red-dim: #8a2a1e; --red-glow: rgba(194,60,42,0.15);
-  --green: #3a8a5c; --green-dim: rgba(58,138,92,0.15);
-  --amber: #b8860b; --amber-dim: rgba(184,134,11,0.15);
+  --red: #c23c2a; --red-dim: #8a2a1e; --red-glow: rgba(194,60,42,0.12);
+  --green: #3a8a5c; --green-dim: rgba(58,138,92,0.12);
+  --amber: #b8860b; --amber-dim: rgba(184,134,11,0.12);
   --font-head: 'Syne', sans-serif;
   --font-body: 'Newsreader', Georgia, serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  --radius: 6px;
+  --radius: 8px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 15px; }
@@ -26,975 +26,576 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-.shell { max-width: 960px; margin: 0 auto; padding: 0 24px; }
-
-/* ── Header ─────────────────────────────── */
-header { padding: 40px 0 0; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
-.masthead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; }
-.masthead h1 { font-family: var(--font-head); font-weight: 800; font-size: 2rem; letter-spacing: -0.5px; }
-.masthead h1 span { color: var(--red); }
-.masthead .tagline { font-family: var(--font-body); font-style: italic; font-size: 0.85rem; color: var(--text-dim); }
-.venue-badge { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; }
-
-/* ── Tabs ────────────────────────────────── */
-.tabs { display: flex; gap: 0; }
-.tab-btn { font-family: var(--font-head); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-dim); background: none; border: none; padding: 10px 20px 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
-.tab-btn:hover { color: var(--text); }
+.shell { max-width: 1000px; margin: 0 auto; padding: 0 28px; }
+header { padding: 32px 0 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+.masthead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+.masthead h1 { font-family: var(--font-head); font-weight: 800; font-size: 1.8rem; letter-spacing: -0.5px; }
+.masthead h1 b { color: var(--red); font-weight: 800; }
+.tagline { font-style: italic; font-size: 0.82rem; color: var(--text-dim); }
+.venue-pill { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; cursor: pointer; }
+.venue-pill:hover { border-color: var(--border-hi); }
+.tabs { display: flex; gap: 0; overflow-x: auto; }
+.tab-btn { font-family: var(--font-head); font-weight: 600; font-size: 0.75rem; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-faint); background: none; border: none; padding: 10px 18px 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.tab-btn:hover { color: var(--text-dim); }
 .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
-.tab-panel { display: none; }
+.tab-panel { display: none; padding-bottom: 60px; }
 .tab-panel.active { display: block; }
-
-/* ── Forms ────────────────────────────────── */
-.input-group { margin-bottom: 20px; }
-.input-group label { display: block; font-family: var(--font-head); font-weight: 600; font-size: 0.7rem; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
-.input-group small { display: block; font-size: 0.75rem; color: var(--text-faint); margin-top: 4px; font-style: italic; }
+.input-group { margin-bottom: 18px; }
+.input-group label { display: block; font-family: var(--font-head); font-weight: 600; font-size: 0.68rem; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px; }
+.input-group .hint { display: block; font-size: 0.73rem; color: var(--text-faint); margin-top: 4px; font-style: italic; }
 textarea, input[type="text"], input[type="date"], input[type="number"], select {
   width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  color: var(--text); font-family: var(--font-body); font-size: 0.95rem; padding: 10px 14px; outline: none; transition: border-color 0.2s;
+  color: var(--text); font-family: var(--font-body); font-size: 0.92rem; padding: 10px 14px; outline: none; transition: border-color 0.2s;
 }
-textarea:focus, input:focus, select:focus { border-color: var(--border-hi); }
-textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
-.form-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
-.form-row-3 { display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px; align-items: end; }
-
-.btn { font-family: var(--font-head); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; padding: 11px 28px; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
-.btn-primary { background: var(--red); color: #fff; }
-.btn-primary:hover { background: #d44433; }
-.btn-primary:disabled { background: var(--red-dim); cursor: not-allowed; opacity: 0.6; }
-.btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 7px 16px; font-size: 0.7rem; font-family: var(--font-head); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; }
+textarea:focus, input:focus, select:focus { border-color: var(--red); }
+textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
+.row { display: flex; gap: 14px; align-items: end; flex-wrap: wrap; }
+.row > * { flex: 1; min-width: 140px; }
+.row > .shrink { flex: 0 0 auto; }
+.btn { font-family: var(--font-head); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; padding: 11px 24px; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { background: #d44433; transform: translateY(-1px); }
+.btn-red:disabled { background: var(--red-dim); cursor: not-allowed; opacity: 0.5; transform: none; }
+.btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px 14px; font-size: 0.68rem; font-family: var(--font-head); font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); }
 .btn-ghost:hover { border-color: var(--border-hi); color: var(--text); }
-
-/* ── Pipeline Log ────────────────────────── */
-.pipeline-log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin: 20px 0; max-height: 240px; overflow-y: auto; font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.8; color: var(--text-dim); display: none; }
-.pipeline-log.visible { display: block; }
-.pipeline-log .step { color: var(--red); }
-.pipeline-log .ok { color: var(--green); }
-.pipeline-log .warn { color: var(--amber); }
-.pipeline-log .dim { color: var(--text-faint); }
-
-/* ── Results ──────────────────────────────── */
-.results-header { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-.results-header h2 { font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; }
-.results-header .count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
-
-.artist-card { display: grid; grid-template-columns: 60px 1fr auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.3s ease both; }
-.artist-card:hover { background: var(--surface); margin: 0 -18px; padding: 16px 18px; border-radius: var(--radius); }
-.rank { font-family: var(--font-head); font-weight: 800; font-size: 1.6rem; color: var(--text-faint); text-align: center; }
-.artist-card:nth-child(-n+3) .rank { color: var(--red); }
-.artist-info h3 { font-family: var(--font-head); font-weight: 700; font-size: 1rem; margin-bottom: 2px; }
-.artist-info .meta { font-size: 0.78rem; color: var(--text-dim); }
-.artist-info .meta .seed-tag { display: inline-block; background: var(--surface-2); border: 1px solid var(--border); padding: 1px 7px; border-radius: 3px; font-family: var(--font-mono); font-size: 0.65rem; margin-left: 4px; }
-.artist-info .ra-history { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-top: 2px; }
-.bcn-number { text-align: right; }
-.bcn-number .value { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; color: var(--red); line-height: 1.1; }
-.bcn-number .label { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-.bcn-number .global { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); }
-.artist-actions { display: flex; gap: 6px; margin-top: 6px; }
-.artist-actions button { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 3px; padding: 2px 8px; cursor: pointer; transition: all 0.15s; }
-.artist-actions button:hover { border-color: var(--red); color: var(--red); }
-.artist-actions button.saved { border-color: var(--green); color: var(--green); }
-
-/* ── Date Scanner ─────────────────────────── */
-.event-row { display: grid; grid-template-columns: 80px 1fr auto; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-.event-row .ev-time { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
-.event-row .ev-venue { font-family: var(--font-head); font-weight: 600; font-size: 0.85rem; }
-.event-row .ev-artists { color: var(--text-dim); font-size: 0.78rem; }
-.event-row .ev-attending { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); text-align: right; }
-
-/* ── Onboarding ───────────────────────────── */
-.onboarding { max-width: 600px; margin: 0 auto; }
-.onboarding h2 { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; margin-bottom: 8px; }
-.onboarding p { color: var(--text-dim); margin-bottom: 24px; font-style: italic; }
-.onboard-step { display: none; }
-.onboard-step.active { display: block; }
-.step-indicator { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); margin-bottom: 16px; }
-
-/* ── Report ────────────────────────────────── */
-.report-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; }
-.report-section h3 { font-family: var(--font-head); font-weight: 700; font-size: 1rem; margin-bottom: 12px; color: var(--red); }
-.report-stat { display: inline-block; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; margin: 4px 8px 4px 0; min-width: 120px; }
-.report-stat .rs-value { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--red); }
-.report-stat .rs-label { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
-
-/* ── Saved ─────────────────────────────────── */
-.saved-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
-.saved-card h3 { font-family: var(--font-head); font-weight: 700; font-size: 1rem; }
-.saved-card .saved-bcn { font-family: var(--font-head); font-weight: 800; color: var(--red); font-size: 1.2rem; }
-.saved-card .saved-meta { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; }
-.saved-card textarea.notes { margin-top: 8px; min-height: 50px; font-size: 0.85rem; width: 100%; }
-.saved-card .remove-btn { font-size: 0.7rem; color: var(--text-faint); background: none; border: 1px solid var(--border); border-radius: var(--radius); padding: 4px 10px; cursor: pointer; font-family: var(--font-mono); }
-.saved-card .remove-btn:hover { color: var(--red); border-color: var(--red); }
-
-.empty-state { text-align: center; padding: 60px 20px; color: var(--text-faint); font-style: italic; }
-.loading-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@media (max-width: 640px) { .form-row, .form-row-3 { grid-template-columns: 1fr; } .artist-card { grid-template-columns: 40px 1fr; } }
+.progress-wrap { margin: 20px 0; display: none; }
+.progress-wrap.visible { display: block; }
+.progress-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); margin-bottom: 6px; }
+.progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--red); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
+.progress-detail { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-top: 6px; max-height: 120px; overflow-y: auto; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; transition: border-color 0.2s; }
+.card:hover { border-color: var(--border-hi); }
+.card h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.stat { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; min-width: 100px; }
+.stat .sv { font-family: var(--font-head); font-weight: 800; font-size: 1.2rem; color: var(--red); line-height: 1.1; }
+.stat .sl { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+.result-item { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.3s ease both; }
+.result-item:last-child { border-bottom: none; }
+.ri-rank { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; color: var(--text-faint); width: 44px; text-align: center; flex-shrink: 0; }
+.result-item:nth-child(-n+3) .ri-rank { color: var(--red); }
+.ri-info { flex: 1; min-width: 0; }
+.ri-info h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.92rem; }
+.ri-info .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+.ri-info .tag { font-family: var(--font-mono); font-size: 0.6rem; background: var(--surface-2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px; color: var(--text-dim); }
+.ri-actions { display: flex; gap: 5px; margin-top: 5px; }
+.ri-actions button { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 3px; padding: 2px 7px; cursor: pointer; }
+.ri-actions button:hover { border-color: var(--red); color: var(--red); }
+.ri-actions button.saved { border-color: var(--green); color: var(--green); }
+.ri-number { text-align: right; flex-shrink: 0; }
+.ri-number .big { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; color: var(--red); line-height: 1; }
+.ri-number .sub { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; }
+.ri-number .dim { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); }
+.ev-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: start; }
+.ev-att { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; color: var(--red); width: 50px; text-align: center; flex-shrink: 0; line-height: 1.2; }
+.ev-att .ev-lbl { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-faint); text-transform: uppercase; }
+.ev-detail { flex: 1; }
+.ev-detail .ev-v { font-family: var(--font-head); font-weight: 700; font-size: 0.88rem; }
+.ev-detail .ev-t { font-size: 0.8rem; color: var(--text-dim); }
+.ev-detail .ev-a { font-size: 0.75rem; color: var(--text-faint); margin-top: 2px; }
+#onboarding { max-width: 560px; margin: 40px auto; }
+#onboarding h2 { font-family: var(--font-head); font-weight: 800; font-size: 1.4rem; margin-bottom: 6px; }
+#onboarding .sub { color: var(--text-dim); font-style: italic; margin-bottom: 24px; font-size: 0.88rem; }
+.ob-dots { display: flex; gap: 6px; margin-bottom: 20px; }
+.ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+.ob-dot.active { background: var(--red); }
+.ob-step { display: none; }
+.ob-step.active { display: block; }
+.saved-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: start; gap: 14px; }
+.saved-item h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.9rem; }
+.saved-item textarea { margin-top: 6px; min-height: 40px; font-size: 0.82rem; width: 100%; }
+.empty { text-align: center; padding: 50px 20px; color: var(--text-faint); font-style: italic; }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.section-head h2 { font-family: var(--font-head); font-weight: 700; font-size: 1rem; }
+.section-head .count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); }
+.badge { display: inline-block; font-family: var(--font-mono); font-size: 0.6rem; padding: 2px 8px; border-radius: 3px; font-weight: 600; }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: var(--red-glow); color: var(--red); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+@media (max-width: 640px) { .row { flex-direction: column; } }
 </style>
 </head>
 <body>
-
 <div class="shell">
   <header>
     <div class="masthead">
-      <div>
-        <h1>Lib<span>r</span>o</h1>
-        <span class="tagline">Booking intelligence for live music</span>
-      </div>
-      <div>
-        <span class="venue-badge" id="venueBadge" style="display:none"></span>
-      </div>
+      <div><h1>Li<b>b</b>ro</h1><div class="tagline">Booking intelligence for live music</div></div>
+      <div class="venue-pill" id="venuePill" style="display:none" onclick="resetOb()" title="Click to reconfigure"></div>
     </div>
     <div class="tabs" id="mainTabs" style="display:none">
       <button class="tab-btn active" data-tab="discover">Discover</button>
-      <button class="tab-btn" data-tab="scanner">Date Scanner</button>
-      <button class="tab-btn" data-tab="verify">Verify</button>
-      <button class="tab-btn" data-tab="saved">Saved</button>
+      <button class="tab-btn" data-tab="scanner">What's On</button>
+      <button class="tab-btn" data-tab="verify">X-Ray</button>
+      <button class="tab-btn" data-tab="saved">Shortlist</button>
       <button class="tab-btn" data-tab="report">Report</button>
     </div>
   </header>
 
-  <!-- ═══════ ONBOARDING ═══════ -->
-  <div id="onboarding" class="onboarding">
-    <div class="onboard-step active" id="ob-step-1">
-      <div class="step-indicator">Step 1 of 3</div>
-      <h2>Your Venue</h2>
-      <p>Tell us about your space so we can tailor everything to your market.</p>
-      <div class="input-group">
-        <label>Venue Name</label>
-        <input type="text" id="obVenue" placeholder="e.g. La Paloma, Sala Apolo, Razzmatazz">
-      </div>
-      <div class="input-group">
-        <label>City</label>
-        <input type="text" id="obCity" placeholder="e.g. Barcelona" value="Barcelona">
-      </div>
-      <div class="input-group">
-        <label>Venue Capacity</label>
-        <input type="number" id="obCapacity" placeholder="e.g. 400">
-      </div>
-      <button class="btn btn-primary" onclick="obNext(2)">Next</button>
+  <div id="onboarding">
+    <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div></div>
+    <div class="ob-step active" id="ob1">
+      <h2>Welcome to Libro</h2>
+      <div class="sub">Let's set up your venue in 60 seconds. Everything adapts to your market.</div>
+      <div class="input-group"><label>Venue Name</label><input type="text" id="obV" placeholder="e.g. La Paloma"></div>
+      <div class="input-group"><label>City</label><input type="text" id="obC" value="Barcelona" placeholder="e.g. Barcelona, Berlin, London"></div>
+      <div class="input-group"><label>Capacity</label><input type="number" id="obCap" placeholder="e.g. 400"></div>
+      <button class="btn btn-red" onclick="obGo(2)">Continue</button>
     </div>
-
-    <div class="onboard-step" id="ob-step-2">
-      <div class="step-indicator">Step 2 of 3</div>
-      <h2>Your Taste</h2>
-      <p>This helps us understand your market and calibrate recommendations.</p>
-      <div class="input-group">
-        <label>5 dream artists you'd book tomorrow</label>
-        <textarea id="obDream" placeholder="One per line"></textarea>
-      </div>
-      <div class="input-group">
-        <label>3 past bookings that packed the room</label>
-        <textarea id="obSuccess" placeholder="One per line"></textarea>
-      </div>
-      <div class="input-group">
-        <label>3 past bookings that flopped</label>
-        <textarea id="obFlop" placeholder="One per line"></textarea>
-      </div>
-      <button class="btn btn-primary" onclick="obNext(3)">Next</button>
+    <div class="ob-step" id="ob2">
+      <h2>Your Booking DNA</h2>
+      <div class="sub">This teaches Libro what works for your room.</div>
+      <div class="input-group"><label>3 artists that packed your room</label><textarea id="obW" placeholder="One per line"></textarea><span class="hint">The nights where the queue was around the block.</span></div>
+      <div class="input-group"><label>3 artists that flopped</label><textarea id="obL" placeholder="One per line"></textarea><span class="hint">No judgment — this is how we learn.</span></div>
+      <button class="btn btn-red" onclick="obGo(3)">Continue</button>
     </div>
-
-    <div class="onboard-step" id="ob-step-3">
-      <div class="step-indicator">Step 3 of 3</div>
-      <h2>Your Constraints</h2>
-      <p>Last step — helps us filter results to what's realistic for you.</p>
-      <div class="input-group">
-        <label>Typical headliner budget</label>
-        <select id="obBudget">
-          <option value="1-3k">Under €3K</option>
-          <option value="3-6k" selected>€3K – €6K</option>
-          <option value="6-10k">€6K – €10K</option>
-          <option value="10k+">Over €10K</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label>How often do you book?</label>
-        <select id="obFrequency">
-          <option value="weekly">Weekly</option>
-          <option value="monthly" selected>Monthly</option>
-          <option value="few-year">A few times a year</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label>Your Instagram handle (optional)</label>
-        <input type="text" id="obInstagram" placeholder="@yourvenue">
-      </div>
-      <button class="btn btn-primary" onclick="obComplete()">Launch Libro</button>
+    <div class="ob-step" id="ob3">
+      <h2>Almost there</h2>
+      <div class="sub">Last details to calibrate results.</div>
+      <div class="input-group"><label>Headliner budget</label><select id="obB"><option value="0-3k">Under €3K</option><option value="3-6k" selected>€3K – €6K</option><option value="6-10k">€6K – €10K</option><option value="10k+">€10K+</option></select></div>
+      <div class="input-group"><label>Booking frequency</label><select id="obF"><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly" selected>Monthly</option><option value="few">A few times a year</option></select></div>
+      <button class="btn btn-red" onclick="obDone()">Launch Libro</button>
     </div>
   </div>
 
-  <!-- ═══════ DISCOVER ═══════ -->
   <div class="tab-panel" id="panel-discover">
-    <div class="input-group">
-      <label>Seed Artists</label>
-      <textarea id="seedInput" placeholder="One artist per line&#10;e.g.&#10;Floating Points&#10;Avalon Emerson&#10;DJ Koze"></textarea>
-      <small>Libro finds similar artists, checks availability via RA, and ranks by local demand.</small>
-      <div id="seedHistory" style="margin-top:8px"></div>
+    <div class="input-group"><label>Seed Artists</label><textarea id="seedInput" placeholder="One artist per line — Libro finds 50 similar artists per seed"></textarea><div id="seedH" style="margin-top:6px"></div></div>
+    <div class="row">
+      <div class="input-group" style="margin:0"><label>Event Date</label><input type="date" id="eventDate"></div>
+      <div class="input-group" style="margin:0;max-width:130px"><label>Min BCN Spotify</label><input type="number" id="minBcn" value="2000"></div>
+      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="dBtn" onclick="runDiscover()">Discover</button></div>
     </div>
-    <div class="form-row-3">
-      <div class="input-group" style="margin-bottom:0">
-        <label>Event Date</label>
-        <input type="date" id="eventDate">
-      </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label>Min BCN Spotify</label>
-        <input type="number" id="minBcn" value="2000" style="width:120px">
-      </div>
-      <button class="btn btn-primary" id="discoverBtn" onclick="runDiscovery()">Discover</button>
-    </div>
-    <div class="pipeline-log" id="pipelineLog"></div>
-    <div id="discoverResults"></div>
+    <div class="progress-wrap" id="dProg"><div class="progress-label" id="pLbl">Starting...</div><div class="progress-bar"><div class="progress-fill" id="pFill"></div></div><div class="progress-detail" id="pDet"></div></div>
+    <div id="dRes"></div>
   </div>
 
-  <!-- ═══════ DATE SCANNER ═══════ -->
   <div class="tab-panel" id="panel-scanner">
-    <div class="form-row">
-      <div class="input-group" style="margin-bottom:0">
-        <label>Check Date</label>
-        <input type="date" id="scanDate">
-      </div>
-      <button class="btn btn-primary" onclick="runDateScan()">Scan</button>
+    <div class="row" style="margin-bottom:20px">
+      <div class="input-group" style="margin:0"><label>Check a date</label><input type="date" id="scanDate"></div>
+      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" onclick="runScan()">Scan</button></div>
     </div>
-    <div id="scanResults" style="margin-top:20px"></div>
+    <div id="scanRes"></div>
   </div>
 
-  <!-- ═══════ VERIFY ═══════ -->
   <div class="tab-panel" id="panel-verify">
-    <div class="form-row">
-      <div class="input-group" style="margin-bottom:0">
-        <label>Artist Name</label>
-        <input type="text" id="verifyInput" placeholder="Enter exact artist name">
-      </div>
-      <button class="btn btn-primary" onclick="runVerify()">Check</button>
+    <div class="row" style="margin-bottom:20px">
+      <div class="input-group" style="margin:0"><label>Artist name</label><input type="text" id="xIn" placeholder="Type any artist name"></div>
+      <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" onclick="runXray()">X-Ray</button></div>
     </div>
-    <div id="verifyResults"></div>
+    <div id="xRes"></div>
   </div>
 
-  <!-- ═══════ SAVED ═══════ -->
   <div class="tab-panel" id="panel-saved">
-    <div style="display:flex;justify-content:space-between;align-items:baseline">
-      <div class="input-group" style="margin:0"><label>Your Shortlist</label></div>
-      <button class="btn-ghost" onclick="exportSaved()">Export CSV</button>
-    </div>
-    <div class="saved-list" id="savedList"></div>
+    <div class="section-head"><h2>Your Shortlist</h2><button class="btn-ghost" onclick="exportCSV()">Export CSV</button></div>
+    <div id="sList"></div>
   </div>
 
-  <!-- ═══════ REPORT ═══════ -->
   <div class="tab-panel" id="panel-report">
-    <div id="reportContent"></div>
-    <button class="btn btn-primary" onclick="generateReport()" style="margin-top:16px">Generate Venue Report</button>
+    <button class="btn btn-red" onclick="genReport()" id="rBtn">Generate Venue Intelligence Report</button>
+    <div id="rOut" style="margin-top:20px"></div>
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   LIBRO v2 — Live RA, Soundcharts, No Pre-scraping
-   ═══════════════════════════════════════════════════════════ */
+/* Libro v3 */
+const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date contentUrl interestedCount venue{id name area{id name}} artists{id name}}}totalResults}}`;
+const AREAS={barcelona:20,berlin:34,london:13,amsterdam:29,paris:44,lisbon:89,madrid:88,milan:108,'new york':8,'los angeles':7,detroit:43,melbourne:100,tokyo:74,'sao paulo':154,'buenos aires':28,tbilisi:173,manchester:17,ibiza:25,brussels:37,copenhagen:42,stockholm:72,warsaw:84,prague:50,zurich:56,bangkok:142,seoul:152};
+const PK='libro_p',SK='libro_s',HK='libro_h',LK='libro_log';
+const P=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch{return{}}};
+const setP=d=>localStorage.setItem(PK,JSON.stringify(d));
+const saved=()=>{try{return JSON.parse(localStorage.getItem(SK))||[]}catch{return[]}};
+const setSaved=d=>localStorage.setItem(SK,JSON.stringify(d));
+const seeds=()=>{try{return JSON.parse(localStorage.getItem(HK))||[]}catch{return[]}};
+const setSeeds=d=>localStorage.setItem(HK,JSON.stringify(d));
+const addLog=e=>{try{const l=JSON.parse(localStorage.getItem(LK)||'[]');l.push({...e,ts:Date.now()});if(l.length>500)l.splice(0,l.length-500);localStorage.setItem(LK,JSON.stringify(l))}catch{}};
+const fmt=n=>{if(!n||isNaN(n))return'0';if(n>=1e6)return(n/1e6).toFixed(1).replace(/\.0$/,'')+'M';if(n>=1e3)return(n/1e3).toFixed(1).replace(/\.0$/,'')+'K';return n.toLocaleString()};
+const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML};
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
+const areaId=()=>AREAS[(P().city||'barcelona').toLowerCase()]||20;
+const fdate=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 
-// ── RA GraphQL ───────────────────────────────────────────
-const RA_QUERY = `query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){
-  eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){
-    data{id listingDate event{id title date venue{id name area{id name}} artists{id name}}}
-    totalResults
+async function ra(v){const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:RA_Q,variables:v})});if(!r.ok)throw new Error('RA '+r.status);return r.json()}
+async function sc(path){const r=await fetch('/api/soundcharts'+path);if(!r.ok)throw new Error('SC '+r.status);return r.json()}
+async function scSearch(name){const d=await sc('/api/v2/artist/search/'+encodeURIComponent(name)+'?limit=1');return d.items?.length?d.items[0]:null}
+async function scRelated(uuid){const d=await sc('/api/v2/artist/'+uuid+'/related?limit=50');return d.items||[]}
+async function scSpotify(uuid){
+  const d=await sc('/api/v2/artist/'+uuid+'/streaming/spotify');
+  const i=(d.items||[])[0];if(!i)return{g:0,c:0};
+  const city=(P().city||'barcelona').toLowerCase();
+  const cp=(i.cityPlots||[]).find(c=>c.cityName&&c.cityName.toLowerCase().includes(city));
+  return{g:i.value||0,c:cp?cp.value||0:0};
+}
+
+/* RA Live Checks */
+async function raCity(name,eventDate){
+  const a=new Date(eventDate),from=new Date(a),to=new Date(a);
+  from.setMonth(a.getMonth()-7);to.setMonth(a.getMonth()+3);
+  const target=norm(name);
+  for(let p=1;p<=8;p++){
+    const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:from.toISOString().slice(0,10),lte:to.toISOString().slice(0,10)}},fo:{},p,s:50});
+    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
+    for(const el of evs){const ev=el.event||{};
+      for(const ar of(ev.artists||[])){const n=norm(ar.name||'');
+        if(n===target||(target.length>=5&&n.includes(target))||(n.length>=5&&target.includes(n)))
+          return{hit:true,date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',attending:ev.interestedCount||0};
+    }}
+    if(p*50>=tot)break;
   }
-}`;
-
-// RA area IDs for common cities
-const RA_AREAS = {
-  'barcelona': 20, 'berlin': 34, 'london': 13, 'amsterdam': 29, 'paris': 44,
-  'lisbon': 89, 'madrid': 88, 'milan': 108, 'new york': 8, 'los angeles': 7,
-  'detroit': 43, 'melbourne': 100, 'tokyo': 74, 'sao paulo': 154,
-  'buenos aires': 28, 'tbilisi': 173, 'manchester': 17, 'ibiza': 25,
-  'brussels': 37, 'copenhagen': 42, 'stockholm': 72, 'warsaw': 84,
-  'prague': 50, 'zurich': 56, 'bangkok': 142, 'seoul': 152,
-};
-
-async function raFetch(query, variables) {
-  const resp = await fetch('/api/ra/graphql', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, variables }),
-  });
-  if (!resp.ok) throw new Error('RA ' + resp.status);
-  return resp.json();
+  return{hit:false};
 }
 
-// ── Soundcharts ──────────────────────────────────────────
-async function scFetch(path) {
-  const resp = await fetch('/api/soundcharts' + path);
-  if (!resp.ok) throw new Error('SC ' + resp.status);
-  return resp.json();
-}
-
-async function scSearch(name) {
-  const data = await scFetch('/api/v2/artist/search/' + encodeURIComponent(name) + '?limit=1');
-  return (data.items && data.items.length > 0) ? data.items[0] : null;
-}
-
-async function scRelated(uuid) {
-  const data = await scFetch('/api/v2/artist/' + uuid + '/related?limit=50');
-  return data.items || [];
-}
-
-async function scStreaming(uuid) {
-  const data = await scFetch('/api/v2/artist/' + uuid + '/streaming/spotify');
-  const item = (data.items || [])[0];
-  if (!item) return { global: 0, bcn: 0 };
-  const global = item.value || 0;
-  let bcn = 0;
-  if (item.cityPlots) {
-    const city = getProfile().city || 'barcelona';
-    const bcnCity = item.cityPlots.find(c => c.cityName && c.cityName.toLowerCase().includes(city));
-    if (bcnCity) bcn = bcnCity.value || 0;
+/* RA: find artist's show history in city */
+async function raHistory(name){
+  const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-2);
+  const target=norm(name),shows=[];
+  for(let p=1;p<=15;p++){
+    const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:ago.toISOString().slice(0,10),lte:now.toISOString().slice(0,10)}},fo:{},p,s:50});
+    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
+    for(const el of evs){const ev=el.event||{};
+      for(const ar of(ev.artists||[])){const n=norm(ar.name||'');
+        if(n===target||(target.length>=5&&n.includes(target))||(n.length>=5&&target.includes(n)))
+          shows.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',title:ev.title||'',att:ev.interestedCount||0});
+    }}
+    if(p*50>=tot)break;
   }
-  return { global, bcn };
+  shows.sort((a,b)=>b.date.localeCompare(a.date));
+  return shows;
 }
 
-// ── State ────────────────────────────────────────────────
-const PROFILE_KEY = 'libro_profile';
-const SAVED_KEY = 'libro_saved';
-const SEED_KEY = 'libro_seeds';
-
-function getProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch { return {}; } }
-function setProfile(p) { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); }
-function getSaved() { try { return JSON.parse(localStorage.getItem(SAVED_KEY)) || []; } catch { return []; } }
-function setSaved(d) { localStorage.setItem(SAVED_KEY, JSON.stringify(d)); }
-function getSeedHistory() { try { return JSON.parse(localStorage.getItem(SEED_KEY)) || []; } catch { return []; } }
-function setSeedHistory(d) { localStorage.setItem(SEED_KEY, JSON.stringify(d)); }
-
-// ── Init ─────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const profile = getProfile();
-  if (profile.venue) {
-    showApp();
-  }
-  // Default date
-  const d = new Date(); d.setMonth(d.getMonth() + 2);
-  document.getElementById('eventDate').value = d.toISOString().split('T')[0];
-  document.getElementById('scanDate').value = d.toISOString().split('T')[0];
-
-  // Tab switching
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-    });
-  });
-
-  renderSaved();
-  renderSeedHistory();
+/* Init */
+document.addEventListener('DOMContentLoaded',()=>{
+  if(P().venue)showApp();
+  const d=new Date();d.setMonth(d.getMonth()+2);
+  document.getElementById('eventDate').value=d.toISOString().slice(0,10);
+  document.getElementById('scanDate').value=d.toISOString().slice(0,10);
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');document.getElementById('panel-'+b.dataset.tab).classList.add('active');
+  }));
+  renderSaved();renderSeeds();
 });
 
-// ── Onboarding ───────────────────────────────────────────
-function obNext(step) {
-  document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('ob-step-' + step).classList.add('active');
-}
-
-function obComplete() {
-  const profile = {
-    venue: document.getElementById('obVenue').value.trim(),
-    city: document.getElementById('obCity').value.trim().toLowerCase(),
-    capacity: parseInt(document.getElementById('obCapacity').value) || 0,
-    dreamArtists: document.getElementById('obDream').value.split('\n').filter(Boolean).map(s => s.trim()),
-    successArtists: document.getElementById('obSuccess').value.split('\n').filter(Boolean).map(s => s.trim()),
-    flopArtists: document.getElementById('obFlop').value.split('\n').filter(Boolean).map(s => s.trim()),
-    budget: document.getElementById('obBudget').value,
-    frequency: document.getElementById('obFrequency').value,
-    instagram: document.getElementById('obInstagram').value.trim(),
-    createdAt: new Date().toISOString(),
-  };
-  setProfile(profile);
+/* Onboarding */
+function obGo(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));document.getElementById('ob'+n).classList.add('active');for(let i=1;i<=3;i++)document.getElementById('d'+i).classList.toggle('active',i<=n)}
+function obDone(){
+  setP({venue:document.getElementById('obV').value.trim(),city:document.getElementById('obC').value.trim().toLowerCase(),capacity:parseInt(document.getElementById('obCap').value)||0,wins:document.getElementById('obW').value.split('\n').filter(Boolean).map(s=>s.trim()),losses:document.getElementById('obL').value.split('\n').filter(Boolean).map(s=>s.trim()),budget:document.getElementById('obB').value,freq:document.getElementById('obF').value,created:new Date().toISOString()});
   showApp();
 }
+function showApp(){document.getElementById('onboarding').style.display='none';document.getElementById('mainTabs').style.display='flex';document.getElementById('panel-discover').classList.add('active');const p=P(),pill=document.getElementById('venuePill');pill.textContent=p.venue+' \u00B7 '+p.city;pill.style.display='inline-block'}
+function resetOb(){if(confirm('Reconfigure venue?')){localStorage.removeItem(PK);location.reload()}}
 
-function showApp() {
-  const profile = getProfile();
-  document.getElementById('onboarding').style.display = 'none';
-  document.getElementById('mainTabs').style.display = 'flex';
-  document.getElementById('panel-discover').classList.add('active');
-  const badge = document.getElementById('venueBadge');
-  badge.textContent = profile.venue + ' · ' + profile.city;
-  badge.style.display = 'inline-flex';
+/* Seed History */
+function saveSeeds(list){const h=seeds();list.forEach(s=>{if(s&&!h.some(x=>x.toLowerCase()===s.toLowerCase()))h.unshift(s)});if(h.length>40)h.length=40;setSeeds(h);renderSeeds()}
+function renderSeeds(){
+  const el=document.getElementById('seedH'),h=seeds();if(!h.length){el.innerHTML='';return}
+  el.innerHTML='<span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase">Recent: </span>'+h.slice(0,12).map(s=>`<span style="display:inline-block;background:var(--surface-2);border:1px solid var(--border);padding:1px 7px;border-radius:3px;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);margin:2px 3px;cursor:pointer" onclick="addSeed('${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</span>`).join('');
+}
+function addSeed(n){const el=document.getElementById('seedInput'),ls=el.value.trim().split('\n').filter(Boolean);if(!ls.some(l=>l.toLowerCase()===n.toLowerCase())){ls.push(n);el.value=ls.join('\n')}}
+
+/* Progress */
+function prog(lbl,pct,detail){
+  const w=document.getElementById('dProg');w.classList.add('visible');
+  if(lbl)document.getElementById('pLbl').textContent=lbl;
+  document.getElementById('pFill').style.width=pct+'%';
+  if(detail){const d=document.getElementById('pDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}
+}
+function progReset(){document.getElementById('dProg').classList.remove('visible');document.getElementById('pDet').innerHTML='';document.getElementById('pFill').style.width='0%'}
+
+/* ═══ DISCOVER ═══ */
+async function runDiscover(){
+  const text=document.getElementById('seedInput').value.trim(),date=document.getElementById('eventDate').value,min=parseInt(document.getElementById('minBcn').value)||2000;
+  if(!text)return;
+  const seedList=text.split('\n').map(s=>s.trim()).filter(Boolean);
+  saveSeeds(seedList);addLog({type:'search',seeds:seedList,date,city:P().city});
+  const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='Working\u2026';
+  progReset();document.getElementById('dRes').innerHTML='';
+
+  prog('Resolving seeds on Soundcharts\u2026',5);
+  const resolved=[];
+  for(const seed of seedList){
+    try{const a=await scSearch(seed);if(a){resolved.push({name:a.name||seed,uuid:a.uuid,seed});prog(null,10,'\u2713 '+seed)}else prog(null,10,'\u2717 '+seed+' not found')}
+    catch(e){prog(null,10,'\u2717 '+seed+' \u2014 '+e.message)}
+  }
+  if(!resolved.length){prog('No seeds found. Check spelling.',10);btn.disabled=false;btn.textContent='Discover';return}
+
+  prog('Finding related artists\u2026',20);
+  const cmap=new Map();
+  for(const s of resolved){
+    try{const rel=await scRelated(s.uuid);prog(null,25,s.name+': '+rel.length+' related');
+      for(const r of rel){if(resolved.some(x=>x.uuid===r.uuid))continue;if(!cmap.has(r.uuid))cmap.set(r.uuid,{name:r.name,uuid:r.uuid,seeds:[]});cmap.get(r.uuid).seeds.push(s.seed)}
+    }catch(e){prog(null,25,s.name+': '+e.message)}
+  }
+  const cands=Array.from(cmap.values());prog(cands.length+' candidates found',30);
+
+  prog('Checking '+P().city+' availability\u2026',35);
+  let raX=0;const afterRA=[];
+  for(let i=0;i<cands.length;i++){
+    const c=cands[i],pct=35+Math.round((i/cands.length)*20);
+    try{const r=await raCity(c.name,date);
+      if(r.hit){raX++;prog(null,pct,'\u2717 '+c.name+' \u2014 '+r.date+' @ '+r.venue+(r.attending?' ('+r.attending+' going)':''))}
+      else afterRA.push(c);
+    }catch(e){afterRA.push(c)}
+  }
+  prog(raX+' excluded, '+afterRA.length+' remain',55);
+
+  prog('Checking worldwide conflicts on '+date+'\u2026',60);
+  let sdX=0;const afterSD=[],wn=new Map();
+  try{
+    for(let p=1;p<=12;p++){
+      const d=await ra({f:{listingDate:{gte:date,lte:date}},fo:{},p,s:50});
+      const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
+      for(const el of evs){const ev=el.event||{};for(const a of(ev.artists||[]))wn.set(norm(a.name||''),{v:(ev.venue||{}).name,a:((ev.venue||{}).area||{}).name})}
+      if(p*50>=tot)break;
+    }
+    prog(null,65,wn.size+' artists playing worldwide');
+  }catch(e){prog(null,65,'Worldwide check failed')}
+
+  for(const c of afterRA){
+    const t=norm(c.name);let blocked=false;
+    for(const[k,v] of wn){const lr=Math.min(k.length,t.length)/Math.max(k.length,t.length);
+      if(k===t||(t.length>=5&&lr>0.6&&k.includes(t))||(k.length>=5&&lr>0.6&&t.includes(k))){sdX++;prog(null,70,'\u2717 '+c.name+' \u2014 '+v.v+' ('+v.a+')');blocked=true;break}}
+    if(!blocked)afterSD.push(c);
+  }
+  prog(sdX+' same-day conflicts, '+afterSD.length+' remain',70);
+
+  prog('Fetching local Spotify demand\u2026',75);
+  const wd=[];
+  for(let i=0;i<afterSD.length;i++){
+    const c=afterSD[i],pct=75+Math.round((i/afterSD.length)*15);
+    try{const s=await scSpotify(c.uuid);c.bcn=s.c;c.global=s.g;wd.push(c);if(s.c>0)prog(null,pct,'\u2713 '+c.name+' '+fmt(s.c)+' BCN')}
+    catch(e){c.bcn=0;c.global=0;wd.push(c)}
+  }
+  const qual=wd.filter(a=>(a.bcn||0)>=min);qual.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
+  prog('Done! '+qual.length+' artists above '+fmt(min)+' BCN',100);
+  renderDiscover(qual);btn.disabled=false;btn.textContent='Discover';
 }
 
-// ── Seed History ─────────────────────────────────────────
-function saveSeedHistory(seeds) {
-  const h = getSeedHistory();
-  for (const s of seeds) {
-    if (s && !h.some(x => x.toLowerCase() === s.toLowerCase())) h.unshift(s);
-  }
-  if (h.length > 50) h.length = 50;
-  setSeedHistory(h);
-  renderSeedHistory();
-}
-
-function renderSeedHistory() {
-  const el = document.getElementById('seedHistory');
-  const h = getSeedHistory();
-  if (!h.length) { el.innerHTML = ''; return; }
-  el.innerHTML = '<span style="font-family:var(--font-head);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-faint);margin-right:6px">Used before:</span>' +
-    h.map(s => '<span style="display:inline-block;background:var(--surface-2);border:1px solid var(--border);padding:2px 8px;border-radius:3px;font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);margin:2px 4px 2px 0;cursor:pointer" onclick="addSeed(\'' + esc(s).replace(/'/g, "\\'") + '\')">' + esc(s) + '</span>').join('');
-}
-
-function addSeed(name) {
-  const el = document.getElementById('seedInput');
-  const lines = el.value.trim().split('\n').filter(Boolean);
-  if (!lines.some(l => l.toLowerCase() === name.toLowerCase())) {
-    lines.push(name);
-    el.value = lines.join('\n');
-  }
-}
-
-// ── Pipeline Log ─────────────────────────────────────────
-function logEl() { return document.getElementById('pipelineLog'); }
-function logClear() { const el = logEl(); el.innerHTML = ''; el.classList.add('visible'); }
-function log(msg, cls) {
-  const el = logEl();
-  const d = document.createElement('div');
-  d.innerHTML = cls ? '<span class="' + cls + '">' + msg + '</span>' : msg;
-  el.appendChild(d);
-  el.scrollTop = el.scrollHeight;
-}
-
-// ── Helpers ──────────────────────────────────────────────
-function fmtNum(n) { if (!n || isNaN(n)) return '0'; if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/, '') + 'M'; if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/, '') + 'K'; return n.toLocaleString(); }
-function formatDate(d) { return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
-function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-function normalise(s) { return s.toLowerCase().replace(/[^a-z0-9]/g, ''); }
-function getRAArea() { const city = (getProfile().city || 'barcelona').toLowerCase(); return RA_AREAS[city] || 20; }
-
-// ═══════════════════════════════════════════════════════════
-//  RA LIVE CHECKS
-// ═══════════════════════════════════════════════════════════
-
-// Check if artist played in user's city within the exclusion window
-async function raCheckCity(artistName, eventDate) {
-  const anchor = new Date(eventDate);
-  const from = new Date(anchor); from.setMonth(anchor.getMonth() - 7);
-  const to = new Date(anchor); to.setMonth(anchor.getMonth() + 3);
-  const fromStr = from.toISOString().split('T')[0];
-  const toStr = to.toISOString().split('T')[0];
-  const area = getRAArea();
-
-  try {
-    const d = await raFetch(RA_QUERY, {
-      f: { areas: { eq: area }, listingDate: { gte: fromStr, lte: toStr } },
-      fo: {}, p: 1, s: 50,
-    });
-
-    const target = normalise(artistName);
-    const events = d?.data?.eventListings?.data || [];
-    const total = d?.data?.eventListings?.totalResults || 0;
-
-    // Check first page
-    for (const el of events) {
-      const ev = el.event || {};
-      for (const a of (ev.artists || [])) {
-        const n = normalise(a.name || '');
-        if (n === target || (target.length >= 5 && n.includes(target)) || (n.length >= 5 && target.includes(n))) {
-          return { excluded: true, reason: (ev.date || '').slice(0, 10) + ' @ ' + ((ev.venue || {}).name || '?') };
-        }
-      }
-    }
-
-    // Check remaining pages if needed (up to 5 pages for speed)
-    const pages = Math.min(Math.ceil(total / 50), 5);
-    for (let p = 2; p <= pages; p++) {
-      const d2 = await raFetch(RA_QUERY, { f: { areas: { eq: area }, listingDate: { gte: fromStr, lte: toStr } }, fo: {}, p, s: 50 });
-      for (const el of (d2?.data?.eventListings?.data || [])) {
-        const ev = el.event || {};
-        for (const a of (ev.artists || [])) {
-          const n = normalise(a.name || '');
-          if (n === target || (target.length >= 5 && n.includes(target)) || (n.length >= 5 && target.includes(n))) {
-            return { excluded: true, reason: (ev.date || '').slice(0, 10) + ' @ ' + ((ev.venue || {}).name || '?') };
-          }
-        }
-      }
-    }
-  } catch (e) {
-    console.warn('[RA city]', e.message);
-  }
-  return { excluded: false };
-}
-
-// Check if artist is playing anywhere on the event date
-async function raCheckSameDay(artistName, eventDate) {
-  try {
-    let allArtists = [];
-    let page = 1;
-    while (true) {
-      const d = await raFetch(RA_QUERY, {
-        f: { listingDate: { gte: eventDate, lte: eventDate } },
-        fo: {}, p: page, s: 50,
-      });
-      const events = d?.data?.eventListings?.data || [];
-      const total = d?.data?.eventListings?.totalResults || 0;
-      for (const el of events) {
-        const ev = el.event || {};
-        for (const a of (ev.artists || [])) {
-          allArtists.push({ name: a.name, venue: (ev.venue || {}).name, area: ((ev.venue || {}).area || {}).name });
-        }
-      }
-      if (page * 50 >= total || page >= 10) break;
-      page++;
-    }
-
-    const target = normalise(artistName);
-    for (const w of allArtists) {
-      const n = normalise(w.name || '');
-      const lenRatio = Math.min(n.length, target.length) / Math.max(n.length, target.length);
-      if (n === target || (target.length >= 5 && lenRatio > 0.6 && n.includes(target)) || (n.length >= 5 && lenRatio > 0.6 && target.includes(n))) {
-        return { excluded: true, reason: w.venue + ' (' + w.area + ')' };
-      }
-    }
-  } catch (e) {
-    console.warn('[RA same-day]', e.message);
-  }
-  return { excluded: false };
-}
-
-// ═══════════════════════════════════════════════════════════
-//  DISCOVERY PIPELINE
-// ═══════════════════════════════════════════════════════════
-
-async function runDiscovery() {
-  const seedText = document.getElementById('seedInput').value.trim();
-  const eventDate = document.getElementById('eventDate').value;
-  const minBcn = parseInt(document.getElementById('minBcn').value) || 2000;
-  if (!seedText) return;
-
-  const seeds = seedText.split('\n').map(s => s.trim()).filter(Boolean);
-  saveSeedHistory(seeds);
-  const btn = document.getElementById('discoverBtn');
-  btn.disabled = true; btn.textContent = 'Running\u2026';
-  logClear();
-  document.getElementById('discoverResults').innerHTML = '';
-
-  const profile = getProfile();
-  log('Starting discovery with ' + seeds.length + ' seed' + (seeds.length > 1 ? 's' : ''), 'step');
-  log('City: ' + (profile.city || 'barcelona') + ' \u00B7 Date: ' + eventDate + ' \u00B7 Min BCN: ' + fmtNum(minBcn), 'dim');
-
-  // Step 1: Resolve seeds
-  log('', '');
-  log('\u25B8 STEP 1 \u2014 Resolving seeds on Soundcharts', 'step');
-  const resolved = [];
-  for (const seed of seeds) {
-    try {
-      const a = await scSearch(seed);
-      if (a) {
-        resolved.push({ name: a.name || seed, uuid: a.uuid, seedName: seed });
-        log('  \u2713 ' + seed + ' \u2192 ' + a.name, 'ok');
-      } else {
-        log('  \u2717 ' + seed + ' \u2014 not found', 'warn');
-      }
-    } catch (e) {
-      log('  \u2717 ' + seed + ' \u2014 ' + e.message, 'warn');
-    }
-  }
-  if (!resolved.length) { log('No seeds resolved.', 'warn'); btn.disabled = false; btn.textContent = 'Discover'; return; }
-
-  // Step 2: Related artists
-  log('', '');
-  log('\u25B8 STEP 2 \u2014 Finding related artists', 'step');
-  const candidateMap = new Map();
-  for (const seed of resolved) {
-    try {
-      const related = await scRelated(seed.uuid);
-      log('  ' + seed.name + ': ' + related.length + ' related', 'ok');
-      for (const r of related) {
-        if (resolved.some(s => s.uuid === r.uuid)) continue;
-        if (!candidateMap.has(r.uuid)) candidateMap.set(r.uuid, { name: r.name, uuid: r.uuid, seeds: [] });
-        candidateMap.get(r.uuid).seeds.push(seed.seedName);
-      }
-    } catch (e) { log('  ' + seed.name + ': ' + e.message, 'warn'); }
-  }
-  const candidates = Array.from(candidateMap.values());
-  log('  ' + candidates.length + ' unique candidates', 'dim');
-
-  // Step 3: RA city exclusion (LIVE — no pre-scraping)
-  log('', '');
-  log('\u25B8 STEP 3 \u2014 RA city check (live, 7mo back / 3mo forward)', 'step');
-  let raExcluded = 0;
-  const afterRA = [];
-  for (let i = 0; i < candidates.length; i++) {
-    const c = candidates[i];
-    if (i > 0 && i % 10 === 0) log('  \u2026 ' + i + '/' + candidates.length, 'dim');
-    const check = await raCheckCity(c.name, eventDate);
-    if (check.excluded) {
-      raExcluded++;
-      log('  \u2717 ' + c.name + ' \u2014 ' + check.reason, 'dim');
-    } else {
-      afterRA.push(c);
-    }
-  }
-  log('  ' + raExcluded + ' excluded, ' + afterRA.length + ' remain', 'ok');
-
-  // Step 4: RA same-day worldwide
-  log('', '');
-  log('\u25B8 STEP 4 \u2014 RA worldwide same-day check (' + eventDate + ')', 'step');
-  let sameDayExcluded = 0;
-  const afterSameDay = [];
-
-  // Fetch worldwide artists once
-  let worldArtists = [];
-  try {
-    let page = 1;
-    while (true) {
-      const d = await raFetch(RA_QUERY, { f: { listingDate: { gte: eventDate, lte: eventDate } }, fo: {}, p: page, s: 50 });
-      const events = d?.data?.eventListings?.data || [];
-      const total = d?.data?.eventListings?.totalResults || 0;
-      for (const el of events) {
-        const ev = el.event || {};
-        for (const a of (ev.artists || [])) {
-          worldArtists.push({ norm: normalise(a.name || ''), venue: (ev.venue || {}).name, area: ((ev.venue || {}).area || {}).name });
-        }
-      }
-      if (page * 50 >= total || page >= 15) break;
-      page++;
-    }
-    log('  ' + worldArtists.length + ' artists playing worldwide on ' + eventDate, 'dim');
-  } catch (e) { log('  RA worldwide failed: ' + e.message, 'warn'); }
-
-  for (const c of afterRA) {
-    const target = normalise(c.name);
-    let blocked = false;
-    for (const w of worldArtists) {
-      const lenRatio = Math.min(w.norm.length, target.length) / Math.max(w.norm.length, target.length);
-      if (w.norm === target || (target.length >= 5 && lenRatio > 0.6 && w.norm.includes(target)) || (w.norm.length >= 5 && lenRatio > 0.6 && target.includes(w.norm))) {
-        sameDayExcluded++;
-        log('  \u2717 ' + c.name + ' \u2014 ' + w.venue + ' (' + w.area + ')', 'dim');
-        blocked = true;
-        break;
-      }
-    }
-    if (!blocked) afterSameDay.push(c);
-  }
-  log('  ' + sameDayExcluded + ' excluded, ' + afterSameDay.length + ' remain', 'ok');
-
-  // Step 5: Soundcharts streaming
-  log('', '');
-  log('\u25B8 STEP 5 \u2014 BCN Spotify listeners (' + afterSameDay.length + ' artists)', 'step');
-  const withData = [];
-  for (let i = 0; i < afterSameDay.length; i++) {
-    const c = afterSameDay[i];
-    if (i > 0 && i % 10 === 0) log('  \u2026 ' + i + '/' + afterSameDay.length, 'dim');
-    try {
-      const s = await scStreaming(c.uuid);
-      c.bcnListeners = s.bcn;
-      c.globalListeners = s.global;
-      withData.push(c);
-      if (s.bcn > 0) log('  \u2713 ' + c.name + ' \u2014 ' + fmtNum(s.bcn) + ' BCN', 'ok');
-      else log('  \u00B7 ' + c.name + ' \u2014 no BCN data', 'dim');
-    } catch (e) {
-      log('  ? ' + c.name + ' \u2014 ' + e.message, 'warn');
-      c.bcnListeners = 0; c.globalListeners = 0;
-      withData.push(c);
-    }
-  }
-
-  // Step 6: Filter & Rank
-  log('', '');
-  log('\u25B8 STEP 6 \u2014 Filtering (min ' + fmtNum(minBcn) + ' BCN) & ranking', 'step');
-  const qualified = withData.filter(a => (a.bcnListeners || 0) >= minBcn);
-  qualified.sort((a, b) => (b.bcnListeners || 0) - (a.bcnListeners || 0));
-  log('  ' + (withData.length - qualified.length) + ' below threshold, ' + qualified.length + ' qualified', 'ok');
-
-  renderResults(qualified);
-  btn.disabled = false; btn.textContent = 'Discover';
-}
-
-// ═══════════════════════════════════════════════════════════
-//  DATE SCANNER
-// ═══════════════════════════════════════════════════════════
-
-async function runDateScan() {
-  const date = document.getElementById('scanDate').value;
-  if (!date) return;
-  const container = document.getElementById('scanResults');
-  container.innerHTML = '<div style="padding:20px;color:var(--text-dim)"><span class="loading-spinner"></span> Scanning ' + date + '...</div>';
-
-  const area = getRAArea();
-  const allEvents = [];
-  let page = 1;
-
-  try {
-    while (true) {
-      const d = await raFetch(RA_QUERY, { f: { areas: { eq: area }, listingDate: { gte: date, lte: date } }, fo: {}, p: page, s: 50 });
-      const events = d?.data?.eventListings?.data || [];
-      const total = d?.data?.eventListings?.totalResults || 0;
-      for (const el of events) allEvents.push(el);
-      if (page * 50 >= total || page >= 10) break;
-      page++;
-    }
-  } catch (e) {
-    container.innerHTML = '<div class="empty-state">Error: ' + e.message + '</div>';
-    return;
-  }
-
-  if (!allEvents.length) {
-    container.innerHTML = '<div class="empty-state">No events found on ' + date + '</div>';
-    return;
-  }
-
-  let html = '<div class="results-header"><h2>Events on ' + date + '</h2><span class="count">' + allEvents.length + ' events</span></div>';
-
-  for (const el of allEvents) {
-    const ev = el.event || {};
-    const venue = (ev.venue || {}).name || '?';
-    const artists = (ev.artists || []).map(a => a.name).join(', ');
-    const title = ev.title || '';
-
-    html += '<div class="event-row">';
-    html += '<div class="ev-venue">' + esc(venue) + '</div>';
-    html += '<div><div style="font-size:0.85rem">' + esc(title) + '</div><div class="ev-artists">' + esc(artists) + '</div></div>';
-    html += '<div class="ev-attending"></div>';
-    html += '</div>';
-  }
-
-  container.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  VERIFY
-// ═══════════════════════════════════════════════════════════
-
-async function runVerify() {
-  const name = document.getElementById('verifyInput').value.trim();
-  if (!name) return;
-  const eventDate = document.getElementById('eventDate').value;
-  const container = document.getElementById('verifyResults');
-  container.innerHTML = '<div style="padding:20px;color:var(--text-dim)"><span class="loading-spinner"></span> Checking ' + esc(name) + '...</div>';
-
-  let scData = null, streaming = { global: 0, bcn: 0 }, cityCheck, sameDayCheck;
-
-  try {
-    scData = await scSearch(name);
-    if (scData) streaming = await scStreaming(scData.uuid);
-  } catch (e) {}
-
-  cityCheck = await raCheckCity(name, eventDate);
-  sameDayCheck = await raCheckSameDay(name, eventDate);
-
-  const blocked = cityCheck.excluded || sameDayCheck.excluded;
-
-  container.innerHTML = '<div class="report-section">' +
-    '<h3>' + esc(scData?.name || name) + ' <span style="font-size:0.8rem;font-family:var(--font-mono);color:' + (blocked ? 'var(--red)' : 'var(--green)') + '">' + (blocked ? 'Blocked' : 'Available') + '</span></h3>' +
-    '<div class="report-stat"><div class="rs-value">' + (streaming.bcn > 0 ? fmtNum(streaming.bcn) : '\u2014') + '</div><div class="rs-label">BCN Spotify</div></div>' +
-    '<div class="report-stat"><div class="rs-value">' + fmtNum(streaming.global) + '</div><div class="rs-label">Global Spotify</div></div>' +
-    '<div class="report-stat"><div class="rs-value" style="font-size:1rem;color:' + (cityCheck.excluded ? 'var(--red)' : 'var(--green)') + '">' + (cityCheck.excluded ? 'Conflict' : 'Clear') + '</div><div class="rs-label">RA City</div></div>' +
-    '<div class="report-stat"><div class="rs-value" style="font-size:1rem;color:' + (sameDayCheck.excluded ? 'var(--red)' : 'var(--green)') + '">' + (sameDayCheck.excluded ? 'Conflict' : 'Clear') + '</div><div class="rs-label">Same Day</div></div>' +
-    (cityCheck.reason ? '<p style="margin-top:12px;font-size:0.8rem;color:var(--text-dim)">City: ' + esc(cityCheck.reason) + '</p>' : '') +
-    (sameDayCheck.reason ? '<p style="font-size:0.8rem;color:var(--text-dim)">Same day: ' + esc(sameDayCheck.reason) + '</p>' : '') +
-    '<div style="margin-top:12px"><button class="btn-ghost" onclick="saveArtist(\'' + esc(scData?.name || name).replace(/'/g, "\\'") + '\',' + streaming.bcn + ',' + streaming.global + ',\'' + (scData?.uuid || '') + '\')">Save to shortlist</button></div>' +
-    '</div>';
-}
-
-// ═══════════════════════════════════════════════════════════
-//  VENUE REPORT
-// ═══════════════════════════════════════════════════════════
-
-async function generateReport() {
-  const profile = getProfile();
-  const container = document.getElementById('reportContent');
-  container.innerHTML = '<div style="padding:20px;color:var(--text-dim)"><span class="loading-spinner"></span> Generating venue report...</div>';
-
-  const area = getRAArea();
-  const city = profile.city || 'barcelona';
-
-  // Fetch last 12 months of events for the venue
-  const now = new Date();
-  const yearAgo = new Date(now); yearAgo.setFullYear(now.getFullYear() - 1);
-  const fromStr = yearAgo.toISOString().split('T')[0];
-  const toStr = now.toISOString().split('T')[0];
-
-  let venueEvents = [];
-  let totalCityEvents = 0;
-
-  try {
-    // Get city events count
-    const d = await raFetch(RA_QUERY, { f: { areas: { eq: area }, listingDate: { gte: fromStr, lte: toStr } }, fo: {}, p: 1, s: 1 });
-    totalCityEvents = d?.data?.eventListings?.totalResults || 0;
-
-    // Search for venue-specific events (check first few pages for venue name match)
-    for (let p = 1; p <= 20; p++) {
-      const d2 = await raFetch(RA_QUERY, { f: { areas: { eq: area }, listingDate: { gte: fromStr, lte: toStr } }, fo: {}, p, s: 50 });
-      const events = d2?.data?.eventListings?.data || [];
-      const total = d2?.data?.eventListings?.totalResults || 0;
-      for (const el of events) {
-        const ev = el.event || {};
-        const vn = ((ev.venue || {}).name || '').toLowerCase();
-        if (profile.venue && vn.includes(profile.venue.toLowerCase().split(' ')[0])) {
-          venueEvents.push(el);
-        }
-      }
-      if (p * 50 >= total) break;
-    }
-  } catch (e) {
-    container.innerHTML = '<div class="empty-state">Error generating report: ' + e.message + '</div>';
-    return;
-  }
-
-  // Analyze venue events
-  const venueArtists = new Set();
-  const monthCounts = {};
-  for (const el of venueEvents) {
-    const ev = el.event || {};
-    const month = (ev.date || '').slice(0, 7);
-    monthCounts[month] = (monthCounts[month] || 0) + 1;
-    for (const a of (ev.artists || [])) venueArtists.add(a.name);
-  }
-
-  // Analyze success/flop artists
-  let successInfo = '', flopInfo = '';
-  for (const name of (profile.successArtists || []).slice(0, 3)) {
-    try {
-      const a = await scSearch(name);
-      if (a) {
-        const s = await scStreaming(a.uuid);
-        successInfo += '<div class="report-stat"><div class="rs-value">' + fmtNum(s.bcn) + '</div><div class="rs-label">' + esc(name) + ' BCN</div></div>';
-      }
-    } catch (e) {}
-  }
-  for (const name of (profile.flopArtists || []).slice(0, 3)) {
-    try {
-      const a = await scSearch(name);
-      if (a) {
-        const s = await scStreaming(a.uuid);
-        flopInfo += '<div class="report-stat"><div class="rs-value">' + fmtNum(s.bcn) + '</div><div class="rs-label">' + esc(name) + ' BCN</div></div>';
-      }
-    } catch (e) {}
-  }
-
-  // Build report
-  let html = '';
-
-  html += '<div class="report-section"><h3>Venue Profile</h3>';
-  html += '<div class="report-stat"><div class="rs-value">' + venueEvents.length + '</div><div class="rs-label">Events (12mo)</div></div>';
-  html += '<div class="report-stat"><div class="rs-value">' + venueArtists.size + '</div><div class="rs-label">Unique Artists</div></div>';
-  html += '<div class="report-stat"><div class="rs-value">' + (profile.capacity || '\u2014') + '</div><div class="rs-label">Capacity</div></div>';
-  html += '<div class="report-stat"><div class="rs-value">' + totalCityEvents.toLocaleString() + '</div><div class="rs-label">' + city + ' events/year</div></div>';
-  html += '</div>';
-
-  if (successInfo) {
-    html += '<div class="report-section"><h3>Your Successes \u2014 BCN Spotify</h3>';
-    html += '<p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px">Artists you said packed the room:</p>';
-    html += successInfo;
-    html += '</div>';
-  }
-
-  if (flopInfo) {
-    html += '<div class="report-section"><h3>Your Flops \u2014 BCN Spotify</h3>';
-    html += '<p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px">Artists you said didn\u2019t draw:</p>';
-    html += flopInfo;
-    html += '</div>';
-  }
-
-  html += '<div class="report-section"><h3>Insight</h3>';
-  html += '<p style="font-size:0.9rem;line-height:1.7;color:var(--text)">Based on your ' + city + ' venue with ' + (profile.capacity || '?') + ' capacity and ' + (profile.budget || '?') + ' budget range, we recommend targeting artists with <strong style="color:var(--red)">2K+ BCN Spotify listeners</strong> who haven\u2019t played ' + city + ' in 7+ months. Use the Discover tab to find them, and the Date Scanner to avoid competing events.</p>';
-  html += '</div>';
-
-  container.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  RENDERING
-// ═══════════════════════════════════════════════════════════
-
-function renderResults(artists) {
-  const container = document.getElementById('discoverResults');
-  if (!artists.length) {
-    container.innerHTML = '<div class="empty-state">No artists passed all filters. Try different seeds, a different date, or lower the BCN threshold.</div>';
-    return;
-  }
-
-  let html = '<div class="results-header"><h2>Results</h2><span class="count">' + artists.length + ' artists \u00B7 ranked by BCN Spotify</span></div>';
-
-  artists.forEach((a, i) => {
-    const seedTags = a.seeds.map(s => '<span class="seed-tag">' + esc(s) + '</span>').join('');
-    const isSaved = getSaved().some(s => s.name === a.name);
-
-    html += '<div class="artist-card" style="animation-delay:' + (i * 40) + 'ms">';
-    html += '<div class="rank">' + (i + 1) + '</div>';
-    html += '<div class="artist-info"><h3>' + esc(a.name) + '</h3>';
-    html += '<div class="meta">via ' + seedTags + '</div>';
-    html += '<div class="artist-actions">';
-    html += '<button onclick="saveArtist(\'' + esc(a.name).replace(/'/g, "\\'") + '\',' + (a.bcnListeners || 0) + ',' + (a.globalListeners || 0) + ',\'' + (a.uuid || '') + '\')" ' + (isSaved ? 'class="saved"' : '') + '>' + (isSaved ? '\u2713 saved' : '+ save') + '</button>';
-    html += '<button onclick="verifyFromDiscover(\'' + esc(a.name).replace(/'/g, "\\'") + '\')">verify</button>';
-    html += '</div></div>';
-    html += '<div class="bcn-number"><div class="value">' + (a.bcnListeners > 0 ? fmtNum(a.bcnListeners) : '\u2014') + '</div><div class="label">BCN Spotify</div><div class="global">' + fmtNum(a.globalListeners || 0) + ' global</div></div>';
-    html += '</div>';
+function renderDiscover(arts){
+  const c=document.getElementById('dRes');
+  if(!arts.length){c.innerHTML='<div class="empty">No artists passed all filters. Try different seeds or lower the threshold.</div>';return}
+  let h='<div class="section-head"><h2>Results</h2><span class="count">'+arts.length+' artists \u00B7 by local Spotify</span></div>';
+  arts.forEach((a,i)=>{
+    const tags=a.seeds.map(s=>'<span class="tag">'+esc(s)+'</span>').join('');
+    const sv=saved().some(s=>s.name===a.name);
+    h+=`<div class="result-item" style="animation-delay:${i*30}ms">
+      <div class="ri-rank">${i+1}</div>
+      <div class="ri-info"><h3>${esc(a.name)}</h3><div class="tags">${tags}</div>
+        <div class="ri-actions">
+          <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn},${a.global},'${a.uuid}')" ${sv?'class="saved"':''}>${sv?'\u2713 saved':'+ save'}</button>
+          <button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">\u26A1 x-ray</button>
+        </div>
+      </div>
+      <div class="ri-number"><div class="big">${fmt(a.bcn)}</div><div class="sub">BCN Spotify</div><div class="dim">${fmt(a.global)} global</div></div>
+    </div>`;
   });
-
-  container.innerHTML = html;
+  c.innerHTML=h;
 }
 
-function verifyFromDiscover(name) {
-  document.getElementById('verifyInput').value = name;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+/* ═══ DATE SCANNER ═══ */
+async function runScan(){
+  const date=document.getElementById('scanDate').value;if(!date)return;
+  const c=document.getElementById('scanRes');
+  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Scanning '+date+' in '+P().city+'\u2026</div>';
+  const all=[];
+  try{for(let p=1;p<=15;p++){
+    const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:date,lte:date}},fo:{},p,s:50});
+    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
+    all.push(...evs);if(p*50>=tot)break;
+  }}catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>';return}
+
+  if(!all.length){c.innerHTML='<div class="empty">No events found on '+date+'</div>';return}
+  all.sort((a,b)=>((b.event||{}).interestedCount||0)-((a.event||{}).interestedCount||0));
+
+  const totalAtt=all.reduce((s,el)=>s+((el.event||{}).interestedCount||0),0);
+  const danger=all.length>15?'High':all.length>8?'Medium':'Low';
+  const dclr=all.length>15?'var(--red)':all.length>8?'var(--amber)':'var(--green)';
+
+  let h=`<div class="section-head"><h2>${fdate(new Date(date))} in ${P().city}</h2><span class="count">${all.length} events</span></div>
+    <div class="stats">
+      <div class="stat"><div class="sv">${all.length}</div><div class="sl">Events</div></div>
+      <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total attending</div></div>
+      <div class="stat"><div class="sv" style="color:${dclr}">${danger}</div><div class="sl">Competition level</div></div>
+    </div>`;
+
+  for(const el of all){
+    const ev=el.event||{},v=(ev.venue||{}).name||'?',t=ev.title||'',ar=(ev.artists||[]).map(a=>a.name).join(', '),att=ev.interestedCount||0;
+    h+=`<div class="ev-item">
+      <div class="ev-att">${att>0?fmt(att):'\u2014'}<div class="ev-lbl">going</div></div>
+      <div class="ev-detail"><div class="ev-v">${esc(v)}</div><div class="ev-t">${esc(t)}</div><div class="ev-a">${esc(ar)}</div></div>
+    </div>`;
+  }
+  c.innerHTML=h;
+}
+
+/* ═══ X-RAY ═══ */
+function goXray(name){
+  document.getElementById('xIn').value=name;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelector('[data-tab="verify"]').classList.add('active');
   document.getElementById('panel-verify').classList.add('active');
-  runVerify();
+  runXray();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  SAVED / LOCALSTORAGE
-// ═══════════════════════════════════════════════════════════
+async function runXray(){
+  const name=document.getElementById('xIn').value.trim();if(!name)return;
+  const date=document.getElementById('eventDate').value;
+  const c=document.getElementById('xRes');
+  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Analyzing '+esc(name)+'\u2026</div>';
 
-function saveArtist(name, bcn, global, uuid) {
-  const saved = getSaved();
-  if (saved.some(s => s.name === name)) return;
-  saved.push({ name, bcn, global, uuid, notes: '', savedAt: new Date().toISOString() });
-  setSaved(saved);
-  renderSaved();
+  let scD=null,sp={g:0,c:0},cityC={hit:false},shows=[];
+  try{scD=await scSearch(name);if(scD)sp=await scSpotify(scD.uuid)}catch(e){}
+  shows=await raHistory(name);
+  cityC=await raCity(name,date);
+
+  // Same-day check
+  let sdC={hit:false};
+  try{
+    const target=norm(name);
+    for(let p=1;p<=10;p++){
+      const d=await ra({f:{listingDate:{gte:date,lte:date}},fo:{},p,s:50});
+      const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
+      for(const el of evs){const ev=el.event||{};
+        for(const ar of(ev.artists||[])){const n=norm(ar.name||'');const lr=Math.min(n.length,target.length)/Math.max(n.length,target.length);
+          if(n===target||(target.length>=5&&lr>0.6&&n.includes(target))||(n.length>=5&&lr>0.6&&target.includes(n)))
+            sdC={hit:true,venue:(ev.venue||{}).name||'?',area:((ev.venue||{}).area||{}).name||'?'};
+      }}
+      if(sdC.hit||p*50>=tot)break;
+    }
+  }catch(e){}
+
+  const blocked=cityC.hit||sdC.hit;
+  const cn=P().city||'barcelona';
+  let lastTxt='Never played '+cn;
+  if(shows.length){const m=Math.round((new Date()-new Date(shows[0].date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(new Date(shows[0].date))+')'}
+
+  let h=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:start">
+      <div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div class="meta" style="font-size:0.78rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div>
+      <span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'\u2014'}</div><div class="sl">${cn} Spotify</div></div>
+      <div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div>
+      <div class="stat"><div class="sv" style="color:${cityC.hit?'var(--red)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div>
+      <div class="stat"><div class="sv" style="color:${sdC.hit?'var(--red)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day</div></div>
+    </div>`;
+
+  if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:4px">\u26A0 ${cn}: ${esc(cityC.date)} @ ${esc(cityC.venue)}</p>`;
+  if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">\u26A0 Same day: ${esc(sdC.venue)} (${esc(sdC.area)})</p>`;
+
+  if(shows.length){
+    h+=`<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
+      <div style="font-family:var(--font-head);font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);margin-bottom:8px">${cn} show history (2 years)</div>`;
+    for(const s of shows.slice(0,8))
+      h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)">
+        <span>${esc(s.date)} \u2014 ${esc(s.venue)}</span>
+        <span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--red)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'\u2014'}</span></div>`;
+    h+=`</div>`;
+  }
+
+  h+=`<div style="margin-top:14px"><button class="btn-ghost" onclick="saveArtist('${esc(scD?.name||name).replace(/'/g,"\\'")}',${sp.c},${sp.g},'${scD?.uuid||''}')">+ Add to shortlist</button></div></div>`;
+  c.innerHTML=h;
 }
 
-function removeSaved(name) {
-  setSaved(getSaved().filter(s => s.name !== name));
-  renderSaved();
+/* ═══ REPORT ═══ */
+async function genReport(){
+  const p=P(),c=document.getElementById('rOut'),btn=document.getElementById('rBtn');
+  btn.disabled=true;btn.textContent='Generating\u2026';
+  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Pulling data from RA + Soundcharts\u2026</div>';
+
+  const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+  const fromS=ago.toISOString().slice(0,10),toS=now.toISOString().slice(0,10);
+  let totalEv=0,venueEv=[],venues={};
+
+  try{for(let pg=1;pg<=30;pg++){
+    const d=await ra({f:{areas:{eq:areaId()},listingDate:{gte:fromS,lte:toS}},fo:{},p:pg,s:50});
+    const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;totalEv=tot;
+    for(const el of evs){const ev=el.event||{};const vn=(ev.venue||{}).name||'?';venues[vn]=(venues[vn]||0)+1;
+      if(p.venue&&vn.toLowerCase().includes(p.venue.toLowerCase().split(' ')[0]))venueEv.push(el)}
+    if(pg*50>=tot)break;
+  }}catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>';btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';return}
+
+  const vArt=new Set();
+  for(const el of venueEv)(el.event?.artists||[]).forEach(a=>vArt.add(a.name));
+
+  // Analyze wins/losses with Soundcharts
+  let wH='',lH='',wAvg=0,lAvg=0,wN=0,lN=0;
+  for(const name of(p.wins||[]).slice(0,3)){
+    try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);wH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){wAvg+=s.c;wN++}}}catch(e){}}
+  for(const name of(p.losses||[]).slice(0,3)){
+    try{const a=await scSearch(name);if(a){const s=await scSpotify(a.uuid);lH+=`<div class="stat"><div class="sv">${fmt(s.c)}</div><div class="sl">${esc(name)}</div></div>`;if(s.c>0){lAvg+=s.c;lN++}}}catch(e){}}
+  if(wN)wAvg=Math.round(wAvg/wN);if(lN)lAvg=Math.round(lAvg/lN);
+
+  const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  let h=`<div class="card"><h3 style="color:var(--red)">Venue Profile</h3>
+    <div class="stats">
+      <div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div>
+      <div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div>
+      <div class="stat"><div class="sv">${p.capacity||'\u2014'}</div><div class="sl">Capacity</div></div>
+      <div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${p.city} events/year</div></div>
+    </div></div>`;
+
+  if(wH||lH){
+    h+=`<div class="card"><h3>Booking DNA Analysis</h3>`;
+    if(wH) h+=`<p style="font-size:0.78rem;color:var(--green);margin-bottom:8px;font-family:var(--font-head);font-weight:600">\u2713 Wins \u2014 avg ${fmt(wAvg)} ${p.city} Spotify</p><div class="stats">${wH}</div>`;
+    if(lH) h+=`<p style="font-size:0.78rem;color:var(--amber);margin:12px 0 8px;font-family:var(--font-head);font-weight:600">\u2717 Losses \u2014 avg ${fmt(lAvg)} ${p.city} Spotify</p><div class="stats">${lH}</div>`;
+    if(wAvg>0&&lAvg>0){
+      const threshold=Math.round((wAvg+lAvg)/2);
+      h+=`<div style="margin-top:14px;padding:12px 16px;background:var(--red-glow);border:1px solid var(--red);border-radius:var(--radius)">
+        <p style="font-size:0.85rem;line-height:1.6"><strong style="color:var(--red)">Insight:</strong> Your wins average <strong>${fmt(wAvg)}</strong> local Spotify listeners. Your losses average <strong>${fmt(lAvg)}</strong>. For your room, target artists above <strong style="color:var(--red)">${fmt(threshold)}</strong> ${p.city} Spotify listeners to reduce risk.</p></div>`;
+    }
+    h+=`</div>`;
+  }
+
+  h+=`<div class="card"><h3 style="color:var(--red)">Competitive Landscape</h3>
+    <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Top venues in ${p.city} by event count (last 12 months):</p>`;
+  for(const[name,count] of topV){
+    const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase().split(' ')[0]);
+    h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem${isU?';color:var(--red);font-weight:600':''}"><span>${esc(name)}${isU?' \u2190 you':''}</span><span style="font-family:var(--font-mono);font-size:0.7rem">${count} events</span></div>`;
+  }
+  h+=`</div>`;
+
+  h+=`<div class="card"><h3>Recommendation</h3>
+    <p style="font-size:0.88rem;line-height:1.7">Based on your ${p.city} venue with ${p.capacity||'?'} capacity and ${p.budget} budget:</p>
+    <ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)">
+      <li>Target artists with <strong style="color:var(--red)">${wAvg>0?fmt(wAvg)+'+':'2K+'}</strong> local Spotify listeners</li>
+      <li>Avoid artists who played ${p.city} in the last 7 months</li>
+      <li>Use <strong>What's On</strong> to check competing events before committing to a date</li>
+      <li>Use <strong>X-Ray</strong> to verify any artist before making an offer</li>
+    </ul></div>`;
+
+  c.innerHTML=h;btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';
 }
 
-function updateNotes(name, notes) {
-  const saved = getSaved();
-  const a = saved.find(s => s.name === name);
-  if (a) { a.notes = notes; setSaved(saved); }
+/* ═══ SAVED ═══ */
+function saveArtist(name,bcn,g,uuid){const s=saved();if(s.some(x=>x.name===name))return;s.push({name,bcn,g,uuid,notes:'',at:new Date().toISOString()});setSaved(s);renderSaved();addLog({type:'save',name,bcn})}
+function removeSaved(name){setSaved(saved().filter(s=>s.name!==name));renderSaved()}
+function updateNotes(name,notes){const s=saved(),a=s.find(x=>x.name===name);if(a){a.notes=notes;setSaved(s)}}
+function renderSaved(){
+  const c=document.getElementById('sList'),s=saved();
+  if(!s.length){c.innerHTML='<div class="empty">No saved artists yet. Use Discover or X-Ray to add artists.</div>';return}
+  s.sort((a,b)=>(b.bcn||0)-(a.bcn||0));
+  c.innerHTML=s.map(a=>
+    `<div class="saved-item"><div style="flex:1"><h3>${esc(a.name)}</h3>
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim)">BCN: ${a.bcn>0?fmt(a.bcn):'\u2014'} \u00B7 Global: ${fmt(a.g||0)}</div>
+      <textarea class="notes" placeholder="Add notes\u2026" onchange="updateNotes('${esc(a.name).replace(/'/g,"\\'")}',this.value)">${esc(a.notes||'')}</textarea>
+    </div><div style="text-align:right">
+      <div style="font-family:var(--font-head);font-weight:800;color:var(--red);font-size:1.1rem">${a.bcn>0?fmt(a.bcn):'\u2014'}</div>
+      <button class="btn-ghost" style="margin-top:8px;font-size:0.6rem;padding:3px 8px" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button>
+    </div></div>`).join('');
 }
-
-function renderSaved() {
-  const container = document.getElementById('savedList');
-  const saved = getSaved();
-  if (!saved.length) { container.innerHTML = '<div class="empty-state">No saved artists yet.</div>'; return; }
-  saved.sort((a, b) => (b.bcn || 0) - (a.bcn || 0));
-  container.innerHTML = saved.map(a =>
-    '<div class="saved-card"><div><h3>' + esc(a.name) + '</h3>' +
-    '<div class="saved-meta">BCN: ' + (a.bcn > 0 ? fmtNum(a.bcn) : '\u2014') + ' \u00B7 Global: ' + fmtNum(a.global || 0) + '</div>' +
-    '<textarea class="notes" placeholder="Notes\u2026" onchange="updateNotes(\'' + esc(a.name).replace(/'/g, "\\'") + '\',this.value)">' + esc(a.notes || '') + '</textarea>' +
-    '</div><div><div class="saved-bcn">' + (a.bcn > 0 ? fmtNum(a.bcn) : '\u2014') + '</div>' +
-    '<button class="remove-btn" onclick="removeSaved(\'' + esc(a.name).replace(/'/g, "\\'") + '\')">Remove</button></div></div>'
-  ).join('');
-}
-
-function exportSaved() {
-  const saved = getSaved();
-  if (!saved.length) return;
-  const csv = 'Name,BCN Spotify,Global Spotify,Notes,Saved\n' +
-    saved.map(a => '"' + a.name + '",' + (a.bcn || 0) + ',' + (a.global || 0) + ',"' + (a.notes || '').replace(/"/g, '""') + '",' + a.savedAt).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url; link.download = 'libro-shortlist-' + new Date().toISOString().split('T')[0] + '.csv';
-  link.click(); URL.revokeObjectURL(url);
-}
-
-// ── Reset onboarding (for testing) ───────────────────────
-function resetOnboarding() {
-  localStorage.removeItem(PROFILE_KEY);
-  location.reload();
+function exportCSV(){
+  const s=saved();if(!s.length)return;
+  const csv='Name,BCN Spotify,Global Spotify,Notes,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+',"'+(a.notes||'').replace(/"/g,'""')+'",'+a.at).join('\n');
+  const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');
+  l.href=u;l.download='libro-shortlist-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
 }
 </script>
 </body>
