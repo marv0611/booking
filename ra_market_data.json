@@ -1,0 +1,21 @@
+{
+  "collected": "2026-04-05T00:09:18.219758",
+  "range": [
+    "2025-04-05",
+    "2026-04-05"
+  ],
+  "totals": {
+    "events": 13791,
+    "venues": "?",
+    "promoters": "?"
+  },
+  "data": [
+    {
+      "city": "Berlin",
+      "key": "berlin",
+      "country": "Germany",
+      "area_id": 34,
+      "events_12m": 13791
+    }
+  ]
+}

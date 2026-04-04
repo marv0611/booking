@@ -134,13 +134,13 @@ header {
 .tab-btn {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 1.5px;
+  font-size: 0.82rem;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
   color: var(--text-faint);
   background: none;
   border: none;
-  padding: 12px 18px 14px;
+  padding: 12px 16px 14px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: color 0.2s;
@@ -154,24 +154,7 @@ header {
   border-bottom-color: var(--accent);
 }
 
-/* Primary tabs — larger */
-.tab-btn[data-tab="discover"],
-.tab-btn[data-tab="routing"],
-.tab-btn[data-tab="scanner"] {
-  font-size: 1.2rem;
-  font-weight: 800;
-  padding: 12px 22px 14px;
-}
-
-/* Secondary tabs — smaller, dimmer */
-.tab-btn[data-tab="intel"],
-.tab-btn[data-tab="verify"],
-.tab-btn[data-tab="saved"],
-.tab-btn[data-tab="report"] {
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-}
+/* All tabs — uniform size */
 
 
 /* ═══════════════════════════════════════════
@@ -1517,10 +1500,10 @@ input[type="number"] { font-family: var(--font-mono); }
 
   <!-- ═══ ONBOARDING ═══ -->
   <div id="onboarding">
-    <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3" style="display:none"></div><div class="ob-dot" id="d4" style="display:none"></div></div>
+    <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div><div class="ob-dot" id="d4" style="display:none"></div></div>
     <div class="ob-step active" id="ob1">
-      <h2>Set Up Your DNA</h2>
-      <div class="sub">Night Pulse scans your booking history and builds an audience profile. Everything calibrates automatically.</div>
+      <h2>Welcome to Night Pulse</h2>
+      <div class="sub">The booking intelligence platform for electronic music. Set up takes 2 minutes — then everything calibrates automatically.</div>
       <div class="input-group"><label>I am a…</label>
         <div class="seg-picker" id="obTypePicker" style="max-width:300px">
           <button onclick="setObType('venue')" data-v="venue" class="active">Venue<span class="seg-sub">club / space</span></button>
@@ -1570,12 +1553,49 @@ input[type="number"] { font-family: var(--font-mono); }
           <span class="hint">The number in your ra.co/promoters/[ID] URL</span>
         </div>
       </div>
-      <div class="input-group" id="obCapGroup"><label>Average Event Size <span style="font-weight:400;font-size:0.8em;color:var(--text-faint);text-transform:none;letter-spacing:0">(optional)</span></label><input type="number" id="obCap" placeholder="e.g. 400"></div>
-      <button class="btn btn-red" onclick="obDone()" style="margin-top:8px">Analyse My Bookings →</button>
+      <button class="btn btn-red" onclick="obDone()" style="margin-top:12px;width:100%;padding:14px;font-size:0.95rem">Next →</button>
     </div>
+
+    <!-- STEP 2: YOUR SOUND -->
     <div class="ob-step" id="ob2" style="display:none">
+      <h2>Define Your Sound</h2>
+      <div class="sub">Name 3 artists that represent your brand. These don't have to be artists you've booked — think of who defines the sound you're going for.</div>
+      <div class="input-group">
+        <label>3 artists that define your sound</label>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px">1</span><input type="text" id="obSoundArtist1" placeholder="e.g. Kerri Chandler" autocomplete="off" style="flex:1"></div>
+          <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px">2</span><input type="text" id="obSoundArtist2" placeholder="e.g. CC:DISCO!" autocomplete="off" style="flex:1"></div>
+          <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-faint);width:16px">3</span><input type="text" id="obSoundArtist3" placeholder="e.g. Antal" autocomplete="off" style="flex:1"></div>
+        </div>
+        <span class="hint">These anchor your discovery engine and competition detection</span>
+      </div>
+      <div class="input-group">
+        <label>What matters most to you?</label>
+        <div id="obPriorityRank" style="display:flex;flex-direction:column;gap:6px">
+          <div class="priority-item" draggable="true" data-priority="discover" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:grab;user-select:none;transition:all 0.15s">
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">1</span>
+            <span style="font-size:0.85rem;font-weight:600">Discovering new artists</span>
+            <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-left:auto">drag to reorder</span>
+          </div>
+          <div class="priority-item" draggable="true" data-priority="competition" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:grab;user-select:none;transition:all 0.15s">
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">2</span>
+            <span style="font-size:0.85rem;font-weight:600">Avoiding competition</span>
+            <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-left:auto">drag to reorder</span>
+          </div>
+          <div class="priority-item" draggable="true" data-priority="routing" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:grab;user-select:none;transition:all 0.15s">
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">3</span>
+            <span style="font-size:0.85rem;font-weight:600">Finding routing deals</span>
+            <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-left:auto">drag to reorder</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-red" onclick="obStep2SoundDone()" style="margin-top:12px;width:100%;padding:14px;font-size:0.95rem">Next →</button>
+    </div>
+
+    <!-- STEP 3: COMPETITION (promoter only) -->
+    <div class="ob-step" id="ob3" style="display:none">
       <h2>Your Competition</h2>
-      <div class="sub">Tag up to 5 competitors. The more we know about them, the smarter your threat detection becomes.</div>
+      <div class="sub">Tag up to 5 competitors. The more we know, the sharper your threat detection.</div>
       <div class="input-group">
         <label>Competitor Promoters</label>
         <div id="obCompetitorList"></div>
@@ -1609,11 +1629,12 @@ input[type="number"] { font-family: var(--font-mono); }
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-red" onclick="obStep2Done()" style="flex:1">Continue →</button>
-        <button class="btn-ghost" onclick="obStep2Done()">Skip</button>
+        <button class="btn btn-red" onclick="obStep3Done()" style="flex:1;padding:14px;font-size:0.95rem">Build My DNA →</button>
+        <button class="btn-ghost" onclick="obStep3Done()" style="padding:14px">Skip</button>
       </div>
     </div>
-    <div class="ob-step" id="ob3" style="display:none"></div>
+
+    <!-- STEP 4: DNA BUILD -->
     <div class="ob-step" id="ob4">
       <h2 id="ob4Title">Scanning Your History</h2>
       <div class="sub" id="ob4Sub">Night Pulse is scanning your past bookings to build your audience DNA.</div>
@@ -1771,8 +1792,8 @@ input[type="number"] { font-family: var(--font-mono); }
       <button class="btn btn-red" onclick="runIntel()" style="white-space:nowrap;flex-shrink:0">Analyse</button>
     </div>
     <div id="intelQuickChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px"></div>
-    <div id="intelMomentum" style="margin-bottom:24px"></div>
     <div id="intelRes"></div>
+    <div id="intelMomentum" style="margin-bottom:24px"></div>
   </div>
 
   <!-- ═══ MY PIPELINE ═══ -->
@@ -1789,22 +1810,20 @@ input[type="number"] { font-family: var(--font-mono); }
 
   <!-- ═══ REPORT ═══ -->
   <div class="tab-panel" id="panel-report">
-    <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px">
-      Booking performance breakdown — best/worst nights, competitive landscape, DNA calibration
-    </div>
-    <div style="margin-bottom:20px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
-      <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Calibration Data <span style="font-weight:400;color:var(--text-faint);font-size:0.62rem;text-transform:none;letter-spacing:0">— optional, improves report accuracy</span></div>
+    <div id="rOut"><div class="empty" style="padding:40px;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-faint)">Click the Report tab to generate your intelligence report.</div></div>
+    <div id="reportCalibration" style="display:none;margin-top:24px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
+      <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Refine Your Report <span style="font-weight:400;color:var(--text-faint);font-size:0.62rem;text-transform:none;letter-spacing:0">— optional, improves accuracy</span></div>
       <div class="row" style="gap:16px;flex-wrap:wrap">
         <div class="input-group" style="margin:0;flex:1;min-width:200px">
           <label style="font-size:0.62rem">Artists that crushed it</label>
-          <div class="ac-wrap"><textarea id="obW" placeholder="One per line — your best nights" rows="3" style="font-size:0.78rem"></textarea></div>
+          <div class="ac-wrap"><textarea id="obW" placeholder="One per line — your best bookings" rows="2" style="font-size:0.78rem"></textarea></div>
         </div>
         <div class="input-group" style="margin:0;flex:1;min-width:200px">
           <label style="font-size:0.62rem">Artists that underperformed</label>
-          <div class="ac-wrap"><textarea id="obL" placeholder="One per line — nights that didn't land" rows="3" style="font-size:0.78rem"></textarea></div>
+          <div class="ac-wrap"><textarea id="obL" placeholder="One per line — bookings that didn't land" rows="2" style="font-size:0.78rem"></textarea></div>
         </div>
       </div>
-      <div class="row" style="gap:12px;margin-top:12px;flex-wrap:wrap">
+      <div class="row" style="gap:12px;margin-top:12px;flex-wrap:wrap;align-items:end">
         <div class="input-group" style="margin:0">
           <label style="font-size:0.62rem">Headliner budget</label>
           <select id="obB" style="font-size:0.78rem"><option value="">Not set</option><option value="0-3k">Under €3K</option><option value="3-6k">€3K – €6K</option><option value="6-10k">€6K – €10K</option><option value="10k+">€10K+</option></select>
@@ -1813,13 +1832,9 @@ input[type="number"] { font-family: var(--font-mono); }
           <label style="font-size:0.62rem">Booking frequency</label>
           <select id="obF" style="font-size:0.78rem"><option value="">Not set</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Monthly</option><option value="few">A few times a year</option></select>
         </div>
-        <div class="shrink" style="padding-bottom:1px;align-self:flex-end">
-          <button class="btn-ghost" style="font-size:0.62rem" onclick="saveReportCalibration()">Save calibration</button>
-        </div>
+        <button class="btn-ghost" style="font-size:0.62rem" onclick="saveReportCalibration();genReport()">Save & Refresh</button>
       </div>
     </div>
-    <button class="btn btn-red" onclick="genReport()" id="rBtn">Generate Report</button>
-    <div id="rOut" style="margin-top:20px"></div>
   </div>
 </div>
 
@@ -2090,19 +2105,20 @@ function switchVenue(key){
 /* Delete a venue profile */
 function deleteVenue(key,e){
   e.stopPropagation();
-  const d=_getAllProfiles();if(!d||!d.venues[key])return;
-  if(Object.keys(d.venues).length<=1){alert('Cannot delete your only venue.');return}
+  const d=_getAllProfiles();if(!d||!d.venues||!d.venues[key])return;
+  const remaining=Object.keys(d.venues).filter(k=>k!==key);
+  if(remaining.length<1){alert('Cannot delete your only profile.');return}
   if(!confirm('Delete '+d.venues[key].venue+'? This cannot be undone.'))return;
-  // Clear per-venue localStorage keys
   localStorage.removeItem('np_saved_'+key);
   localStorage.removeItem('np_seeds_'+key);
   localStorage.removeItem('np_dna_'+key);
   localStorage.removeItem('np_fees_'+key);
   delete d.venues[key];
-  // Switch to first remaining
-  d.active=Object.keys(d.venues)[0];
+  d.active=remaining[0];
   _setAllProfiles(d);
-  showApp();renderSaved();renderSeeds();
+  _intelTabLoaded=false;
+  const bar=document.getElementById('cacheBar');if(bar)bar.remove();
+  showApp();renderSaved();renderSeeds();updateCityLabels();
 }
 
 /* Add a new venue (triggers onboarding flow) */
@@ -2120,7 +2136,15 @@ function addVenueProfile(){
   document.getElementById('ob1').classList.add('active');
   for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i===1);
   document.getElementById('obV').value='';document.getElementById('obC').value='barcelona';
-  document.getElementById('obCap').value='';document.getElementById('obW').value='';document.getElementById('obL').value='';
+  // Reset sound anchor fields
+  for(let i=1;i<=3;i++){const el=document.getElementById('obSoundArtist'+i);if(el)el.value=''}
+  // Reset report fields safely
+  const obW=document.getElementById('obW');if(obW)obW.value='';
+  const obL=document.getElementById('obL');if(obL)obL.value='';
+  // Reset competitor list
+  const cl=document.getElementById('obCompetitorList');if(cl)cl.innerHTML='';
+  // Reset genre picker
+  document.querySelectorAll('#obGenrePicker button').forEach(b=>{b.classList.remove('active');b.style.background='';b.style.color='';b.style.borderColor=''});
   // Reset type toggle to venue (default) so stale promoter state doesn't persist
   const _obPromoterName=document.getElementById('obPromoterName');if(_obPromoterName)_obPromoterName.value='';
   const _obPromoterRaId=document.getElementById('obPromoterRaId');if(_obPromoterRaId)_obPromoterRaId.value='';
@@ -2908,12 +2932,25 @@ async function buildDNA(statusCb,artistCb){
   const tsCount=enrichTargets.filter(p=>p.traxsourceGenres&&Object.keys(p.traxsourceGenres).length).length;
   if(statusCb)statusCb('Genre data: '+bpCount+' from Beatport, '+tsCount+' from Traxsource');
 
-  // Build RA co-billing network: for each booked artist, find who they share lineups with
-  // Uses venueEvents (the promoter/venue's own events) — always defined, works for both paths
-  if(statusCb)statusCb('Mapping RA co-billing network…');
+  // ═══ SOUND ANCHOR EXPANSION ═══
+  // User's "3 artists that define your sound" — use their co-billing networks 
+  // to massively expand scene detection
+  const soundAnchors=p.soundAnchors||[];
+  if(soundAnchors.length&&statusCb)statusCb('Expanding network from '+soundAnchors.length+' sound anchor artists…');
+  
+  // Build RA co-billing network: for each booked artist + sound anchors, find shared lineups
+  // Search BOTH your own events AND the full city cache for maximum coverage
+  if(statusCb)statusCb('Mapping co-billing network…');
+  let coBillEvents=venueEvents;
+  try{
+    const cityCache=await ensureCache();
+    if(cityCache&&cityCache.length>venueEvents.length)coBillEvents=cityCache;
+  }catch(e){}
   const coBillMap=new Map();
+  
+  // First: booked artists
   for(const prof of profiles){
-    const related=raRelated(prof.name,venueEvents);
+    const related=raRelated(prof.name,coBillEvents);
     for(const r of related){
       const n=norm(r.name);
       if(!coBillMap.has(n))coBillMap.set(n,{name:r.name,totalCoBills:0,connectedTo:[]});
@@ -2921,6 +2958,29 @@ async function buildDNA(statusCb,artistCb){
       entry.totalCoBills+=r.count;
       entry.connectedTo.push(prof.name);
     }
+  }
+  
+  // Second: sound anchors — these expand the network into the user's aspirational scene
+  for(const anchor of soundAnchors){
+    if(statusCb)statusCb('Expanding from sound anchor: '+anchor);
+    // Search city cache for anchor's co-billing
+    const anchorRelated=raRelated(anchor,coBillEvents);
+    for(const r of anchorRelated){
+      const n=norm(r.name);
+      if(!coBillMap.has(n))coBillMap.set(n,{name:r.name,totalCoBills:0,connectedTo:[]});
+      const entry=coBillMap.get(n);
+      entry.totalCoBills+=r.count;
+      if(!entry.connectedTo.includes('⚓ '+anchor))entry.connectedTo.push('⚓ '+anchor);
+    }
+    // Also fetch Beatport genres for anchors to enrich the genre fingerprint
+    try{
+      const bp=await beatportArtistGenres(anchor);
+      if(bp&&bp.genres){
+        // Merge anchor genres into a special set for the fingerprint
+        if(!p._anchorGenres)p._anchorGenres={};
+        for(const[g,c] of Object.entries(bp.genres))p._anchorGenres[g]=(p._anchorGenres[g]||0)+c;
+      }
+    }catch(e){}
   }
   const venueNorms=new Set(profiles.map(p=>norm(p.name)));
   const coBillNetwork=[...coBillMap.values()]
@@ -2987,6 +3047,46 @@ async function buildDNA(statusCb,artistCb){
     if(statusCb)statusCb('Auto-detected '+detectedVenues.length+' venues from your events');
   }
 
+  // ═══ VENUE AFFINITY MATRIX ═══
+  // For every venue in the city, compute what % of their artists overlap with ours
+  // This is the strongest signal for "same audience" without explicit tagging
+  if(statusCb)statusCb('Computing venue affinity matrix…');
+  const venueAffinityMap={};
+  try{
+    const cityEvents=await ensureCache().catch(()=>[]);
+    if(cityEvents.length){
+      // Build our full artist set: booked + co-billing network
+      const ourArtists=new Set();
+      for(const p2 of profiles)ourArtists.add(norm(p2.name));
+      for(const c of coBillNetwork)ourArtists.add(norm(c.name));
+      
+      // For each venue, find their artists and compute overlap
+      const venueArtistSets=new Map(); // venue → Set of normed artist names
+      for(const ev of cityEvents){
+        if(!ev.venue||ev.venue==='?')continue;
+        if(!venueArtistSets.has(ev.venue))venueArtistSets.set(ev.venue,new Set());
+        const vas=venueArtistSets.get(ev.venue);
+        for(const a of(ev.artists||[]))vas.add(norm(a));
+      }
+      
+      for(const[venue,theirArtists] of venueArtistSets){
+        if(theirArtists.size<3)continue; // skip tiny venues
+        let overlap=0;
+        for(const a of theirArtists){if(ourArtists.has(a))overlap++}
+        const ratio=overlap/Math.min(ourArtists.size,theirArtists.size);
+        if(ratio>0.03)venueAffinityMap[venue]=Math.round(ratio*100); // store as percentage
+      }
+      if(statusCb)statusCb('Venue affinity: '+Object.keys(venueAffinityMap).length+' venues mapped');
+    }
+  }catch(e){if(statusCb)statusCb('Venue affinity computation failed — continuing')}
+
+  // Compute average headliner follower count for caliber matching
+  const headlinerFollowers=profiles.filter(p=>p.raFollowers>0).map(p=>p.raFollowers).sort((a,b)=>a-b);
+  const avgHeadlinerFollowers=headlinerFollowers.length
+    ?Math.round(headlinerFollowers.reduce((s,f)=>s+f,0)/headlinerFollowers.length):0;
+  const medianHeadlinerFollowers=headlinerFollowers.length
+    ?headlinerFollowers[Math.floor(headlinerFollowers.length/2)]:0;
+
   const dna={
     city,
     venue:venueName,
@@ -3022,6 +3122,9 @@ async function buildDNA(statusCb,artistCb){
     profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl,raShows:p.raShows||1,raAvgAtt:p.raAvgAtt||0,raFollowers:p.raFollowers,isReal:p.isReal,avgBillingPos:p.avgBillingPos,titleMatches:p.titleMatches,headlinerScore:p.headlinerScore||0,beatportGenres:p.beatportGenres||null,beatportSubgenres:p.beatportSubgenres||null,traxsourceGenres:p.traxsourceGenres||null})),
     archiveYearsFetched:window._dnaBuildMeta?.archiveYearsFetched??null,
     dnaComplete:window._dnaBuildMeta?.dnaComplete??true,
+    venueAffinity:venueAffinityMap,
+    avgHeadlinerFollowers,
+    medianHeadlinerFollowers,
     // Compact venue events for recency weighting + time-of-day fingerprint
     _venueEvents:venueEvents.slice(0,200).map(ev=>({
       date:ev.date,startTime:ev.startTime||null,attending:ev.attending,
@@ -3193,127 +3296,143 @@ function sceneRelevance(artistName, dna){
    
    Returns {tier:1-4, score:0-100, reason, isCompetition:bool}
    
-   Tier 1: Artist match — artist from your DNA on their lineup (certain)
-   Tier 2: Genre match — same RA genre groups as your DNA (strong signal)
-   Tier 3: Partial overlap — some genre match but not dominant (awareness)
-   Tier 4: No overlap — completely different scene (ignore)              */
+   Tier 1: Direct competition — score 75-100
+   Tier 2: Indirect competition — score 50-74  
+   Tier 3: Adjacent — score 25-49
+   Tier 4: Different scene — score 0-24              */
 function eventThreat(event, dna){
-  if(!dna||!dna.artistCount)return{tier:4,score:0,reason:'No DNA',isCompetition:false};
+  if(!dna||!dna.artistCount)return{tier:4,score:0,reason:'No DNA',isCompetition:false,signals:{}};
   const fp=getDNAFingerprint(dna);
   const p=P();
   const isPromoterMode=p.type==='promoter';
-  const FOLLOWER_GATE=100;
 
-  // Time-of-day mismatch — daytime vs nighttime audiences don't compete
+  // Time-of-day mismatch — daytime vs nighttime audiences don't compete as hard
   const eventIsDaytime=isEventDaytime(event.startTime);
   const timeMismatch=fp.dnaIsDaytime!==eventIsDaytime&&(fp.dnaIsDaytime||eventIsDaytime);
+  const timePenalty=timeMismatch?0.6:1.0;
 
-  // ═══ FOLLOWER-GATED ARTIST MATCHING ═══
-  // Only artists with ≥100 RA followers can trigger competition
+  // ═══ STEP 1: EXPLICIT COMPETITOR CHECK ═══
+  if(isPromoterMode){
+    const competitors=p.competitors||[];
+    const evVenue=norm(event.venue||'');
+    const evTitle=norm(event.title||'');
+    const matchedComp=competitors.find(c=>{const cn=norm(c.name||c);return cn.length>2&&(evVenue.includes(cn)||evTitle.includes(cn))});
+    if(matchedComp){
+      return{
+        tier:1,score:Math.round(95*timePenalty),
+        reason:'Tagged competitor: '+(matchedComp.name||matchedComp),
+        isCompetition:true,timeMismatch,
+        signals:{competitor:100}
+      };
+    }
+  }
+
+  // ═══ STEP 2: ARTIST THREAT (0-100) ═══
   const artists=event.artists||[];
-  let bestArtistMatch=null;
-  
+  let artistScore=0,artistReason='';
   for(const a of artists){
     const n=norm(a.name||a);
     const aName=a.name||a;
+    let s=0,type='';
+    if(fp.bookedNorms.has(n))      {s=85;type='Played your events'}
+    else if(fp.coBillMap.has(n))   {s=70;type='Shares lineups'}
+    else if(fp.cloudNorms.has(n))  {s=55;type='In your network'}
+    else if(fp.secondDegree.has(n)){s=40;type='2nd-degree connection'}
+    if(!s)continue;
     
-    // Check if this artist is in our DNA network
-    let matchType=null,matchScore=0;
-    if(fp.bookedNorms.has(n))     {matchType='booked';matchScore=85}
-    else if(fp.coBillMap.has(n))  {matchType='cobill';matchScore=72}
-    else if(fp.cloudNorms.has(n)) {matchType='network';matchScore=60}
-    else if(fp.secondDegree.has(n)){matchType='2nd';matchScore=48}
-    
-    if(!matchType)continue;
-    
-    // FOLLOWER GATE: check if this artist has ≥100 RA followers
-    // Look up in DNA profiles first (already fetched during build)
+    // Follower gate — skip tiny local acts
     const profMatch=(dna.profiles||[]).find(pp=>norm(pp.name)===n);
     const followers=profMatch?.raFollowers;
+    if(followers!==null&&followers!==undefined&&followers<100)continue;
     
-    // If we have follower data and it's below gate, skip this artist
-    if(followers!==null&&followers!==undefined&&followers<FOLLOWER_GATE)continue;
-    
-    // This is a real artist match — track the best one
-    if(!bestArtistMatch||matchScore>bestArtistMatch.score){
-      bestArtistMatch={name:aName,type:matchType,score:matchScore,followers};
-    }
-  }
-  
-  // If we found a real artist match, classify as tier 1
-  if(bestArtistMatch){
-    const score=timeMismatch?Math.round(bestArtistMatch.score*0.65):bestArtistMatch.score;
-    const reasons={booked:'Played your events',cobill:'Shares lineups',network:'In your network','2nd':'2nd-degree connection'};
-    const reason=reasons[bestArtistMatch.type]+': '+bestArtistMatch.name;
-    
-    // For promoter mode: check if this is at a tagged competitor venue/brand
-    let competitorBoost=false;
-    if(isPromoterMode){
-      const competitors=p.competitors||[];
-      const evVenue=norm(event.venue||'');
-      const evTitle=norm(event.title||'');
-      competitorBoost=competitors.some(c=>{const cn=norm(c.name||c);return evVenue.includes(cn)||evTitle.includes(cn)});
+    // Caliber amplifier — bigger artists are bigger threats
+    if(followers&&dna.avgHeadlinerFollowers>0){
+      const ratio=followers/dna.avgHeadlinerFollowers;
+      if(ratio>2)s=Math.min(100,Math.round(s*1.3));      // much bigger than your avg = amplified threat
+      else if(ratio<0.3)s=Math.round(s*0.7);             // much smaller = reduced threat
     }
     
-    return{
-      tier:1,score:competitorBoost?Math.min(100,score+10):score,
-      reason:reason+(competitorBoost?' (competitor venue)':''),
-      isCompetition:!timeMismatch||competitorBoost,
-      timeMismatch
-    };
+    if(s>artistScore){artistScore=s;artistReason=type+': '+aName}
   }
 
-  // ═══ GENRE-LEVEL MATCHING ═══
-  // Only triggers if the event's genre overlaps with your DNA genres
+  // ═══ STEP 3: VENUE AFFINITY (0-100) ═══
+  let venueAffinityScore=0,venueAffinityReason='';
+  const affinity=dna.venueAffinity||{};
+  const evVenueName=event.venue||'';
+  const aff=affinity[evVenueName]||0;
+  if(aff>=50)     {venueAffinityScore=90;venueAffinityReason=evVenueName+' ('+aff+'% artist overlap)'}
+  else if(aff>=30){venueAffinityScore=70;venueAffinityReason=evVenueName+' ('+aff+'% overlap)'}
+  else if(aff>=15){venueAffinityScore=45;venueAffinityReason=evVenueName+' ('+aff+'% overlap)'}
+  else if(aff>=5) {venueAffinityScore=20;venueAffinityReason=evVenueName+' ('+aff+'% overlap)'}
+
+  // ═══ STEP 4: GENRE MATCH (0-100) ═══
+  let genreScore=0,genreReason='';
   const raGenreNames=(event.genres||[]).map(g=>typeof g==='string'?g:g.name||'');
   const eventGroups=eventSceneGroups(raGenreNames);
   if(eventGroups.length&&fp.dnaSceneGroups.size){
     const matchingGroups=eventGroups.filter(g=>fp.dnaSceneGroups.has(g));
-    const overlapRatio=matchingGroups.length/Math.max(eventGroups.length,fp.dnaSceneGroups.size);
-
-    if(matchingGroups.length>=1&&overlapRatio>=0.4){
-      const baseScore=70;
-      const score=timeMismatch?Math.round(baseScore*0.6):baseScore;
-      const groups=matchingGroups.join(', ');
-      
-      // For promoter mode: genre match at a competitor = elevated threat
-      let competitorBoost=false;
-      if(isPromoterMode){
-        const competitors=p.competitors||[];
-        const evVenue=norm(event.venue||'');
-        const evTitle=norm(event.title||'');
-        competitorBoost=competitors.some(c=>{const cn=norm(c.name||c);return evVenue.includes(cn)||evTitle.includes(cn)});
-      }
-      
-      return{
-        tier:2,score:competitorBoost?Math.min(100,score+15):score,
-        reason:'Same scene: '+groups+(competitorBoost?' (competitor)':'')+(timeMismatch?' (different time of day)':''),
-        isCompetition:(!timeMismatch)||competitorBoost,
-        timeMismatch,matchingGroups
-      };
-    } else if(matchingGroups.length>=1){
-      const baseScore=40;
-      const score=timeMismatch?Math.round(baseScore*0.5):baseScore;
-      return{
-        tier:3,score,
-        reason:'Partial overlap: '+matchingGroups[0]+(timeMismatch?' (different time)':''),
-        isCompetition:false,
-        timeMismatch,matchingGroups
-      };
+    if(matchingGroups.length>=1){
+      genreScore=50;
+      genreReason='Same scene: '+matchingGroups.join(', ');
+      // Subgenre precision bonus — Beatport/Traxsource data
+      // TODO: cross-reference event artists' Beatport genres with DNA profile
+    }
+  }
+  // Last.fm fallback
+  if(!genreScore){
+    const lastfmGenres=(event.genres_lastfm||[]);
+    if(lastfmGenres.length&&fp.dnaGenres.size){
+      const matches=lastfmGenres.filter(g=>fp.dnaGenres.has(g.toLowerCase()));
+      if(matches.length>=1){genreScore=30;genreReason='Genre adjacent: '+matches[0]}
     }
   }
 
-  // No RA genres — Last.fm fallback
-  const lastfmGenres=(event.genres_lastfm||[]);
-  if(lastfmGenres.length&&fp.dnaGenres.size){
-    const matches=lastfmGenres.filter(g=>fp.dnaGenres.has(g.toLowerCase()));
-    if(matches.length>=1){
-      const score=timeMismatch?30:50;
-      return{tier:3,score,reason:'Genre adjacent: '+matches[0],isCompetition:false,timeMismatch};
-    }
+  // ═══ STEP 5: ATTENDANCE THREAT (0-100) ═══
+  let attendScore=0,attendReason='';
+  const evAtt=event.attending||0;
+  const myAvg=dna.avgAttendance||100;
+  if(evAtt>0){
+    const ratio=evAtt/myAvg;
+    if(ratio>=2)      {attendScore=90;attendReason=fmt(evAtt)+' interest (2×+ your avg)'}
+    else if(ratio>=1) {attendScore=70;attendReason=fmt(evAtt)+' interest (same league)'}
+    else if(ratio>=0.5){attendScore=50;attendReason=fmt(evAtt)+' interest'}
+    else              {attendScore=20;attendReason=fmt(evAtt)+' interest (smaller)'}
   }
 
-  return{tier:4,score:0,reason:'Different scene',isCompetition:false,timeMismatch:false};
+  // ═══ STEP 6: COMBINE WITH FLOOR PROTECTION ═══
+  const weighted=Math.round(
+    artistScore      * 0.35 +
+    venueAffinityScore * 0.25 +
+    genreScore       * 0.20 +
+    attendScore      * 0.20
+  );
+  
+  // Floor: strong single signals shouldn't be diluted
+  const artistFloor=Math.round(artistScore*0.7);
+  const venueFloor=Math.round(venueAffinityScore*0.7);
+  const attendFloor=Math.round(attendScore*0.5);
+  
+  let finalScore=Math.max(weighted,artistFloor,venueFloor,attendFloor);
+  
+  // Apply time penalty
+  finalScore=Math.round(finalScore*timePenalty);
+  
+  // Build reason from strongest signal
+  let reason='';
+  const signals={artist:artistScore,venue:venueAffinityScore,genre:genreScore,attendance:attendScore};
+  if(artistScore>=venueAffinityScore&&artistScore>=genreScore&&artistScore>=attendScore)reason=artistReason;
+  else if(venueAffinityScore>=artistScore&&venueAffinityScore>=genreScore)reason=venueAffinityReason;
+  else if(genreScore>=attendScore)reason=genreReason;
+  else reason=attendReason;
+  
+  if(timeMismatch&&reason)reason+=' (different time of day)';
+  if(!reason)reason='Different scene';
+
+  // Tier classification
+  const tier=finalScore>=75?1:finalScore>=50?2:finalScore>=25?3:4;
+  const isCompetition=tier<=2&&!timeMismatch;
+
+  return{tier,score:finalScore,reason,isCompetition,timeMismatch,signals};
 }
 
 /* Legacy wrapper — keeps existing callers working during transition */
@@ -3389,6 +3508,7 @@ async function raBulkFetch(areaCode, from, to, maxPages=60){
    Shows a status bar at the top while loading. */
 let _cachePromise=null;
 async function ensureCache(force=false){
+  if(!P().venue&&!P().promoterName)return[]; // no profile = no cache
   if(!force&&cacheValid())return getCache().events;
   if(_cachePromise)return _cachePromise;
   _cachePromise=(async()=>{
@@ -3460,6 +3580,8 @@ async function ensureCache(force=false){
 
 /* Tiny status bar for cache loading */
 function showCacheStatus(msg,autoHide){
+  // Don't show cache bar during onboarding or if no profile
+  if(!P().venue&&!document.getElementById('ob4')?.classList.contains('active'))return;
   let bar=document.getElementById('cacheBar');
   if(!bar){
     bar=document.createElement('div');bar.id='cacheBar';
@@ -3902,6 +4024,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(lEl&&p.losses&&p.losses.length&&!lEl.value)lEl.value=p.losses.join('\n');
       if(bEl&&p.budget)bEl.value=p.budget;
       if(fEl&&p.freq)fEl.value=p.freq;
+      // Auto-generate report on first visit
+      if(!document.getElementById('rOut').querySelector('.card'))genReport();
     }
   }));
   renderSaved();renderSeeds();
@@ -3914,7 +4038,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   setupIntelAC();
   setupRaIdVerifier();
   updateCityLabels();
-  if(P().venue)ensureCache(); // pre-warm cache for active venue's city
+  if(P().venue){
+    ensureCache(); // pre-warm cache for active venue's city
+  }else{
+    // No profile — make sure cache bar is hidden and no stale state
+    const bar=document.getElementById('cacheBar');
+    if(bar)bar.style.display='none';
+  }
 });
 function updateCityLabels(){
   const cn=cityName(),city=(P().city||'barcelona').toLowerCase();
@@ -4029,26 +4159,29 @@ async function obDone(){
     promoterName:_obType==='promoter'?_obVenueName:'',
     promoterId:_resolvedPromoId,
     city:document.getElementById('obC').value,
-    capacity:parseInt(document.getElementById('obCap').value)||0,
-    wins:[],losses:[],  // collected later in Report tab
+    capacity:0,
+    wins:[],losses:[],
     budget:'',freq:'',
     created:new Date().toISOString()
   };
   const _d=_getAllProfiles();if(_d&&_d._adding){delete _d._adding;_setAllProfiles(_d);}
   setP(_newProfile);
   
-  // For promoters, show competition setup step first
-  if(_obType==='promoter'){
-    document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
-    document.getElementById('ob2').style.display='';
-    document.getElementById('ob2').classList.add('active');
-    for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i<=2);
-    document.getElementById('d2').style.display='';
-    return;
+  // All users go to Step 2: Your Sound
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ob2').style.display='';
+  document.getElementById('ob2').classList.add('active');
+  // Dots: venues have 3 steps total, promoters have 4
+  const totalSteps=_obType==='promoter'?4:3;
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById('d'+i);
+    if(!dot)continue;
+    if(i<=totalSteps){dot.style.display='';dot.classList.toggle('active',i<=2)}
+    else{dot.style.display='none'}
   }
   
-// For venues, go straight to DNA analysis — step 4
-  _startDNABuild();
+  // Setup drag-and-drop for priority ranking
+  _setupPriorityDrag();
 }
 
 /* Helper: chip input for competitor/venue tagging */
@@ -4116,10 +4249,96 @@ function _readChips(chipsId){
   return[...box.querySelectorAll('.ac-chip')].map(c=>c.dataset.value).filter(Boolean);
 }
 
-/* Step 2 done — save competitor data and proceed to DNA build */
-function obStep2Done(){
+/* Step 2 done — save sound anchors + priorities, go to step 3 (competition) or DNA build */
+function obStep2SoundDone(){
   const p=P();
-  // Read competitors as name+raId pairs
+  // Save sound anchor artists
+  const a1=(document.getElementById('obSoundArtist1')?.value||'').trim();
+  const a2=(document.getElementById('obSoundArtist2')?.value||'').trim();
+  const a3=(document.getElementById('obSoundArtist3')?.value||'').trim();
+  p.soundAnchors=[a1,a2,a3].filter(Boolean);
+  
+  // Save priority ranking
+  const items=[...document.querySelectorAll('#obPriorityRank .priority-item')];
+  p.priorities=items.map(el=>el.dataset.priority).filter(Boolean);
+  
+  setP(p);
+  
+  // Promoters go to Step 3 (Competition), Venues go straight to DNA
+  if(p.type==='promoter'){
+    document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+    document.getElementById('ob3').style.display='';
+    document.getElementById('ob3').classList.add('active');
+    for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(dot)dot.classList.toggle('active',i<=3);}
+  }else{
+    _startDNABuild();
+  }
+}
+
+/* Setup drag-and-drop for priority ranking */
+function _setupPriorityDrag(){
+  const container=document.getElementById('obPriorityRank');
+  if(!container)return;
+  let dragEl=null;
+  
+  container.addEventListener('dragstart',e=>{
+    dragEl=e.target.closest('.priority-item');
+    if(dragEl)dragEl.style.opacity='0.4';
+  });
+  container.addEventListener('dragend',e=>{
+    if(dragEl)dragEl.style.opacity='1';
+    dragEl=null;
+    // Re-number
+    container.querySelectorAll('.priority-item').forEach((el,i)=>{
+      const num=el.querySelector('.priority-num');
+      if(num)num.textContent=i+1;
+    });
+  });
+  container.addEventListener('dragover',e=>{
+    e.preventDefault();
+    const target=e.target.closest('.priority-item');
+    if(target&&target!==dragEl){
+      const rect=target.getBoundingClientRect();
+      const mid=rect.top+rect.height/2;
+      if(e.clientY<mid)container.insertBefore(dragEl,target);
+      else container.insertBefore(dragEl,target.nextSibling);
+    }
+  });
+  
+  // Touch support for mobile
+  let touchEl=null,touchClone=null;
+  container.addEventListener('touchstart',e=>{
+    touchEl=e.target.closest('.priority-item');
+    if(!touchEl)return;
+    touchEl.style.opacity='0.4';
+  },{passive:true});
+  container.addEventListener('touchmove',e=>{
+    if(!touchEl)return;
+    e.preventDefault();
+    const touch=e.touches[0];
+    const target=document.elementFromPoint(touch.clientX,touch.clientY)?.closest('.priority-item');
+    if(target&&target!==touchEl){
+      const rect=target.getBoundingClientRect();
+      const mid=rect.top+rect.height/2;
+      if(touch.clientY<mid)container.insertBefore(touchEl,target);
+      else container.insertBefore(touchEl,target.nextSibling);
+    }
+  },{passive:false});
+  container.addEventListener('touchend',()=>{
+    if(touchEl){
+      touchEl.style.opacity='1';
+      container.querySelectorAll('.priority-item').forEach((el,i)=>{
+        const num=el.querySelector('.priority-num');
+        if(num)num.textContent=i+1;
+      });
+      touchEl=null;
+    }
+  });
+}
+
+/* Step 3 done (competition) — save and start DNA build */
+function obStep3Done(){
+  const p=P();
   const list=document.getElementById('obCompetitorList');
   const competitors=list?[...list.querySelectorAll('.competitor-entry')].map(el=>({
     name:(el.dataset.name||'').toLowerCase(),
@@ -4127,7 +4346,6 @@ function obStep2Done(){
   })).filter(c=>c.name):[];
   p.competitors=competitors;
   p.genreFocus=[...document.querySelectorAll('#obGenrePicker button.active')].map(b=>b.dataset.genre).filter(Boolean);
-  // Auto-detect venues from event history (done during DNA build)
   setP(p);
   _startDNABuild();
 }
@@ -4135,9 +4353,20 @@ function obStep2Done(){
 /* Start the DNA build animation and analysis */
 async function _startDNABuild(){
   const _obType=P().type||'venue';
+  if(!P().venue&&!P().promoterName){
+    console.warn('_startDNABuild called with no profile');
+    return;
+  }
   document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('ob4').classList.add('active');
-  for(let i=1;i<=4;i++){document.getElementById('d'+i).style.display='';document.getElementById('d'+i).classList.toggle('active',i<=4);}
+  // Dots: venues see 3 steps (d1,d2,d3), promoters see 4 (d1,d2,d3,d4)
+  const totalSteps=_isPromo?4:3;
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById('d'+i);
+    if(!dot)continue;
+    if(i<=totalSteps){dot.style.display='';dot.classList.add('active')}
+    else{dot.style.display='none'}
+  }
   const _isPromo=_obType==='promoter';
   const _ob4Title=document.getElementById('ob4Title');
   const _ob4Sub=document.getElementById('ob4Sub');
@@ -4210,13 +4439,19 @@ async function _startDNABuild(){
       const coBillHtml=dna.coBillNetwork&&dna.coBillNetwork.length
         ?'<div style="margin-top:16px"><div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:8px">Artists in your orbit</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+dna.coBillNetwork.slice(0,12).map(c=>'<span class="tag">'+esc(c.name)+' <span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--blue)">×'+c.coBills+'</span></span>').join('')+'</div></div>':'';
 
-      sum.innerHTML='<div class="card" style="margin-top:16px;border-color:var(--accent)"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;flex-wrap:wrap;gap:8px"><div><h3 style="color:var(--accent);font-size:1.1rem;margin-bottom:4px">'+esc(dna.venue||P().venue)+'</h3><div style="font-size:0.78rem;color:var(--text-dim)">'+(dna.isPromoter?'Promoter':'Venue')+' · '+cityName()+'</div></div><div style="text-align:right"><div style="font-family:var(--font-head);font-weight:800;font-size:1.8rem;color:var(--text);line-height:1">'+dna.artistCount+'</div><div style="font-size:0.7rem;color:var(--text-dim)">artists booked</div></div></div>'
+        const _ctaText=(()=>{
+          const pri=(P().priorities||[])[0]||'discover';
+          if(pri==='competition')return'Start Scanning Competition →';
+          if(pri==='routing')return'Find Routing Deals →';
+          return'Start Discovering Artists →';
+        })();
+        sum.innerHTML='<div class="card" style="margin-top:16px;border-color:var(--accent)"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;flex-wrap:wrap;gap:8px"><div><h3 style="color:var(--accent);font-size:1.1rem;margin-bottom:4px">'+esc(dna.venue||P().venue)+'</h3><div style="font-size:0.78rem;color:var(--text-dim)">'+(dna.isPromoter?'Promoter':'Venue')+' · '+cityName()+'</div></div><div style="text-align:right"><div style="font-family:var(--font-head);font-weight:800;font-size:1.8rem;color:var(--text);line-height:1">'+dna.artistCount+'</div><div style="font-size:0.7rem;color:var(--text-dim)">artists booked</div></div></div>'
         +(dna.isPromoter?'<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--green);margin-bottom:12px;padding:6px 10px;background:rgba(34,197,94,0.08);border-radius:4px">✓ Profile verified</div>':'')
         +'<div class="stats" style="margin-bottom:16px"><div class="stat"><div class="sv">'+dna.venueEvents+'</div><div class="sl">Events</div></div><div class="stat"><div class="sv">'+(dna.eventsPerMonth||'—')+'</div><div class="sl">Per month</div></div><div class="stat"><div class="sv">'+(dna.avgAttendance?fmt(dna.avgAttendance):'—')+'</div><div class="sl">Avg RA interest</div></div><div class="stat"><div class="sv">'+realCount+'</div><div class="sl">Headliners (100+ followers)</div></div></div>'
         +(topArtists.length?'<div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:4px">Your headliners</div>'+topArtHtml:'')
         +(tg?'<div style="margin-top:14px"><div style="font-family:var(--font-head);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Your scene</div>'+tg+'</div>':'')
         +coBillHtml
-        +'<button class="btn btn-red" style="margin-top:20px;width:100%;font-size:0.95rem;padding:14px" onclick="showApp()">Start Discovering Artists →</button></div>';
+        +'<button class="btn btn-red" style="margin-top:20px;width:100%;font-size:0.95rem;padding:14px" onclick="showApp()">'+_ctaText+'</button></div>';
     }else{
       lbl.textContent='No booking history found — skipping DNA';
       const sum=document.getElementById('dnaSummary');sum.style.display='block';
@@ -4232,15 +4467,29 @@ async function _startDNABuild(){
 function showApp(){
   document.getElementById('onboarding').style.display='none';
   document.getElementById('mainTabs').style.display='flex';
-  // First-time users (no seeds saved yet) land on Intelligence — immediate value with no setup.
-  // Returning users land on Discover where their seeds are.
+  
+  // Use priority ranking to determine default tab
+  const p=P();
+  const priorities=p.priorities||[];
+  const priorityTabMap={discover:'discover',competition:'scanner',routing:'routing'};
   const hasPriorSeeds=seeds().length>0;
-  const defaultTab=hasPriorSeeds?'discover':'intel';
+  let defaultTab='intel'; // fallback for first-time users
+  if(priorities.length){
+    defaultTab=priorityTabMap[priorities[0]]||'discover';
+  }else if(hasPriorSeeds){
+    defaultTab='discover';
+  }
+  
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===defaultTab));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+defaultTab).classList.add('active');
-  if(!hasPriorSeeds)loadIntelTab(); // pre-load momentum on first visit
-  const p=P(),pill=document.getElementById('venuePill');
+  if(defaultTab==='intel')loadIntelTab();
+  if(defaultTab==='scanner'){
+    // Auto-trigger a scan for today's date area
+    const scanDate=document.getElementById('scanDate');
+    if(scanDate&&scanDate.value)setTimeout(()=>runScan(),500);
+  }
+  const pill=document.getElementById('venuePill');
   const wrap=document.getElementById('venueSwitcherWrap');
   const dna=getDNA();
   const isPromoter=p.type==='promoter';
@@ -4294,13 +4543,21 @@ function resetOb(){
   if(confirm('Start over from scratch? This clears your profile and DNA.')){
     localStorage.removeItem('np_dna_'+_vk());
     const d=_getAllProfiles();if(d&&d.venues)delete d.venues[_vk()];if(d)_setAllProfiles(d);
+    // Clear any running state
+    _cachePromise=null;
+    _intelTabLoaded=false;
+    _prefetchedPromoterEvents=null;
+    _prefetchPromise=null;
+    const bar=document.getElementById('cacheBar');
+    if(bar)bar.remove();
     location.reload();
   }
 }
 
 function rebuildDNAFromScratch(){
   document.getElementById('npVenueSwitcherDd')?.remove();
-  if(!confirm('Rebuild DNA? This re-scans all your bookings from RA (takes ~60 seconds).'))return;
+  if(!P().venue&&!P().promoterName){alert('No profile to rebuild. Set up your profile first.');return}
+  if(!confirm('Rebuild DNA? This re-scans all your bookings (takes ~60 seconds).'))return;
   localStorage.removeItem('np_dna_'+_vk());
   // Show onboarding step 4 (DNA build) directly
   document.getElementById('onboarding').style.display='';
@@ -4439,12 +4696,44 @@ function loadDNASeedsIntoDiscover(){
     alert('Build your DNA first — click the venue pill and select "Rebuild DNA".');
     return;
   }
-  const ta=document.getElementById('seedInput');
-  if(!ta)return;
-  const seeds=_buildSmartSeeds(dna);
-  if(!seeds.length){alert('No qualifying artists found in DNA. Try rebuilding DNA.');return}
-  ta.value=seeds.join('\n');
-  ta.dispatchEvent(new Event('blur'));
+  
+  // Show ALL qualifying artists from DNA directly — don't dump into seeds
+  const profiles=(dna.profiles||[]).filter(p=>{
+    if(p.raFollowers===null||p.raFollowers===undefined)return true;
+    return p.raFollowers>=100;
+  }).sort((a,b)=>(b.headlinerScore||0)-(a.headlinerScore||0));
+  
+  if(!profiles.length){alert('No qualifying artists in DNA.');return}
+  
+  const c=document.getElementById('dRes');
+  const bpGenreStr=p=>{
+    if(!p.beatportGenres||!Object.keys(p.beatportGenres).length)return'';
+    return Object.entries(p.beatportGenres).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g).join(', ');
+  };
+  const tsGenreStr=p=>{
+    if(!p.traxsourceGenres||!Object.keys(p.traxsourceGenres).length)return'';
+    return Object.entries(p.traxsourceGenres).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g).join(', ');
+  };
+  
+  let html='<div class="card" style="border-color:var(--accent);margin-bottom:16px"><h3 style="color:var(--accent);margin-bottom:4px">Your DNA — '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">All artists with ≥100 RA followers from your booking history. Click any artist to use as a discovery seed.</div>';
+  
+  for(const p of profiles){
+    const fc=p.raFollowers!=null?fmt(p.raFollowers):'?';
+    const genres=bpGenreStr(p)||tsGenreStr(p)||(p.genres||[]).slice(0,3).join(', ')||'';
+    const initial=p.name.charAt(0).toUpperCase();
+    const img=p.imageUrl&&p.imageUrl.length>10&&!p.imageUrl.includes('2a96cbd8b46e442fc41c2b86b821562f')
+      ?'<img src="'+esc(p.imageUrl)+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display=\'none\'">'
+      :'<div style="width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:0.8rem;color:var(--text-faint)">'+initial+'</div>';
+    
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="addSeed(\''+esc(p.name).replace(/'/g,"\\'")+'\');this.style.opacity=\'0.4\'">'
+      +img
+      +'<div style="flex:1;min-width:0"><div style="font-family:var(--font-head);font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.name)+'</div>'
+      +'<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(genres)+'</div></div>'
+      +'<div style="text-align:right;flex-shrink:0"><div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);font-weight:700">'+fc+'</div><div style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-faint)">followers</div></div>'
+      +'</div>';
+  }
+  html+='</div>';
+  c.innerHTML=html;
 }
 
 /* Build smart seed list from DNA — excludes local-only/small acts, focuses on
@@ -4767,6 +5056,18 @@ async function runScan(){
       <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total RA interest</div></div>
     </div>`;
 
+    // ═══ SATURATION OVERLAY ═══
+    // Count events in your genre on this date
+    const yourGenreEvents=[...tier1,...tier2].length;
+    const saturationLevel=yourGenreEvents>=7?'saturated':yourGenreEvents>=4?'crowded':'normal';
+    if(saturationLevel!=='normal'){
+      const satColor=saturationLevel==='saturated'?'var(--accent)':'var(--amber)';
+      const satMsg=saturationLevel==='saturated'
+        ?'⚠ SATURATED NIGHT — '+yourGenreEvents+' events competing for your audience. Consider moving your date.'
+        :'Crowded night — '+yourGenreEvents+' events in your scene. Expect split attendance.';
+      h+=`<div style="margin-top:12px;padding:10px 14px;background:rgba(232,169,18,0.08);border:1px solid ${satColor};border-radius:var(--radius);font-family:var(--font-mono);font-size:0.72rem;color:${satColor}">${satMsg}</div>`;
+    }
+
     // Own events
     if(ownEvents.length){
       h+=`<div class="card" style="border-color:var(--blue);margin-top:16px">
@@ -5039,7 +5340,6 @@ async function runXray(){
     }
     h+=`<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn-ghost" onclick="saveArtist('${esc(scD?.name||name).replace(/'/g,"\\'")}',${sp.c},${sp.g},'${scD?.uuid||''}','${esc(scD?.imageUrl||'').replace(/'/g,"\\'")}')" >+ Add to shortlist</button>
-      <button class="btn-ghost" onclick="(()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab=intel]').classList.add('active');document.getElementById('panel-intel').classList.add('active');runIntel('${esc(name).replace(/'/g,"\\'")}');loadIntelTab()})()">🕵️ Full Intelligence</button>
     </div>`;
     // Cross-venue performance block — async, appended after initial render
     c.innerHTML=h+'</div>';
@@ -5276,7 +5576,6 @@ function renderRouting(arts, meta={}){
         <div class="ri-actions">
           <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
           <button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ check artist</button>
-          <button onclick="(()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab=intel]').classList.add('active');document.getElementById('panel-intel').classList.add('active');runIntel('${esc(a.name).replace(/'/g,"\\'")}');loadIntelTab()})()">🕵 intel</button>
         </div>
       </div>
       <div class="ri-number">
@@ -5826,16 +6125,31 @@ async function loadIntelTab(){
   }catch(e){console.warn('Momentum failed:',e);}
 
   try{
-    const venueCounts=new Map();
-    for(const ev of allEvents)if(ev.venue&&ev.venue!=='?')venueCounts.set(ev.venue,(venueCounts.get(ev.venue)||0)+1);
+    // Build venue quality data — filter out small/irrelevant venues
+    const venueData=new Map(); // venue → {count, totalAtt, hasHeadliner}
+    for(const ev of allEvents){
+      if(!ev.venue||ev.venue==='?')continue;
+      if(!venueData.has(ev.venue))venueData.set(ev.venue,{count:0,totalAtt:0,hasHeadliner:false});
+      const vd=venueData.get(ev.venue);
+      vd.count++;
+      vd.totalAtt+=(ev.attending||0);
+      // Check if any artist in this event has ≥100 followers in our DNA
+      if(!vd.hasHeadliner&&(ev.attending||0)>=50)vd.hasHeadliner=true;
+    }
 
-    // Build competitor chips — venues with most events, excluding your own venue
+    // Filter: venues with 10+ events AND avg attendance ≥50 OR 20+ events
+    // This removes weed clubs, tiny bars, pop-up shops etc.
     const myVenue=norm(P().venue||'');
-    const topVenues=[...venueCounts.entries()]
-      .filter(([v])=>norm(v)!==myVenue&&v!=='?')
-      .sort((a,b)=>b[1]-a[1])
+    const qualityVenues=[...venueData.entries()]
+      .filter(([v,d])=>{
+        if(norm(v)===myVenue)return false;
+        const avgAtt=d.count>0?d.totalAtt/d.count:0;
+        // Must have either: decent attendance OR high event frequency
+        return(d.count>=10&&avgAtt>=50)||(d.count>=20);
+      })
+      .sort((a,b)=>b[1].count-a[1].count)
       .slice(0,10)
-      .map(v=>v[0]);
+      .map(([v])=>v);
 
     // Known promoters from the map
     const knownPromoters=Object.entries(RA_PROMOTER_IDS)
@@ -5843,7 +6157,7 @@ async function loadIntelTab(){
       .map(([k])=>k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '))
       .slice(0,6);
 
-    const chips=[...new Set([...topVenues,...knownPromoters])].slice(0,16);
+    const chips=[...new Set([...qualityVenues,...knownPromoters])].slice(0,16);
     const chipsEl=document.getElementById('intelQuickChips');
     if(chipsEl)chipsEl.innerHTML=
       `<span style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text-faint);padding:4px 0;flex-basis:100%">Quick scan →</span>`+
@@ -5941,90 +6255,178 @@ function saveReportCalibration(){
 
 /* ═══ REPORT ═══ */
 async function genReport(){
-  const p=P(),c=document.getElementById('rOut'),btn=document.getElementById('rBtn'),cn=cityName();
-  btn.disabled=true;btn.textContent='Generating…';
-  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Pulling data…</div>';
+  const p=P(),c=document.getElementById('rOut'),cn=cityName();
+  if(!p.venue){c.innerHTML='<div class="empty">Set up your profile first.</div>';return}
+  c.innerHTML='<div class="empty" style="padding:30px"><span class="spinner"></span> Generating your intelligence report…</div>';
 
   try{
+    const dna=getDNA();
+    const hasDNA=dna&&dna.artistCount>0;
     const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
     const cityEvents=await getCityEvents(ago,now);
     const totalEv=cityEvents.length;
-    const venues={};const venueEv=[];
+    
+    // Your events
     const _reportVenueId=raVenueId(p.venue||'');
+    const venueEv=[];
     for(const ev of cityEvents){
-      venues[ev.venue]=(venues[ev.venue]||0)+1;
-      // Use confirmed venue ID for exact match; fall back to name
-      const isOwnVenueEv=_reportVenueId&&ev.venueId
+      const isOwn=_reportVenueId&&ev.venueId
         ?String(ev.venueId)===String(_reportVenueId)
-        :p.venue&&ev.venue.toLowerCase()===p.venue.toLowerCase();
-      if(isOwnVenueEv)venueEv.push(ev);
+        :p.venue&&(ev.venue||'').toLowerCase()===p.venue.toLowerCase();
+      if(isOwn)venueEv.push(ev);
     }
-    const vArt=new Set();for(const ev of venueEv)for(const a of ev.artists)vArt.add(a.name||a);
-
-    // DNA wins/losses analysis — use Last.fm for genre tags (no SC needed)
-    let wH='',lH='',wN=0,lN=0;
-    for(const name of(p.wins||[]).slice(0,3)){
-      try{
-        const tags=await lastfmTags(name);
-        const genre=tags.slice(0,2).join(', ')||'—';
-        wH+=`<div class="stat"><div class="sv" style="font-size:0.7rem">${esc(genre)}</div><div class="sl">${esc(name)}</div></div>`;
-        wN++;
-      }catch(e){}
-    }
-    for(const name of(p.losses||[]).slice(0,3)){
-      try{
-        const tags=await lastfmTags(name);
-        const genre=tags.slice(0,2).join(', ')||'—';
-        lH+=`<div class="stat"><div class="sv" style="font-size:0.7rem">${esc(genre)}</div><div class="sl">${esc(name)}</div></div>`;
-        lN++;
-      }catch(e){}
-    }
-    const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
-
-    let h=`<div class="card"><h3 style="color:var(--accent)">Venue Profile</h3><div class="stats"><div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events (12mo)</div></div><div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div><div class="stat"><div class="sv">${p.capacity||'—'}</div><div class="sl">Capacity</div></div><div class="stat"><div class="sv">${totalEv.toLocaleString()}</div><div class="sl">${cn} events/year</div></div></div></div>`;
-
-    // Best and worst attending nights
+    const vArt=new Set();for(const ev of venueEv)for(const a of(ev.artists||[]))vArt.add(a.name||a);
     const evWithAtt=venueEv.filter(e=>e.attending>0).sort((a,b)=>b.attending-a.attending);
+    const avgAtt=evWithAtt.length?Math.round(evWithAtt.reduce((s,e)=>s+e.attending,0)/evWithAtt.length):0;
+
+    let h='';
+
+    // ═══ OVERVIEW CARD ═══
+    h+=`<div class="card" style="border-color:var(--accent)">
+      <h3 style="color:var(--accent);font-size:1rem;margin-bottom:12px">${esc(p.venue)} — 12-Month Intelligence Report</h3>
+      <div class="stats">
+        <div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events</div></div>
+        <div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div>
+        <div class="stat"><div class="sv">${avgAtt?fmt(avgAtt):'—'}</div><div class="sl">Avg RA interest</div></div>
+        <div class="stat"><div class="sv">${fmt(totalEv)}</div><div class="sl">${cn} events total</div></div>
+      </div>
+    </div>`;
+
+    // ═══ GENRE FINGERPRINT (from DNA) ═══
+    if(hasDNA){
+      const profiles=dna.profiles||[];
+      // Aggregate Beatport genres across all headliners
+      const bpAgg={};
+      for(const prof of profiles.filter(pp=>pp.beatportGenres)){
+        for(const[g,c] of Object.entries(prof.beatportGenres))bpAgg[g]=(bpAgg[g]||0)+c;
+      }
+      const bpSorted=Object.entries(bpAgg).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      const bpTotal=bpSorted.reduce((s,[,c])=>s+c,0)||1;
+      
+      // Aggregate Traxsource genres
+      const tsAgg={};
+      for(const prof of profiles.filter(pp=>pp.traxsourceGenres)){
+        for(const[g,c] of Object.entries(prof.traxsourceGenres))tsAgg[g]=(tsAgg[g]||0)+c;
+      }
+      const tsSorted=Object.entries(tsAgg).sort((a,b)=>b[1]-a[1]).slice(0,6);
+
+      if(bpSorted.length||tsSorted.length){
+        h+=`<div class="card"><h3 style="color:var(--accent)">Your Genre Fingerprint</h3>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:12px">Based on your artists' release data across platforms</div>`;
+        if(bpSorted.length){
+          h+=`<div style="margin-bottom:12px">`;
+          for(const[g,c] of bpSorted){
+            const pct=Math.round(c/bpTotal*100);
+            h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);width:32px;text-align:right">${pct}%</span>
+              <div style="flex:1;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px"></div></div>
+              <span style="font-size:0.78rem;min-width:120px">${esc(g)}</span>
+            </div>`;
+          }
+          h+=`</div>`;
+        }
+        if(tsSorted.length){
+          h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">`;
+          for(const[g] of tsSorted)h+=`<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent)">${esc(g)}</span>`;
+          h+=`</div>`;
+        }
+        h+=`</div>`;
+      }
+
+      // ═══ ARTIST TIER BREAKDOWN ═══
+      const headliners=profiles.filter(pp=>pp.raFollowers>=1000);
+      const midTier=profiles.filter(pp=>pp.raFollowers>=100&&pp.raFollowers<1000);
+      const local=profiles.filter(pp=>pp.raFollowers!==null&&pp.raFollowers!==undefined&&pp.raFollowers<100);
+      const unknown=profiles.filter(pp=>pp.raFollowers===null||pp.raFollowers===undefined);
+      
+      h+=`<div class="card"><h3>Artist Tier Breakdown</h3>
+        <div class="stats">
+          <div class="stat"><div class="sv" style="color:var(--accent)">${headliners.length}</div><div class="sl">Headliners (1K+ followers)</div></div>
+          <div class="stat"><div class="sv" style="color:var(--green)">${midTier.length}</div><div class="sl">Mid-tier (100-1K)</div></div>
+          <div class="stat"><div class="sv" style="color:var(--text-faint)">${local.length}</div><div class="sl">Local / Support (&lt;100)</div></div>
+          <div class="stat"><div class="sv">${dna.avgHeadlinerFollowers?fmt(dna.avgHeadlinerFollowers):'—'}</div><div class="sl">Avg headliner followers</div></div>
+        </div>
+      </div>`;
+
+      // ═══ VENUE AFFINITY — TOP COMPETITORS ═══
+      if(dna.venueAffinity&&Object.keys(dna.venueAffinity).length){
+        const affinities=Object.entries(dna.venueAffinity)
+          .sort((a,b)=>b[1]-a[1])
+          .slice(0,10);
+        h+=`<div class="card"><h3 style="color:var(--amber)">Closest Competitors by Artist Overlap</h3>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:10px">Venues that book the most similar artists to yours</div>`;
+        for(const[venue,pct] of affinities){
+          const barClr=pct>=40?'var(--accent)':pct>=20?'var(--amber)':'var(--text-faint)';
+          h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);width:32px;text-align:right">${pct}%</span>
+            <div style="flex:1;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.min(pct,100)}%;background:${barClr};border-radius:3px"></div></div>
+            <span style="font-size:0.78rem;min-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(venue)}</span>
+          </div>`;
+        }
+        h+=`</div>`;
+      }
+    }
+
+    // ═══ BEST / QUIETEST NIGHTS ═══
     if(evWithAtt.length>=2){
       const best=evWithAtt.slice(0,5);
       const worst=evWithAtt.slice(-5).reverse();
-      const avgAtt=Math.round(evWithAtt.reduce((s,e)=>s+e.attending,0)/evWithAtt.length);
-      h+=`<div class="card"><h3 style="color:var(--green)">Best Nights</h3><p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:8px">Avg RA interest: ${fmt(avgAtt)}</p>`;
-      for(const ev of best)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--green)">${fmt(ev.attending)}</span></div>`;
+      h+=`<div class="card"><h3 style="color:var(--green)">Best Performing Nights</h3>`;
+      for(const ev of best)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc((ev.artists||[]).slice(0,3).map(a=>a.name||a).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--green)">${fmt(ev.attending)}</span></div>`;
       h+=`</div>`;
-      h+=`<div class="card"><h3 style="color:var(--amber)">Quietest Nights</h3>`;
-      for(const ev of worst)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</span><span style="font-family:var(--font-head);font-weight:700;color:var(--amber)">${fmt(ev.attending)}</span></div>`;
-      h+=`</div>`;
-    }
-
-    if(wH||lH){
-      h+=`<div class="card"><h3>Booking DNA — Genre Profile</h3>`;
-      if(wH)h+=`<p style="font-size:0.78rem;color:var(--green);margin-bottom:8px;font-family:var(--font-head);font-weight:600">✓ What worked</p><div class="stats">${wH}</div>`;
-      if(lH)h+=`<p style="font-size:0.78rem;color:var(--amber);margin:12px 0 8px;font-family:var(--font-head);font-weight:600">✗ What didn't land</p><div class="stats">${lH}</div>`;
+      h+=`<div class="card"><h3 style="color:var(--text-faint)">Quietest Nights</h3>`;
+      for(const ev of worst)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span>${fdate(ev.date)} — ${esc((ev.artists||[]).slice(0,3).map(a=>a.name||a).join(', '))}</span><span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-faint)">${fmt(ev.attending)}</span></div>`;
       h+=`</div>`;
     }
 
-    h+=`<div class="card"><h3 style="color:var(--accent)">Competitive Landscape</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Top venues (12 months):</p>`;
-    for(const[name,count] of topV){const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase());h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem${isU?';color:var(--accent);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--font-mono);font-size:0.7rem">${count}</span></div>`}
+    // ═══ BOOKING FREQUENCY TREND ═══
+    if(venueEv.length>=3){
+      const monthCounts={};
+      for(const ev of venueEv){
+        const m=ev.date.slice(0,7); // YYYY-MM
+        monthCounts[m]=(monthCounts[m]||0)+1;
+      }
+      const months=Object.entries(monthCounts).sort((a,b)=>a[0].localeCompare(b[0]));
+      const maxMonth=Math.max(...months.map(([,c])=>c));
+      h+=`<div class="card"><h3>Booking Frequency</h3>
+        <div style="display:flex;align-items:end;gap:4px;height:80px;margin:12px 0">`;
+      for(const[m,c] of months){
+        const pct=Math.round(c/maxMonth*100);
+        const label=new Date(m+'-15').toLocaleDateString('en-GB',{month:'short'});
+        h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+          <span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-faint)">${c}</span>
+          <div style="width:100%;height:${pct}%;min-height:2px;background:var(--accent);border-radius:2px 2px 0 0"></div>
+          <span style="font-family:var(--font-mono);font-size:0.48rem;color:var(--text-faint)">${label}</span>
+        </div>`;
+      }
+      h+=`</div></div>`;
+    }
+
+    // ═══ COMPETITIVE LANDSCAPE ═══
+    const venues={};
+    for(const ev of cityEvents)if(ev.venue)venues[ev.venue]=(venues[ev.venue]||0)+1;
+    const topV=Object.entries(venues).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    h+=`<div class="card"><h3>Market Landscape — ${cn}</h3>
+      <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:10px">Top venues by event count (12 months)</div>`;
+    for(const[name,count] of topV){
+      const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase());
+      h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.82rem${isU?';color:var(--accent);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--font-mono);font-size:0.7rem">${count}</span></div>`;
+    }
     h+=`</div>`;
 
-    // Fee intelligence
-    const feeData=fees(),feeEntries=Object.values(feeData).filter(f=>f.fee>0);
-    if(feeEntries.length>=2){
-      const buckets={};for(const f of feeEntries){const b=f.bcn<1000?'<1K':f.bcn<3000?'1-3K':f.bcn<5000?'3-5K':f.bcn<10000?'5-10K':'10K+';if(!buckets[b])buckets[b]=[];buckets[b].push(f.fee)}
-      h+=`<div class="card"><h3 style="color:var(--amber)">Fee Intelligence</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">${feeEntries.length} data points:</p>`;
-      for(const[b,fs] of Object.entries(buckets)){const mn=Math.min(...fs),mx=Math.max(...fs);h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem"><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim)">${b} Spotify</span><span style="font-family:var(--font-head);font-weight:700;color:var(--amber)">€${mn.toLocaleString()}${mx!==mn?' – €'+mx.toLocaleString():''}</span><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint)">${fs.length}pts</span></div>`}
-      h+=`</div>`;
-    }
+    // ═══ CALENDAR ═══
+    h+=`<div class="card"><h3 style="color:var(--blue)">Competition Calendar</h3>
+      <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:12px">Fri/Sat event density — next 3 months</div>
+      <div id="calGrid"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning…</div></div>
+    </div>`;
 
-    // Calendar
-    h+=`<div class="card"><h3 style="color:var(--blue)">Calendar</h3><p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Fri/Sat competition next 3 months:</p><div id="calGrid"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning…</div></div></div>`;
-
-    h+=`<div class="card"><h3>Recommendations</h3><ul style="margin:10px 0 0 18px;font-size:0.85rem;line-height:1.8;color:var(--text-dim)"><li>Use <strong>Routing Deals</strong> for cheaper bookings — artists already near ${cn}</li><li>Use <strong>What's On</strong> before committing to dates</li><li>Use <strong>Artist Check</strong> before making offers</li><li>Use <strong>Scene Intel</strong> to track what's working for competitors</li></ul></div>`;
-
-    c.innerHTML=h;btn.disabled=false;btn.textContent='Generate Venue Intelligence Report';
+    c.innerHTML=h;
+    // Show calibration section
+    document.getElementById('reportCalibration').style.display='';
     loadCalendar();
-  }catch(e){c.innerHTML='<div class="empty">Error: '+e.message+'</div>';btn.disabled=false;btn.textContent='Generate Venue Intelligence Report'}
+  }catch(e){
+    c.innerHTML='<div class="empty">Error: '+esc(e.message)+'</div>';
+  }
 }
 
 async function loadCalendar(){
@@ -6119,7 +6521,6 @@ function renderSaved(){
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;padding-left:12px">
         <button class="btn-ghost" style="font-size:0.6rem;padding:4px 10px;white-space:nowrap" onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ X-Ray</button>
-        <button class="btn-ghost" style="font-size:0.6rem;padding:4px 10px;white-space:nowrap" onclick="(()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab=intel]').classList.add('active');document.getElementById('panel-intel').classList.add('active');runIntel('${esc(a.name).replace(/'/g,"\\'")}');loadIntelTab()})()">🕵️ Intel</button>
         <button class="btn-ghost" style="font-size:0.6rem;padding:4px 10px;white-space:nowrap;color:var(--accent)" onclick="removeSaved('${esc(a.name).replace(/'/g,"\\'")}')">Remove</button>
       </div>
     </div>`;

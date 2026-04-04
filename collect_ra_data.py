@@ -1,51 +1,46 @@
 #!/usr/bin/env python3
 """
-Night Pulse — RA Data Collector
-=================================
-Queries RA's GraphQL API (via server.py proxy) for REAL venue counts,
-promoter counts, and 12-month event totals across all European cities.
+Night Pulse — RA Data Collector v2
+====================================
+Uses correct RA GraphQL query names (discovered via schema introspection).
 
-This gives you the actual TAM — not estimates, not models.
-
-Prerequisites:
-  1. server.py running: python3 server.py
-  2. ra_area_ids.json in same directory
+Queries:
+  venues(areaId)    → registered venues per city
+  promoters(areaId) → registered promoters per city
+  eventListings     → 12-month event count (splits date range to beat 10K cap)
 
 Usage:
-  python3 collect_ra_data.py                    # all cities
-  python3 collect_ra_data.py --top 10           # top 10 by event count
-  python3 collect_ra_data.py --city berlin       # single city test
-
-Output:
-  ra_market_data.csv    — one row per city, real counts
-  ra_market_data.json   — full structured data
+  python3 collect_ra_data.py --city berlin         # single city test
+  python3 collect_ra_data.py --top 10              # top 10 cities
+  python3 collect_ra_data.py --top 10 --deep       # with venue/artist breakdown
+  python3 collect_ra_data.py                       # all 78 cities
 """
 
 import json, csv, time, sys, argparse, math
 from datetime import datetime, timedelta
+from collections import Counter
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
 API = "http://localhost:8000/api/ra/graphql"
-DELAY = 1.2  # seconds between requests (RA rate limit)
+DELAY = 1.2
 
 TODAY = datetime.now()
 DATE_12M_AGO = (TODAY - timedelta(days=365)).strftime("%Y-%m-%d")
 DATE_TODAY = TODAY.strftime("%Y-%m-%d")
 
-# ─── GraphQL Queries ───────────────────────────────────────────
+Q_VENUES_LIST = 'query { venues(areaId: %d, limit: 500) { id name } }'
+Q_PROMOTERS_LIST = 'query { promoters(areaId: %d, limit: 500) { id name } }'
 
-# 1. Event count for trailing 12 months (just page 1, we only need totalResults)
-Q_EVENTS = """
-query GET_EVENT_LISTINGS($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
+Q_EVENTS_COUNT = """
+query ($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
   eventListings(filters: $filters, page: $page, pageSize: $pageSize) {
     totalResults
   }
 }"""
 
-# 2. Event listings with full detail (for deeper analysis of a city)
 Q_EVENTS_DETAIL = """
-query GET_EVENT_LISTINGS($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
+query ($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
   eventListings(filters: $filters, page: $page, pageSize: $pageSize) {
     data {
       event {
@@ -60,37 +55,23 @@ query GET_EVENT_LISTINGS($filters: FilterInputDtoInput, $page: Int, $pageSize: I
   }
 }"""
 
-# 3. Club/venue listings by area
-Q_CLUBS = """
-query GET_CLUB_LISTINGS($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
-  clubListings(filters: $filters, page: $page, pageSize: $pageSize) {
-    totalResults
-  }
-}"""
 
-# 4. Promoter listings by area — try different query names
-Q_PROMOTERS_V1 = """
-query GET_PROMOTER_LISTINGS($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
-  promoterListings(filters: $filters, page: $page, pageSize: $pageSize) {
-    totalResults
-  }
-}"""
-
-Q_PROMOTERS_V2 = """
-query GET_PROMOTERS($filters: FilterInputDtoInput, $page: Int, $pageSize: Int) {
-  promoters(filters: $filters, page: $page, pageSize: $pageSize) {
-    totalResults
-  }
-}"""
-
-# 5. Introspection — discover what queries are available
-Q_INTROSPECT = """
-query { __schema { queryType { fields { name description args { name } } } } }
-"""
+def post_raw(query_str):
+    payload = json.dumps({"query": query_str}).encode()
+    req = Request(API, data=payload, headers={"Content-Type": "application/json"})
+    try:
+        with urlopen(req, timeout=20) as resp:
+            return json.loads(resp.read())
+    except HTTPError as e:
+        if e.code == 429:
+            time.sleep(10)
+            return post_raw(query_str)
+        return None
+    except:
+        return None
 
 
 def post(query, variables=None):
-    """Send a GraphQL query to the proxy. Returns parsed JSON or None."""
     payload = json.dumps({"query": query, "variables": variables or {}}).encode()
     req = Request(API, data=payload, headers={"Content-Type": "application/json"})
     try:
@@ -98,362 +79,223 @@ def post(query, variables=None):
             return json.loads(resp.read())
     except HTTPError as e:
         if e.code == 429:
-            print("    ⚠ Rate limited, waiting 10s...")
             time.sleep(10)
-            return post(query, variables)  # retry once
-        body = e.read().decode(errors="replace")[:200]
-        print(f"    ✗ HTTP {e.code}: {body}")
+            return post(query, variables)
         return None
-    except Exception as e:
-        print(f"    ✗ Error: {e}")
+    except:
         return None
 
 
-def get_total_events_12m(area_id):
-    """Get total event count for trailing 12 months."""
-    vars = {
-        "filters": {
-            "areas": {"eq": area_id},
-            "listingDate": {"gte": DATE_12M_AGO, "lte": DATE_TODAY},
-        },
-        "page": 1, "pageSize": 1,
-    }
-    resp = post(Q_EVENTS, vars)
+def get_venues(area_id):
+    resp = post_raw(Q_VENUES_LIST % area_id)
+    if resp and "data" in resp and resp["data"].get("venues"):
+        return resp["data"]["venues"]
+    return None
+
+
+def get_promoters(area_id):
+    resp = post_raw(Q_PROMOTERS_LIST % area_id)
+    if resp and "data" in resp and resp["data"].get("promoters"):
+        return resp["data"]["promoters"]
+    return None
+
+
+def get_events_count(area_id, date_from, date_to):
+    v = {"filters": {"areas": {"eq": area_id}, "listingDate": {"gte": date_from, "lte": date_to}}, "page": 1, "pageSize": 1}
+    resp = post(Q_EVENTS_COUNT, v)
     if resp and "data" in resp:
         return resp["data"]["eventListings"]["totalResults"]
     return None
 
 
-def get_clubs_total(area_id):
-    """Get total registered clubs/venues for an area."""
-    vars = {
-        "filters": {"areas": {"eq": area_id}},
-        "page": 1, "pageSize": 1,
-    }
-    resp = post(Q_CLUBS, vars)
-    if resp and "data" in resp and resp["data"].get("clubListings"):
-        return resp["data"]["clubListings"]["totalResults"]
-    return None
+def get_true_event_count(area_id):
+    total = get_events_count(area_id, DATE_12M_AGO, DATE_TODAY)
+    if total is None:
+        return None
+    if total < 10000:
+        return total
+    print(f"    ↳ Hit 10K cap, splitting into quarters...")
+    real = 0
+    base = datetime.strptime(DATE_12M_AGO, "%Y-%m-%d")
+    for q in range(4):
+        qs = (base + timedelta(days=q * 91)).strftime("%Y-%m-%d")
+        qe = (base + timedelta(days=(q + 1) * 91 - 1)).strftime("%Y-%m-%d")
+        if q == 3:
+            qe = DATE_TODAY
+        time.sleep(DELAY)
+        qc = get_events_count(area_id, qs, qe) or 0
+        if qc >= 10000:
+            print(f"    ↳ Q{q+1} also capped, splitting months...")
+            mc = 0
+            qb = datetime.strptime(qs, "%Y-%m-%d")
+            for m in range(3):
+                ms = (qb + timedelta(days=m * 30)).strftime("%Y-%m-%d")
+                me = (qb + timedelta(days=(m + 1) * 30 - 1)).strftime("%Y-%m-%d")
+                if m == 2: me = qe
+                time.sleep(DELAY)
+                mc += get_events_count(area_id, ms, me) or 0
+            qc = mc
+        real += qc
+    return real
 
 
-def get_promoters_total(area_id):
-    """Get total registered promoters for an area. Tries multiple query variants."""
-    vars = {
-        "filters": {"areas": {"eq": area_id}},
-        "page": 1, "pageSize": 1,
-    }
-    # Try variant 1
-    resp = post(Q_PROMOTERS_V1, vars)
-    if resp and "data" in resp and resp["data"].get("promoterListings"):
-        return resp["data"]["promoterListings"]["totalResults"], "promoterListings"
-
-    # Try variant 2
-    resp = post(Q_PROMOTERS_V2, vars)
-    if resp and "data" in resp and resp["data"].get("promoters"):
-        return resp["data"]["promoters"]["totalResults"], "promoters"
-
-    return None, None
-
-
-def get_event_page(area_id, page=1, page_size=50):
-    """Fetch a single page of events with full detail."""
-    vars = {
-        "filters": {
-            "areas": {"eq": area_id},
-            "listingDate": {"gte": DATE_12M_AGO, "lte": DATE_TODAY},
-        },
-        "page": page, "pageSize": page_size,
-    }
-    resp = post(Q_EVENTS_DETAIL, vars)
+def get_event_page(area_id, page=1):
+    v = {"filters": {"areas": {"eq": area_id}, "listingDate": {"gte": DATE_12M_AGO, "lte": DATE_TODAY}}, "page": page, "pageSize": 50}
+    resp = post(Q_EVENTS_DETAIL, v)
     if resp and "data" in resp:
-        listings = resp["data"]["eventListings"]
-        events = [item["event"] for item in listings.get("data", []) if item.get("event")]
-        return events, listings.get("totalResults", 0)
+        ls = resp["data"]["eventListings"]
+        return [i["event"] for i in ls.get("data", []) if i.get("event")], ls.get("totalResults", 0)
     return [], 0
 
 
-def analyze_event_sample(area_id, max_pages=5):
-    """Fetch a sample of events and extract venue/promoter/artist counts."""
-    all_events = []
+def analyze_events(area_id, max_pages=4):
+    evts = []
     total = 0
-
-    for page in range(1, max_pages + 1):
-        events, total = get_event_page(area_id, page)
-        all_events.extend(events)
-        if len(all_events) >= total or not events:
-            break
+    for p in range(1, max_pages + 1):
+        e, total = get_event_page(area_id, p)
+        evts.extend(e)
+        if len(evts) >= total or not e: break
         time.sleep(DELAY)
-
-    if not all_events:
-        return {}
-
-    # Unique venues
-    venues = {}
-    for e in all_events:
+    if not evts: return {}
+    ratio = total / max(len(evts), 1)
+    vm = {}
+    for e in evts:
         v = e.get("venue") or {}
         vid = v.get("id")
         if vid:
-            venues.setdefault(vid, {"name": v.get("name", ""), "count": 0})
-            venues[vid]["count"] += 1
-
-    # Venue frequency tiers (extrapolate from sample to full year)
-    sample_ratio = total / max(len(all_events), 1)
-    venue_counts = [v["count"] * sample_ratio for v in venues.values()]
-    venues_12plus = sum(1 for c in venue_counts if c >= 12)
-    venues_20plus = sum(1 for c in venue_counts if c >= 20)
-    venues_50plus = sum(1 for c in venue_counts if c >= 50)
-
-    # Unique artists
+            vm.setdefault(vid, 0)
+            vm[vid] += 1
+    vc = [c * ratio for c in vm.values()]
     artists = set()
-    for e in all_events:
+    for e in evts:
         for a in e.get("artists") or []:
-            if a.get("id"):
-                artists.add(a["id"])
-
-    # Promoter brands (title heuristic)
-    brands = set()
-    for e in all_events:
-        title = (e.get("title") or "").strip()
+            if a.get("id"): artists.add(a["id"])
+    brands = Counter()
+    for e in evts:
+        t = (e.get("title") or "").strip()
         for sep in [":", " presents ", " w/ ", " x ", " | ", " — ", " at ", " @ "]:
-            if sep in title:
-                brand = title.split(sep)[0].strip()
-                if 2 < len(brand) < 50:
-                    brands.add(brand.lower())
+            if sep in t:
+                b = t.split(sep)[0].strip()
+                if 2 < len(b) < 50: brands[b.lower()] += 1
                 break
-
-    # Genre distribution
-    from collections import Counter
     genres = Counter()
-    for e in all_events:
+    for e in evts:
         for g in e.get("genres") or []:
             n = g.get("name", "").strip()
-            if n:
-                genres[n] += 1
-    top_genre = genres.most_common(1)[0][0] if genres else "N/A"
-
+            if n: genres[n] += 1
+    att = [e.get("interestedCount", 0) or 0 for e in evts if (e.get("interestedCount") or 0) > 0]
     return {
-        "sample_events": len(all_events),
-        "unique_venues_in_sample": len(venues),
-        "est_venues_12plus": venues_12plus,
-        "est_venues_20plus": venues_20plus,
-        "est_venues_50plus": venues_50plus,
-        "unique_artists_in_sample": len(artists),
-        "heuristic_brands": len(brands),
-        "top_genre": top_genre,
+        "sample_size": len(evts),
+        "unique_venues_sample": len(vm),
+        "venues_12plus": sum(1 for c in vc if c >= 12),
+        "venues_20plus": sum(1 for c in vc if c >= 20),
+        "venues_50plus": sum(1 for c in vc if c >= 50),
+        "unique_artists_sample": len(artists),
+        "brand_promoters_found": len(brands),
+        "brands_12plus": sum(1 for c in brands.values() if c * ratio >= 12),
+        "brands_20plus": sum(1 for c in brands.values() if c * ratio >= 20),
+        "top_genre": genres.most_common(1)[0][0] if genres else "N/A",
+        "avg_attendance": round(sum(att) / max(len(att), 1)) if att else 0,
     }
 
 
-def discover_schema():
-    """Run introspection to discover available queries."""
-    print("Discovering RA GraphQL schema...")
-    resp = post(Q_INTROSPECT)
-    if resp and "data" in resp:
-        fields = resp["data"]["__schema"]["queryType"]["fields"]
-        print(f"  Found {len(fields)} query types:")
-        for f in fields:
-            args = ", ".join(a["name"] for a in f.get("args", []))
-            print(f"    • {f['name']}({args})")
-        return fields
-    elif resp and "errors" in resp:
-        print(f"  Introspection blocked: {resp['errors'][0].get('message', '')[:100]}")
-    else:
-        print("  Introspection failed — no response")
-    return None
-
-
-def load_cities(filepath="ra_area_ids.json"):
-    """Load city definitions, filtering out legacy/region entries."""
-    with open(filepath) as f:
+def load_cities(fp="ra_area_ids.json"):
+    with open(fp) as f:
         data = json.load(f)
-
-    cities = []
+    out = []
     for key, val in data.get("european_cities", {}).items():
         note = val.get("note", "")
         if "legacy" in note or "country-level" in note or "region" in note:
             continue
-        cities.append({
-            "key": key,
-            "name": key.replace("_", " ").title(),
-            "area_id": val["id"],
-            "country": val["country"],
-            "historical_events": val.get("events", 0),
-        })
-
-    return sorted(cities, key=lambda c: c["historical_events"], reverse=True)
+        out.append({"key": key, "name": key.replace("_", " ").title(), "area_id": val["id"], "country": val["country"], "hist": val.get("events", 0)})
+    return sorted(out, key=lambda c: c["hist"], reverse=True)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Night Pulse — RA Data Collector")
-    parser.add_argument("--top", type=int, help="Only process top N cities by event count")
-    parser.add_argument("--city", type=str, help="Single city key to test (e.g., 'berlin')")
-    parser.add_argument("--deep", action="store_true", help="Also fetch event samples for venue/artist analysis")
-    parser.add_argument("--schema", action="store_true", help="Discover RA GraphQL schema and exit")
-    parser.add_argument("--ids-file", default="ra_area_ids.json", help="Path to area IDs file")
-    args = parser.parse_args()
+    pa = argparse.ArgumentParser()
+    pa.add_argument("--top", type=int)
+    pa.add_argument("--city", type=str)
+    pa.add_argument("--deep", action="store_true")
+    pa.add_argument("--ids-file", default="ra_area_ids.json")
+    args = pa.parse_args()
 
-    # ── Schema discovery ──
-    if args.schema:
-        discover_schema()
-        return
-
-    # ── Load cities ──
     cities = load_cities(args.ids_file)
-    print(f"Loaded {len(cities)} cities from {args.ids_file}")
-
     if args.city:
         cities = [c for c in cities if c["key"] == args.city]
-        if not cities:
-            print(f"City '{args.city}' not found")
-            return
     elif args.top:
         cities = cities[:args.top]
-        print(f"Processing top {len(cities)} cities")
 
-    # ── Step 1: Test connectivity ──
-    print(f"\nTesting proxy at {API}...")
-    test = get_total_events_12m(cities[0]["area_id"])
-    if test is None:
-        print("✗ Cannot reach proxy. Is server.py running?")
-        print("  Start it with: python3 server.py")
-        return
-    print(f"✓ Proxy working. {cities[0]['name']}: {test:,} events in trailing 12m")
+    if not cities:
+        print("No cities found."); return
 
-    # ── Step 2: Test club/promoter queries ──
-    print("\nTesting venue query (clubListings)...")
-    clubs_test = get_clubs_total(cities[0]["area_id"])
-    clubs_available = clubs_test is not None
-    if clubs_available:
-        print(f"✓ Club query works. {cities[0]['name']}: {clubs_test:,} registered venues")
-    else:
-        print("✗ clubListings query not available — will estimate from events")
+    # Test
+    aid0 = cities[0]["area_id"]
+    print(f"Testing on {cities[0]['name']}...")
 
+    print("  venues query...")
+    vtest = get_venues(aid0)
+    v_ok = vtest is not None
+    print(f"  {'✓' if v_ok else '✗'} venues: {len(vtest) if vtest else 'failed'}")
     time.sleep(DELAY)
 
-    print("Testing promoter query...")
-    promo_test, promo_query = get_promoters_total(cities[0]["area_id"])
-    promos_available = promo_test is not None
-    if promos_available:
-        print(f"✓ Promoter query works ({promo_query}). {cities[0]['name']}: {promo_test:,} registered promoters")
-    else:
-        print("✗ Promoter query not available — will estimate from events")
-
+    print("  promoters query...")
+    ptest = get_promoters(aid0)
+    p_ok = ptest is not None
+    print(f"  {'✓' if p_ok else '✗'} promoters: {len(ptest) if ptest else 'failed'}")
     time.sleep(DELAY)
 
-    # ── Step 3: Collect data for all cities ──
-    print(f"\n{'='*70}")
-    print(f"  Collecting data for {len(cities)} cities")
-    print(f"  Date range: {DATE_12M_AGO} → {DATE_TODAY}")
-    est_time = len(cities) * DELAY * (1 + int(clubs_available) + int(promos_available) + (5 if args.deep else 0))
-    print(f"  Estimated time: ~{est_time/60:.1f} minutes")
-    print(f"{'='*70}\n")
+    n = len(cities)
+    calls = n * (1 + int(v_ok) + int(p_ok) + (4 if args.deep else 0))
+    print(f"\n{'='*60}")
+    print(f"  {n} cities | ~{calls * DELAY / 60:.1f} min")
+    print(f"  {DATE_12M_AGO} → {DATE_TODAY}")
+    print(f"{'='*60}\n")
 
     results = []
-
-    for i, city in enumerate(cities, 1):
-        aid = city["area_id"]
-        name = city["name"]
-        print(f"[{i}/{len(cities)}] {name} (area_id={aid})...")
-
-        row = {
-            "city": name,
-            "key": city["key"],
-            "country": city["country"],
-            "area_id": aid,
-            "events_12m": None,
-            "ra_registered_venues": None,
-            "ra_registered_promoters": None,
-        }
-
-        # Events (12 months)
-        row["events_12m"] = get_total_events_12m(aid)
+    for i, c in enumerate(cities, 1):
+        aid = c["area_id"]
+        print(f"[{i}/{n}] {c['name']}...")
+        row = {"city": c["name"], "key": c["key"], "country": c["country"], "area_id": aid}
+        row["events_12m"] = get_true_event_count(aid)
         time.sleep(DELAY)
-
-        # Venues
-        if clubs_available:
-            row["ra_registered_venues"] = get_clubs_total(aid)
+        if v_ok:
+            vl = get_venues(aid)
+            row["ra_venues"] = len(vl) if vl else 0
             time.sleep(DELAY)
-
-        # Promoters
-        if promos_available:
-            count, _ = get_promoters_total(aid)
-            row["ra_registered_promoters"] = count
+        if p_ok:
+            pl = get_promoters(aid)
+            row["ra_promoters"] = len(pl) if pl else 0
             time.sleep(DELAY)
-
-        # Deep analysis (event sample)
         if args.deep:
-            print(f"    Fetching event sample...")
-            sample = analyze_event_sample(aid, max_pages=4)
-            row.update(sample)
-
-        ev = row["events_12m"] or 0
-        vn = row["ra_registered_venues"]
-        pr = row["ra_registered_promoters"]
-        print(f"    events={ev:,}  venues={vn or '?'}  promoters={pr or '?'}")
-
+            row.update(analyze_events(aid))
+        ev = row.get("events_12m") or 0
+        print(f"    → events={ev:,}  venues={row.get('ra_venues','?')}  promoters={row.get('ra_promoters','?')}")
         results.append(row)
 
-    # ── Step 4: Write outputs ──
-    # CSV
-    csv_path = "ra_market_data.csv"
-    if results:
-        keys = list(results[0].keys())
-        # Add any extra keys from deep analysis
-        for r in results:
-            for k in r.keys():
-                if k not in keys:
-                    keys.append(k)
+    # Write
+    all_keys = []
+    for r in results:
+        for k in r:
+            if k not in all_keys: all_keys.append(k)
+    with open("ra_market_data.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=all_keys, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(sorted(results, key=lambda r: r.get("events_12m") or 0, reverse=True))
+    with open("ra_market_data.json", "w") as f:
+        json.dump({"collected": datetime.now().isoformat(), "range": [DATE_12M_AGO, DATE_TODAY],
+                    "totals": {"events": sum(r.get("events_12m") or 0 for r in results),
+                               "venues": sum(r.get("ra_venues") or 0 for r in results) if v_ok else "?",
+                               "promoters": sum(r.get("ra_promoters") or 0 for r in results) if p_ok else "?"},
+                    "data": results}, f, indent=2, default=str)
 
-        with open(csv_path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=keys, extrasaction="ignore")
-            writer.writeheader()
-            writer.writerows(sorted(results, key=lambda r: r.get("events_12m") or 0, reverse=True))
-        print(f"\n✓ CSV written → {csv_path}")
-
-    # JSON
-    json_path = "ra_market_data.json"
-    summary = {
-        "collected_at": datetime.now().isoformat(),
-        "date_range": {"start": DATE_12M_AGO, "end": DATE_TODAY},
-        "cities_queried": len(results),
-        "data_sources": {
-            "events_12m": "RA GraphQL eventListings (trailing 12 months)",
-            "ra_registered_venues": "RA GraphQL clubListings" if clubs_available else "NOT AVAILABLE",
-            "ra_registered_promoters": f"RA GraphQL {promo_query}" if promos_available else "NOT AVAILABLE",
-        },
-        "totals": {
-            "total_events_12m": sum(r.get("events_12m") or 0 for r in results),
-            "total_registered_venues": sum(r.get("ra_registered_venues") or 0 for r in results) if clubs_available else "N/A",
-            "total_registered_promoters": sum(r.get("ra_registered_promoters") or 0 for r in results) if promos_available else "N/A",
-        },
-        "cities": results,
-    }
-
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(summary, f, indent=2, default=str)
-    print(f"✓ JSON written → {json_path}")
-
-    # ── Summary ──
-    total_ev = sum(r.get("events_12m") or 0 for r in results)
-    print(f"\n{'='*70}")
-    print(f"  RESULTS")
-    print(f"{'='*70}")
-    print(f"  Cities queried:       {len(results)}")
-    print(f"  Total events (12m):   {total_ev:,}")
-    if clubs_available:
-        total_v = sum(r.get("ra_registered_venues") or 0 for r in results)
-        print(f"  Registered venues:    {total_v:,}")
-    if promos_available:
-        total_p = sum(r.get("ra_registered_promoters") or 0 for r in results)
-        print(f"  Registered promoters: {total_p:,}")
-    print(f"{'='*70}")
-
-    print(f"\nNext steps:")
-    print(f"  1. Upload ra_market_data.csv and ra_market_data.json back to Claude")
-    print(f"  2. I'll build your investor-ready TAM/SAM/SOM from real data")
-    if not clubs_available or not promos_available:
-        print(f"  3. Run: python3 collect_ra_data.py --schema")
-        print(f"     to discover what other RA queries are available")
-
+    te = sum(r.get("events_12m") or 0 for r in results)
+    print(f"\n{'='*60}")
+    print(f"  {n} cities | {te:,} events/year")
+    if v_ok: print(f"  {sum(r.get('ra_venues',0) for r in results):,} venues")
+    if p_ok: print(f"  {sum(r.get('ra_promoters',0) for r in results):,} promoters")
+    print(f"{'='*60}")
+    print(f"\n✓ ra_market_data.csv + ra_market_data.json")
+    print(f"Upload both back to Claude.")
 
 if __name__ == "__main__":
     main()
