@@ -66,6 +66,10 @@ textarea, input[type="text"], input[type="date"], input[type="number"], select {
 textarea:focus, input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
 textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
 select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%237a776f' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+input[type="date"] { color-scheme: dark; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+.date-wrap { position: relative; }
+.date-wrap .date-display { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); font-family: var(--font-head); font-weight: 600; font-size: 0.72rem; color: var(--accent); pointer-events: none; }
 .row { display: flex; gap: 14px; align-items: end; flex-wrap: wrap; }
 .row > * { flex: 1; min-width: 140px; }
 .row > .shrink { flex: 0 0 auto; }
@@ -142,6 +146,12 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .ob-step { display: none; }
 .ob-step.active { display: block; animation: fadeIn 0.4s ease; }
 
+/* DNA mosaic — artist avatars that pop in during analysis */
+@keyframes mosaicPop { from { opacity: 0; transform: scale(0.3) rotate(-10deg); } to { opacity: 1; transform: scale(1) rotate(0deg); } }
+.dna-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); animation: mosaicPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; transition: all 0.3s; cursor: default; }
+.dna-avatar:hover { border-color: var(--accent); transform: scale(1.15); z-index: 10; }
+.dna-avatar-ph { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: 0.65rem; color: var(--text-faint); animation: mosaicPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+
 /* Saved */
 .saved-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: start; gap: 14px; transition: all 0.2s; }
 .saved-item:hover { border-color: var(--border-hi); box-shadow: var(--shadow); }
@@ -162,6 +172,12 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 
 /* Autocomplete */
 .ac-wrap { position: relative; }
+.ac-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.ac-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border: 1px solid var(--border-hi); border-radius: 20px; padding: 3px 10px 3px 3px; font-family: var(--font-head); font-size: 0.72rem; font-weight: 600; color: var(--text); animation: fadeIn 0.2s ease; }
+.ac-chip img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+.ac-chip .ac-chip-ph { width: 22px; height: 22px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.5rem; color: var(--text-faint); }
+.ac-chip .ac-chip-x { cursor: pointer; color: var(--text-faint); font-size: 0.7rem; margin-left: 2px; transition: color 0.15s; line-height: 1; }
+.ac-chip .ac-chip-x:hover { color: var(--accent); }
 .ac-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 100; background: var(--surface); border: 1px solid var(--border-hi); border-radius: var(--radius); margin-top: 4px; max-height: 260px; overflow-y: auto; box-shadow: var(--shadow-lg); display: none; }
 .ac-dropdown.open { display: block; animation: slideDown 0.2s ease; }
 .ac-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border); }
@@ -287,12 +303,13 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
     </div>
     <div class="ob-step" id="ob4">
       <h2>Analyzing Your Venue</h2>
-      <div class="sub">Night Pulse is scanning your past 12 months of bookings to understand your audience. This takes 2-3 minutes.</div>
-      <div class="progress-wrap visible" style="margin:20px 0">
-        <div class="progress-label" id="dnaLbl">Starting analysis…</div>
-        <div class="progress-bar"><div class="progress-fill" id="dnaFill" style="width:0%"></div></div>
-        <div class="progress-detail" id="dnaDet" style="margin-top:12px"></div>
+      <div class="sub">Night Pulse is scanning your past 12 months of bookings to build your audience DNA.</div>
+      <div id="dnaMosaic" style="display:flex;flex-wrap:wrap;gap:4px;margin:16px 0;min-height:60px;justify-content:center"></div>
+      <div style="margin:12px 0">
+        <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" id="dnaFill" style="width:0%"></div></div>
+        <div class="progress-label" id="dnaLbl" style="font-size:0.72rem;margin:0">Starting analysis…</div>
       </div>
+      <div class="progress-detail" id="dnaDet" style="max-height:70px;overflow-y:auto;margin-top:8px"></div>
       <div id="dnaSummary" style="display:none"></div>
     </div>
   </div>
@@ -418,13 +435,13 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
    ═══════════════════════════════════════════ */
 
 const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date contentUrl interestedCount venue{id name area{id name}} artists{id name}}}totalResults}}`;
-const AREAS={barcelona:20,berlin:34,london:13,amsterdam:29,paris:44,lisbon:89,madrid:88,milan:108,hamburg:106,'new york':8,'los angeles':7,detroit:43,melbourne:100,tokyo:74,'sao paulo':154,'buenos aires':28,tbilisi:173,manchester:17,ibiza:25,brussels:37,copenhagen:42,stockholm:72,warsaw:84,prague:50,zurich:56,bangkok:142,seoul:152};
+const AREAS={barcelona:20,berlin:34,london:13,amsterdam:29,paris:44,lisbon:89,madrid:88,milan:108,hamburg:106,'new york':8,'los angeles':7,detroit:43,melbourne:100,tokyo:74,'sao paulo':154,'buenos aires':28,tbilisi:173,manchester:17,ibiza:25,brussels:37,copenhagen:42,stockholm:72,warsaw:84,prague:50,zurich:56,bangkok:142,seoul:152,lyon:71,marseille:48,munich:41,vienna:35,dublin:45,glasgow:36,birmingham:52,bristol:22,leeds:23,brighton:14,cologne:86,antwerp:58,rotterdam:107,munich:41};
 const NEARBY_CITIES={
-  barcelona:['madrid','lisbon','ibiza','paris','milan'],
-  berlin:['amsterdam','prague','warsaw','copenhagen','hamburg'],
-  london:['amsterdam','paris','brussels','manchester'],
-  amsterdam:['berlin','london','brussels','paris','copenhagen'],
-  paris:['london','amsterdam','brussels','berlin','barcelona'],
+  barcelona:['madrid','lisbon','ibiza','paris','milan','lyon','marseille','zurich','berlin','amsterdam','london','brussels','manchester','munich'],
+  berlin:['amsterdam','prague','warsaw','copenhagen','hamburg','munich','zurich','brussels','paris','london','stockholm','vienna','milan'],
+  london:['amsterdam','paris','brussels','manchester','berlin','dublin','glasgow','birmingham','bristol','leeds','brighton','lisbon','barcelona'],
+  amsterdam:['berlin','london','brussels','paris','copenhagen','hamburg','cologne','zurich','manchester','antwerp','rotterdam','munich','barcelona'],
+  paris:['london','amsterdam','brussels','berlin','barcelona','lyon','marseille','zurich','milan','lisbon','manchester','dublin','cologne'],
 };
 // localStorage keys (kept as 'libro_*' for backwards compatibility with existing data)
 const PK='libro_p',SK='libro_s',HK='libro_h',LK='libro_log',FK='libro_fees',DK='libro_dna';
@@ -463,6 +480,31 @@ async function sc(path){const r=await fetch('/api/soundcharts'+path);if(!r.ok)th
 async function scSearch(name){const d=await sc('/api/v2/artist/search/'+encodeURIComponent(name)+'?limit=1');return d.items?.length?d.items[0]:null}
 async function scSearchMulti(query,limit=5){const d=await sc('/api/v2/artist/search/'+encodeURIComponent(query)+'?limit='+limit);return d.items||[]}
 async function scRelated(uuid){const d=await sc('/api/v2/artist/'+uuid+'/related?limit=50');return d.items||[]}
+
+/* RA-based related artists: artists who share events/lineups with seed artists.
+   This is more accurate for booking because it's based on real co-billing patterns. */
+function raRelated(seedName,events){
+  const sn=norm(seedName);
+  const coArtists=new Map(); // norm(name) → {name, count, events:[]}
+
+  for(const ev of events){
+    // Does this event feature the seed?
+    const hasSeed=ev.artists.some(a=>norm(a)===sn||(sn.length>=5&&norm(a).length>=5&&(norm(a).includes(sn)||sn.includes(norm(a)))));
+    if(!hasSeed)continue;
+    // Every other artist on this event is "related"
+    for(const a of ev.artists){
+      const n=norm(a);
+      if(n===sn)continue;
+      if(n.length<2)continue;
+      if(!coArtists.has(n))coArtists.set(n,{name:a,count:0,events:[]});
+      const entry=coArtists.get(n);
+      entry.count++;
+      if(entry.events.length<3)entry.events.push({date:ev.date,venue:ev.venue});
+    }
+  }
+  // Sort by co-billing frequency and return top 30
+  return [...coArtists.values()].sort((a,b)=>b.count-a.count).slice(0,30);
+}
 async function scSpotify(uuid){
   const d=await sc('/api/v2/artist/'+uuid+'/streaming/spotify');
   const i=(d.items||[])[0];if(!i)return{g:0,c:0};
@@ -488,8 +530,9 @@ function dnaValid(){
 }
 
 /* Build DNA from venue's past 12 months of bookings.
-   Deep analysis: every artist → SC lookup for genres + Spotify listeners */
-async function buildDNA(statusCb){
+   Deep analysis: every artist → SC lookup for genres + Spotify listeners.
+   Also builds RA co-billing network for related artist discovery. */
+async function buildDNA(statusCb,artistCb){
   const p=P(),venueName=p.venue,city=p.city||'barcelona';
   if(!venueName){if(statusCb)statusCb('No venue set');return null}
 
@@ -515,35 +558,62 @@ async function buildDNA(statusCb){
       const a=await scSearch(name);
       if(!a)continue;
       const sp=await scSpotify(a.uuid);
-      // Get genres from metadata
       let genres=[];
       try{
         const meta=await scMeta(a.uuid);
         if(meta&&meta.genres)genres=meta.genres.map(g=>(g.name||g).toLowerCase());
         else if(meta&&meta.mainGenre)genres=[(meta.mainGenre.name||meta.mainGenre).toLowerCase()];
-        // Also try subgenres
         if(meta&&meta.subGenres)genres=[...genres,...meta.subGenres.map(g=>(g.name||g).toLowerCase())];
       }catch(e){}
-      profiles.push({name:a.name,uuid:a.uuid,bcn:sp.c,global:sp.g,genres,imageUrl:a.imageUrl||''});
+      const profile={name:a.name,uuid:a.uuid,bcn:sp.c,global:sp.g,genres,imageUrl:a.imageUrl||''};
+      profiles.push(profile);
+      // Visual callback: send artist image + name as they're analyzed
+      if(artistCb)artistCb(profile);
     }catch(e){}
   }
   if(statusCb)statusCb('Building DNA from '+profiles.length+' artists…');
+
+  // Build RA co-billing network: for each venue artist, find who they share lineups with
+  if(statusCb)statusCb('Mapping RA co-billing network…');
+  const coBillMap=new Map(); // norm(name) → {name, totalCoBills, connectedTo:[]}
+  for(const prof of profiles){
+    const related=raRelated(prof.name,allEvents);
+    for(const r of related){
+      const n=norm(r.name);
+      if(!coBillMap.has(n))coBillMap.set(n,{name:r.name,totalCoBills:0,connectedTo:[]});
+      const entry=coBillMap.get(n);
+      entry.totalCoBills+=r.count;
+      entry.connectedTo.push(prof.name);
+    }
+  }
+  // Top co-billed artists not already in direct venue bookings
+  const venueNorms=new Set(profiles.map(p=>norm(p.name)));
+  const coBillNetwork=[...coBillMap.values()]
+    .filter(c=>!venueNorms.has(norm(c.name)))
+    .sort((a,b)=>b.totalCoBills-a.totalCoBills)
+    .slice(0,50);
 
   // Build listener range
   const listeners=profiles.map(p=>p.bcn).filter(v=>v>0).sort((a,b)=>a-b);
   const globals=profiles.map(p=>p.global).filter(v=>v>0).sort((a,b)=>a-b);
   const median=arr=>arr.length?arr[Math.floor(arr.length/2)]:0;
 
-  // Build genre weights (how often each genre appears, normalized)
+  // Build genre weights
   const genreCounts={};let totalGenreTags=0;
   for(const p of profiles)for(const g of p.genres){genreCounts[g]=(genreCounts[g]||0)+1;totalGenreTags++}
   const genreWeights={};
   for(const[g,c] of Object.entries(genreCounts))genreWeights[g]=c/totalGenreTags;
-  // Sort by weight
   const sortedGenres=Object.entries(genreWeights).sort((a,b)=>b[1]-a[1]);
 
-  // Artist cloud (names for reference)
+  // Artist cloud (names for reference) + co-billing extended cloud
   const cloud=profiles.map(p=>p.name).slice(0,30);
+  const extendedCloud=[...cloud,...coBillNetwork.slice(0,20).map(c=>c.name)];
+
+  // Compute average attendance from venue events
+  const atts=venueEvents.map(e=>e.attending||0).filter(a=>a>0);
+  const avgAtt=atts.length?Math.round(atts.reduce((s,a)=>s+a,0)/atts.length):0;
+  const topArtists=profiles.sort((a,b)=>(b.bcn||0)-(a.bcn||0)).slice(0,5);
+  const eventsPerMonth=venueEvents.length>0?Math.round(venueEvents.length/12*10)/10:0;
 
   const dna={
     city,
@@ -551,6 +621,9 @@ async function buildDNA(statusCb){
     ts:Date.now(),
     venueEvents:venueEvents.length,
     artistCount:profiles.length,
+    avgAttendance:avgAtt,
+    eventsPerMonth,
+    topArtists:topArtists.map(a=>({name:a.name,bcn:a.bcn,imageUrl:a.imageUrl})),
     listenerRange:{
       min:listeners.length?listeners[0]:0,
       max:listeners.length?listeners[listeners.length-1]:0,
@@ -565,88 +638,82 @@ async function buildDNA(statusCb){
     },
     genres:genreWeights,
     topGenres:sortedGenres.slice(0,8).map(([g,w])=>({genre:g,weight:Math.round(w*100)})),
-    cloud,
-    profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres})),
+    cloud:extendedCloud,
+    coBillNetwork:coBillNetwork.slice(0,30).map(c=>({name:c.name,coBills:c.totalCoBills,via:c.connectedTo.slice(0,3)})),
+    profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl})),
   };
   setDNA(dna);
-  if(statusCb)statusCb('DNA complete — '+profiles.length+' artists, '+sortedGenres.length+' genres');
+  if(statusCb)statusCb('DNA complete — '+profiles.length+' artists, '+coBillNetwork.length+' co-billing connections, '+sortedGenres.length+' genres');
   return dna;
 }
 
 /* Score a candidate artist against venue DNA (0-100).
-   Factors: listener fit (40%), genre overlap (40%), related-to-cloud (20% bonus from seeds) */
+   Factors: listener fit (40pts), network overlap (40pts), seed-cloud bonus (20pts) */
 function dnaScore(candidate){
   const dna=getDNA();
   if(!dna||!dna.artistCount)return{score:50,flags:[],label:'No DNA'};
 
   const lr=dna.listenerRange;
-  let listenerScore=0,genreScore=0;
+  let listenerScore=0,networkScore=0;
   const flags=[];
 
   // --- Listener fit (0-40) ---
   const bcn=candidate.bcn||0;
   if(bcn>0&&lr.median>0){
-    // Perfect = near median. Penalize distance from the p25-p75 range.
     if(bcn>=lr.p25&&bcn<=lr.p75){
       listenerScore=40; // sweet spot
     }else if(bcn>=lr.min&&bcn<=lr.max){
-      listenerScore=28; // within range but outside interquartile
+      listenerScore=28;
     }else if(bcn<lr.min){
-      // Below range — might be too small
-      const ratio=bcn/lr.min;
+      const ratio=lr.min>0?bcn/lr.min:0;
       listenerScore=Math.max(5,Math.round(28*ratio));
       if(ratio<0.3)flags.push('Below typical range');
     }else{
-      // Above range — might be too expensive / wrong tier
-      const ratio=lr.max/bcn;
+      const ratio=lr.max>0?lr.max/bcn:0;
       listenerScore=Math.max(5,Math.round(28*ratio));
       if(ratio<0.3)flags.push('Above typical range');
     }
   }else{
-    listenerScore=15; // no data — neutral
+    listenerScore=15;
   }
 
-  // --- Genre overlap (0-40) ---
-  const cGenres=(candidate.genres||[]).map(g=>g.toLowerCase());
-  if(cGenres.length>0&&Object.keys(dna.genres).length>0){
-    let overlap=0,totalWeight=0;
-    for(const g of cGenres){
-      if(dna.genres[g]){overlap+=dna.genres[g]}
-      totalWeight+=1;
-    }
-    // Normalize: if all candidate genres are in DNA, overlap approaches sum of weights
-    const maxPossible=cGenres.length>0?cGenres.reduce((s,g)=>s+(dna.genres[g]||0),0):0;
-    // Also check: does the candidate share ANY top genre?
-    const topGenreNames=dna.topGenres.map(t=>t.genre);
-    const hasTopGenre=cGenres.some(g=>topGenreNames.includes(g));
+  // --- Network overlap (0-40) — is this candidate in the co-billing network? ---
+  const candidateNorm=norm(candidate.name||'');
+  const cloudNorm=new Set((dna.cloud||[]).map(n=>norm(n)));
+  const profileNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
+  const coBillNorms=new Map();
+  for(const c of(dna.coBillNetwork||[]))coBillNorms.set(norm(c.name),c.coBills);
 
-    if(hasTopGenre){
-      genreScore=Math.min(40,Math.round(25+maxPossible*60));
-    }else if(maxPossible>0){
-      genreScore=Math.min(30,Math.round(maxPossible*50));
-    }else{
-      genreScore=3;
-      flags.push('Genre mismatch');
-    }
+  if(profileNorms.has(candidateNorm)){
+    networkScore=40; // played at this venue before!
+    flags.push('Previously booked');
+  }else if(coBillNorms.has(candidateNorm)){
+    const bills=coBillNorms.get(candidateNorm);
+    networkScore=Math.min(40,15+bills*5); // more co-bills = higher score
+  }else if(cloudNorm.has(candidateNorm)){
+    networkScore=25;
   }else{
-    genreScore=15; // no genre data — neutral
+    // Check if candidate shares any RA co-billing connections
+    // (candidate's seeds might overlap with venue's network)
+    networkScore=5; // baseline for unknown
   }
 
   // --- Cloud bonus (0-20) — if the candidate was related to a seed that's in the venue cloud ---
   let cloudBonus=0;
   if(candidate.seeds&&dna.cloud){
-    const cloudNorm=new Set(dna.cloud.map(n=>norm(n)));
     for(const s of(candidate.seeds||[])){if(cloudNorm.has(norm(s)))cloudBonus=Math.min(cloudBonus+10,20)}
   }
+  // Extra bonus if candidate has RA co-billing tag
+  if(candidate.raCoBills)cloudBonus=Math.min(cloudBonus+Math.min(candidate.raCoBills*3,15),20);
 
-  const score=Math.min(100,listenerScore+genreScore+cloudBonus);
+  const score=Math.min(100,listenerScore+networkScore+cloudBonus);
   let label='';
-  if(score>=70)label='Strong fit';
-  else if(score>=50)label='Decent fit';
-  else if(score>=30)label='Weak fit';
-  else label='Poor fit';
+  if(score>=75)label='Strong fit';
+  else if(score>=55)label='Good fit';
+  else if(score>=35)label='Possible';
+  else label='Unlikely';
 
-  return{score,flags,label,listenerScore,genreScore,cloudBonus};
+  return{score,flags,label,listenerScore,networkScore,cloudBonus};
 }
 
 /* Get genre info for a candidate (fetches from SC if not already present) */
@@ -855,11 +922,14 @@ function setupAutocomplete(inputEl,onSelect){
     if(q.length<3){dd.classList.remove('open');dd.innerHTML='';return}
     timer=setTimeout(async()=>{
       try{
-        const res=await scSearchMulti(q,5);
-        if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
-        dd.innerHTML=res.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div></div></div>`).join('');
+        const res=await scSearchMulti(q,8);
+        // Deduplicate by normalized name
+        const seen=new Set(),deduped=[];
+        for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
+        if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
+        dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div>${r.country?'<div class="ac-sub">'+esc(r.country)+'</div>':''}</div></div>`).join('');
         dd.classList.add('open');idx=-1;
-        dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{onSelect(res[i]);dd.classList.remove('open');dd.innerHTML=''}));
+        dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{onSelect(deduped[i]);dd.classList.remove('open');dd.innerHTML=''}));
       }catch(e){dd.classList.remove('open')}
     },300);
   });
@@ -872,6 +942,20 @@ function setupTextareaAC(ta){
   const wrap=ta.closest('.ac-wrap');if(!wrap)return;
   let dd=wrap.querySelector('.ac-dropdown');
   if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
+  // Chip container
+  let chips=wrap.querySelector('.ac-chips');
+  if(!chips){chips=document.createElement('div');chips.className='ac-chips';wrap.appendChild(chips)}
+
+  const renderChips=()=>{
+    const lines=ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    chips.innerHTML=lines.map(name=>{
+      const initial=name.charAt(0).toUpperCase();
+      return `<span class="ac-chip"><span class="ac-chip-ph">${esc(initial)}</span>${esc(name)}<span class="ac-chip-x" onclick="removeChip(this,'${esc(name).replace(/'/g,"\\'")}')" title="Remove">×</span></span>`;
+    }).join('');
+  };
+  // Render chips on load if textarea has content
+  if(ta.value.trim())renderChips();
+
   let timer=null;
   ta.addEventListener('input',()=>{
     clearTimeout(timer);
@@ -881,21 +965,36 @@ function setupTextareaAC(ta){
     if(line.length<3){dd.classList.remove('open');dd.innerHTML='';return}
     timer=setTimeout(async()=>{
       try{
-        const res=await scSearchMulti(line,5);
+        const res=await scSearchMulti(line,8);
         if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
-        dd.innerHTML=res.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div></div></div>`).join('');
+        // Deduplicate by normalized name — keep first (highest ranked) result per name
+        const seen=new Set(),deduped=[];
+        for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
+        if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
+        dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">${r.imageUrl?`<img src="${esc(r.imageUrl)}" alt="" onerror="this.style.display='none'">`:'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface-2)"></div>'}<div><div class="ac-name">${esc(r.name)}</div>${r.country?'<div class="ac-sub">'+esc(r.country)+'</div>':''}</div></div>`).join('');
         dd.classList.add('open');
         dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{
           const v=ta.value,c=ta.selectionStart,b=v.substring(0,c),n=b.lastIndexOf('\n');
           const pre=n>=0?v.substring(0,n+1):'';const aft=v.substring(c),anl=aft.indexOf('\n');
-          ta.value=pre+res[i].name+(anl>=0?aft.substring(anl):'');
+          ta.value=pre+deduped[i].name+(anl>=0?aft.substring(anl):'');
           dd.classList.remove('open');dd.innerHTML='';ta.focus();
+          renderChips();
         }));
       }catch(e){dd.classList.remove('open')}
     },300);
   });
   ta.addEventListener('keydown',e=>{const its=dd.querySelectorAll('.ac-item');if(!its.length||!dd.classList.contains('open'))return;if(e.key==='ArrowDown'){e.preventDefault();const c=[...its].findIndex(x=>x.classList.contains('selected'));const i=Math.min(c+1,its.length-1);its.forEach((it,j)=>it.classList.toggle('selected',j===i))}else if(e.key==='ArrowUp'){e.preventDefault();const c=[...its].findIndex(x=>x.classList.contains('selected'));its.forEach((it,j)=>it.classList.toggle('selected',j===Math.max(c-1,0)))}else if(e.key==='Enter'){const sel=dd.querySelector('.ac-item.selected');if(sel){e.preventDefault();sel.click()}}else if(e.key==='Escape')dd.classList.remove('open')});
+  // Update chips on blur (manual edits)
+  ta.addEventListener('blur',()=>setTimeout(renderChips,100));
   document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
+}
+/* Remove a chip and its line from the associated textarea */
+function removeChip(el,name){
+  const wrap=el.closest('.ac-wrap');if(!wrap)return;
+  const ta=wrap.querySelector('textarea');if(!ta)return;
+  const lines=ta.value.split('\n').filter(l=>l.trim().toLowerCase()!==name.toLowerCase());
+  ta.value=lines.join('\n');
+  el.closest('.ac-chip').remove();
 }
 
 /* Venue autocomplete from cached event data */
@@ -1000,22 +1099,49 @@ async function obDone(){
   setP({venue:document.getElementById('obV').value.trim(),city:document.getElementById('obC').value,capacity:parseInt(document.getElementById('obCap').value)||0,wins:document.getElementById('obW').value.split('\n').filter(Boolean).map(s=>s.trim()),losses:document.getElementById('obL').value.split('\n').filter(Boolean).map(s=>s.trim()),budget:document.getElementById('obB').value,freq:document.getElementById('obF').value,created:new Date().toISOString()});
   // Go to step 4: DNA analysis
   obGo(4);
-  const lbl=document.getElementById('dnaLbl'),fill=document.getElementById('dnaFill'),det=document.getElementById('dnaDet');
-  let step=0;
-  const status=msg=>{step++;lbl.textContent=msg;fill.style.width=Math.min(95,step*4)+'%';det.innerHTML+='<div>'+msg+'</div>';det.scrollTop=det.scrollHeight};
+  const lbl=document.getElementById('dnaLbl'),fill=document.getElementById('dnaFill'),det=document.getElementById('dnaDet'),mosaic=document.getElementById('dnaMosaic');
+  let step=0,avatarCount=0;
+  const status=msg=>{step++;lbl.textContent=msg;fill.style.width=Math.min(95,step*3)+'%';det.innerHTML+='<div>'+msg+'</div>';det.scrollTop=det.scrollHeight};
+  const artistVisual=prof=>{
+    avatarCount++;
+    const d=avatarCount*50;
+    if(prof.imageUrl){
+      const img=document.createElement('img');img.className='dna-avatar';img.src=prof.imageUrl;img.alt=prof.name;
+      img.title=prof.name+(prof.bcn?' · '+fmt(prof.bcn)+' listeners':'');img.style.animationDelay=d+'ms';
+      img.onerror=()=>{const ph=document.createElement('div');ph.className='dna-avatar-ph';ph.style.animationDelay=d+'ms';ph.title=prof.name;ph.textContent=prof.name.charAt(0);img.replaceWith(ph)};
+      mosaic.appendChild(img);
+    }else{
+      const ph=document.createElement('div');ph.className='dna-avatar-ph';ph.style.animationDelay=d+'ms';ph.title=prof.name;ph.textContent=prof.name.charAt(0);
+      mosaic.appendChild(ph);
+    }
+  };
   try{
-    const dna=await buildDNA(status);
+    const dna=await buildDNA(status,artistVisual);
     fill.style.width='100%';
     if(dna&&dna.artistCount>0){
       lbl.textContent='DNA complete ✓';
       const sum=document.getElementById('dnaSummary');
       sum.style.display='block';
       const tg=dna.topGenres.slice(0,5).map(t=>'<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent)">'+esc(t.genre)+' '+t.weight+'%</span>').join(' ');
+      // Top booked artists with images
+      const topArtHtml=(dna.topArtists||[]).slice(0,5).map(a=>{
+        const img=a.imageUrl?`<img src="${esc(a.imageUrl)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'">`:'';
+        return `<span style="display:inline-flex;align-items:center;gap:5px;margin:3px 4px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:3px 10px 3px 3px;font-size:0.72rem;font-family:var(--font-head);font-weight:600">${img}${esc(a.name)} <span style="font-family:var(--font-mono);font-size:0.55rem;color:var(--accent)">${fmt(a.bcn)}</span></span>`;
+      }).join('');
+      const coBillHtml=dna.coBillNetwork&&dna.coBillNetwork.length?
+        `<div style="margin-top:14px"><div style="font-family:var(--font-head);font-weight:600;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Artists in your orbit</div><div style="font-size:0.78rem;color:var(--text-dim);line-height:2">${dna.coBillNetwork.slice(0,10).map(c=>esc(c.name)+' <span style="font-family:var(--font-mono);font-size:0.52rem;color:var(--blue)">×'+c.coBills+'</span>').join(' · ')}</div></div>`:'';
       sum.innerHTML=`<div class="card" style="margin-top:16px"><h3 style="color:var(--accent)">Your Venue DNA</h3>
-        <div class="stats"><div class="stat"><div class="sv">${dna.artistCount}</div><div class="sl">Artists analyzed</div></div><div class="stat"><div class="sv">${dna.venueEvents}</div><div class="sl">Events (12mo)</div></div><div class="stat"><div class="sv">${fmt(dna.listenerRange.median)}</div><div class="sl">Median ${cityName()} Spotify</div></div></div>
-        <div style="margin:10px 0"><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase">Listener range:</span> <span style="font-family:var(--font-head);font-weight:700;font-size:0.85rem">${fmt(dna.listenerRange.p25)} – ${fmt(dna.listenerRange.p75)}</span> <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint)">(25th–75th percentile)</span></div>
-        <div style="margin:8px 0">${tg}</div>
-        <button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Night Pulse</button>
+        <div class="stats">
+          <div class="stat"><div class="sv">${dna.venueEvents}</div><div class="sl">Events / year</div></div>
+          <div class="stat"><div class="sv">${dna.eventsPerMonth||'—'}</div><div class="sl">Events / month</div></div>
+          <div class="stat"><div class="sv">${dna.avgAttendance?fmt(dna.avgAttendance):'—'}</div><div class="sl">Avg attendance</div></div>
+          <div class="stat"><div class="sv">${dna.artistCount}</div><div class="sl">Artists booked</div></div>
+          <div class="stat"><div class="sv">${(dna.coBillNetwork||[]).length}</div><div class="sl">Network connections</div></div>
+        </div>
+        ${topArtHtml?'<div style="margin:12px 0"><div style="font-family:var(--font-head);font-weight:600;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Your biggest bookings</div>'+topArtHtml+'</div>':''}
+        ${tg?'<div style="margin:10px 0">'+tg+'</div>':''}
+        ${coBillHtml}
+        <button class="btn btn-red" style="margin-top:18px" onclick="showApp()">Enter Night Pulse</button>
       </div>`;
     }else{
       lbl.textContent='No booking history found — skipping DNA';
@@ -1092,14 +1218,47 @@ async function runDiscover(){
     }
     if(!resolved.length){prog('No seeds found.',10);btn.disabled=false;btn.textContent='Discover';return}
 
-    // Step 2: related artists
+    // Step 2: related artists (Soundcharts + RA co-billing)
     prog('Finding related artists…',15);
     const cmap=new Map();
+    const allEvents=await ensureCache()||[];
+
     for(const s of resolved){
-      try{const rel=await scRelated(s.uuid);prog(null,20,s.name+': '+rel.length+' related');
-        for(const r of rel){if(resolved.some(x=>x.uuid===r.uuid))continue;if(!cmap.has(r.uuid))cmap.set(r.uuid,{name:r.name,uuid:r.uuid,imageUrl:r.imageUrl||'',seeds:[]});cmap.get(r.uuid).seeds.push(s.seed)}
+      // Soundcharts related
+      try{const rel=await scRelated(s.uuid);
+        const scCount=rel.length;
+        for(const r of rel){if(resolved.some(x=>x.uuid===r.uuid))continue;if(!cmap.has(r.uuid))cmap.set(r.uuid,{name:r.name,uuid:r.uuid,imageUrl:r.imageUrl||'',seeds:[],source:'sc'});cmap.get(r.uuid).seeds.push(s.seed)}
+
+        // RA co-billing related (from cached events)
+        const raRel=raRelated(s.name,allEvents);
+        let raAdded=0;
+        for(const r of raRel){
+          // Check if already in cmap by name match
+          let exists=false;
+          for(const[k,v] of cmap){if(norm(v.name)===norm(r.name)){v.seeds.push(s.seed);v.raCoBills=(v.raCoBills||0)+r.count;exists=true;break}}
+          if(!exists){
+            // Need to resolve on SC to get uuid+image for later Spotify lookup
+            const key='ra_'+norm(r.name);
+            if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:'',seeds:[s.seed],source:'ra',raCoBills:r.count});
+            else cmap.get(key).seeds.push(s.seed);
+            raAdded++;
+          }
+        }
+        prog(null,20,s.name+': '+scCount+' SC + '+raRel.length+' RA related'+(raAdded?' ('+raAdded+' new)':''));
       }catch(e){prog(null,20,s.name+': error')}
     }
+
+    // Resolve RA-only candidates on Soundcharts (need uuid for Spotify data)
+    const raOnly=[...cmap.values()].filter(c=>c.source==='ra'&&!c.uuid);
+    if(raOnly.length>0){
+      prog('Resolving '+raOnly.length+' RA artists on Soundcharts…',22);
+      for(const c of raOnly){
+        try{const a=await scSearch(c.name);if(a){c.uuid=a.uuid;c.imageUrl=a.imageUrl||'';c.name=a.name}}catch(e){}
+      }
+    }
+    // Remove candidates without uuid (can't get Spotify data)
+    for(const[k,v] of cmap){if(!v.uuid)cmap.delete(k)}
+
     const cands=Array.from(cmap.values());prog(cands.length+' candidates',25);
 
     // Step 3: city exclusion from cache (instant)
@@ -1158,6 +1317,7 @@ function renderDiscover(arts){
   let h='<div class="section-head"><h2>Results</h2><span class="count">'+arts.length+' artists'+(hasDNA?' · sorted by DNA fit':' · by '+cn+' Spotify')+'</span></div>';
   arts.forEach((a,i)=>{
     const tags=a.seeds.map(s=>'<span class="tag">'+esc(s)+'</span>').join('');
+    const raBadge=a.raCoBills?'<span class="tag" style="background:var(--blue-dim);border-color:var(--blue);color:var(--blue)">RA co-billed ×'+a.raCoBills+'</span>':'';
     const sv=saved().some(s=>s.name===a.name);
     const img=a.imageUrl?`<img class="ri-img" src="${esc(a.imageUrl)}" alt="" onerror="this.outerHTML='<div class=\\'ri-img-placeholder\\'>${esc(a.name).charAt(0)}</div>'">`:`<div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>`;
     // DNA badge
@@ -1169,7 +1329,7 @@ function renderDiscover(arts){
     }
     const genreTags=(a.genres||[]).slice(0,3).map(g=>'<span class="tag" style="opacity:0.7">'+esc(g)+'</span>').join('');
     h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
-      <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags">${tags}${genreTags}</div>
+      <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags">${tags}${raBadge}${genreTags}</div>
         <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn},${a.global},'${a.uuid}','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button></div>
       </div><div class="ri-number"><div class="big">${fmt(a.bcn)}</div><div class="sub">${cn} Spotify</div><div class="dim">${fmt(a.global)} global</div></div></div>`;
   });
@@ -1201,44 +1361,33 @@ async function runScan(){
     const direct=[], general=[];
 
     if(hasDNA){
-      // Classify each event: does it compete for YOUR audience?
-      // Match by: genre overlap with venue DNA, or artist appearing in venue's cloud
+      // Build lookup sets from DNA
       const cloudNorm=new Set((dna.cloud||[]).map(n=>norm(n)));
-      const topGenres=new Set((dna.topGenres||[]).slice(0,5).map(t=>t.genre));
+      // Also build set of all artists in DNA profiles
+      const profileNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
+      // Co-billing network names
+      const coBillNorms=new Set((dna.coBillNetwork||[]).map(c=>norm(c.name)));
 
       for(const ev of all){
         let isDirect=false,reason='';
-        // Check if any artist in this event is in the venue's cloud
         for(const a of ev.artists){
-          if(cloudNorm.has(norm(a))){isDirect=true;reason='Played your venue';break}
+          const n=norm(a);
+          // 1. Artist has played your venue
+          if(profileNorms.has(n)){isDirect=true;reason='Played your venue';break}
+          // 2. Artist is in extended cloud (includes co-billing network)
+          if(cloudNorm.has(n)){isDirect=true;reason='In your network';break}
+          // 3. Artist is in co-billing network
+          if(coBillNorms.has(n)){isDirect=true;reason='Shares lineups';break}
         }
-        // Check genre via event title / known artist genres from DNA profiles
-        if(!isDirect&&dna.profiles){
+        // 4. Check if any artist on this event shares lineups with venue artists (live check from cache)
+        if(!isDirect){
+          const allCacheEvents=getCache()?.events||[];
           for(const a of ev.artists){
-            const prof=dna.profiles.find(p=>norm(p.name)===norm(a));
-            if(prof&&prof.genres){
-              const shared=prof.genres.filter(g=>topGenres.has(g));
-              if(shared.length){isDirect=true;reason=shared[0];break}
-            }
+            const related=raRelated(a,allCacheEvents);
+            // If this artist has co-billed with any venue artist, it's a competitor
+            const venueOverlap=related.filter(r=>profileNorms.has(norm(r.name)));
+            if(venueOverlap.length>=2){isDirect=true;reason='Co-bills with '+venueOverlap[0].name;break}
           }
-        }
-        // If still not classified, try Soundcharts lookup for the headliner (first artist)
-        // But only do this for high-attendance events to save API calls
-        if(!isDirect&&ev.attending>=50&&ev.artists.length>0){
-          try{
-            const sc_a=await scSearch(ev.artists[0]);
-            if(sc_a){
-              const meta=await scMeta(sc_a.uuid);
-              if(meta){
-                const aGenres=[];
-                if(meta.genres)aGenres.push(...meta.genres.map(g=>(g.name||g).toLowerCase()));
-                else if(meta.mainGenre)aGenres.push((meta.mainGenre.name||meta.mainGenre).toLowerCase());
-                if(meta.subGenres)aGenres.push(...meta.subGenres.map(g=>(g.name||g).toLowerCase()));
-                const shared=aGenres.filter(g=>topGenres.has(g));
-                if(shared.length){isDirect=true;reason=shared[0]}
-              }
-            }
-          }catch(e){}
         }
         if(isDirect)direct.push({...ev,reason});
         else general.push(ev);
@@ -1330,51 +1479,29 @@ async function scanAdjacentThreats(dateStr){
     }
 
     // Find threats: high-attendance events (1000+ going) OR direct genre competitors (50+ going)
-    const ATT_THRESHOLD=1000; // big event threshold (any genre)
-    const DIRECT_ATT_THRESHOLD=50; // direct competitor threshold
+    const ATT_THRESHOLD=500; // big event threshold (any genre)
+    const DIRECT_ATT_THRESHOLD=0; // direct competitor — any attendance counts
     const threats=[];
 
     const classifyAdjacentEvents=async(events,dayLabel,dayDate)=>{
-      const topGenres=hasDNA?new Set((dna.topGenres||[]).slice(0,5).map(t=>t.genre)):new Set();
       const cloudNorm=hasDNA?new Set((dna.cloud||[]).map(n=>norm(n))):new Set();
+      const profileNorms=hasDNA?new Set((dna.profiles||[]).map(p=>norm(p.name))):new Set();
+      const coBillNorms=hasDNA?new Set((dna.coBillNetwork||[]).map(c=>norm(c.name))):new Set();
 
       for(const ev of events){
         const att=ev.attending||0;
         let isDirect=false,reason='';
 
         if(hasDNA){
-          // Check cloud
-          for(const a of ev.artists){if(cloudNorm.has(norm(a))){isDirect=true;reason='Played your venue';break}}
-          // Check DNA profiles
-          if(!isDirect&&dna.profiles){
-            for(const a of ev.artists){
-              const prof=dna.profiles.find(p=>norm(p.name)===norm(a));
-              if(prof&&prof.genres){
-                const shared=prof.genres.filter(g=>topGenres.has(g));
-                if(shared.length){isDirect=true;reason=shared[0];break}
-              }
-            }
-          }
-          // Live lookup for big events only
-          if(!isDirect&&att>=DIRECT_ATT_THRESHOLD&&ev.artists.length>0){
-            try{
-              const sc_a=await scSearch(ev.artists[0]);
-              if(sc_a){
-                const meta=await scMeta(sc_a.uuid);
-                if(meta){
-                  const aGenres=[];
-                  if(meta.genres)aGenres.push(...meta.genres.map(g=>(g.name||g).toLowerCase()));
-                  else if(meta.mainGenre)aGenres.push((meta.mainGenre.name||meta.mainGenre).toLowerCase());
-                  if(meta.subGenres)aGenres.push(...meta.subGenres.map(g=>(g.name||g).toLowerCase()));
-                  const shared=aGenres.filter(g=>topGenres.has(g));
-                  if(shared.length){isDirect=true;reason=shared[0]}
-                }
-              }
-            }catch(e){}
+          for(const a of ev.artists){
+            const n=norm(a);
+            if(profileNorms.has(n)){isDirect=true;reason='Played your venue';break}
+            if(cloudNorm.has(n)){isDirect=true;reason='In your network';break}
+            if(coBillNorms.has(n)){isDirect=true;reason='Shares lineups';break}
           }
         }
 
-        // Include if: big event (any genre, 1000+) OR direct competitor (50+)
+        // Include if: big event (any genre, 500+) OR direct competitor (any attendance)
         if(att>=ATT_THRESHOLD||(isDirect&&att>=DIRECT_ATT_THRESHOLD)){
           threats.push({...ev,dayLabel,dayDate,isDirect,reason,isBig:att>=ATT_THRESHOLD});
         }
