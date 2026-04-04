@@ -230,8 +230,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
     <div class="ob-step" id="ob2">
       <h2>Your Booking DNA</h2>
       <div class="sub">This teaches Libro what works for your room.</div>
-      <div class="input-group"><label>3 artists that packed your room</label><textarea id="obW" placeholder="One per line"></textarea><span class="hint">The nights where the queue was around the block.</span></div>
-      <div class="input-group"><label>3 artists that flopped</label><textarea id="obL" placeholder="One per line"></textarea><span class="hint">No judgment — this is how we learn.</span></div>
+      <div class="input-group"><label>3 artists that packed your room</label><div class="ac-wrap"><textarea id="obW" placeholder="One per line" rows="3"></textarea></div><span class="hint">The nights where the queue was around the block.</span></div>
+      <div class="input-group"><label>3 artists that flopped</label><div class="ac-wrap"><textarea id="obL" placeholder="One per line" rows="3"></textarea></div><span class="hint">No judgment — this is how we learn.</span></div>
       <button class="btn btn-red" onclick="obGo(3)">Continue</button>
     </div>
     <div class="ob-step" id="ob3">
@@ -375,19 +375,20 @@ async function scSpotify(uuid){
 
 /* ═══ CACHED RA ENGINE ═══ */
 
-const CACHE_KEY='libro_ra_cache';
+const CACHE_KEY='libro_ra_cache_v3';
 const CACHE_MAX_AGE=12*60*60*1000; // 12 hours
 
 /* Get/set the event cache from localStorage */
 function getCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY))||null}catch{return null}}
 function setCache(data){try{localStorage.setItem(CACHE_KEY,JSON.stringify(data))}catch(e){console.warn('Cache write failed (storage full?)',e)}}
 
-/* Is cache fresh and for the right city? */
+/* Is cache fresh, correct city, and has enough data? */
 function cacheValid(){
   const c=getCache();
   if(!c)return false;
   if(c.areaCode!==areaId())return false;
   if(Date.now()-c.ts>CACHE_MAX_AGE)return false;
+  if(!c.events||c.events.length<500)return false; // Barcelona should have thousands — reject tiny caches
   return true;
 }
 
@@ -443,18 +444,37 @@ async function ensureCache(force=false){
           promises.push(ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p,s:50}).catch(()=>null));
         }
         const results=await Promise.all(promises);
+        let batchFailed=0;
         for(const d of results){
-          if(!d)continue;
+          if(!d){batchFailed++;continue}
           for(const el of(d?.data?.eventListings?.data||[])){
             const ev=el.event||{};
             events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
           }
         }
-        showCacheStatus('Loading events… '+Math.min(batch+4,totalPages)+'/'+totalPages+' pages');
+        showCacheStatus('Loading events… '+Math.min(batch+4,totalPages)+'/'+totalPages+' pages'+(batchFailed?' ('+batchFailed+' retrying)':''));
+        // Retry failed pages individually
+        if(batchFailed>0){
+          for(let p=batch;p<batch+5&&p<=totalPages;p++){
+            try{
+              const d=await ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p,s:50});
+              for(const el of(d?.data?.eventListings?.data||[])){
+                const ev=el.event||{};
+                events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+              }
+            }catch(e){}
+          }
+        }
       }
 
-      setCache({areaCode:area,ts:Date.now(),events});
-      showCacheStatus(events.length+' events cached ✓',true);
+      // Only save cache if we got a reasonable amount of data
+      const expectedMin=Math.floor(total*0.7); // at least 70% of reported total
+      if(events.length>=expectedMin||events.length>=500){
+        setCache({areaCode:area,ts:Date.now(),events,total});
+        showCacheStatus(events.length+'/'+total+' events cached ✓',true);
+      }else{
+        showCacheStatus('Partial data ('+events.length+'/'+total+') — not caching, will retry',true);
+      }
       return events;
     }catch(e){
       showCacheStatus('Cache load failed — using live queries',true);
@@ -555,9 +575,9 @@ function setupAutocomplete(inputEl,onSelect){
   document.addEventListener('click',e=>{if(!wrap.contains(e.target))dd.classList.remove('open')});
 }
 
-/* Seed textarea autocomplete — works per-line */
-function setupSeedAC(){
-  const ta=document.getElementById('seedInput'),wrap=ta.closest('.ac-wrap');
+/* Per-line artist autocomplete for any textarea */
+function setupTextareaAC(ta){
+  const wrap=ta.closest('.ac-wrap');if(!wrap)return;
   let dd=wrap.querySelector('.ac-dropdown');
   if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
   let timer=null;
@@ -587,6 +607,7 @@ function setupSeedAC(){
 }
 
 /* Venue autocomplete from cached event data */
+let venueCache=null;
 function setupVenueAC(){
   const inp=document.getElementById('obV'),wrap=inp.closest('.ac-wrap'),sel=document.getElementById('obC');
   let dd=wrap.querySelector('.ac-dropdown');
@@ -645,7 +666,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   }));
   renderSaved();renderSeeds();
   setupAutocomplete(document.getElementById('xIn'),a=>{document.getElementById('xIn').value=a.name});
-  setupSeedAC();
+  // Per-line artist autocomplete on all textareas
+  setupTextareaAC(document.getElementById('seedInput'));
+  setupTextareaAC(document.getElementById('obW'));
+  setupTextareaAC(document.getElementById('obL'));
   setupVenueAC();
   updateCityLabels();
   // Pre-load event cache in background
@@ -781,9 +805,9 @@ async function runScan(){
   try{
     // Use cache if available, otherwise live fetch
     let all;
-    const c=getCache();
-    if(c&&c.areaCode===areaId()){
-      all=c.events.filter(e=>e.date===date);
+    const cache=getCache();
+    if(cache&&cache.areaCode===areaId()){
+      all=cache.events.filter(e=>e.date===date);
       if(!all.length)all=await raBulkFetch(areaId(),date,date,15); // might be outside cache range
     }else{
       all=await raBulkFetch(areaId(),date,date,15);
@@ -827,9 +851,20 @@ async function runXray(){
     let scD=null,sp={g:0,c:0};
     try{scD=await scSearch(name);if(scD)sp=await scSpotify(scD.uuid)}catch(e){}
 
-    // Show history from FULL cache range (not narrowed)
-    const allEvents=await ensureCache();
-    const shows=extractShows(allEvents||[],name);
+    // Show history: try cache first, then targeted live search as safety net
+    let allEvents=[];
+    try{allEvents=await ensureCache()||[]}catch(e){allEvents=[]}
+    let shows=extractShows(allEvents,name);
+
+    // If cache found nothing, do a targeted live search (the artist might exist but cache might be incomplete)
+    if(!shows.length){
+      try{
+        const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
+        const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
+        const liveEvents=await raBulkFetch(areaId(),ago,fwd,60);
+        shows=extractShows(liveEvents,name);
+      }catch(e){}
+    }
 
     // City conflict: check shows within exclusion window around the user's date
     const backMo=parseInt(document.getElementById('filterBack')?.value)||7,fwdMo=parseInt(document.getElementById('filterFwd')?.value)||3;
