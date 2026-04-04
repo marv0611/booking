@@ -270,6 +270,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
     <div class="card" style="margin-bottom:18px">
       <h3 style="color:var(--amber);margin-bottom:2px">↗ Routing Detection</h3>
       <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:14px">Find artists playing nearby cities around your date — they already have routing through your region, meaning lower fees and higher chance of booking.</p>
+      <div id="nearbyCities" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);margin-bottom:12px"></div>
       <div class="row">
         <div class="input-group" style="margin:0"><label>Your Event Date</label><input type="date" id="routeDate"></div>
         <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" id="rteBtn" onclick="runRouting()">Find Routing</button></div>
@@ -300,6 +301,9 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
     <div class="row" style="margin-bottom:20px">
       <div class="input-group" style="margin:0"><label>Artist name</label>
         <div class="ac-wrap"><input type="text" id="xIn" placeholder="Start typing an artist name..." autocomplete="off"></div>
+      </div>
+      <div class="input-group" style="margin:0"><label>Your event date</label>
+        <input type="date" id="xDate">
       </div>
       <div class="shrink" style="padding-bottom:1px"><button class="btn btn-red" onclick="runXray()">X-Ray</button></div>
     </div>
@@ -409,7 +413,6 @@ async function raBulkFetch(areaCode, from, to, maxPages=60){
 let _cachePromise=null;
 async function ensureCache(force=false){
   if(!force&&cacheValid())return getCache().events;
-  // Prevent duplicate parallel fetches
   if(_cachePromise)return _cachePromise;
   _cachePromise=(async()=>{
     showCacheStatus('Loading '+cityName()+' event data…');
@@ -417,12 +420,44 @@ async function ensureCache(force=false){
       const now=new Date();
       const ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
       const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
-      const events=await raBulkFetch(areaId(),ago,fwd,80);
-      setCache({areaCode:areaId(),ts:Date.now(),events});
+      const gte=ago.toISOString().slice(0,10),lte=fwd.toISOString().slice(0,10);
+      const area=areaId();
+
+      // First call to get total count
+      const first=await ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p:1,s:50});
+      const total=first?.data?.eventListings?.totalResults||0;
+      const totalPages=Math.ceil(total/50);
+      const events=[];
+
+      // Parse first page
+      for(const el of(first?.data?.eventListings?.data||[])){
+        const ev=el.event||{};
+        events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+      }
+      showCacheStatus('Loading events… 1/'+totalPages+' pages ('+total+' total)');
+
+      // Fetch remaining pages in batches of 5 for speed
+      for(let batch=2;batch<=totalPages;batch+=5){
+        const promises=[];
+        for(let p=batch;p<batch+5&&p<=totalPages;p++){
+          promises.push(ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p,s:50}).catch(()=>null));
+        }
+        const results=await Promise.all(promises);
+        for(const d of results){
+          if(!d)continue;
+          for(const el of(d?.data?.eventListings?.data||[])){
+            const ev=el.event||{};
+            events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),attending:ev.interestedCount||0,title:ev.title||''});
+          }
+        }
+        showCacheStatus('Loading events… '+Math.min(batch+4,totalPages)+'/'+totalPages+' pages');
+      }
+
+      setCache({areaCode:area,ts:Date.now(),events});
       showCacheStatus(events.length+' events cached ✓',true);
       return events;
     }catch(e){
-      showCacheStatus('Cache failed: '+e.message,true);
+      showCacheStatus('Cache load failed — using live queries',true);
       return getCache()?.events||[];
     }finally{_cachePromise=null}
   })();
@@ -449,10 +484,13 @@ function getCachedEvents(from,to){
   return c.events.filter(e=>e.date>=gte&&e.date<=lte);
 }
 
-/* Get city events for a range — uses cache for past, live fetch for gaps */
+/* Get city events for a range — cache first, live fallback */
 async function getCityEvents(from,to){
   await ensureCache();
-  return getCachedEvents(from,to);
+  const cached=getCachedEvents(from,to);
+  if(cached.length>0)return cached;
+  // Fallback: cache might not cover this range, try live
+  try{return await raBulkFetch(areaId(),from,to,40)}catch(e){return[]}
 }
 
 /* Build norm(name)→{name,date,venue,attending} index */
@@ -597,6 +635,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('eventDate').value=ds;
   document.getElementById('scanDate').value=ds;
   document.getElementById('routeDate').value=ds;
+  document.getElementById('xDate').value=ds;
+  // Sync X-Ray date when Discover date changes
+  document.getElementById('eventDate').addEventListener('change',e=>{document.getElementById('xDate').value=e.target.value});
   document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
@@ -611,9 +652,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(P().venue)ensureCache();
 });
 function updateCityLabels(){
-  const cn=cityName();
+  const cn=cityName(),city=(P().city||'barcelona').toLowerCase();
   document.querySelectorAll('#fCityD,#fCityR').forEach(el=>el.textContent=cn);
   const ml=document.getElementById('minLabel');if(ml)ml.textContent=cn.slice(0,3).toUpperCase();
+  // Show nearby cities in routing panel
+  const nc=document.getElementById('nearbyCities');
+  if(nc){
+    const nearby=NEARBY_CITIES[city]||[];
+    nc.textContent=nearby.length?'Scanning: '+nearby.map(c=>c.charAt(0).toUpperCase()+c.slice(1)).join(', '):'No nearby cities configured for '+cn;
+  }
 }
 
 /* ═══ ONBOARDING ═══ */
@@ -754,26 +801,37 @@ async function runScan(){
 }
 
 /* ═══ X-RAY ═══ */
-function goXray(name){document.getElementById('xIn').value=name;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab="verify"]').classList.add('active');document.getElementById('panel-verify').classList.add('active');runXray()}
+function goXray(name){
+  document.getElementById('xIn').value=name;
+  // Carry over the date from whichever tab we're coming from
+  const discoverDate=document.getElementById('eventDate').value;
+  const routeDate=document.getElementById('routeDate').value;
+  document.getElementById('xDate').value=discoverDate||routeDate||'';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('[data-tab="verify"]').classList.add('active');
+  document.getElementById('panel-verify').classList.add('active');
+  runXray();
+}
 
 async function runXray(){
   const name=document.getElementById('xIn').value.trim();if(!name)return;
-  const date=document.getElementById('eventDate').value,cn=cityName();
+  const date=document.getElementById('xDate').value;
+  if(!date){document.getElementById('xRes').innerHTML='<div class="empty">Please select your event date first.</div>';return}
+  const cn=cityName();
   const c=document.getElementById('xRes');
-  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Analyzing '+esc(name)+'…</div>';
+  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Analyzing '+esc(name)+' for '+fdate(date)+'…</div>';
 
   try{
     // Soundcharts
     let scD=null,sp={g:0,c:0};
     try{scD=await scSearch(name);if(scD)sp=await scSpotify(scD.uuid)}catch(e){}
 
-    // Show history from cache (instant — no API calls)
-    const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
-    const fwd=new Date(now);fwd.setMonth(now.getMonth()+3);
-    const cityEvents=await getCityEvents(ago,fwd);
-    const shows=extractShows(cityEvents,name);
+    // Show history from FULL cache range (not narrowed)
+    const allEvents=await ensureCache();
+    const shows=extractShows(allEvents||[],name);
 
-    // City conflict from shows
+    // City conflict: check shows within exclusion window around the user's date
     const backMo=parseInt(document.getElementById('filterBack')?.value)||7,fwdMo=parseInt(document.getElementById('filterFwd')?.value)||3;
     const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
     exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
@@ -787,16 +845,24 @@ async function runXray(){
 
     const blocked=cityC.hit||sdC.hit;
     let lastTxt='Never played '+cn;
-    if(shows.length){const m=Math.round((new Date()-new Date(shows[0].date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(shows[0].date)+')'}
+    if(shows.length){
+      const lastShow=shows.find(s=>new Date(s.date)<=new Date()); // most recent past show
+      if(lastShow){const m=Math.round((new Date()-new Date(lastShow.date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(lastShow.date)+')'}
+    }
     const imgH=scD?.imageUrl?`<img src="${esc(scD.imageUrl)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-right:14px" onerror="this.style.display='none'">`:'';
 
     let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start"><div style="display:flex;align-items:center">${imgH}<div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div style="font-size:0.78rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div></div><span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span></div>
-      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--red)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--red)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day</div></div></div>`;
-    if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${fdate(cityC.date)} @ ${esc(cityC.venue)}</p>`;
-    if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">⚠ Same day: ${esc(sdC.venue)} (${esc(sdC.area)})</p>`;
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);margin:8px 0 4px">Checked against your date: ${fdate(date)} · Exclusion: ${backMo}mo back / ${fwdMo}mo forward</div>
+      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--red)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--red)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
+    if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${fdate(cityC.date)} @ ${esc(cityC.venue)} — within ${backMo}mo before / ${fwdMo}mo after your date</p>`;
+    if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">⚠ Playing ${esc(sdC.venue)} (${esc(sdC.area)}) on ${fdate(date)}</p>`;
     if(shows.length){
-      h+=`<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px"><div style="font-family:var(--font-head);font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);margin-bottom:8px">${cn} show history</div>`;
-      for(const s of shows.slice(0,5))h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${fdate(s.date)} — ${esc(s.venue)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--red)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'—'}</span></div>`;
+      h+=`<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px"><div style="font-family:var(--font-head);font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);margin-bottom:8px">${cn} shows (past &amp; upcoming)</div>`;
+      for(const s of shows.slice(0,5)){
+        const isPast=new Date(s.date)<=new Date();
+        const isFuture=!isPast;
+        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--font-mono)">UPCOMING</span> ':''}${fdate(s.date)} — ${esc(s.venue)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--red)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'—'}</span></div>`;
+      }
       h+=`</div>`;
     }
     h+=`<div style="margin-top:14px"><button class="btn-ghost" onclick="saveArtist('${esc(scD?.name||name).replace(/'/g,"\\'")}',${sp.c},${sp.g},'${scD?.uuid||''}','${esc(scD?.imageUrl||'').replace(/'/g,"\\'")}')">+ Add to shortlist</button></div></div>`;
