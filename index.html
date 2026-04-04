@@ -495,6 +495,31 @@ async function scSearch(name){const d=await sc('/api/v2/artist/search/'+encodeUR
 async function scSearchMulti(query,limit=5){const d=await sc('/api/v2/artist/search/'+encodeURIComponent(query)+'?limit='+limit);return d.items||[]}
 async function scRelated(uuid){const d=await sc('/api/v2/artist/'+uuid+'/related?limit=50');return d.items||[]}
 
+/* RA cache-based artist search — fallback when SC is down */
+function raCacheSearch(query,limit=8){
+  const c=getCache();if(!c||!c.events)return[];
+  const q=query.toLowerCase();
+  const found=new Map();
+  for(const ev of c.events){
+    for(const a of ev.artists){
+      if(a.toLowerCase().includes(q)&&!found.has(norm(a))){
+        found.set(norm(a),{name:a,uuid:null,imageUrl:''});
+        if(found.size>=limit)return[...found.values()];
+      }
+    }
+  }
+  return[...found.values()];
+}
+
+/* Search with SC first, RA cache fallback */
+async function searchArtists(query,limit=8){
+  try{
+    const results=await scSearchMulti(query,limit);
+    if(results.length)return results;
+  }catch(e){}
+  return raCacheSearch(query,limit);
+}
+
 /* RA-based related artists: artists who share events/lineups with seed artists.
    This is more accurate for booking because it's based on real co-billing patterns. */
 function raRelated(seedName,events){
@@ -1007,7 +1032,7 @@ function setupAutocomplete(inputEl,onSelect){
     if(q.length<3){dd.classList.remove('open');dd.innerHTML='';return}
     timer=setTimeout(async()=>{
       try{
-        const res=await scSearchMulti(q,8);
+        const res=await searchArtists(q,8);
         // Deduplicate by normalized name
         const seen=new Set(),deduped=[];
         for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
@@ -1050,7 +1075,7 @@ function setupTextareaAC(ta){
     if(line.length<3){dd.classList.remove('open');dd.innerHTML='';return}
     timer=setTimeout(async()=>{
       try{
-        const res=await scSearchMulti(line,8);
+        const res=await searchArtists(line,8);
         if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Deduplicate by normalized name — keep first (highest ranked) result per name
         const seen=new Set(),deduped=[];
