@@ -1543,6 +1543,14 @@ input[type="number"] { font-family: var(--font-mono); }
         </div>
         <input type="hidden" id="obType" value="venue">
       </div>
+      <div class="input-group"><label>When do you run events?</label>
+        <div class="seg-picker" id="obTimePicker" style="max-width:300px">
+          <button onclick="setObTime('night')" data-v="night" class="active">Nights<span class="seg-sub">after dark</span></button>
+          <button onclick="setObTime('day')" data-v="day">Daytime<span class="seg-sub">afternoon / open air</span></button>
+          <button onclick="setObTime('both')" data-v="both">Both<span class="seg-sub">mixed</span></button>
+        </div>
+        <input type="hidden" id="obTimeType" value="night">
+      </div>
       <div class="input-group"><label>City</label>
         <select id="obC">
           <option value="barcelona" selected>Barcelona</option>
@@ -2355,17 +2363,14 @@ async function getArtistImage(name){
           }
         }catch(e){}
 
-        // Fallback: try RA GraphQL using the same slug pattern that works for followers
+        // Fallback: server-side RA page scrape (extracts og:image — reliable)
         if(!valid){
           try{
             const slug=nameToSlug(name);
-            const artistId=_raArtistIdCache.get(norm(name))||null;
-            const vars=artistId?{id:artistId}:{slug};
-            const rr=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:`query A($id:ID,$slug:String){artist(id:$id,slug:$slug){image}}`,variables:vars})});
+            const rr=await fetch('/api/ra/image?slug='+encodeURIComponent(slug));
             if(rr.ok){
               const rd=await rr.json();
-              const img=rd?.data?.artist?.image;
-              if(img&&img.startsWith('http'))valid=img;
+              if(rd.image&&rd.image.startsWith('http'))valid=rd.image;
             }
           }catch(e){}
         }
@@ -3014,19 +3019,27 @@ async function buildDNA(statusCb,artistCb){
           // Tags/genres
           const tags=(artist.tags?.tag||[]).map(t=>t.name.toLowerCase()).slice(0,8);
           if(tags.length)profile.genres=tags;
-          // Image — populate the shared image cache so getArtistImage() never re-fetches
-          const imgs=artist.image||[];
-          const img=imgs.find(i=>i.size==='extralarge')||imgs.find(i=>i.size==='large')||imgs[imgs.length-1];
-          const imgUrl=img?.['#text']||'';
-          if(imgUrl&&!imgUrl.includes('2a96cbd8b46e442fc41c2b86b821562f')){
-            profile.imageUrl=imgUrl;
-            _imgCache.set(lfk,imgUrl);
-          }else{
-            _imgCache.set(lfk,'');
-          }
+          // Last.fm images have been dead since 2019 — skip, go straight to RA scrape
         }else{_imgCache.set(lfk,'')}
       }else{_imgCache.set(lfk,'')}
     }catch(e){_imgCache.set(lfk,'')}
+
+    // Image: check cache first (may have been set by GraphQL follower fetch), then scrape RA page
+    if(_imgCache.has(lfk)&&_imgCache.get(lfk)){
+      profile.imageUrl=_imgCache.get(lfk);
+    } else if(!_imgCache.has(lfk)){
+      try{
+        const slug=nameToSlug(name);
+        const ir=await fetch('/api/ra/image?slug='+encodeURIComponent(slug));
+        if(ir.ok){
+          const id=await ir.json();
+          if(id.image&&id.image.startsWith('http')){
+            profile.imageUrl=id.image;
+            _imgCache.set(lfk,id.image);
+          }else{_imgCache.set(lfk,'');}
+        }else{_imgCache.set(lfk,'');}
+      }catch(e){_imgCache.set(lfk,'');}
+    }
 
     profiles.push(profile);
     if(artistCb)artistCb(profile);
@@ -3310,6 +3323,7 @@ async function buildDNA(statusCb,artistCb){
     topGenres:sortedGenres.slice(0,8).map(([g,w])=>({genre:g,weight:Math.round(w*100)})),
     raTopGenres,                          // RA curated genre tags from your events
     raSceneGroups:[...raSceneGroupsSet],  // e.g. ['house','disco','melodic']
+    soundAnchors:soundAnchors,            // user's 3 defining artists — used for competition detection
     cloud:extendedCloud,
     secondDegree:[...secondDegreeSet],
     coBillNetwork:coBillNetwork.slice(0,30).map(c=>({name:c.name,coBills:c.totalCoBills,via:c.connectedTo.slice(0,3)})),
@@ -3402,6 +3416,8 @@ function getDNAFingerprint(dna){
 
   // Artist sets for O(1) lookup
   const bookedNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
+  // Sound anchors — user's 3 defining artists. Treated as direct scene signal for competition detection.
+  const anchorNorms=new Set((dna.soundAnchors||[]).map(a=>norm(a)));
   const coBillMap=new Map();
   for(const c of(dna.coBillNetwork||[]))coBillMap.set(norm(c.name),c.coBills||1);
   const cloudNorms=new Set((dna.cloud||[]).map(n=>norm(n)));
@@ -3435,14 +3451,18 @@ function getDNAFingerprint(dna){
     }
   }
 
-  // Daytime vs nighttime DNA — does this venue/promoter do daytime events?
+  // Daytime vs nighttime DNA — use explicit preference if set, otherwise infer from event start times
+  const _pref=P().eventTime||'night';
   let dnaIsDaytime=false;
-  if(dna._venueEvents&&dna._venueEvents.length){
+  if(_pref==='day'){dnaIsDaytime=true;}
+  else if(_pref==='both'){dnaIsDaytime=false;} // mixed: don't penalise either
+  else if(_pref==='night'){dnaIsDaytime=false;}
+  else if(dna._venueEvents&&dna._venueEvents.length){
     const daytimeEvents=dna._venueEvents.filter(ev=>isEventDaytime(ev.startTime));
-    dnaIsDaytime=daytimeEvents.length/dna._venueEvents.length>0.4; // >40% daytime = daytime brand
+    dnaIsDaytime=daytimeEvents.length/dna._venueEvents.length>0.4;
   }
 
-  const fp={bookedNorms,coBillMap,cloudNorms,secondDegree,dnaGenres,dnaSceneGroups,recentArtists,dnaIsDaytime};
+  const fp={bookedNorms,anchorNorms,coBillMap,cloudNorms,secondDegree,dnaGenres,dnaSceneGroups,recentArtists,dnaIsDaytime};
   dna._fingerprint=fp; // cache it
   return fp;
 }
@@ -3540,10 +3560,11 @@ function eventThreat(event, dna){
     const n=norm(a.name||a);
     const aName=a.name||a;
     let s=0,type='';
-    if(fp.bookedNorms.has(n))      {s=85;type='Played your events'}
-    else if(fp.coBillMap.has(n))   {s=70;type='Shares lineups'}
-    else if(fp.cloudNorms.has(n))  {s=55;type='In your network'}
-    else if(fp.secondDegree.has(n)){s=40;type='2nd-degree connection'}
+    if(fp.anchorNorms.has(n))          {s=95;type='Your sound anchor'}
+    else if(fp.bookedNorms.has(n))     {s=85;type='Played your events'}
+    else if(fp.coBillMap.has(n))       {s=70;type='Shares lineups'}
+    else if(fp.cloudNorms.has(n))      {s=55;type='In your network'}
+    else if(fp.secondDegree.has(n))    {s=40;type='2nd-degree connection'}
     if(!s)continue;
     
     // Follower gate — skip tiny local acts
@@ -3627,8 +3648,12 @@ function eventThreat(event, dna){
   const artistFloor=Math.round(artistScore*0.7);
   const venueFloor=Math.round(venueAffinityScore*0.7);
   const attendFloor=Math.round(attendScore*0.5);
-  
-  let finalScore=Math.max(weighted,artistFloor,venueFloor,attendFloor);
+  // Genre+attendance floor: same scene genre + big event = at minimum tier 2 threat
+  // This catches events like Folamour at Seaseaclub — no artist connection but clearly your audience
+  const genreAttendFloor=(genreScore>=55&&attendScore>=50)?Math.round((genreScore*0.5+attendScore*0.5)*0.85):
+                         (genreScore>=55&&attendScore>=20)?Math.round((genreScore*0.5+attendScore*0.5)*0.7):0;
+
+  let finalScore=Math.max(weighted,artistFloor,venueFloor,attendFloor,genreAttendFloor);
   
   // Apply time penalty
   finalScore=Math.round(finalScore*timePenalty);
@@ -4410,6 +4435,11 @@ function setObType(type){
   }
 }
 
+function setObTime(val){
+  document.getElementById('obTimeType').value=val;
+  document.getElementById('obTimePicker').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.v===val));
+}
+
 function obGo(n){
   // Get current step number
   const currentStep=[1,2,3,4].find(i=>document.getElementById('ob'+i)?.classList.contains('active'))||1;
@@ -4446,6 +4476,7 @@ async function obDone(){
     promoterName:_obType==='promoter'?_obVenueName:'',
     promoterId:_resolvedPromoId,
     city:document.getElementById('obC').value,
+    eventTime:document.getElementById('obTimeType')?.value||'night',
     capacity:0,
     wins:[],losses:[],
     budget:'',freq:'',
@@ -4767,7 +4798,7 @@ async function _startDNABuild(){
   document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('ob4').classList.add('active');
   const totalSteps=_isPromo?4:3;
-  for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(!dot)continue;if(i<=totalSteps){dot.style.display='';dot.classList.add('active')}else{dot.style.display='none'}}
+  for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(!dot)continue;dot.style.display='none';} // hide all dots on step 4 — they serve no purpose here
 
   const phEl=document.getElementById('dnaPhaseLabel');
   const fill=document.getElementById('dnaFill');
@@ -4857,8 +4888,19 @@ async function _startDNABuild(){
     const dna=await buildDNA(status,artistVisual);
     _done=true;cancelAnimationFrame(_cdjFrame);
     pctDraw=100;fill.style.width='100%';
-    if(s1El)s1El.textContent=state.events;
-    if(s2El)s2El.textContent=dna?dna.artistCount:avatarCount;
+    // Animate counters from 0 to final values so it always feels like a scan, even when prefetch was instant
+    const finalEvents=state.events||dna?.venueEvents||0;
+    const finalArtists=dna?dna.artistCount:avatarCount;
+    const animDur=2200,animSteps=60,animInterval=animDur/animSteps;
+    let animStep=0;
+    const animTimer=setInterval(()=>{
+      animStep++;
+      const t=animStep/animSteps;
+      const ease=t<0.5?2*t*t:(4-2*t)*t-1; // ease in-out
+      if(s1El)s1El.textContent=Math.round(ease*finalEvents);
+      if(s2El)s2El.textContent=Math.round(ease*finalArtists);
+      if(animStep>=animSteps){clearInterval(animTimer);if(s1El)s1El.textContent=finalEvents;if(s2El)s2El.textContent=finalArtists;}
+    },animInterval);
     if(phEl){phEl.textContent='Your DNA is ready';phEl.style.color='var(--green)'}
     if(lbl)lbl.textContent='';
     fill.style.background='var(--green)';
@@ -5212,7 +5254,7 @@ function _buildSmartSeeds(dna){
 }
 function prog(lbl,pct,detail){const w=document.getElementById('dProg');w.classList.add('visible');if(lbl)document.getElementById('pLbl').textContent=lbl;if(pct!==null)document.getElementById('pFill').style.width=pct+'%';if(detail){const d=document.getElementById('pDet');d.innerHTML+='<div>'+detail+'</div>';const lines=d.querySelectorAll('div');if(lines.length>50)lines[0].remove();d.scrollTop=d.scrollHeight}}
 function progReset(){document.getElementById('dProg').classList.remove('visible');document.getElementById('pDet').innerHTML='';document.getElementById('pFill').style.width='0%'}
-function rteProg(lbl,pct,detail){const w=document.getElementById('rteProg');w.classList.add('visible');if(lbl)document.getElementById('rteLbl').textContent=lbl;document.getElementById('rteFill').style.width=pct+'%';if(detail){const d=document.getElementById('rteDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}}
+function rteProg(lbl,pct,detail){const w=document.getElementById('rteProg');w.classList.add('visible');if(lbl)document.getElementById('rteLbl').textContent=lbl;if(pct!=null)document.getElementById('rteFill').style.width=pct+'%';if(detail){const d=document.getElementById('rteDet');d.innerHTML+='<div>'+detail+'</div>';d.scrollTop=d.scrollHeight}}
 function rteProgReset(){document.getElementById('rteProg').classList.remove('visible');document.getElementById('rteDet').innerHTML='';document.getElementById('rteFill').style.width='0%'}
 
 /* ═══ DISCOVER ═══ */
@@ -5527,7 +5569,7 @@ async function runScan(){
         const tierBadge=t.tier===1
           ?`<span class="badge badge-red">${esc(t.reason)}</span>`
           :`<span class="badge badge-amber">${esc(t.reason)}</span>`;
-        const timeBadge=t.timeMismatch?`<span class="badge" style="border-color:var(--text-faint);color:var(--text-faint);font-size:0.48rem">different time slot</span>`:'';
+        const timeBadge=t.timeMismatch?`<span class="badge" style="border-color:var(--text-faint);color:var(--text-faint);font-size:0.48rem;opacity:0.7">daytime event</span>`:'';
         h+=`<div class="ev-item" style="border-left:3px solid ${t.tier===1?'var(--accent)':'var(--amber)'};padding-left:11px">
           <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
           <div class="ev-detail">

@@ -68,6 +68,8 @@ class LibroHandler(http.server.SimpleHTTPRequestHandler):
             return self._proxy_lastfm()
         if self.path.startswith("/api/musicbrainz"):
             return self._proxy_mb()
+        if self.path.startswith("/api/ra/image"):
+            return self._ra_artist_image()
         if self.path == "/":
             self.path = "/index.html"
         return super().do_GET()
@@ -78,6 +80,39 @@ class LibroHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == "/api/ra/probe":
             return self._probe_ra()
         self.send_error(404)
+
+    def _ra_artist_image(self):
+        """
+        Scrape RA artist page for og:image.
+        GET /api/ra/image?slug=folamour
+        Returns: {"image": "https://..."} or {"image": ""}
+        """
+        parsed = urllib.parse.urlparse(self.path)
+        params = urllib.parse.parse_qs(parsed.query)
+        slug = params.get("slug", [""])[0].strip()
+        if not slug:
+            self._send(400, b'{"error":"missing slug"}')
+            return
+        url = f"https://ra.co/dj/{slug}"
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+                "Accept": "text/html",
+            })
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                html = resp.read().decode("utf-8", errors="ignore")
+            # Extract og:image
+            import re
+            m = re.search(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html)
+            if not m:
+                m = re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html)
+            image = m.group(1) if m else ""
+            # Filter out generic RA placeholder images
+            if image and ("default" in image.lower() or "placeholder" in image.lower() or image.endswith("ra-logo.png")):
+                image = ""
+            self._send(200, json.dumps({"image": image}).encode())
+        except Exception as e:
+            self._send(200, b'{"image":""}')  # always 200 so client doesn't retry
 
     def _proxy_sc(self):
         url = SC_BASE + self.path.replace("/api/soundcharts", "", 1)
