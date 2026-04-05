@@ -6,7 +6,7 @@
 <title>Night Pulse · Booking Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ═══ NIGHT PULSE v3 — Design System ═══ */
 :root {
@@ -338,33 +338,269 @@ input[type="number"]{font-family:var(--mono)}
 /* ── Onboarding shell ── */
 #onboarding{max-width:480px;margin:60px auto;padding:0 20px}
 .ob-step{animation:fadeIn .2s ease}
+
+/* ══ NEW DESIGN SYSTEM OVERRIDES ══ */
+
+/* Top nav */
+.np-hdr{
+  height:50px;padding:0 24px;gap:0;
+  display:flex;align-items:center;
+  border-bottom:1px solid var(--border);background:var(--bg);z-index:100;
+}
+.logo{font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:4px;color:var(--text-secondary);text-transform:uppercase;margin-right:32px;flex-shrink:0}
+.logo span,.logo b{color:var(--amber)}
+
+.np-tabs{display:flex;height:100%;gap:0}
+.np-tab{
+  display:flex;align-items:center;gap:6px;padding:0 18px;
+  font-family:var(--body);font-size:14px;font-weight:500;color:var(--text-muted);
+  cursor:pointer;border-bottom:2px solid transparent;height:100%;
+  transition:color .1s;user-select:none;
+}
+.np-tab:hover{color:var(--text-secondary)}
+.np-tab.active{color:var(--text);border-bottom-color:var(--amber)}
+.np-tab-count{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-faint)}
+.np-tab.active .np-tab-count{color:var(--amber)}
+.np-tab-live{color:var(--green) !important}
+
+.np-hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+.np-saved-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:6px;
+  border:1px solid var(--border);background:transparent;
+  font-family:var(--body);font-size:13px;font-weight:500;color:var(--text-secondary);
+  cursor:pointer;transition:all .1s;
+}
+.np-saved-btn:hover{border-color:var(--border-hi);color:var(--text)}
+.np-saved-count{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--amber);background:var(--a10);padding:1px 6px;border-radius:3px}
+
+/* Hide sidebar on desktop — tabs replace it */
+.np-sidebar{display:none !important}
+.np-shell{display:flex;flex:1;overflow:hidden}
+.np-content{flex:1;overflow-y:auto;background:var(--bg)}
+
+/* Venue pill */
+.venue-pill{
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:0.5px;
+  color:var(--text-secondary);background:transparent;border:1px solid var(--border);
+  padding:7px 14px;border-radius:6px;cursor:pointer;
+  transition:all .12s;
+}
+.venue-pill:hover{border-color:var(--border-hi);color:var(--text)}
+
+/* Tab panels — remove max-width, better padding */
+.tab-panel{padding:24px 28px 60px;max-width:none;animation:fadeIn .15s ease}
+
+/* Body */
+body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.5}
+
+/* Screen headers */
+.sc-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px}
+.sc-ctx{font-family:var(--mono);font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.sc-edit{color:var(--amber);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:11px}
+
+/* v3 Cards — restyled for new design */
+.v3-list{gap:2px}
+.v3-card{border:1px solid var(--border);border-radius:6px;transition:border-color .12s}
+.v3-card:hover{border-color:var(--border-hi)}
+.v3-card.open{border-color:rgba(255,255,255,.12)}
+.v3-main{padding:12px 18px;gap:12px}
+.v3-rank{font-family:var(--mono);font-size:10px;color:var(--text-faint);font-weight:600}
+.v3-ava{width:36px;height:36px;border-radius:8px;font-size:12px}
+.v3-name{font-family:var(--body);font-size:14px;font-weight:600;letter-spacing:0;color:var(--text)}
+.v3-trend{font-family:var(--mono);font-size:10px;color:var(--green)}
+.v3-sub{font-family:var(--mono);font-size:11px;color:var(--text-secondary)}
+.v3-badge{font-family:var(--mono);font-size:10px;border-radius:4px}
+.v3-ok{color:var(--green);border-color:var(--g30);background:var(--g10)}
+.v3-warn{color:var(--amber);border-color:var(--a40);background:var(--a10)}
+.v3-genre{font-family:var(--mono);font-size:10px;color:var(--text-muted)}
+.v3-score{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--amber)}
+
+/* Expanded card */
+.v3-exp{padding:0 18px 20px 66px}
+.v3-hero{border-bottom:1px solid var(--border)}
+.v3-hlbl{font-family:var(--mono);font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px}
+.v3-hnum{font-family:var(--mono);font-size:2.5rem;font-weight:700;color:var(--amber)}
+.v3-hunit{font-family:var(--mono);font-size:10px;color:var(--text-muted)}
+.v3-hvenue{font-family:var(--body);font-size:1rem;font-weight:600;color:var(--text)}
+.v3-hdate{font-family:var(--mono);font-size:11px;color:var(--text-secondary)}
+.v3-rlbl{font-family:var(--mono);font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.8px}
+.v3-rval{font-family:var(--mono);font-size:13px;color:var(--text)}
+.v3-why{border-left:3px solid var(--a40);padding:12px 16px;font-size:14px;color:var(--text-secondary);line-height:1.8;background:rgba(245,158,11,.02);border-radius:0 6px 6px 0;margin-bottom:18px}
+.v3-why em{color:var(--text);font-style:normal;font-weight:600}
+.v3-btn{font-family:var(--body);font-size:12px;font-weight:600;padding:9px 18px;border-radius:6px;color:var(--text-secondary);border:1px solid var(--border-hi)}
+.v3-btn:hover{border-color:var(--amber);color:var(--amber)}
+.v3-btn.p{border-color:var(--amber);color:#111;background:var(--amber)}
+.v3-btn.p:hover{filter:brightness(1.1)}
+
+/* Routing feature card */
+.rf-card{border:1px solid var(--sky-dim);border-radius:8px;padding:16px 20px;margin-bottom:24px;background:rgba(56,189,248,.03)}
+.rf-head{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky);margin-bottom:16px}
+.rf-arrow{color:var(--sky)}
+.rf-name{font-family:var(--body);font-size:1rem;font-weight:700;color:var(--text);letter-spacing:0}
+.rf-where{font-family:var(--mono);font-size:11px;color:var(--sky)}
+.rf-note{font-family:var(--mono);font-size:12px;color:var(--text-secondary)}
+.rf-link{font-family:var(--body);font-size:12px;font-weight:600;padding:8px 16px;border:1px solid rgba(56,189,248,.2);border-radius:6px;color:var(--sky);text-transform:none;letter-spacing:0}
+.rf-link:hover{background:rgba(56,189,248,.06)}
+
+/* Tonight/Scanner */
+.tn-date{font-family:var(--body);font-size:2rem;font-weight:700;letter-spacing:0;color:var(--text)}
+.tn-change{font-family:var(--mono);font-size:11px;color:var(--amber)}
+.tn-summary{padding:14px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:12px;color:var(--text-secondary);line-height:2}
+.tn-sec{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text-secondary)}
+.tn-row{padding:12px 18px;border:1px solid var(--border);border-radius:6px}
+.tn-row:hover{border-color:var(--border-hi)}
+.tn-row.crowd{border-left:3px solid var(--red)}
+.tn-venue{font-family:var(--body);font-size:14px;font-weight:600;color:var(--text)}
+.tn-artists{font-family:var(--mono);font-size:11px;color:var(--text-secondary)}
+
+/* Pipeline/Saved */
+.tk-title{font-family:var(--body);font-size:1.2rem;font-weight:700;letter-spacing:0;color:var(--text)}
+.tk-sub{font-family:var(--mono);font-size:11px;color:var(--text-secondary)}
+.saved-card{border-radius:6px}
+.saved-name{font-family:var(--body);font-size:14px;font-weight:600;letter-spacing:0;color:var(--text)}
+.saved-meta{font-family:var(--mono);font-size:11px;color:var(--text-secondary)}
+
+/* Inputs */
+textarea,input[type="text"],input[type="date"],input[type="number"],select{
+  background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:var(--body);font-size:14px;padding:10px 14px;
+}
+textarea:focus,input:focus,select:focus{border-color:var(--amber)}
+select{font-family:var(--mono);font-size:13px}
+
+/* Buttons */
+.btn{border-radius:6px;font-family:var(--body);font-weight:600;font-size:13px;letter-spacing:0;padding:10px 22px}
+.btn-red{background:var(--amber);color:#111}
+.btn-red:hover{filter:brightness(1.1)}
+.btn-ghost{font-family:var(--body);font-size:12px;font-weight:600;border-radius:6px;color:var(--text-secondary);border:1px solid var(--border-hi)}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+
+/* Progress */
+.progress-label{font-family:var(--mono);font-size:12px;color:var(--text-secondary)}
+.progress-detail{font-family:var(--mono);font-size:11px;color:var(--text-muted)}
+.progress-bar{height:3px;background:rgba(255,255,255,.05);border-radius:2px}
+.progress-fill{background:var(--amber);border-radius:2px}
+
+/* Cards and stats */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:6px}
+.card h3{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:0}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:6px}
+.stat .sv{font-family:var(--mono);font-size:1.3rem;color:var(--amber)}
+.stat .sl{font-family:var(--mono);font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.8px}
+
+/* Badges */
+.badge,.badge-amber{color:var(--amber);border-color:var(--a40);background:var(--a10);border-radius:4px;font-size:10px}
+.badge-green{color:var(--green);border-color:var(--g30);background:var(--g10)}
+.badge-red{color:var(--red);border-color:var(--r30);background:var(--r10)}
+
+/* Onboarding */
+#onboarding{max-width:520px;margin:48px auto;padding:0 24px}
+.ob-step h2{font-family:var(--body);font-size:1.5rem;font-weight:700;letter-spacing:0;color:var(--text)}
+.ob-step .sub{font-family:var(--mono);font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:24px}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.08)}
+.ob-dot.active{background:var(--amber)}
+.input-group label{font-family:var(--body);font-weight:600;font-size:13px;letter-spacing:0;text-transform:none;color:var(--text-secondary)}
+.input-group .hint{font-family:var(--mono);font-size:12px;color:var(--text-muted)}
+
+/* Seg picker */
+.seg-picker{border-radius:6px}
+.seg-picker button{font-family:var(--body);font-weight:600;font-size:13px;letter-spacing:0;color:var(--text-muted);padding:10px 14px}
+.seg-picker button:hover{background:var(--bg3);color:var(--text)}
+.seg-picker button.active{background:var(--amber);color:#111}
+
+/* Filter bar */
+.filter-bar{background:var(--bg2);border:1px solid var(--border);border-radius:6px}
+.filter-bar h4{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text-secondary)}
+.fg-label{font-family:var(--mono);font-size:12px;color:var(--text-secondary)}
+
+/* Empty state */
+.empty{font-family:var(--mono);font-size:13px;color:var(--text-muted);border-radius:6px}
+
+/* DNA log */
+.dna-log{font-family:var(--mono);font-size:12px;color:var(--text-muted)}
+
+/* Intel */
+.intel-hero h2{font-family:var(--body);font-weight:700;letter-spacing:0}
+.intel-hero p{font-family:var(--mono);font-size:13px;color:var(--text-secondary)}
+
+/* Scene chips */
+#intelQuickChips .chip{font-family:var(--mono);font-size:11px;color:var(--text-muted);border-radius:4px}
+#intelQuickChips .chip:hover{border-color:var(--amber);color:var(--amber)}
+
+/* Result items */
+.ri-name{font-family:var(--body);font-weight:600;font-size:14px;letter-spacing:0}
+.ri-reason{font-family:var(--mono);font-size:11px;color:var(--text-secondary)}
+.ri-score{font-family:var(--mono);font-size:1.3rem;color:var(--amber)}
+.ri-score-label{font-family:var(--mono);font-size:10px;color:var(--text-muted)}
+
+/* Bottom nav — updated for mobile */
+.np-bnav{display:none;height:50px}
+.np-bn{font-family:var(--body);font-size:11px;font-weight:600;letter-spacing:1px;color:var(--text-muted)}
+.np-bn.active{color:var(--amber);border-top-color:var(--amber)}
+
+@media(max-width:640px){
+  .np-sidebar{display:none !important}
+  .np-tabs{display:none !important}
+  .np-app.app-ready .np-bnav{display:flex}
+  .tab-panel{padding:16px 16px 80px}
+  .np-hdr{padding:0 16px}
+}
+@media(min-width:641px){
+  .np-bnav{display:none !important}
+}
+
+/* Venue switcher dropdown */
+.venue-switcher-dd{border-radius:6px}
+.venue-switcher-dd .vs-item{font-family:var(--body);font-weight:600;font-size:14px;letter-spacing:0}
+.venue-switcher-dd .vs-item .vs-city{font-family:var(--mono);font-size:11px;color:var(--text-muted)}
+
+/* Date picker */
+.np-dp-display{font-family:var(--mono);font-size:13px;color:var(--text);background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 14px}
+.np-dp-cal{background:var(--bg2);border:1px solid var(--border-hi);border-radius:8px}
+.np-dp-nav{background:var(--bg3)}
+.np-dp-month{font-family:var(--mono);font-size:12px;color:var(--text)}
+.np-dp-dh{font-family:var(--mono);font-size:10px;color:var(--text-muted)}
+.np-dp-day{font-family:var(--mono);font-size:13px;color:var(--text-secondary);border-radius:4px}
+.np-dp-day:hover{background:var(--bg3);color:var(--text)}
+.np-dp-sel{background:var(--amber) !important;color:#111 !important}
+.np-dp-today{border:1px solid var(--amber)}
+
 </style>
 </head>
 <body>
 <div class="v-status-bar" id="vStatusBar"></div>
 <div class="np-app">
 
-  <!-- HEADER -->
+  <!-- TOP NAV -->
   <div class="np-hdr">
     <div class="logo">NIGHT<span>PULSE</span></div>
-    <div id="venueSwitcherWrap" style="display:none;position:relative">
-      <div class="venue-pill" id="venuePill" onclick="toggleVenueSwitcher(event)" title="Switch venue or add new"></div>
+    <div class="np-tabs" id="npTabs" style="display:none">
+      <div class="np-tab active" data-screen="book" onclick="npNav('book',this)">Discover <span class="np-tab-count" id="discoverCount"></span></div>
+      <div class="np-tab" data-screen="tonight" onclick="npNav('tonight',this)">Night Scanner <span class="np-tab-count" id="scannerCount"></span></div>
+      <div class="np-tab" data-screen="routing" onclick="npNav('routing',this)">Routing <span class="np-tab-count np-tab-live" id="routingCount"></span></div>
+    </div>
+    <div class="np-hdr-right">
+      <button class="np-saved-btn" id="npSavedBtn" style="display:none" onclick="npNav('track',null)">Saved <span class="np-saved-count" id="npSavedCount">0</span></button>
+      <div id="venueSwitcherWrap" style="display:none;position:relative">
+        <div class="venue-pill" id="venuePill" onclick="toggleVenueSwitcher(event)" title="Switch venue or add new"></div>
+      </div>
     </div>
   </div>
 
+  <!-- Legacy sidebar (hidden) -->
+  <nav class="np-sidebar" id="npSidebar" style="display:none">
+    <div class="np-nav active" data-screen="book" onclick="npNav('book',this)">BOOK</div>
+    <div class="np-nav" data-screen="tonight" onclick="npNav('tonight',this)">TONIGHT</div>
+    <div class="np-nav" data-screen="track" onclick="npNav('track',this)">TRACK</div>
+    <div class="np-sidebar-foot" id="npSidebarFoot"></div>
+  </nav>
+
   <div class="np-shell">
-
-    <!-- SIDEBAR -->
-    <nav class="np-sidebar" id="npSidebar" style="display:none">
-      <div class="np-nav active" data-screen="book" onclick="npNav('book',this)">BOOK</div>
-      <div class="np-nav" data-screen="tonight" onclick="npNav('tonight',this)">TONIGHT</div>
-      <div class="np-nav" data-screen="track" onclick="npNav('track',this)">TRACK</div>
-      <div class="np-sidebar-foot" id="npSidebarFoot"></div>
-    </nav>
-
     <!-- CONTENT -->
     <div class="np-content" id="npContent">
-      <div id="mainTabs" style="display:none"></div><!-- legacy compat -->
+      <div id="mainTabs" style="display:none"></div>
       <div class="shell" style="max-width:none;padding:0">
 
   <!-- ═══ ONBOARDING ═══ -->
@@ -3713,11 +3949,10 @@ function npNav(screen, el) {
   };
   const panelId = map[screen] || screen;
 
-  // Update sidebar
-  document.querySelectorAll('.np-nav').forEach(n => n.classList.remove('active'));
-  document.querySelectorAll('.np-bn').forEach(n => n.classList.remove('active'));
-  // Mark active in sidebar
-  document.querySelectorAll('.np-nav,.np-bn').forEach(n => {
+  // Update top nav tabs
+  document.querySelectorAll('.np-tab').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.np-nav,.np-bn').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.np-tab,.np-nav,.np-bn').forEach(n => {
     if (n.dataset && n.dataset.screen === screen) n.classList.add('active');
     if (n.getAttribute && n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+screen+"'")) n.classList.add('active');
   });
@@ -5869,6 +6104,8 @@ function updateFee(name,fee){const s=saved(),a=s.find(x=>x.name===name);if(a){a.
 function updateOutcome(name,outcome){const s=saved(),a=s.find(x=>x.name===name);if(a){a.outcome=a.outcome===outcome?'':outcome;setSaved(s)}const f=fees();if(f[name]){f[name].outcome=a?a.outcome:'';setFees(f)}renderSaved()}
 
 function renderSaved(){
+  // Update saved count in header
+  const sc=document.getElementById('npSavedCount');if(sc)sc.textContent=saved().length;
   const c=document.getElementById('sList'),s=saved(),cn=cityName();
   if(!s.length){
     c.innerHTML=`<div class="empty">
@@ -6044,9 +6281,9 @@ function exportCSV(){
 
   <!-- BOTTOM NAV (mobile) -->
   <nav class="np-bnav" id="npBnav" style="display:none">
-    <div class="np-bn active" onclick="npNav('book',this)">BOOK</div>
-    <div class="np-bn" onclick="npNav('tonight',this)">TONIGHT</div>
-    <div class="np-bn" onclick="npNav('track',this)">TRACK</div>
+    <div class="np-bn active" data-screen="book" onclick="npNav('book',this)">Discover</div>
+    <div class="np-bn" data-screen="tonight" onclick="npNav('tonight',this)">Scanner</div>
+    <div class="np-bn" data-screen="track" onclick="npNav('track',this)">Saved</div>
   </nav>
 
       </div><!-- /shell -->
