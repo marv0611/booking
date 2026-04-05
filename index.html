@@ -675,6 +675,7 @@ input[type="number"]{font-family:var(--mono)}
           <div class="progress-bar" style="margin-bottom:6px"><div class="progress-fill" id="dnaFill" style="width:0%"></div></div>
           <div id="dnaLbl" style="font-family:var(--mono);font-weight:500;font-size:0.65rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px;margin:0"></div>
         </div>
+        <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" style="margin-top:20px;background:transparent;border:1px solid var(--t10);color:var(--text-faint);font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:8px 20px;border-radius:2px;cursor:pointer">← Start Over</button>
       </div>
       <div id="dnaDet" class="dna-log" style="display:none"></div>
       <div id="dnaSummary" style="display:none"></div>
@@ -1165,6 +1166,35 @@ function deleteVenue(key,e){
   showApp();renderSaved();renderSeeds();updateCityLabels();
 }
 
+/* Dev pre-fill for fast testing */
+function _devPrefill(){
+  if(localStorage.getItem('_np_dev')!=='1')return;
+  setTimeout(()=>{
+    setObType('promoter');
+    const raId=document.getElementById('obPromoterRaId');if(raId)raId.value='83067';
+    const pName=document.getElementById('obPromoterName');if(pName){pName.value='Drop Dance Society';pName.readOnly=false;}
+    const s1=document.getElementById('obSoundArtist1');if(s1)s1.value='Kerri Chandler';
+    const s2=document.getElementById('obSoundArtist2');if(s2)s2.value='CC:DISCO!';
+    const s3=document.getElementById('obSoundArtist3');if(s3)s3.value='Antal';
+    const compIds=[77801,72357,207515,140794,103095];
+    const compList=document.getElementById('obCompetitorList');
+    if(compList){
+      compIds.forEach(id=>{
+        const entry=document.createElement('div');
+        entry.className='competitor-entry';
+        entry.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px';
+        entry.dataset.name='ID '+id;
+        entry.dataset.raId=String(id);
+        entry.innerHTML='<span style="flex:1;font-family:var(--mono);font-weight:600;font-size:0.8rem;color:var(--text-dim)">RA ID: '+id+'</span>'
+          +'<span style="cursor:pointer;color:var(--text);font-size:1rem;padding:0 4px;line-height:1;flex-shrink:0" onclick="this.parentElement.remove();if(typeof _updateCompetitorInputVisibility===\'function\')_updateCompetitorInputVisibility();if(typeof _updateCompCount===\'function\')_updateCompCount()" title="Remove">✕</span>';
+        compList.appendChild(entry);
+      });
+      if(typeof _updateCompCount==='function')setTimeout(_updateCompCount,200);
+      if(typeof _updateCompetitorInputVisibility==='function')setTimeout(_updateCompetitorInputVisibility,200);
+    }
+  },150);
+}
+
 /* Add a new venue (triggers onboarding flow) */
 function addVenueProfile(){
   document.getElementById('npVenueSwitcherDd')?.remove();
@@ -1184,35 +1214,7 @@ function addVenueProfile(){
   document.getElementById('obV').value='';document.getElementById('obC').value='barcelona';
   // ── DEV: Pre-fill test account for fast testing ──
   // Enable with: localStorage.setItem('_np_dev','1')
-  if(localStorage.getItem('_np_dev')==='1'){
-  setTimeout(()=>{
-    // Step 1: Set to Promoter + Barcelona
-    setObType('promoter');
-    // Step 2: RA ID + Name
-    const raId=document.getElementById('obPromoterRaId');if(raId)raId.value='83067';
-    const pName=document.getElementById('obPromoterName');if(pName){pName.value='Drop Dance Society';pName.readOnly=false;}
-    // Step 3: Sound artists
-    const s1=document.getElementById('obSoundArtist1');if(s1)s1.value='Kerri Chandler';
-    const s2=document.getElementById('obSoundArtist2');if(s2)s2.value='CC:DISCO!';
-    const s3=document.getElementById('obSoundArtist3');if(s3)s3.value='Antal';
-    // Pre-fill competitors — IDs added directly, names resolve when step 3 loads
-    const compIds=[77801,72357,207515,140794,103095];
-    const compList=document.getElementById('obCompetitorList');
-    if(compList){
-      compIds.forEach(id=>{
-        const entry=document.createElement('div');
-        entry.className='competitor-entry';
-        entry.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px';
-        entry.dataset.name='ID '+id;
-        entry.dataset.raId=String(id);
-        entry.innerHTML='<span style="flex:1;font-family:var(--mono);font-weight:600;font-size:0.8rem;color:var(--text-dim)">RA ID: '+id+'</span>'
-          +'<span style="cursor:pointer;color:var(--text);font-size:1rem;padding:0 4px;line-height:1;flex-shrink:0" onclick="this.parentElement.remove();if(typeof _updateCompetitorInputVisibility===\'function\')_updateCompetitorInputVisibility();if(typeof _updateCompCount===\'function\')_updateCompCount()" title="Remove">✕</span>';
-        compList.appendChild(entry);
-      });
-      if(typeof _updateCompCount==='function')setTimeout(_updateCompCount,200);
-      if(typeof _updateCompetitorInputVisibility==='function')setTimeout(_updateCompetitorInputVisibility,200);
-    }  },100);
-  }
+  _devPrefill();
   // Reset sound anchor fields
   for(let i=1;i<=3;i++){const el=document.getElementById('obSoundArtist'+i);if(el)el.value=''}
   // Reset report fields safely
@@ -2876,7 +2878,7 @@ function setupAutocomplete(inputEl,onSelect,searchFn){
       try{
         const res=await _search(q,8);
         const seen=new Set(),deduped=[];
-        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\.?\s|\sand\s|\sfeat\.?\s|\sft\.?\s|\sb2b\s/i.test(r.name))continue;if(/\(|BBC|Radio\s?\d|Live\sSet|DJ\sSet|Mix\b/i.test(r.name))continue;seen.add(n);deduped.push(r)}
+        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\.?\s|\sand\s|\sfeat\.?\s|\sft\.?\s|\sb2b\s/i.test(r.name))continue;if(/\(|BBC|Radio\s?\d|Live\sSet|DJ\sSet|Mix\b|Event|Show\b|Night\b|Session\b|Festival|Presents|Party\b/i.test(r.name))continue;seen.add(n);deduped.push(r)}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Render immediately with placeholder, then load images async
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
@@ -2933,7 +2935,7 @@ function setupTextareaAC(ta){
         if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Deduplicate by normalized name — keep first (highest ranked) result per name
         const seen=new Set(),deduped=[];
-        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\.?\s|\sand\s|\sfeat\.?\s|\sft\.?\s|\sb2b\s/i.test(r.name))continue;if(/\(|BBC|Radio\s?\d|Live\sSet|DJ\sSet|Mix\b/i.test(r.name))continue;seen.add(n);deduped.push(r)}
+        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\.?\s|\sand\s|\sfeat\.?\s|\sft\.?\s|\sb2b\s/i.test(r.name))continue;if(/\(|BBC|Radio\s?\d|Live\sSet|DJ\sSet|Mix\b|Event|Show\b|Night\b|Session\b|Festival|Presents|Party\b/i.test(r.name))continue;seen.add(n);deduped.push(r)}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
           <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.name.charAt(0).toUpperCase()}</div>
@@ -3186,10 +3188,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(dnaValid()){
       showApp();
     }else{
-      // DNA not built - show onboarding step 4 to build it
-      document.getElementById('onboarding').style.display='block';
-      document.getElementById('mainTabs').style.display='none';
-      _startDNABuild();
+      // DNA not built or interrupted — restart onboarding from step 1, not step 4
+      // Trying to resume a broken DNA build leaves the user stuck with no escape
+      addVenueProfile();
     }
   }
   const d=new Date();d.setMonth(d.getMonth()+2);
@@ -3248,6 +3249,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }));
   renderSaved();renderSeeds();
   setObType('venue'); // initialise toggle state
+  _devPrefill(); // dev pre-fill for first-time onboarding too
   setupAutocomplete(document.getElementById('xIn'),a=>{document.getElementById('xIn').value=a.name});
   setupTextareaAC(document.getElementById('seedInput'));
   setupTextareaAC(document.getElementById('obW'));
