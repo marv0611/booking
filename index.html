@@ -298,6 +298,11 @@ input[type="number"] { font-family: var(--font-mono); }
 .row > * { flex: 1; min-width: 140px; }
 .row > .shrink { flex: 0 0 auto; }
 
+/* Competitor input row — scoped override so global input{width:100%} doesn't stack items */
+.comp-input-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: nowrap; }
+.comp-input-row input[type="number"] { width: 120px !important; flex-shrink: 0; }
+.comp-input-row input[type="text"] { flex: 1 !important; width: auto !important; min-width: 0; }
+
 
 /* ═══════════════════════════════════════════
    BUTTONS
@@ -380,6 +385,8 @@ input[type="number"] { font-family: var(--font-mono); }
   overflow-y: auto;
   line-height: 1.9;
   letter-spacing: 0.2px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
 }
 
 /* Routing progress */
@@ -1627,9 +1634,9 @@ input[type="number"] { font-family: var(--font-mono); }
       <div class="input-group">
         <label>My Competition <span id="obCompCount" style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">0 of 3 minimum</span></label>
         <div id="obCompetitorList"></div>
-        <div id="obCompInputRow" style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:nowrap">
-          <input type="number" id="obCompetitorRaId" placeholder="RA ID" style="font-size:0.85rem;font-family:var(--font-mono);width:120px;flex-shrink:0">
-          <input type="text" id="obCompetitorName" placeholder="Name auto-fills from RA" autocomplete="off" style="font-size:0.85rem;flex:1;min-width:0" readonly>
+        <div id="obCompInputRow" class="comp-input-row">
+          <input type="number" id="obCompetitorRaId" placeholder="RA ID" style="font-size:0.85rem;font-family:var(--font-mono)">
+          <input type="text" id="obCompetitorName" placeholder="Name auto-fills from RA" autocomplete="off" style="font-size:0.85rem" readonly>
           <button type="button" class="btn-ghost" id="obCompAddBtn" onclick="_addCompetitor()" style="padding:10px 14px;white-space:nowrap;opacity:0.4;pointer-events:none;flex-shrink:0">+ Add</button>
         </div>
         <div id="obCompVerifyStatus" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint);margin-top:6px;min-height:1em"></div>
@@ -2309,16 +2316,16 @@ let _imgActive=0;
 const _IMG_MAX_CONCURRENT=3;
 const _imgQueue=[];
 
-// Hydrate from sessionStorage on load
+// Hydrate from localStorage on load (persists across sessions, populated during DNA build)
 try{
-  const stored=sessionStorage.getItem('np_img_cache');
+  const stored=localStorage.getItem('np_img_cache');
   if(stored){const m=JSON.parse(stored);for(const[k,v] of Object.entries(m))_imgCache.set(k,v)}
 }catch(e){}
 
 function _imgCacheSave(){
   try{
-    const obj={};for(const[k,v] of _imgCache)obj[k]=v;
-    sessionStorage.setItem('np_img_cache',JSON.stringify(obj));
+    const obj={};for(const[k,v] of _imgCache)if(v)obj[k]=v; // only persist non-empty
+    localStorage.setItem('np_img_cache',JSON.stringify(obj));
   }catch(e){}
 }
 
@@ -2333,17 +2340,38 @@ async function getArtistImage(name){
     const doFetch=async()=>{
       _imgActive++;
       try{
-        const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
-        if(!r.ok){_imgCache.set(k,'');resolve('');return}
-        const d=await r.json();
-        const imgs=d?.artist?.image||[];
-        const img=imgs.find(i=>i.size==='extralarge')
-          ||imgs.find(i=>i.size==='large')
-          ||imgs.find(i=>i['#text']&&i['#text'].length>10);
-        const url=img?.['#text']||'';
-        const valid=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http')?url:'';
+        // Try Last.fm first (fast, free)
+        let valid='';
+        try{
+          const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
+          if(r.ok){
+            const d=await r.json();
+            const imgs=d?.artist?.image||[];
+            const img=imgs.find(i=>i.size==='extralarge')
+              ||imgs.find(i=>i.size==='large')
+              ||imgs.find(i=>i['#text']&&i['#text'].length>10);
+            const url=img?.['#text']||'';
+            if(url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http'))valid=url;
+          }
+        }catch(e){}
+
+        // Fallback: try RA GraphQL using the same slug pattern that works for followers
+        if(!valid){
+          try{
+            const slug=nameToSlug(name);
+            const artistId=_raArtistIdCache.get(norm(name))||null;
+            const vars=artistId?{id:artistId}:{slug};
+            const rr=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:`query A($id:ID,$slug:String){artist(id:$id,slug:$slug){image}}`,variables:vars})});
+            if(rr.ok){
+              const rd=await rr.json();
+              const img=rd?.data?.artist?.image;
+              if(img&&img.startsWith('http'))valid=img;
+            }
+          }catch(e){}
+        }
+
         _imgCache.set(k,valid);
-        _imgCacheSave();
+        if(valid)_imgCacheSave();
         resolve(valid);
       }catch(e){_imgCache.set(k,'');resolve('')}
       finally{
@@ -2618,7 +2646,8 @@ function nameToSlug(name){
 const RA_ARTIST_Q=`query ArtistRelated($id:ID,$slug:String){
   artist(id:$id,slug:$slug){
     id name urlSafeName followerCount
-    relatedArtists{ id name urlSafeName }
+    image
+    relatedArtists{ id name urlSafeName image }
   }
 }`;
 
@@ -2633,12 +2662,13 @@ async function raArtistFollowers(name){
     const vars=artistId?{id:artistId}:{slug};
     const r=await fetch('/api/ra/graphql',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({query:`query A($id:ID,$slug:String){artist(id:$id,slug:$slug){id followerCount}}`,variables:vars})
+      body:JSON.stringify({query:`query A($id:ID,$slug:String){artist(id:$id,slug:$slug){id followerCount image}}`,variables:vars})
     });
     const d=await r.json();
     const artist=d?.data?.artist;
     if(!artist){_raFollowerCache.set(sn,null);return null}
     if(artist.id)_raArtistIdCache.set(sn,String(artist.id));
+    if(artist.image){const ik='img_'+sn;if(!_imgCache.get(ik)){_imgCache.set(ik,artist.image);_imgCacheSave();}}
     // Distinguish: followerCount=0 (real, has profile) vs undefined (field missing)
     if(artist.followerCount===undefined||artist.followerCount===null){_raFollowerCache.set(sn,null);return null}
     _raFollowerCache.set(sn,artist.followerCount);
@@ -2718,14 +2748,17 @@ async function raOfficialRelated(seedName){
     const artist=d?.data?.artist;
     if(!artist)return[];
 
-    // Cache the ID for future calls
+    // Cache the ID and image for future calls
     if(artist.id)_raArtistIdCache.set(sn,String(artist.id));
+    if(artist.image){const ik='img_'+sn;if(!_imgCache.get(ik)){_imgCache.set(ik,artist.image);_imgCacheSave();}}
 
     const related=Array.isArray(artist.relatedArtists)?artist.relatedArtists:[];
-    // Cache related artist IDs too — builds up the index organically
+    // Cache related artist IDs and images too
     for(const ra of related){
       if(ra.id&&ra.name)_raArtistIdCache.set(norm(ra.name),String(ra.id));
+      if(ra.image){const ik='img_'+norm(ra.name);if(!_imgCache.get(ik)){_imgCache.set(ik,ra.image);}}
     }
+    if(related.some(r=>r.image))_imgCacheSave();
     const result=related.map(a=>({name:a.name,id:a.id}));
     _raOfficialCache.set(sn,result);
     return result;
@@ -3016,7 +3049,7 @@ async function buildDNA(statusCb,artistCb){
   }
 
   // ═══ NEW: Batch-fetch RA follower counts ═══
-  if(statusCb)statusCb('Checking RA artist profiles for follower data…');
+  if(statusCb)statusCb('Checking artist profiles for follower data…');
   
   // Build artist ID index from venue events first
   for(const ev of venueEvents){
@@ -3043,7 +3076,7 @@ async function buildDNA(statusCb,artistCb){
     // Small delay between batches to avoid throttling
     if(i+FOLLOWER_BATCH<profiles.length)await new Promise(r=>setTimeout(r,200));
   }
-  if(statusCb)statusCb('RA follower data: '+followersFetched+' artists, '+followersSkipped+' unavailable');
+  if(statusCb)statusCb('Artist profiles: '+followersFetched+' found, '+followersSkipped+' unavailable');
 
   // ═══ NEW: Compute headliner score ═══
   // headlinerScore = followerCount × billingWeight × titleBonus
@@ -3059,7 +3092,7 @@ async function buildDNA(statusCb,artistCb){
     prof.headlinerScore=Math.round(fc*billingW*titleW);
   }
   const realArtists=profiles.filter(p=>p.isReal===true);
-  if(statusCb)statusCb(realArtists.length+' headliner-level artists (≥'+FOLLOWER_GATE+' RA followers) out of '+profiles.length+' total');
+  if(statusCb)statusCb(realArtists.length+' headliner-level artists (≥'+FOLLOWER_GATE+' followers) out of '+profiles.length+' total');
 
   // ═══ NEW: Beatport + Traxsource genre enrichment for headliners ═══
   // Only enrich artists with ≥100 followers — no point looking up local acts
@@ -3314,13 +3347,24 @@ async function buildDNA(statusCb,artistCb){
    Grouped by scene affinity so we can compute overlap intelligently. */
 const RA_GENRE_GROUPS={
   techno:     ['Techno','Industrial / EBM','Noise','Hardcore'],
-  house:      ['House','Deep House','Tech House','Afro House','Organic House / Downtempo'],
-  melodic:    ['Melodic House & Techno','Progressive House','Electronica'],
+  house:      ['House','Deep House','Tech House','Afro House','Organic House / Downtempo','Soulful House','Jackin House'],
+  melodic:    ['Melodic House & Techno','Progressive House'],
   minimal:    ['Minimal / Deep Tech'],
   disco:      ['Disco / Funk','Nu Disco / Indie Dance'],
   electronic: ['Electronica','Ambient','Experimental / Avant-garde'],
   dnb:        ['Drum & Bass / Jungle','Breaks / Breakbeat / UK Bass'],
   other:      ['Hip-Hop / R&B','Reggae / Dancehall','Latin / Tropical'],
+};
+
+// Cross-group affinities — audiences that heavily overlap.
+// Key = group, value = groups that count as partial competition (0.5× weight)
+const GENRE_CROSS_AFFINITY={
+  house:   ['melodic','minimal','disco'],
+  techno:  ['melodic','minimal'],
+  melodic: ['house','techno','minimal'],
+  minimal: ['house','techno','melodic'],
+  disco:   ['house','electronic'],
+  electronic:['disco','melodic'],
 };
 
 // Flatten to norm→group map for O(1) lookup
@@ -3417,7 +3461,7 @@ function sceneRelevance(artistName, dna){
   const n=norm(artistName);
   let score=0,tier=4,reason='',breakdown={};
 
-  // Tier 1: Direct DNA — you've booked them or they're a top co-bill
+  // Tier 1: Direct DNA — you've actually booked them (headliner-level)
   if(fp.bookedNorms.has(n)){
     const isRecent=fp.recentArtists.has(n);
     score=isRecent?100:85;
@@ -3534,10 +3578,20 @@ function eventThreat(event, dna){
   if(eventGroups.length&&fp.dnaSceneGroups.size){
     const matchingGroups=eventGroups.filter(g=>fp.dnaSceneGroups.has(g));
     if(matchingGroups.length>=1){
-      genreScore=50;
+      genreScore=60;
       genreReason='Same scene: '+matchingGroups.join(', ');
-      // Subgenre precision bonus — Beatport/Traxsource data
-      // TODO: cross-reference event artists' Beatport genres with DNA profile
+    } else {
+      // Cross-group affinity — e.g. house promoter vs techno event
+      let bestCross=0,crossReason='';
+      for(const evGroup of eventGroups){
+        for(const dnaGroup of fp.dnaSceneGroups){
+          const crossList=GENRE_CROSS_AFFINITY[dnaGroup]||[];
+          if(crossList.includes(evGroup)){
+            if(bestCross<35){bestCross=35;crossReason='Adjacent scene: '+evGroup+'/'+dnaGroup;}
+          }
+        }
+      }
+      if(bestCross){genreScore=bestCross;genreReason=crossReason;}
     }
   }
   // Last.fm fallback
@@ -3545,7 +3599,7 @@ function eventThreat(event, dna){
     const lastfmGenres=(event.genres_lastfm||[]);
     if(lastfmGenres.length&&fp.dnaGenres.size){
       const matches=lastfmGenres.filter(g=>fp.dnaGenres.has(g.toLowerCase()));
-      if(matches.length>=1){genreScore=30;genreReason='Genre adjacent: '+matches[0]}
+      if(matches.length>=1){genreScore=25;genreReason='Genre adjacent: '+matches[0]}
     }
   }
 
@@ -5101,7 +5155,7 @@ function loadDNASeedsIntoDiscover(){
     return Object.entries(p.traxsourceGenres).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g).join(', ');
   };
   
-  let html='<div class="card" style="border-color:var(--accent);margin-bottom:16px"><h3 style="color:var(--accent);margin-bottom:4px">Your DNA: '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">All artists with ≥100 RA followers from your booking history. Click any artist to use as a discovery seed.</div>';
+  let html='<div class="card" style="border-color:var(--accent);margin-bottom:16px"><h3 style="color:var(--accent);margin-bottom:4px">Your DNA: '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">All artists with ≥100 followers from your booking history. Click any artist to use as a discovery seed.</div>';
   
   for(const p of profiles){
     const fc=p.raFollowers!=null?fmt(p.raFollowers):'?';
@@ -5244,7 +5298,7 @@ async function runDiscover(){
     prog(null,45,cityIdx.size+' artists in exclusion window');
 
     let raX=0;const afterRA=[];
-    for(const c of cands){const hit=idxLookup(cityIdx,c.name);if(hit){raX++;prog(null,50,'✗ '+c.name+' — '+fdate(hit.date)+' @ '+hit.venue)}else afterRA.push(c)}
+    for(const c of cands){const hit=idxLookup(cityIdx,c.name);if(hit){raX++;prog(null,50,'✗ '+c.name+' at '+hit.venue+' on '+fdate(hit.date))}else afterRA.push(c)}
     prog(raX+' excluded, '+afterRA.length+' remain',50);
 
     // Step 4: worldwide same-day
@@ -5252,7 +5306,7 @@ async function runDiscover(){
     const wwIdx=await raWorldwide(date);
     prog(null,60,wwIdx.size+' artists worldwide on '+fdate(date));
     let sdX=0;const afterSD=[];
-    for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' — '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
+    for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' at '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
     prog(sdX+' same-day conflicts, '+afterSD.length+' remain',65);
 
     // Step 5: Genres (Last.fm — free, no quota) + Spotify listeners (SC, optional)
@@ -5270,7 +5324,7 @@ async function runDiscover(){
           // Genre filter
           if(c.genres&&c.genres.length>0&&!genreAllowed(c.genres)){
             genreSkipped++;
-            prog(null,70+Math.round((i/afterSD.length)*25),'✗ '+c.name+' — genre excluded ('+c.genres.slice(0,2).join(', ')+')');
+            prog(null,70+Math.round((i/afterSD.length)*25),'✗ '+c.name+' genre excluded ('+c.genres.slice(0,2).join(', ')+')');
             return;
           }
           // Spotify city listeners — SC, but only if uuid known (X-Ray path)
@@ -5346,9 +5400,9 @@ function renderDiscover(arts,hasDNA,diag){
     }
     const genreTags=(a.genres||[]).slice(0,3).map(g=>'<span class="tag" style="opacity:0.7">'+esc(g)+'</span>').join('');
     const sourceBadge=a.sources?.includes('ra_official')
-      ?'<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent);font-size:0.5rem">RA related</span>'
+      ?'<span class="tag" style="background:var(--accent-glow);border-color:var(--accent);color:var(--accent);font-size:0.5rem">similar artist</span>'
       :a.sources?.includes('ra_local')
-      ?'<span class="tag" style="background:var(--blue-dim);border-color:var(--blue);color:var(--blue);font-size:0.5rem">RA circuit</span>'
+      ?'<span class="tag" style="background:var(--blue-dim);border-color:var(--blue);color:var(--blue);font-size:0.5rem">circuit</span>'
       :'';
     h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
       <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags">${tags}${raBadge}${sourceBadge}${genreTags}</div>
@@ -5811,7 +5865,7 @@ async function runRouting(){
     // Layer 3: RA official related artists for your top 5 DNA artists
     // RA's own similarity algorithm — exactly what shows on their artist pages
     const topDnaArtists=yourArtists.slice(0,5);
-    rteProg('Fetching RA related artists for your top bookings…',15);
+    rteProg('Fetching similar artists for your top bookings…',15);
     let raRelatedCount=0;
     for(const seedName of topDnaArtists){
       try{
@@ -5820,14 +5874,14 @@ async function runRouting(){
           const n=norm(r.name);
           if(!scenePool.has(n)){
             const rel=sceneRelevance(r.name,dna);
-            scenePool.set(n,{name:r.name,relevance:rel.score,reason:rel.reason||('RA related to '+seedName)});
+            scenePool.set(n,{name:r.name,relevance:rel.score,reason:rel.reason||('Similar to '+seedName)});
             raRelatedCount++;
           }
         }
-        rteProg(null,null,'RA related for '+seedName+': '+related.length+' artists');
+        rteProg(null,null,'Related artists for '+seedName+': '+related.length+' found');
       }catch(e){}
     }
-    rteProg(null,30,'Scene pool: '+scenePool.size+' artists ('+raRelatedCount+' from RA related)');
+    rteProg(null,30,'Scene pool: '+scenePool.size+' artists ('+raRelatedCount+' from similar artist data)');
 
     // ═══ STEP 2: Scan nearby cities for those dates ═══
     rteProg('Scanning '+nearby.length+' nearby cities…',35);
@@ -5880,7 +5934,7 @@ async function runRouting(){
     const routingOpps=[];
     for(const m of matches){
       if(idxLookup(cityIdx,m.name)){
-        rteProg(null,null,'✗ '+m.name+' — already booked in '+cityName());
+        rteProg(null,null,'✗ '+m.name+' already touring '+cityName()+' in window');
         continue;
       }
       routingOpps.push(m);
@@ -5915,8 +5969,8 @@ function renderRouting(arts, meta={}){
 
   const byReason={
     booked:arts.filter(a=>a.reason?.includes('booked')),
-    coBilled:arts.filter(a=>a.reason?.includes('Co-billed')),
-    raRelated:arts.filter(a=>a.reason?.includes('RA related')),
+    coBilled:arts.filter(a=>a.reason?.includes('Co-billed')||a.reason?.includes('lineup')),
+    similar:arts.filter(a=>a.reason?.includes('Similar')||a.reason?.includes('network')||a.reason?.includes('connection')||a.reason?.includes('adjacent')),
   };
 
   let h=`<div class="section-head">
@@ -5928,7 +5982,7 @@ function renderRouting(arts, meta={}){
     Already in the region means <strong>30–50% lower fees</strong> and a motivated booking conversation.
   </p>
   <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-faint);margin-bottom:20px">
-    Scene pool: ${scenePoolSize||0} artists · ${byReason.booked.length} you've booked · ${byReason.coBilled.length} co-billed · ${byReason.raRelated.length} RA related
+    Scene pool: ${scenePoolSize||0} artists · ${byReason.booked.length} you've booked · ${byReason.coBilled.length} co-billed · ${byReason.similar.length} similar artists
   </div>`;
 
   arts.forEach((a,i)=>{
@@ -6652,14 +6706,26 @@ async function genReport(){
     const cityEvents=await getCityEvents(ago,now);
     const totalEv=cityEvents.length;
     
-    // Your events
-    const _reportVenueId=raVenueId(p.venue||'');
-    const venueEv=[];
-    for(const ev of cityEvents){
-      const isOwn=_reportVenueId&&ev.venueId
-        ?String(ev.venueId)===String(_reportVenueId)
-        :p.venue&&(ev.venue||'').toLowerCase()===p.venue.toLowerCase();
-      if(isOwn)venueEv.push(ev);
+    const isPromoterMode=P().type==='promoter';
+
+    // Your events: promoters use DNA archive (accurate), venues use city cache (by venue ID/name)
+    let venueEv=[];
+    if(isPromoterMode&&hasDNA&&dna._venueEvents&&dna._venueEvents.length){
+      // Use DNA stored events — these are the actual promoter-fetched events from RA
+      // Filter to last 12 months for the report
+      venueEv=dna._venueEvents.filter(ev=>{
+        if(!ev.date)return false;
+        return new Date(ev.date)>=ago;
+      });
+    } else {
+      // Venue mode: filter city cache by venue ID or name
+      const _reportVenueId=raVenueId(p.venue||'');
+      for(const ev of cityEvents){
+        const isOwn=_reportVenueId&&ev.venueId
+          ?String(ev.venueId)===String(_reportVenueId)
+          :p.venue&&(ev.venue||'').toLowerCase()===p.venue.toLowerCase();
+        if(isOwn)venueEv.push(ev);
+      }
     }
     const vArt=new Set();for(const ev of venueEv)for(const a of(ev.artists||[]))vArt.add(a.name||a);
     const evWithAtt=venueEv.filter(e=>e.attending>0).sort((a,b)=>b.attending-a.attending);
@@ -6669,7 +6735,7 @@ async function genReport(){
 
     // ═══ OVERVIEW CARD ═══
     h+=`<div class="card" style="border-color:var(--accent)">
-      <h3 style="color:var(--accent);font-size:1rem;margin-bottom:12px">${esc(p.venue)} — 12-Month Intelligence Report</h3>
+      <h3 style="color:var(--accent);font-size:1rem;margin-bottom:12px">${esc(p.venue)}: 12-Month Intelligence Report</h3>
       <div class="stats">
         <div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events</div></div>
         <div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div>
