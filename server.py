@@ -4,7 +4,7 @@ Sub Pulse Server v3 — RA proxy, Last.fm, MusicBrainz, Claude AI email drafting
 
 Run:  ANTHROPIC_API_KEY=sk-ant-... python3 server.py
       or: python3 server.py  (email drafting will be disabled)
-Open: http://localhost:8001
+Open: http://localhost:8000
 
 """
 
@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 from pathlib import Path
 
-PORT = int(os.environ.get("PORT", 8001))
+PORT = int(os.environ.get("PORT", 8000))
 
 # Anthropic Claude API — for smart email drafting
 CLAUDE_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")

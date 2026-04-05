@@ -2,7 +2,7 @@
 """
 SubPulse — Full Artist Image Database Builder
 
-Builds a complete image database of every RA artist with 100+ followers
+Builds a complete image database of every RA artist with 20+ followers
 who has appeared on at least one event in the last 24 months.
 
 This ships with the app. Users see instant images from first load.
@@ -45,8 +45,8 @@ IMG_DIR = Path("img/artists")
 INDEX_FILE = Path("artist_images.json")
 PROGRESS_FILE = Path("_artist_db_progress.json")
 THUMB_SIZE = (100, 100)
-MIN_FOLLOWERS = 100
-MONTHS_BACK = 24
+MIN_FOLLOWERS = 20
+MONTHS_BACK = 12
 RA_RATE = 1.0  # seconds between RA page scrapes
 
 # Top cities by event volume (RA area IDs)
@@ -126,20 +126,20 @@ def fetch_city_artists(city_name, area_id):
 
         page = 1
         while True:
-            query = """
-            query Events($filters: EventFilters, $page: Int, $pageSize: Int) {
-              eventListings(filters: $filters, pageSize: $pageSize, page: $page) {
-                data { event { artists { name } } }
+            query = """query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){
+              eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){
+                data{event{artists{name}}}
                 totalResults
               }
             }"""
             variables = {
-                "filters": {
+                "f": {
                     "areas": {"eq": area_id},
                     "listingDate": {"gte": start_str, "lte": end_str},
                 },
-                "page": page,
-                "pageSize": 50,
+                "fo": {},
+                "p": page,
+                "s": 50,
             }
             result = ra_graphql(query, variables)
             if not result:
@@ -289,7 +289,7 @@ def main():
     # ── Phase 2: Check follower counts ──────────────────────────
     all_artists = prog["all_artists"]
     checked = prog.get("checked_followers", {})
-    qualified = {}  # norm → name (100+ followers)
+    qualified = {}  # norm → name (20+ followers)
 
     if prog["phase"] == "followers":
         unchecked = {n: name for n, name in all_artists.items() if n not in checked and n not in index}
@@ -324,7 +324,7 @@ def main():
         if fc >= MIN_FOLLOWERS and n in all_artists and n not in index:
             qualified[n] = all_artists[n]
 
-    print(f"\nQualified artists (100+ followers): {len(qualified)}")
+    print(f"\nQualified artists (20+ followers): {len(qualified)}")
     print(f"Already in index: {len(index)}")
     to_fetch = {n: name for n, name in qualified.items() if n not in index}
     print(f"Images to fetch: {len(to_fetch)}\n")
