@@ -65,10 +65,17 @@ _bp_token_expires = 0
 _bp_lock = threading.Lock()
 
 
-class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
-    """Don't follow redirects — we need to capture the Location header."""
+class _CodeCaptureHandler(urllib.request.HTTPRedirectHandler):
+    """Follow all redirects, but capture the authorization code when it appears."""
+    captured_code = None
+    
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise urllib.error.HTTPError(newurl, code, msg, headers, fp)
+        import re as _re
+        m = _re.search(r'[?&]code=([^&]+)', newurl)
+        if m:
+            _CodeCaptureHandler.captured_code = m.group(1)
+            return None  # stop following
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
 class LibroHandler(http.server.SimpleHTTPRequestHandler):
@@ -305,13 +312,10 @@ Rules:
     # ── Beatport v4 API ──
 
     def _bp_get_token(self):
-        """Get or refresh Beatport access token using authorization_code flow.
-        
-        Automates the browser login:
-        1. GET /authorize/ page (get session cookies + CSRF)
-        2. POST login form with username/password
-        3. Capture authorization code from redirect
-        4. Exchange code for access token
+        """Get Beatport token using the exact beets-beatport4 auth flow:
+        1. POST /auth/login/ with JSON credentials → session cookies
+        2. GET /auth/o/authorize/ with allow_redirects=False → code in Location header
+        3. POST /auth/o/token/ with code → access token
         """
         global _bp_token, _bp_token_expires
         with _bp_lock:
@@ -319,124 +323,88 @@ Rules:
                 return _bp_token
 
             import http.cookiejar
+            import re as _re
             
-            redirect_uri = "https://api.beatport.com/v4/auth/o/post-message"
-            authorize_url = (
-                f"{BP_BASE}/auth/o/authorize/"
-                f"?client_id={BP_CLIENT_ID}"
-                f"&response_type=code"
-                f"&redirect_uri={urllib.parse.quote(redirect_uri, safe='')}"
-            )
+            redirect_uri = f"{BP_BASE}/auth/o/post-message/"
+            cj = http.cookiejar.CookieJar()
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 
             try:
-                # Step 1: GET authorize page — capture cookies + find login form
-                cj = http.cookiejar.CookieJar()
-                opener = urllib.request.build_opener(
-                    urllib.request.HTTPCookieProcessor(cj),
-                    _NoRedirectHandler()
-                )
-                req1 = urllib.request.Request(authorize_url, headers={
-                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-                    "Accept": "text/html",
-                })
-                resp1 = opener.open(req1, timeout=15)
-                page = resp1.read().decode("utf-8", errors="ignore")
-                resp1.close()
-                print(f"\033[36m[BP]\033[0m Step 1: authorize page {resp1.status}")
-
-                # Extract CSRF token if present
-                import re as _re
-                csrf = ""
-                m = _re.search(r'name=["\']csrfmiddlewaretoken["\'][^>]*value=["\']([^"\']+)["\']', page)
-                if m:
-                    csrf = m.group(1)
-                if not csrf:
-                    for ck in cj:
-                        if 'csrf' in ck.name.lower():
-                            csrf = ck.value
-                            break
-                print(f"\033[36m[BP]\033[0m CSRF: {'found' if csrf else 'not found'}")
-
-                # Step 2: POST login form
-                login_data = {
-                    "username": BP_USERNAME,
-                    "password": BP_PASSWORD,
-                    "client_id": BP_CLIENT_ID,
-                    "response_type": "code",
-                    "redirect_uri": redirect_uri,
-                    "allow": "Authorize",
-                }
-                if csrf:
-                    login_data["csrfmiddlewaretoken"] = csrf
-
-                req2 = urllib.request.Request(
-                    authorize_url,
-                    data=urllib.parse.urlencode(login_data).encode(),
+                # Step 1: POST /auth/login/ with JSON body
+                print(f"\033[36m[BP]\033[0m Step 1: logging in...")
+                login_body = json.dumps({"username": BP_USERNAME, "password": BP_PASSWORD}).encode()
+                req1 = urllib.request.Request(
+                    f"{BP_BASE}/auth/login/",
+                    data=login_body,
                     headers={
-                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "Referer": authorize_url,
-                        "Origin": "https://api.beatport.com",
+                        "Content-Type": "application/json",
+                        "User-Agent": "Mozilla/5.0",
+                        "Accept": "application/json",
                     },
                 )
+                resp1 = opener.open(req1, timeout=15)
+                data1 = json.loads(resp1.read().decode())
+                resp1.close()
+                if "username" not in data1:
+                    print(f"\033[31m[BP]\033[0m Login failed: {json.dumps(data1)[:200]}")
+                    return None
+                print(f"\033[36m[BP]\033[0m Step 1: logged in as {data1.get('username')}")
+
+                # Step 2: GET /auth/o/authorize/ — DON'T follow redirect, capture code from Location
+                print(f"\033[36m[BP]\033[0m Step 2: fetching auth code...")
+                auth_params = urllib.parse.urlencode({
+                    "response_type": "code",
+                    "client_id": BP_CLIENT_ID,
+                    "redirect_uri": redirect_uri,
+                })
+                auth_url = f"{BP_BASE}/auth/o/authorize/?{auth_params}"
+                req2 = urllib.request.Request(auth_url, headers={
+                    "User-Agent": "Mozilla/5.0",
+                    "Accept": "text/html",
+                })
+                # Use a no-redirect opener for this step only
+                no_redir = urllib.request.build_opener(
+                    urllib.request.HTTPCookieProcessor(cj),
+                    _CodeCaptureHandler()
+                )
                 try:
-                    resp2 = opener.open(req2, timeout=15)
-                    body2 = resp2.read().decode("utf-8", errors="ignore")
-                    status2 = resp2.status
-                    headers2 = dict(resp2.headers)
+                    resp2 = no_redir.open(req2, timeout=15)
+                    resp2.read()
                     resp2.close()
                 except urllib.error.HTTPError as e:
-                    status2 = e.code
-                    headers2 = dict(e.headers)
-                    body2 = e.read().decode("utf-8", errors="ignore")
-
-                print(f"\033[36m[BP]\033[0m Step 2: login POST {status2}")
-
-                # Step 3: Extract authorization code from redirect
-                code = None
-                # Check Location header (302 redirect)
-                location = headers2.get("Location", headers2.get("location", ""))
-                if location and "code=" in location:
+                    # 302 is expected — check Location header
+                    location = e.headers.get("Location", "")
+                    e.close()
                     m = _re.search(r'code=([^&]+)', location)
                     if m:
-                        code = m.group(1)
-                
-                # Check response body for code (post-message page embeds it)
-                if not code and body2:
-                    m = _re.search(r'["\']code["\']\s*:\s*["\']([^"\']+)["\']', body2)
-                    if m:
-                        code = m.group(1)
-                    if not code:
-                        m = _re.search(r'code=([a-zA-Z0-9_-]+)', body2)
-                        if m:
-                            code = m.group(1)
+                        _CodeCaptureHandler.captured_code = m.group(1)
 
+                code = _CodeCaptureHandler.captured_code
                 if not code:
-                    print(f"\033[31m[BP]\033[0m No auth code found. Status: {status2}")
-                    print(f"\033[31m[BP]\033[0m Location: {location[:200] if location else 'none'}")
-                    print(f"\033[31m[BP]\033[0m Body: {body2[:300]}")
+                    print(f"\033[31m[BP]\033[0m No auth code in redirect")
                     return None
+                print(f"\033[36m[BP]\033[0m Step 2: got auth code: {code[:20]}...")
 
-                print(f"\033[36m[BP]\033[0m Step 3: got auth code: {code[:20]}...")
-
-                # Step 4: Exchange code for token
-                token_data = urllib.parse.urlencode({
-                    "grant_type": "authorization_code",
-                    "client_id": BP_CLIENT_ID,
+                # Step 3: POST /auth/o/token/ — exchange code for token
+                print(f"\033[36m[BP]\033[0m Step 3: exchanging code for token...")
+                token_params = urllib.parse.urlencode({
                     "code": code,
+                    "grant_type": "authorization_code",
                     "redirect_uri": redirect_uri,
-                }).encode()
-                req3 = urllib.request.Request(BP_TOKEN_URL, data=token_data, headers={
-                    "Content-Type": "application/x-www-form-urlencoded",
+                    "client_id": BP_CLIENT_ID,
+                })
+                token_url = f"{BP_TOKEN_URL}?{token_params}"
+                req3 = urllib.request.Request(token_url, data=b"", headers={
                     "User-Agent": "SubPulse/1.0",
                     "Accept": "application/json",
-                })
-                with urllib.request.urlopen(req3, timeout=15) as resp3:
-                    td = json.loads(resp3.read())
-                    _bp_token = td.get("access_token", "")
-                    _bp_token_expires = time.time() + td.get("expires_in", 3600)
-                    print(f"\033[36m[BP]\033[0m ✓ Token obtained, expires in {td.get('expires_in', '?')}s")
-                    return _bp_token
+                }, method="POST")
+                resp3 = opener.open(req3, timeout=15)
+                td = json.loads(resp3.read().decode())
+                resp3.close()
+                _bp_token = td.get("access_token", "")
+                _bp_token_expires = time.time() + td.get("expires_in", 3600)
+                print(f"\033[36m[BP]\033[0m ✓ Token obtained, expires in {td.get('expires_in', '?')}s")
+                return _bp_token
 
             except Exception as e:
                 print(f"\033[31m[BP AUTH ERROR]\033[0m {e}")
