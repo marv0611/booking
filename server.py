@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Night Pulse Server v3 — RA proxy, Last.fm, MusicBrainz, Claude AI email drafting.
+Sub Pulse Server v3 — RA proxy, Last.fm, MusicBrainz, Claude AI email drafting.
 
 Run:  ANTHROPIC_API_KEY=sk-ant-... python3 server.py
       or: python3 server.py  (email drafting will be disabled)
@@ -47,7 +47,7 @@ LASTFM_KEY = os.environ.get("LASTFM_KEY", "9985c4c3971211d3a422c8477c5ec7cd")
 # MusicBrainz
 MB_BASE = "https://musicbrainz.org/ws/2"
 MB_HDRS = {
-    "User-Agent": "NightPulse/1.0 (booking intelligence)",
+    "User-Agent": "SubPulse/1.0 (booking intelligence)",
     "Accept": "application/json",
 }
 _mb_lock = threading.Lock()
@@ -246,7 +246,7 @@ Rules:
         })
         url = f"{LASTFM_BASE}/?{qs}"
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "NightPulse/1.0"})
+            req = urllib.request.Request(url, headers={"User-Agent": "SubPulse/1.0"})
             with urllib.request.urlopen(req, timeout=10) as resp:
                 self._send(200, resp.read())
         except urllib.error.HTTPError as e:
@@ -310,7 +310,7 @@ if __name__ == "__main__":
     else:
         print(f"⚠ No ANTHROPIC_API_KEY — email drafting will use templates")
     with http.server.HTTPServer(("", PORT), LibroHandler) as httpd:
-        print(f"NIGHT PULSE running -> http://localhost:{PORT}")
+        print(f"SUB PULSE running -> http://localhost:{PORT}")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

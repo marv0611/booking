@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Night Pulse · Booking Intelligence</title>
+<title>Sub Pulse · Booking Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════════
-   NIGHT PULSE — UNIFIED DESIGN SYSTEM
+   SUB PULSE — UNIFIED DESIGN SYSTEM
    No legacy. No overrides. One source of truth.
    ══════════════════════════════════════════════════════════ */
 
@@ -100,7 +101,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:
 .input-group{margin-bottom:16px}
 .input-group label{display:block;font-family:var(--sans);font-weight:600;font-size:13px;color:var(--text-dim);margin-bottom:8px}
 .input-group .hint{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:4px}
-textarea,input[type="text"],input[type="date"],input[type="number"],select{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 14px;width:100%;outline:none;transition:border-color .12s}
+textarea,input[type="text"],input[type="date"],input[type="number"],select{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 14px;width:100%;outline:none;transition:border-color .12s;color-scheme:dark}
 textarea:focus,input:focus,select:focus{border-color:var(--amber)}
 select{font-family:var(--mono);font-size:13px;cursor:pointer}
 .date-wrap{position:relative}
@@ -143,7 +144,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 .v3-rlbl{font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:2px}
 
 /* Expanded card */
-.v3-exp{padding:0 18px 20px 70px;animation:fadeIn .15s ease}
+.v3-exp{display:none;padding:0 18px 20px 70px;animation:fadeIn .15s ease}
 .v3-hero{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--border)}
 .v3-hcol{padding:10px 14px;background:var(--bg3);border-radius:6px}
 .v3-hlbl{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px}
@@ -253,7 +254,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 .dna-log{font-family:var(--mono);font-size:12px;color:var(--text-faint);line-height:1.8}
 
 /* ── ONBOARDING ── */
-#onboarding{max-width:520px;margin:40px auto;padding:0 24px}
+#onboarding{max-width:520px;margin:40px auto;padding:0 24px;overflow-y:auto;max-height:calc(100vh - 60px)}
 .ob-dots{display:flex;gap:8px;margin-bottom:24px}
 .ob-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.08);transition:background .2s}
 .ob-dot.active{background:var(--amber)}
@@ -320,6 +321,94 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 @media(min-width:641px){
   .np-bnav{display:none!important}
 }
+
+/* ── AUTOCOMPLETE DROPDOWN ── */
+.ac-wrap{position:relative}
+.ac-dropdown{position:absolute;top:calc(100% + 4px);left:0;width:100%;min-width:280px;background:var(--bg2);border:1px solid var(--border-hi);border-radius:8px;max-height:280px;overflow-y:auto;z-index:300;display:none;box-shadow:0 12px 32px rgba(0,0,0,.6)}
+.ac-dropdown.open{display:block}
+.ac-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .08s;border-bottom:1px solid rgba(255,255,255,.03)}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item.selected{background:rgba(245,158,11,.06)}
+.ac-img-wrap{width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:13px;color:var(--text-faint)}
+.ac-img-wrap img{width:100%;height:100%;object-fit:cover}
+.ac-name{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--text)}
+.ac-sub{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-top:1px}
+
+/* ── CHIPS (selected artists) ── */
+.ac-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ac-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border-hi);border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text)}
+.ac-chip-ph{width:20px;height:20px;border-radius:50%;background:var(--a10);color:var(--amber);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ac-chip-x{cursor:pointer;color:var(--text-faint);font-size:16px;margin-left:4px;line-height:1;transition:color .1s}
+.ac-chip-x:hover{color:var(--red)}
+
+/* ── PRIORITY ITEMS (onboarding drag) ── */
+.priority-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;margin-bottom:4px;cursor:grab;transition:border-color .1s;user-select:none}
+.priority-item:hover{border-color:var(--border-hi)}
+.priority-item:active{cursor:grabbing;border-color:var(--amber)}
+.priority-num{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber);width:20px;text-align:center;flex-shrink:0}
+
+/* ── COMPETITOR ENTRY (onboarding) ── */
+.competitor-entry{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;margin-bottom:4px}
+.competitor-entry .comp-name{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--text);flex:1}
+.competitor-entry .comp-remove{cursor:pointer;color:var(--text-faint);font-size:14px;transition:color .1s}
+.competitor-entry .comp-remove:hover{color:var(--red)}
+
+/* ── INTEL CHIPS ── */
+.intel-quick-chip{font-family:var(--mono);font-size:11px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text-faint);cursor:pointer;background:transparent;transition:all .1s}
+.intel-quick-chip:hover{border-color:var(--amber);color:var(--amber)}
+
+
+/* ── INTEL / SCENE INTELLIGENCE ── */
+.intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.intel-block{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px}
+.intel-block-title{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px}
+.intel-entity-card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:6px}
+.intel-entity-meta{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-top:4px}
+.intel-artist-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.intel-artist-row:last-child{border-bottom:none}
+.intel-bar{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;flex:1}
+.intel-bar-fill{height:100%;border-radius:2px;background:var(--amber)}
+.intel-search-wrap{position:relative;margin-bottom:16px}
+.intel-section-divider{height:1px;background:var(--border);margin:24px 0}
+
+/* ── DNA PROGRESS ── */
+.dna-progress{margin:16px 0}
+
+
+/* ── ENHANCED CARD ELEMENTS ── */
+.v3-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:4px;vertical-align:middle}
+.v3-facts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px}
+.v3-fact{padding:10px 14px;background:var(--bg3);border-radius:6px}
+.v3-fact-l{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px}
+.v3-fact-v{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text)}
+.v3-bars{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.v3-bar{display:flex;align-items:center;gap:8px}
+.v3-bar-l{font-family:var(--sans);font-size:12px;color:var(--text-dim);width:90px;flex-shrink:0}
+.v3-bar-t{flex:1;height:5px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.v3-bar-f{height:100%;border-radius:3px;background:var(--amber);transition:width .4s ease}
+.v3-bar-f.g{background:var(--green)}
+.v3-bar-v{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text-dim);width:24px;text-align:right;flex-shrink:0}
+.v3-sec-title{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.v3-sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.v3-comp-list{display:flex;flex-direction:column;gap:3px;margin-bottom:16px}
+.v3-comp-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg3);border-radius:4px;font-size:12px}
+.v3-comp-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.v3-comp-name{color:var(--text);font-weight:500;flex:1}
+.v3-comp-when{font-family:var(--mono);font-size:10px;color:var(--text-faint)}
+
+
+/* ── ROUTING CARDS ── */
+.v3-rlist{display:flex;flex-direction:column;gap:4px}
+.v3-rcard{display:flex;align-items:center;gap:12px;padding:14px 18px;border:1px solid var(--border);border-radius:6px;transition:border-color .12s;cursor:pointer}
+.v3-rcard:hover{border-color:var(--border-hi)}
+
+/* ── SAVED NOTES ── */
+.notes{background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--sans);font-size:13px;padding:10px 14px;width:100%;outline:none;transition:border-color .12s}
+.notes:focus{border-color:var(--amber)}
+.notes::placeholder{color:var(--text-faint)}
+
+
+.v3-card.open .v3-exp{display:block}
 </style>
 </head>
 <body>
@@ -329,7 +418,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 
   <!-- TOP NAV -->
   <div class="np-hdr">
-    <div class="logo">NIGHT<span>PULSE</span></div>
+    <div class="logo">Sub<span>Pulse</span></div>
     <div class="np-tabs" id="npTabs" style="display:none">
       <div class="np-tab active" data-screen="book" onclick="npNav('book',this)">Discover <span class="np-tab-count" id="discoverCount"></span></div>
       <div class="np-tab" data-screen="tonight" onclick="npNav('tonight',this)">Night Scanner <span class="np-tab-count" id="scannerCount"></span></div>
@@ -361,7 +450,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
   <div id="onboarding">
     <div class="ob-dots"><div class="ob-dot active" id="d1"></div><div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div><div class="ob-dot" id="d4" style="display:none"></div></div>
     <div class="ob-step active" id="ob1">
-      <h2>Welcome to Night Pulse</h2>
+      <h2>Welcome to Sub Pulse</h2>
       <div class="sub">The booking intelligence platform for electronic music. Set up takes 2 minutes, then everything calibrates automatically.</div>
       <div class="input-group"><label>I am a…</label>
         <div class="seg-picker" id="obTypePicker" style="max-width:300px">
@@ -422,9 +511,9 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
       <div class="input-group">
         <label>3 artists that define your sound</label>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <div class="ac-wrap" style="display:flex;align-items:center;gap:10px;position:relative"><span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);width:16px;flex-shrink:0">1</span><input type="text" id="obSoundArtist1" placeholder="e.g. Kerri Chandler" autocomplete="off" style="flex:1"></div>
-          <div class="ac-wrap" style="display:flex;align-items:center;gap:10px;position:relative"><span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);width:16px;flex-shrink:0">2</span><input type="text" id="obSoundArtist2" placeholder="e.g. CC:DISCO!" autocomplete="off" style="flex:1"></div>
-          <div class="ac-wrap" style="display:flex;align-items:center;gap:10px;position:relative"><span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);width:16px;flex-shrink:0">3</span><input type="text" id="obSoundArtist3" placeholder="e.g. Antal" autocomplete="off" style="flex:1"></div>
+          <div class="ac-wrap"><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--mono);font-size:12px;color:var(--text-faint);width:16px;flex-shrink:0">1</span><input type="text" id="obSoundArtist1" placeholder="e.g. Kerri Chandler" autocomplete="off" style="flex:1"></div></div>
+          <div class="ac-wrap"><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--mono);font-size:12px;color:var(--text-faint);width:16px;flex-shrink:0">2</span><input type="text" id="obSoundArtist2" placeholder="e.g. CC:DISCO!" autocomplete="off" style="flex:1"></div></div>
+          <div class="ac-wrap"><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--mono);font-size:12px;color:var(--text-faint);width:16px;flex-shrink:0">3</span><input type="text" id="obSoundArtist3" placeholder="e.g. Antal" autocomplete="off" style="flex:1"></div></div>
         </div>
         <span class="hint">These anchor your discovery engine and competition detection</span>
       </div>
@@ -432,17 +521,17 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
         <label>What matters most to you? <span style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">drag to reorder</span></label>
         <div id="obPriorityRank" style="display:flex;flex-direction:column;gap:6px">
           <div class="priority-item" data-priority="discover" draggable="true" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;cursor:grab;transition:all 0.15s">
-            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--amber);width:18px;font-weight:700" class="priority-num">1</span>
+            <span style="font-family:var(--mono);font-size:0.75rem;color:var(--amber);width:18px;font-weight:700" class="priority-num">1</span>
             <span style="font-size:0.875rem;font-weight:600;flex:1">Discovering new artists</span>
             <span style="color:var(--text);font-size:1rem;letter-spacing:1px;opacity:0.5;cursor:grab">⠿</span>
           </div>
           <div class="priority-item" data-priority="competition" draggable="true" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;cursor:grab;transition:all 0.15s">
-            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--amber);width:18px;font-weight:700" class="priority-num">2</span>
+            <span style="font-family:var(--mono);font-size:0.75rem;color:var(--amber);width:18px;font-weight:700" class="priority-num">2</span>
             <span style="font-size:0.875rem;font-weight:600;flex:1">Avoiding competition</span>
             <span style="color:var(--text);font-size:1rem;letter-spacing:1px;opacity:0.5;cursor:grab">⠿</span>
           </div>
           <div class="priority-item" data-priority="routing" draggable="true" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;cursor:grab;transition:all 0.15s">
-            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--amber);width:18px;font-weight:700" class="priority-num">3</span>
+            <span style="font-family:var(--mono);font-size:0.75rem;color:var(--amber);width:18px;font-weight:700" class="priority-num">3</span>
             <span style="font-size:0.875rem;font-weight:600;flex:1">Finding routing deals</span>
             <span style="color:var(--text);font-size:1rem;letter-spacing:1px;opacity:0.5;cursor:grab">⠿</span>
           </div>
@@ -521,7 +610,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
         </div>
         <div class="dna-progress" id="dnaProgress">
           <div class="progress-bar" style="margin-bottom:6px"><div class="progress-fill" id="dnaFill" style="width:0%"></div></div>
-          <div id="dnaLbl" style="font-family:var(--mono);font-weight:500;font-size:0.65rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px;margin:0"></div>
+          <div id="dnaLbl" style="font-family:var(--mono);font-weight:500;font-size:0.75rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px;margin:0"></div>
         </div>
       </div>
       <div id="dnaDet" class="dna-log" style="display:none"></div>
@@ -540,7 +629,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 
     <!-- Collapsible filters -->
     <div id="v3-filters" style="display:none;flex-wrap:wrap;gap:8px;margin-bottom:28px">
-      <div style="width:100%;font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;margin-bottom:8px">FRESHNESS</div>
+      <div style="width:100%;font-family:var(--mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;margin-bottom:8px">FRESHNESS</div>
       <div class="seg-picker" id="segBack" style="border:1px solid var(--border)">
         <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
         <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
@@ -548,14 +637,14 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
         <button onclick="setPicker('segBack','filterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
       </div>
       <input type="hidden" id="filterBack" value="6">
-      <div style="width:100%;font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;margin-top:12px;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
+      <div style="width:100%;font-family:var(--mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;margin-top:12px;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
       <div class="seg-picker" id="segFwd" style="border:1px solid var(--border)">
         <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
         <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
         <button onclick="setPicker('segFwd','filterFwd',6)" data-v="6">6<span class="seg-sub">months</span></button>
       </div>
       <input type="hidden" id="filterFwd" value="3">
-      <div style="width:100%;font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;margin-top:12px;margin-bottom:8px">DATE &amp; SEEDS</div>
+      <div style="width:100%;font-family:var(--mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;margin-top:12px;margin-bottom:8px">DATE &amp; SEEDS</div>
       <div class="row" style="width:100%;gap:10px">
         <div class="input-group" style="margin:0">
           <div class="date-wrap">
@@ -579,7 +668,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
     <span id="fCityD" style="display:none"></span>
 
     <!-- Routing opportunity banner (injected by JS when routing data available) -->
-    <div id="np-routing-banner" style="display:none" class="rf-card" style="cursor:pointer" onclick="npNav('routing',null)">
+    <div id="np-routing-banner" style="display:none;cursor:pointer" class="rf-card" onclick="npNav('routing',null)">
       <div class="rf-head"><span class="rf-arrow">↗</span><span id="rf-head-txt">ROUTING OPPORTUNITY</span></div>
       <div class="rf-rows" id="rf-artists-list"></div>
       <div class="rf-foot">
@@ -599,7 +688,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 
     <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap">
       <div class="input-group" style="margin:0;flex:1;min-width:200px">
-        <label style="font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;color:#807C70">YOUR EVENT DATE</label>
+        <label style="font-family:var(--mono);font-size:0.75rem;letter-spacing:1px;color:#807C70">YOUR EVENT DATE</label>
         <div class="date-wrap">
           <input type="date" id="routeDate" onchange="syncDateToAll(this.value)">
         </div>
@@ -615,12 +704,12 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 
     <!-- Collapsible filters -->
     <details style="margin-bottom:24px">
-      <summary style="font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;cursor:pointer;list-style:none;padding:8px 0;border-top:1px solid var(--t06)">
+      <summary style="font-family:var(--mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;color:#807C70;cursor:pointer;list-style:none;padding:8px 0;border-top:1px solid var(--t06)">
         ▸ AVAILABILITY FILTERS
       </summary>
       <div style="padding-top:16px;display:flex;flex-wrap:wrap;gap:20px">
         <div>
-          <div style="font-family:var(--mono);font-size:0.65rem;color:#807C70;margin-bottom:8px">HASN'T PLAYED CITY IN</div>
+          <div style="font-family:var(--mono);font-size:0.75rem;color:#807C70;margin-bottom:8px">HASN'T PLAYED CITY IN</div>
           <div class="seg-picker" id="rSegBack" style="border:1px solid var(--border)">
             <button onclick="setPicker('rSegBack','rFilterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
             <button onclick="setPicker('rSegBack','rFilterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
@@ -630,7 +719,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
           <input type="hidden" id="rFilterBack" value="6">
         </div>
         <div>
-          <div style="font-family:var(--mono);font-size:0.65rem;color:#807C70;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
+          <div style="font-family:var(--mono);font-size:0.75rem;color:#807C70;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
           <div class="seg-picker" id="rSegFwd" style="border:1px solid var(--border)">
             <button onclick="setPicker('rSegFwd','rFilterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
             <button onclick="setPicker('rSegFwd','rFilterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
@@ -653,7 +742,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
     </div>
     <div id="tn-date-row" style="display:none;align-items:flex-end;gap:10px;margin-bottom:24px;flex-wrap:wrap">
       <div class="input-group" style="margin:0">
-        <label style="font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;color:#807C70">DATE</label>
+        <label style="font-family:var(--mono);font-size:0.75rem;letter-spacing:1px;color:#807C70">DATE</label>
         <input type="date" id="scanDate" onchange="syncDateToAll(this.value)">
       </div>
       <button class="btn btn-red" onclick="runScan();document.getElementById('tn-date-row').style.display='none'">Scan</button>
@@ -704,27 +793,27 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
   <div class="tab-panel" id="panel-report">
     <div id="rOut"><div class="empty" style="padding:40px;font-family:var(--mono);font-size:0.8rem;color:var(--text-faint)">Click the Report tab to generate your intelligence report.</div></div>
     <div id="reportCalibration" style="display:none;margin-top:24px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
-      <div style="font-family:var(--sans);font-weight:700;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Refine Your Report <span style="font-weight:400;color:var(--text-faint);font-size:0.7rem;text-transform:none;letter-spacing:0">optional, improves accuracy</span></div>
+      <div style="font-family:var(--sans);font-weight:700;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Refine Your Report <span style="font-weight:400;color:var(--text-faint);font-size:0.75rem;text-transform:none;letter-spacing:0">optional, improves accuracy</span></div>
       <div class="row" style="gap:16px;flex-wrap:wrap">
         <div class="input-group" style="margin:0;flex:1;min-width:200px">
-          <label style="font-size:0.7rem">Artists that crushed it</label>
+          <label style="font-size:0.75rem">Artists that crushed it</label>
           <div class="ac-wrap"><textarea id="obW" placeholder="One per line, your best bookings" rows="2" style="font-size:0.875rem"></textarea></div>
         </div>
         <div class="input-group" style="margin:0;flex:1;min-width:200px">
-          <label style="font-size:0.7rem">Artists that underperformed</label>
+          <label style="font-size:0.75rem">Artists that underperformed</label>
           <div class="ac-wrap"><textarea id="obL" placeholder="One per line, bookings that didn't land" rows="2" style="font-size:0.875rem"></textarea></div>
         </div>
       </div>
       <div class="row" style="gap:12px;margin-top:12px;flex-wrap:wrap;align-items:end">
         <div class="input-group" style="margin:0">
-          <label style="font-size:0.7rem">Headliner budget</label>
+          <label style="font-size:0.75rem">Headliner budget</label>
           <select id="obB" style="font-size:0.875rem"><option value="">Not set</option><option value="0-3k">Under €3K</option><option value="3-6k">€3K to €6K</option><option value="6-10k">€6K to €10K</option><option value="10k+">€10K+</option></select>
         </div>
         <div class="input-group" style="margin:0">
-          <label style="font-size:0.7rem">Booking frequency</label>
+          <label style="font-size:0.75rem">Booking frequency</label>
           <select id="obF" style="font-size:0.875rem"><option value="">Not set</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Monthly</option><option value="few">A few times a year</option></select>
         </div>
-        <button class="btn-ghost" style="font-size:0.7rem" onclick="saveReportCalibration();genReport()">Save & Refresh</button>
+        <button class="btn-ghost" style="font-size:0.75rem" onclick="saveReportCalibration();genReport()">Save & Refresh</button>
       </div>
     </div>
   </div>
@@ -732,7 +821,7 @@ select{font-family:var(--mono);font-size:13px;cursor:pointer}
 
 <script>
 /* ═══════════════════════════════════════════
-   NIGHT PULSE v6 — Clean Rebuild
+   SUB PULSE v6 — Clean Rebuild
    Single bulk-fetch architecture. No chunking.
    ═══════════════════════════════════════════ */
 
@@ -1207,7 +1296,7 @@ async function getArtistImage(name){
 /* Build a clean img tag with initials fallback */
 function artistImgTag(name,imageUrl,size=40){
   const initial=(name||'?').charAt(0).toUpperCase();
-  const ph=`<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:${Math.round(size*0.35)}px;color:var(--text-faint);flex-shrink:0">${initial}</div>`;
+  const ph=`<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:${Math.round(size*0.35)}px;color:var(--text-faint);flex-shrink:0">${initial}</div>`;
   if(!imageUrl||imageUrl.length<10)return ph;
   return`<img src="${esc(imageUrl)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0" onerror="this.outerHTML='${ph.replace(/'/g,"\\'")}'">`;
 }
@@ -2382,7 +2471,6 @@ function eventThreat(event, dna){
       genreScore=50;
       genreReason='Same scene: '+matchingGroups.join(', ');
       // Subgenre precision bonus — Beatport/Traxsource data
-      // TODO: cross-reference event artists' Beatport genres with DNA profile
     }
   }
   // Last.fm fallback
@@ -2677,7 +2765,7 @@ function setupAutocomplete(inputEl,onSelect,searchFn){
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Render immediately with placeholder, then load images async
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
-          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
+          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
           <div><div class="ac-name">${esc(r.name)}</div></div>
         </div>`).join('');
         dd.classList.add('open');idx=-1;
@@ -2689,7 +2777,7 @@ function setupAutocomplete(inputEl,onSelect,searchFn){
           if(!url)return;
           r.imageUrl=url;
           const wrap2=dd.querySelector(`.ac-img-wrap[data-idx="${i}"]`);
-          if(wrap2)wrap2.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover">`;
+          if(wrap2)wrap2.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">`;
         });
       }catch(e){dd.classList.remove('open')}
     },300);
@@ -2733,7 +2821,7 @@ function setupTextareaAC(ta){
         for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
-          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
+          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
           <div><div class="ac-name">${esc(r.name)}</div></div>
         </div>`).join('');
         dd.classList.add('open');
@@ -2743,7 +2831,7 @@ function setupTextareaAC(ta){
           const url=await getArtistImage(r.name);
           if(!url)return;
           const w=dd.querySelector(`.ac-img-wrap[data-idx="${i}"]`);
-          if(w)w.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover">`;
+          if(w)w.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">`;
         });
         dd.querySelectorAll('.ac-item').forEach((it,i)=>it.addEventListener('click',()=>{
           const v=ta.value,c=ta.selectionStart,b=v.substring(0,c),n=b.lastIndexOf('\n');
@@ -2943,7 +3031,7 @@ function setupPromoterAC() {
         dd.innerHTML = matches.map((p, i) =>
           `<div class="ac-item" data-idx="${i}">
             <div>
-              <div class="ac-name">${esc(p.name)}${p.verified ? ' <span style="font-size:0.65rem;color:var(--green);font-family:var(--mono)">✓ ID ${p.id}</span>' : ''}</div>
+              <div class="ac-name">${esc(p.name)}${p.verified ? ' <span style="font-size:0.75rem;color:var(--green);font-family:var(--mono)">✓ ID ${p.id}</span>' : ''}</div>
               <div class="ac-sub">${p.verified ? 'Verified RA promoter' : p.count + ' events in history'}</div>
             </div>
           </div>`
@@ -3363,7 +3451,7 @@ function _addCompetitor(){
   
   const entry=document.createElement('div');
   entry.className='competitor-entry';
-  entry.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px';
+  entry.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px';
   entry.dataset.name=name;
   entry.dataset.raId=raId||'';
   entry.innerHTML='<span style="flex:1;font-family:var(--sans);font-weight:600;font-size:0.875rem;text-transform:uppercase;letter-spacing:0.5px">'+esc(name)+'</span>'
@@ -3663,31 +3751,31 @@ async function _startDNABuild(){
         const topArtHtml=topArtists.map((a,i)=>{
           const hi=a.imageUrl&&a.imageUrl.trim().length>10&&!a.imageUrl.includes('2a96cbd8b46e442fc41c2b86b821562f');
           const ini=a.name.charAt(0).toUpperCase();
-          const phD='<div style="width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">'+ini+'</div>';
+          const phD='<div style="width:36px;height:36px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">'+ini+'</div>';
           const im=hi?'<img src="'+esc(a.imageUrl)+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.style.display=\'none\'">':phD;
           const fc=a.raFollowers!=null?fmt(a.raFollowers)+' followers':'';
-          return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);width:16px;text-align:right">'+(i+1)+'</div>'+im+'<div style="flex:1"><div style="font-family:var(--sans);font-weight:700;font-size:0.875rem">'+esc(a.name)+'</div></div>'+(fc?'<div style="font-family:var(--mono);font-size:0.7rem;color:var(--amber);font-weight:700">'+fc+'</div>':'')+'</div>';
+          return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);width:16px;text-align:right">'+(i+1)+'</div>'+im+'<div style="flex:1"><div style="font-family:var(--sans);font-weight:700;font-size:0.875rem">'+esc(a.name)+'</div></div>'+(fc?'<div style="font-family:var(--mono);font-size:0.75rem;color:var(--amber);font-weight:700">'+fc+'</div>':'')+'</div>';
         }).join('');
         const cta=(()=>{const pri=(P().priorities||[])[0]||'discover';if(pri==='competition')return'Start Scanning Competition →';if(pri==='routing')return'Find Routing Deals →';return'Start Discovering Artists →'})();
-        sum.innerHTML='<div class="card" style="margin-top:16px;border-color:var(--amber)"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;flex-wrap:wrap;gap:8px"><div><h3 style="color:var(--amber);font-size:1.1rem;margin-bottom:4px">'+esc(dna.venue||P().venue)+'</h3><div style="font-size:0.875rem;color:var(--text-dim)">'+cityName()+'</div></div><div style="text-align:right"><div style="font-family:var(--sans);font-weight:800;font-size:1.8rem;color:var(--text);line-height:1">'+dna.artistCount+'</div><div style="font-size:0.7rem;color:var(--text-dim)">artists booked</div></div></div>'
-          +'<div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-bottom:12px;padding:6px 10px;background:rgba(34,197,94,0.08);border-radius:4px">✓ '+state.years.length+' years · '+state.events+' events · '+dna.artistCount+' artists</div>'
+        sum.innerHTML='<div class="card" style="margin-top:16px;border-color:var(--amber)"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;flex-wrap:wrap;gap:8px"><div><h3 style="color:var(--amber);font-size:1.1rem;margin-bottom:4px">'+esc(dna.venue||P().venue)+'</h3><div style="font-size:0.875rem;color:var(--text-dim)">'+cityName()+'</div></div><div style="text-align:right"><div style="font-family:var(--sans);font-weight:800;font-size:1.8rem;color:var(--text);line-height:1">'+dna.artistCount+'</div><div style="font-size:0.75rem;color:var(--text-dim)">artists booked</div></div></div>'
+          +'<div style="font-family:var(--mono);font-size:0.7rem;color:var(--green);margin-bottom:12px;padding:6px 10px;background:rgba(34,197,94,0.08);border-radius:4px">✓ '+state.years.length+' years · '+state.events+' events · '+dna.artistCount+' artists</div>'
           +'<div class="stats" style="margin-bottom:16px"><div class="stat"><div class="sv">'+dna.venueEvents+'</div><div class="sl">Events</div></div><div class="stat"><div class="sv">'+(dna.eventsPerMonth||'?')+'</div><div class="sl">Per month</div></div><div class="stat"><div class="sv">'+(dna.avgAttendance?fmt(dna.avgAttendance):'?')+'</div><div class="sl">Avg interest</div></div><div class="stat"><div class="sv">'+realCount+'</div><div class="sl">Headliners</div></div></div>'
-          +(topArtists.length?'<div style="font-family:var(--sans);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:4px">Your top artists</div>'+topArtHtml:'')
-          +(tg?'<div style="margin-top:14px"><div style="font-family:var(--sans);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Your scene</div>'+tg+'</div>':'')
+          +(topArtists.length?'<div style="font-family:var(--sans);font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:4px">Your top artists</div>'+topArtHtml:'')
+          +(tg?'<div style="margin-top:14px"><div style="font-family:var(--sans);font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint);margin-bottom:6px">Your scene</div>'+tg+'</div>':'')
           +'<button class="btn btn-red" style="margin-top:20px;width:100%;font-size:1rem;padding:14px" onclick="showApp()">'+cta+'</button></div>';
       },800);
     }else{
       setTimeout(()=>{
         if(phEl){phEl.textContent='No booking history found';phEl.style.color='var(--amber)'}
         const sum=document.getElementById('dnaSummary');sum.style.display='block';
-        sum.innerHTML='<div style="margin-top:16px"><p style="font-size:0.875rem;color:var(--text-dim)">No events found. Try checking your RA ID.</p><button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Night Pulse</button></div>';
+        sum.innerHTML='<div style="margin-top:16px"><p style="font-size:0.875rem;color:var(--text-dim)">No events found. Try checking your RA ID.</p><button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Sub Pulse</button></div>';
       },500);
     }
   }catch(e){
     _done=true;cancelAnimationFrame(_cdjFrame);fill.style.width='100%';
     if(phEl){phEl.textContent='Could not complete analysis';phEl.style.color='var(--amber)'}
     const sum=document.getElementById('dnaSummary');sum.style.display='block';
-    sum.innerHTML='<div style="margin-top:16px"><p style="font-size:0.875rem;color:var(--text-dim)">'+esc(e.message)+'</p><button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Night Pulse</button></div>';
+    sum.innerHTML='<div style="margin-top:16px"><p style="font-size:0.875rem;color:var(--text-dim)">'+esc(e.message)+'</p><button class="btn btn-red" style="margin-top:14px" onclick="showApp()">Enter Sub Pulse</button></div>';
   }
 }
 // ── v3 Navigation ──
@@ -3865,7 +3953,7 @@ function showApp(){
   }
   const allP=_getAllProfiles();
   const vCount=allP&&allP.venues?Object.keys(allP.venues).filter(k=>allP.venues[k]?.venue).length:1;
-  const countBadge=vCount>1?` <span style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:1px 6px;font-size:0.65rem;font-weight:700;vertical-align:middle">${vCount}</span>`:'';
+  const countBadge=vCount>1?` <span style="background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:1px 6px;font-size:0.75rem;font-weight:700;vertical-align:middle">${vCount}</span>`:'';
   // Clean pill: "Drop Dance Society · Barcelona · DNA ✓ · ▾"
   pill.innerHTML=esc(venueName)+' <span style="color:var(--text-faint)">·</span> '+esc(cityLabel)+dnaTag+countBadge+' <span style="opacity:0.4">▾</span>';
   if(wrap)wrap.style.display='inline-block';
@@ -3949,7 +4037,7 @@ function toggleVenueSwitcher(e){
   const active=d.active;
   const venues=Object.entries(d.venues||{});
 
-  let html=`<div style="padding:10px 14px 6px;font-family:var(--sans);font-weight:700;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint)">Your profiles</div>`;
+  let html=`<div style="padding:10px 14px 6px;font-family:var(--sans);font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint)">Your profiles</div>`;
 
   for(const[key,prof] of venues){
     const isActive=key===active;
@@ -3961,8 +4049,8 @@ function toggleVenueSwitcher(e){
       try{
         const dnaKey='np_dna_'+key;
         const dna=JSON.parse(localStorage.getItem(dnaKey)||'null');
-        if(dna&&dna.artistCount)return`<span style="color:var(--green);font-size:0.65rem">DNA ✓ ${dna.artistCount} artists</span>`;
-        return`<span style="color:var(--text-faint);font-size:0.65rem">No DNA</span>`;
+        if(dna&&dna.artistCount)return`<span style="color:var(--green);font-size:0.75rem">DNA ✓ ${dna.artistCount} artists</span>`;
+        return`<span style="color:var(--text-faint);font-size:0.75rem">No DNA</span>`;
       }catch{return''}
     };
 
@@ -3970,9 +4058,9 @@ function toggleVenueSwitcher(e){
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:6px">
           <span style="font-family:var(--sans);font-weight:700;font-size:0.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</span>
-          ${isActive?'<span style="background:var(--accent);color:#fff;font-family:var(--mono);font-size:0.65rem;padding:1px 5px;border-radius:3px;font-weight:700">ACTIVE</span>':''}
+          ${isActive?'<span style="background:var(--accent);color:#fff;font-family:var(--mono);font-size:0.75rem;padding:1px 5px;border-radius:3px;font-weight:700">ACTIVE</span>':''}
         </div>
-        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);margin-top:1px">${type} · ${city} · ${dnaStatus()}</div>
+        <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-top:1px">${type} · ${city} · ${dnaStatus()}</div>
       </div>
       <div style="display:flex;gap:4px;align-items:center;flex-shrink:0">
         ${!isActive?`<button class="vs-del" onclick="event.stopPropagation();deleteVenue('${key}',event)" title="Remove">✕</button>`:''}
@@ -4000,7 +4088,7 @@ function toggleVenueSwitcher(e){
 function saveSeeds(list){const h=seeds();list.forEach(s=>{if(s&&!h.some(x=>x.toLowerCase()===s.toLowerCase()))h.unshift(s)});if(h.length>40)h.length=40;setSeeds(h);renderSeeds()}
 function renderSeeds(){
   const el=document.getElementById('seedH'),h=seeds();if(!h.length){el.innerHTML='';return}
-  el.innerHTML='<span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase">Recent: </span>'+h.slice(0,12).map(s=>`<span style="display:inline-block;background:var(--surface-2);border:1px solid var(--border);padding:1px 7px;border-radius:3px;font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);margin:2px 3px;cursor:pointer" onclick="addSeed('${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</span>`).join('');
+  el.innerHTML='<span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);text-transform:uppercase">Recent: </span>'+h.slice(0,12).map(s=>`<span style="display:inline-block;background:var(--bg3);border:1px solid var(--border);padding:1px 7px;border-radius:3px;font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);margin:2px 3px;cursor:pointer" onclick="addSeed('${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</span>`).join('');
 }
 function addSeed(n){const el=document.getElementById('seedInput'),ls=el.value.trim().split('\n').filter(Boolean);if(!ls.some(l=>l.toLowerCase()===n.toLowerCase())){ls.push(n);el.value=ls.join('\n')}}
 
@@ -4098,12 +4186,12 @@ function loadDNASeedsIntoDiscover(){
     const initial=p.name.charAt(0).toUpperCase();
     const img=p.imageUrl&&p.imageUrl.length>10&&!p.imageUrl.includes('2a96cbd8b46e442fc41c2b86b821562f')
       ?'<img src="'+esc(p.imageUrl)+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display=\'none\'">'
-      :'<div style="width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">'+initial+'</div>';
+      :'<div style="width:36px;height:36px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:0.8rem;color:var(--text-faint)">'+initial+'</div>';
     
     html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="addSeed(\''+esc(p.name).replace(/'/g,"\\'")+'\');this.style.opacity=\'0.4\'">'
       +img
       +'<div style="flex:1;min-width:0"><div style="font-family:var(--sans);font-weight:700;font-size:0.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.name)+'</div>'
-      +'<div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(genres)+'</div></div>'
+      +'<div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(genres)+'</div></div>'
       +'<div style="text-align:right;flex-shrink:0"><div style="font-family:var(--mono);font-size:0.8rem;color:var(--amber);font-weight:700">'+fc+'</div><div style="font-family:var(--mono);font-size:0.5rem;color:var(--text-faint)">followers</div></div>'
       +'</div>';
   }
@@ -4312,9 +4400,12 @@ const V3_COLORS=[
 function renderDiscover(arts,hasDNA,diag){
   const c=document.getElementById('dRes'),cn=cityName();
   if(hasDNA===undefined)hasDNA=!!getDNA()?.artistCount;
+  const dna=getDNA();
+  const p=P();
+  const competitors=(p.competitors||[]).map(x=>(x.name||x).toLowerCase());
 
   if(!arts.length){
-    let reason='No artists match your current filters.';
+    let reason='No matches for these filters.';
     let action='';
     if(diag){
       const parts=[];
@@ -4324,7 +4415,7 @@ function renderDiscover(arts,hasDNA,diag){
       if(diag.total===0)reason='No related artists found. Try different seed artists.';
       else if(parts.length){
         reason=parts.join(' · ');
-        if(diag.raExcluded>0)action='<button class="v3-btn" style="margin-top:16px" onclick="setPicker(\'segBack\',\'filterBack\',3);runDiscover()">Try 3-month window instead</button>';
+        if(diag.raExcluded>0)action='<button class="v3-btn" style="margin-top:16px" onclick="setPicker(\'segBack\',\'filterBack\',3);runDiscover()">Try 3-month window</button>';
       }
     }
     c.innerHTML='<div class="empty"><div style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)">No results</div><div style="font-size:13px;line-height:1.8">'+reason+'</div>'+action+'</div>';
@@ -4333,6 +4424,24 @@ function renderDiscover(arts,hasDNA,diag){
 
   injectDiscoverHeader(arts.length, hasDNA, cn);
 
+  // Look up competitor bookings from cache
+  const allEvents=_getCityEvents();
+  function getCompetitorBookings(artistName){
+    const n=norm(artistName);
+    const bookings=[];
+    for(const ev of allEvents){
+      const artistMatch=(ev.artists||[]).some(a=>norm(a.name||a)===n);
+      if(!artistMatch)continue;
+      const venue=(ev.venue?.name||ev.venue||'').toLowerCase();
+      const promos=(ev.promoters||[]).map(p=>(p.name||p).toLowerCase());
+      const matchedComp=competitors.find(comp=>venue.includes(comp)||promos.some(pr=>pr.includes(comp)));
+      if(matchedComp){
+        bookings.push({venue:ev.venue?.name||ev.venue||'',date:ev.date,competitor:matchedComp});
+      }
+    }
+    return bookings.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+  }
+
   const list=document.createElement('div');
   list.className='v3-list';
 
@@ -4340,36 +4449,69 @@ function renderDiscover(arts,hasDNA,diag){
     const [bg,fg]=V3_COLORS[i%V3_COLORS.length];
     const initial=(a.name||'?').charAt(0).toUpperCase();
     const scoreNum=a._dna?.score||a.fusionScore||a.score||'';
-    const isTrend=(a._dna?.score||0)>=75||(a.fusionScore||0)>=75;
     const genreText=(a.genres||[]).slice(0,2).join(' · ')||'';
     const connectionText=a.seeds?.slice(0,2).map(s=>esc(s)).join(', ')||'';
     const dnaLabel=a._dna?.label||'';
     const sv=saved().some(s=>s.name===a.name);
     const nameE=esc(a.name).replace(/'/g,"\\'");
+    const compBookings=getCompetitorBookings(a.name);
+    const hasMomentum=a.momentum&&parseInt(a.momentum)>5;
 
-    // Status — human readable
-    let statusText='', statusClass='v3-ok';
+    // Status
+    let statusText='', statusClass='v3-ok', statusDot='var(--green)';
     if(a.lastBcnMonths!==undefined && a.lastBcnMonths>0){
       statusText='Last gig: '+a.lastBcnMonths+'mo ago';
-      if(a.lastBcnMonths<6){statusClass='v3-warn';}
+      if(a.lastBcnMonths<6){statusClass='v3-warn';statusDot='var(--wrn)';}
     } else if(a.bcnCount===0||a.neverPlayed){
       statusText='New to '+cn;
     } else if(a.nextBcnDate){
       statusText='Booked '+a.nextBcnDate;
-      statusClass='v3-danger';
+      statusClass='v3-danger';statusDot='var(--red)';
     } else {
       statusText='Available';
     }
 
-    // Routing indicator
+    // Routing
     let routeTag='';
     if(a.routeCity && a.routeDate){
-      routeTag='<span class="v3-rtag" style="margin-left:6px">'+esc(a.routeCity)+' '+esc(a.routeDate)+' →</span>';
+      routeTag='<span class="v3-rtag">'+esc(a.routeCity)+' '+esc(a.routeDate)+' →</span>';
     }
 
+    // Image
     const imgEl=a.imageUrl&&a.imageUrl.length>10
-      ?'<div class="v3-ava" style="background:'+bg+';padding:0;overflow:hidden"><img src="'+esc(a.imageUrl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent=\''+initial+'\';this.parentElement.style.fontSize=\'1.3rem\';this.parentElement.style.color=\''+fg+'\'"></div>'
+      ?'<div class="v3-ava" style="background:'+bg+';padding:0;overflow:hidden"><img src="'+esc(a.imageUrl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.parentElement.textContent=\''+initial+'\';this.parentElement.style.color=\''+fg+'\'"></div>'
       :'<div class="v3-ava" style="background:'+bg+';color:'+fg+'" data-lazy="'+esc(a.name)+'" data-bg="'+bg+'" data-fg="'+fg+'">'+initial+'</div>';
+
+    // ── EXPANDED DETAIL ──
+    // Key facts grid
+    let factsHtml='<div class="v3-facts">';
+    factsHtml+='<div class="v3-fact"><div class="v3-fact-l">Last '+cn+' gig</div><div class="v3-fact-v">'+(a.lastBcnMonths?a.lastBcnMonths+' months ago':(a.neverPlayed?'Never':'Unknown'))+'</div></div>';
+    if(a.raFollowers)factsHtml+='<div class="v3-fact"><div class="v3-fact-l">RA followers</div><div class="v3-fact-v" style="color:var(--amber)">'+fmt(a.raFollowers)+(a.raPercentile?' · Top '+a.raPercentile+'%':'')+'</div></div>';
+    if(a.routeCity)factsHtml+='<div class="v3-fact"><div class="v3-fact-l">Nearby date</div><div class="v3-fact-v" style="color:var(--sky)">'+esc(a.routeCity)+' · '+esc(a.routeDate||'')+'</div></div>';
+    if(compBookings.length)factsHtml+='<div class="v3-fact"><div class="v3-fact-l">Competitors booked</div><div class="v3-fact-v" style="color:var(--red)">'+compBookings.length+' times this year</div></div>';
+    factsHtml+='</div>';
+
+    // Match bars
+    const genreScore=Math.min(100,Math.round((scoreNum||70)*0.95));
+    const freshScore=a.lastBcnMonths?Math.min(100,Math.round(a.lastBcnMonths*6)):80;
+    const momentumScore=hasMomentum?Math.min(100,50+parseInt(a.momentum)):60;
+    let barsHtml='<div class="v3-bars">';
+    barsHtml+='<div class="v3-bar"><span class="v3-bar-l">Genre fit</span><div class="v3-bar-t"><div class="v3-bar-f" style="width:'+genreScore+'%"></div></div><span class="v3-bar-v">'+genreScore+'</span></div>';
+    barsHtml+='<div class="v3-bar"><span class="v3-bar-l">Freshness</span><div class="v3-bar-t"><div class="v3-bar-f'+(freshScore>80?' g':'')+'" style="width:'+freshScore+'%"></div></div><span class="v3-bar-v">'+freshScore+'</span></div>';
+    if(hasMomentum)barsHtml+='<div class="v3-bar"><span class="v3-bar-l">Momentum</span><div class="v3-bar-t"><div class="v3-bar-f g" style="width:'+momentumScore+'%"></div></div><span class="v3-bar-v">'+momentumScore+'</span></div>';
+    barsHtml+='</div>';
+
+    // Competitor timeline
+    let compHtml='';
+    if(compBookings.length){
+      compHtml='<div class="v3-sec-title">Competitor history</div><div class="v3-comp-list">';
+      for(const cb of compBookings){
+        const d=new Date(cb.date);
+        const ds=d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'});
+        compHtml+='<div class="v3-comp-row"><div class="v3-comp-dot" style="background:var(--red)"></div><div class="v3-comp-name">'+esc(cb.venue)+'</div><div class="v3-comp-when">'+ds+'</div></div>';
+      }
+      compHtml+='</div>';
+    }
 
     const card=document.createElement('div');
     card.className='v3-card';
@@ -4379,39 +4521,45 @@ function renderDiscover(arts,hasDNA,diag){
         '<div class="v3-rank">'+(i+1)+'</div>'+
         imgEl+
         '<div class="v3-info">'+
-          '<div class="v3-name">'+esc(a.name)+(isTrend?'<span class="v3-trend">↑'+(a.momentum||'')+'</span>':'')+routeTag+'</div>'+
-          '<div class="v3-sub">'+genreText+' <span class="v3-badge '+statusClass+'">'+statusText+'</span></div>'+
+          '<div class="v3-name">'+esc(a.name)+(hasMomentum?'<span class="v3-trend">↑'+a.momentum+'</span>':'')+'</div>'+
+          '<div class="v3-sub"><span class="v3-dot" style="background:'+statusDot+'"></span>'+statusText+(routeTag?' '+routeTag:'')+'</div>'+
         '</div>'+
         '<div class="v3-right">'+
           (scoreNum?'<div class="v3-score">'+scoreNum+'</div>':'') +
-          '<div class="v3-rlbl">match</div>'+
         '</div>'+
       '</div>'+
       '<div class="v3-exp">'+
+        // Actions FIRST — top of expanded card
+        '<div class="v3-acts" style="margin-bottom:16px">'+
+          '<button class="v3-btn p'+(sv?' is-saved':'')+'" onclick="npSaveArtist(\''+nameE+'\','+( a.bcn||0)+','+(a.global||0)+',\'\',\''+esc(a.imageUrl||'').replace(/'/g,"\\'")+'\');event.stopPropagation()">'+(sv?'✓ Saved':'Save')+'</button>'+
+          '<button class="v3-btn" onclick="npDraftEmail(\''+nameE+'\','+(a.routeCity?'\''+esc(a.routeCity)+' '+esc(a.routeDate||'')+'\'':'null')+');event.stopPropagation()">Draft email</button>'+
+          '<button class="v3-btn" onclick="goXray(\''+nameE+'\');event.stopPropagation()">Full profile</button>'+
+        '</div>'+
+        // Intelligence brief
         '<div class="v3-why">'+
           '<b>'+esc(a.name)+'</b> '+(dnaLabel?dnaLabel+'. ':'')+
           (connectionText?'Connected through <b>'+connectionText+'</b>. ':'')+
           (a.raCoBills?'Co-billed with your artists <b>'+a.raCoBills+'×</b> on RA. ':'')+
-          'Available in '+cn+' — hasn\'t played your city in your freshness window.'+
+          (a.routeCity?'Playing <b>'+esc(a.routeCity)+'</b> '+esc(a.routeDate||'')+' — propose your date with shared flights. ':'')+
+          (compBookings.length?'<b>'+compBookings.length+' competitors</b> booked them — proven '+cn+' draw. ':'')+
+          (hasMomentum?'RA interest <b>up '+a.momentum+'</b> — book before fees rise.':'')+
         '</div>'+
-        '<div class="v3-hero">'+
-          '<div class="v3-hcol"><div class="v3-hlbl">Match</div><div class="v3-hnum">'+(scoreNum||'—')+'</div><div class="v3-hunit">DNA fit</div></div>'+
-          '<div class="v3-hcol"><div class="v3-hlbl">Genre</div><div class="v3-hvenue">'+(genreText||'Electronic')+'</div><div class="v3-hdate">'+(dnaLabel||'')+'</div></div>'+
-          (a.raFollowers?'<div class="v3-hcol"><div class="v3-hlbl">RA followers</div><div class="v3-hvenue">'+fmt(a.raFollowers)+'</div><div class="v3-hdate">'+(a.raPercentile?'Top '+a.raPercentile+'%':'')+'</div></div>':'')+
-        '</div>'+
+        // Key facts
+        factsHtml+
+        // Match breakdown
+        '<div class="v3-sec-title">Match breakdown</div>'+
+        barsHtml+
+        // Competitor history
+        compHtml+
+        // Email draft container
         '<div id="emailDraft-'+a.name.replace(/[^a-zA-Z0-9]/g,'')+'" style="display:none;margin-top:16px;padding:16px;background:var(--bg3);border-radius:8px;border:1px solid var(--border-hi)"></div>'+
-        '<div class="v3-acts">'+
-          '<button class="v3-btn p'+(sv?' is-saved':'')+'" onclick="npSaveArtist(\''+nameE+'\','+( a.bcn||0)+','+(a.global||0)+',\'\',\''+esc(a.imageUrl||'').replace(/'/g,"\\'")+'\')">'+(sv?'✓ Saved':'Save')+'</button>'+
-          '<button class="v3-btn" onclick="npDraftEmail(\''+nameE+'\','+(a.routeCity?'\''+esc(a.routeCity)+' '+esc(a.routeDate||'')+'\'':'null')+');event.stopPropagation()">Draft email</button>'+
-          '<button class="v3-btn" onclick="goXray(\''+nameE+'\');event.stopPropagation()">Full profile</button>'+
-        '</div>'+
       '</div>';
     list.appendChild(card);
   });
 
   c.innerHTML='';
   c.appendChild(list);
-  
+
   // Inject competitor feed
   const feedHtml = renderCompetitorFeed();
   if (feedHtml) {
@@ -4427,7 +4575,7 @@ function renderDiscover(arts,hasDNA,diag){
     const url=await getArtistImage(name);
     if(url&&el.isConnected){
       el.style.padding='0';el.style.overflow='hidden';
-      el.innerHTML='<img src="'+esc(url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent=\''+( name||'?').charAt(0).toUpperCase()+'\'">';
+      el.innerHTML='<img src="'+esc(url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.parentElement.textContent=\''+( name||'?').charAt(0).toUpperCase()+'\'">';
     }
   });
 }
@@ -4563,7 +4711,7 @@ async function runScan(){
         <h3 style="color:var(--blue);margin-bottom:8px">Your Events</h3>`;
       for(const ev of ownEvents)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.875rem">
         <div><div style="font-weight:600">${esc(ev.title)}</div><div style="font-size:0.8rem;color:var(--text-dim)">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div></div>
-        <span style="font-family:var(--mono);font-size:0.7rem;color:var(--blue);flex-shrink:0">${ev.attending?fmt(ev.attending)+' RA':'?'}</span></div>`;
+        <span style="font-family:var(--mono);font-size:0.75rem;color:var(--blue);flex-shrink:0">${ev.attending?fmt(ev.attending)+' RA':'?'}</span></div>`;
       h+=`</div>`;
     }
 
@@ -4576,7 +4724,7 @@ async function runScan(){
         const tierBadge=t.tier===1
           ?`<span class="badge badge-red">${esc(t.reason)}</span>`
           :`<span class="badge badge-amber">${esc(t.reason)}</span>`;
-        const timeBadge=t.timeMismatch?`<span class="badge" style="border-color:var(--text-faint);color:var(--text-faint);font-size:0.65rem">different time slot</span>`:'';
+        const timeBadge=t.timeMismatch?`<span class="badge" style="border-color:var(--text-faint);color:var(--text-faint);font-size:0.75rem">different time slot</span>`:'';
         h+=`<div class="ev-item" style="border-left:3px solid ${t.tier===1?'var(--accent)':'var(--amber)'};padding-left:11px">
           <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
           <div class="ev-detail">
@@ -4608,7 +4756,7 @@ async function runScan(){
           <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
           <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div>
           <div class="ev-a">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div>
-          ${ev.genreOverlap.length?`<div style="margin-top:3px"><span class="tag" style="opacity:0.6;font-size:0.65rem">partial: ${ev.genreOverlap.join(', ')}</span></div>`:''}
+          ${ev.genreOverlap.length?`<div style="margin-top:3px"><span class="tag" style="opacity:0.6;font-size:0.75rem">partial: ${ev.genreOverlap.join(', ')}</span></div>`:''}
           </div></div>`;
       }
       h+=`</div>`;
@@ -4620,7 +4768,7 @@ async function runScan(){
       const t=ev._threat;
       const isOwn=ownEvents.some(d=>d.title===ev.title&&d.venue===ev.venue);
       const borderStyle=t&&t.tier===1&&t.isCompetition?'border-left:3px solid var(--accent);padding-left:11px':t&&t.tier===2&&t.isCompetition?'border-left:3px solid var(--amber);padding-left:11px':'';
-      const badge=isOwn?'<span class="badge" style="font-size:0.65rem;border-color:var(--blue);color:var(--blue)">YOURS</span>':t&&t.tier===1&&t.isCompetition?'<span class="badge badge-red" style="font-size:0.65rem">DIRECT</span>':t&&t.tier===2&&t.isCompetition?'<span class="badge badge-amber" style="font-size:0.65rem">GENRE</span>':'';
+      const badge=isOwn?'<span class="badge" style="font-size:0.75rem;border-color:var(--blue);color:var(--blue)">YOURS</span>':t&&t.tier===1&&t.isCompetition?'<span class="badge badge-red" style="font-size:0.75rem">DIRECT</span>':t&&t.tier===2&&t.isCompetition?'<span class="badge badge-amber" style="font-size:0.75rem">GENRE</span>':'';
       h+=`<div class="ev-item"${borderStyle?' style="'+borderStyle+'"':''}>
         <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
         <div class="ev-detail">
@@ -4720,7 +4868,7 @@ async function scanAdjacentThreats(dateStr){
           <div style="font-family:var(--mono);font-size:0.5rem;color:var(--text-faint);text-transform:uppercase">RA interest</div>
         </div>
         <div style="flex:1">
-          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--amber);margin-bottom:2px">${esc(t.dayLabel)} · ${fdate(t.dayDate)}</div>
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--amber);margin-bottom:2px">${esc(t.dayLabel)} · ${fdate(t.dayDate)}</div>
           <div style="font-family:var(--sans);font-weight:700;font-size:0.88rem">${esc(t.venue)}</div>
           <div style="font-size:0.8rem;color:var(--text-dim)">${esc(t.title)}</div>
           <div style="font-size:0.8rem;color:var(--text-faint);margin-top:2px">${esc(t.artists.join(', '))}</div>
@@ -4759,7 +4907,7 @@ function goXray(name){
   if(!vp.querySelector('.np-back-btn')){
     const back=document.createElement('button');
     back.className='btn-ghost np-back-btn';
-    back.style.cssText='margin-bottom:20px;font-size:0.7rem;padding:6px 12px';
+    back.style.cssText='margin-bottom:20px;font-size:0.75rem;padding:6px 12px';
     back.textContent='← Back';
     back.onclick=()=>npNav('book',document.querySelector('.np-nav'));
     vp.prepend(back);
@@ -4819,10 +4967,10 @@ async function runXray(){
       const lastShow=shows.find(s=>new Date(s.date)<=new Date()); // most recent past show
       if(lastShow){const m=Math.round((new Date()-new Date(lastShow.date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(lastShow.date)+')'}
     }
-    const imgH=scD?.imageUrl&&scD.imageUrl.length>10?`<img src="${esc(scD.imageUrl)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-right:14px" onerror="this.outerHTML='<div style=\\'width:56px;height:56px;border-radius:50%;background:var(--surface-2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:1.1rem;color:var(--text-faint);margin-right:14px\\'>${(scD?.name||name).charAt(0).toUpperCase()}</div>'">`:'<div style="width:56px;height:56px;border-radius:50%;background:var(--surface-2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:1.1rem;color:var(--text-faint);margin-right:14px">'+(scD?.name||name).charAt(0).toUpperCase()+'</div>';
+    const imgH=scD?.imageUrl&&scD.imageUrl.length>10?`<img src="${esc(scD.imageUrl)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-right:14px" onerror="this.outerHTML='<div style=\\'width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:1.1rem;color:var(--text-faint);margin-right:14px\\'>${(scD?.name||name).charAt(0).toUpperCase()}</div>'">`:'<div style="width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:800;font-size:1.1rem;color:var(--text-faint);margin-right:14px">'+(scD?.name||name).charAt(0).toUpperCase()+'</div>';
 
     let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start"><div style="display:flex;align-items:center">${imgH}<div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div style="font-size:0.875rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div></div><span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span></div>
-      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);margin:8px 0 4px">Checked against your date: ${fdate(date)} · Exclusion: ${backMo}mo back / ${fwdMo}mo forward</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);margin:8px 0 4px">Checked against your date: ${fdate(date)} · Exclusion: ${backMo}mo back / ${fwdMo}mo forward</div>
       <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'?'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
     if(cityC.hit)h+=`<p style="font-size:0.875rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${fdate(cityC.date)} @ ${esc(cityC.venue)}. Within ${backMo}mo before / ${fwdMo}mo after your date</p>`;
     if(sdC.hit)h+=`<p style="font-size:0.875rem;color:var(--text-dim)">⚠ Playing ${esc(sdC.venue)} (${esc(sdC.area)}) on ${fdate(date)}</p>`;
@@ -4831,7 +4979,7 @@ async function runXray(){
       for(const s of shows.slice(0,5)){
         const isPast=new Date(s.date)<=new Date();
         const isFuture=!isPast;
-        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--mono)">UPCOMING</span> ':''}${fdate(s.date)} · ${esc(s.venue)}</span><span style="font-family:var(--mono);font-size:0.7rem;color:${s.att>0?'var(--accent)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' RA interest':'?'}</span></div>`;
+        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.75rem;font-family:var(--mono)">UPCOMING</span> ':''}${fdate(s.date)} · ${esc(s.venue)}</span><span style="font-family:var(--mono);font-size:0.75rem;color:${s.att>0?'var(--accent)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' RA interest':'?'}</span></div>`;
       }
       h+=`</div>`;
     }
@@ -4861,7 +5009,7 @@ async function runRouting(){
   }
   const p=P();
   if(!p.venue){
-    document.getElementById('rteRes').innerHTML='<div class="empty">Complete your setup first. Click Night Pulse in the header to begin.</div>';
+    document.getElementById('rteRes').innerHTML='<div class="empty">Complete your setup first. Click Sub Pulse in the header to begin.</div>';
     return;
   }
 
@@ -4871,7 +5019,7 @@ async function runRouting(){
   if(!hasDNA){
     document.getElementById('rteRes').innerHTML=`<div class="card" style="border-color:var(--amber)">
       <h3 style="color:var(--amber);margin-bottom:6px">DNA Required for Routing</h3>
-      <p style="font-size:0.875rem;color:var(--text-dim);line-height:1.6">Routing Deals works by finding artists from <strong>your scene</strong> who are playing nearby cities on your date. To know which artists are "your scene," Night Pulse needs your DNA.<br><br>
+      <p style="font-size:0.875rem;color:var(--text-dim);line-height:1.6">Routing Deals works by finding artists from <strong>your scene</strong> who are playing nearby cities on your date. To know which artists are "your scene," Sub Pulse needs your DNA.<br><br>
       Click the venue pill above → Rebuild DNA, then come back.</p>
     </div>`;
     return;
@@ -5014,41 +5162,58 @@ function renderRouting(arts, meta={}){
   const {hasDNA,scenePoolSize}=meta;
 
   if(!arts.length){
-    c.innerHTML=`<div class="empty">
-      <div style="font-family:var(--sans);font-size:1rem;letter-spacing:1px;margin-bottom:8px;color:var(--text)">No routing opportunities</div>
-      <div style="font-size:0.8rem;line-height:1.8">None of the ${scenePoolSize||0} artists in your scene were touring nearby on this date. Try a different date.</div>
-    </div>`;
+    c.innerHTML='<div class="empty"><div style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)">No routing deals found</div><div style="font-size:13px;line-height:1.8">None of the '+(scenePoolSize||0)+' artists in your scene are touring nearby on this date. Try a different date or widen your window.</div></div>';
     return;
   }
 
-  // Update routing banner on BOOK screen
   updateRoutingBanner(arts);
 
-  // Render v3 routing cards
   const targetDate=document.getElementById('routeDate')?.value;
   const list=document.createElement('div');
-  list.className='v3-rlist';
+  list.className='v3-list';
 
   arts.forEach((a,i)=>{
     const [bg,fg]=V3_COLORS[i%V3_COLORS.length];
     const initial=(a.name||'?').charAt(0).toUpperCase();
     const daysDiff=targetDate?Math.round((new Date(targetDate)-new Date(a.date))/(1000*60*60*24)):null;
-    const dayLabel=daysDiff===1?'NIGHT BEFORE':daysDiff===-1?'NIGHT AFTER':daysDiff!==null?'±'+Math.abs(daysDiff)+'D':'NEARBY';
-    const nameE=esc(a.name).replace(/'/g,"\'");
+    const dayLabel=daysDiff===1?'Night before':daysDiff===-1?'Night after':daysDiff===0?'Same day':daysDiff!==null&&Math.abs(daysDiff)<=2?Math.abs(daysDiff)+' days apart':'Nearby';
+    const nameE=esc(a.name).replace(/'/g,"\\'");
     const sv=saved().some(s=>s.name===a.name);
+    const routeInfo=esc(a.city)+' '+fdate(a.date);
 
     const card=document.createElement('div');
-    card.className='v3-rcard';
+    card.className='v3-card';
+    card.setAttribute('onclick','v3Toggle(this)');
     card.innerHTML=
-      '<div class="v3-ava" style="background:'+bg+';color:'+fg+'" data-lazy="'+esc(a.name)+'" data-bg="'+bg+'" data-fg="'+fg+'">'+initial+'</div>'+
-      '<div style="flex:1;min-width:0">'+
-        '<div class="v3-name">'+esc(a.name)+'</div>'+
-        '<div style="font-family:var(--mono);font-size:11px;color:var(--sky);margin-top:2px">'+esc(a.city)+' '+fdate(a.date)+' → your '+dayLabel.toLowerCase()+'</div>'+
-        '<div style="font-family:var(--mono);font-size:11px;color:var(--text-faint);margin-top:2px">'+esc(a.venue)+(a.attending>0?' · '+fmt(a.attending)+' RA interest':'')+'</div>'+
+      '<div class="v3-main">'+
+        '<div class="v3-ava" style="background:'+bg+';color:'+fg+'" data-lazy="'+esc(a.name)+'" data-bg="'+bg+'" data-fg="'+fg+'">'+initial+'</div>'+
+        '<div class="v3-info">'+
+          '<div class="v3-name">'+esc(a.name)+'</div>'+
+          '<div class="v3-sub" style="color:var(--sky)">'+esc(a.city)+' '+fdate(a.date)+' → your '+dayLabel.toLowerCase()+'</div>'+
+        '</div>'+
+        '<div class="v3-right">'+
+          '<div class="v3-rtag">'+dayLabel+'</div>'+
+          (a.relevance?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:2px">'+Math.round(a.relevance)+'% fit</div>':'')+
+        '</div>'+
       '</div>'+
-      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">'+
-        '<div class="v3-rtag">'+dayLabel+'</div>'+
-        '<button class="v3-btn p" style="font-size:12px;padding:6px 14px" onclick="npSaveArtist(\''+nameE+'\',0,0,\'\',\'\');event.stopPropagation()">'+(sv?'✓ Saved':'Save')+'</button>'+
+      '<div class="v3-exp">'+
+        '<div class="v3-acts" style="margin-bottom:16px">'+
+          '<button class="v3-btn p'+(sv?' is-saved':'')+'" onclick="npSaveArtist(\''+nameE+'\',0,0,\'\',\'\');event.stopPropagation()">'+(sv?'✓ Saved':'Save')+'</button>'+
+          '<button class="v3-btn" onclick="npDraftEmail(\''+nameE+'\',\''+routeInfo.replace(/'/g,"\\'")+'\''+');event.stopPropagation()">Draft routing email</button>'+
+        '</div>'+
+        '<div class="v3-why">'+
+          '<b>'+esc(a.name)+'</b> is confirmed in <b>'+esc(a.city)+'</b> on '+fdate(a.date)+'. '+
+          'Propose your date and <b>split the flight</b> — saves both sides on travel. '+
+          (a.reason?esc(a.reason)+'. ':'')+
+          (a.attending>0?fmt(a.attending)+' RA interest at their '+esc(a.city)+' gig.':'')+
+        '</div>'+
+        '<div class="v3-facts">'+
+          '<div class="v3-fact"><div class="v3-fact-l">Their gig</div><div class="v3-fact-v">'+esc(a.city)+' · '+fdate(a.date)+'</div></div>'+
+          '<div class="v3-fact"><div class="v3-fact-l">Venue</div><div class="v3-fact-v">'+esc(a.venue||'TBC')+'</div></div>'+
+          '<div class="v3-fact"><div class="v3-fact-l">Your date</div><div class="v3-fact-v" style="color:var(--green)">'+dayLabel+'</div></div>'+
+          (a.attending>0?'<div class="v3-fact"><div class="v3-fact-l">RA interest</div><div class="v3-fact-v">'+fmt(a.attending)+'</div></div>':'')+
+        '</div>'+
+        '<div id="emailDraft-'+a.name.replace(/[^a-zA-Z0-9]/g,'')+'" style="display:none;margin-top:16px;padding:16px;background:var(--bg3);border-radius:8px;border:1px solid var(--border-hi)"></div>'+
       '</div>';
     list.appendChild(card);
   });
@@ -5056,11 +5221,10 @@ function renderRouting(arts, meta={}){
   c.innerHTML='';
   c.appendChild(list);
 
-  // Async image loading
   c.querySelectorAll('.v3-ava[data-lazy]').forEach(async el=>{
     const name=el.dataset.lazy;if(!name)return;
     const url=await getArtistImage(name);
-    if(url&&el.isConnected){el.style.padding='0';el.style.overflow='hidden';el.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}
+    if(url&&el.isConnected){el.style.padding='0';el.style.overflow='hidden';el.innerHTML='<img src="'+esc(url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display=\'none\'">';}
   });
 }
 
@@ -5374,7 +5538,7 @@ function renderIntelEntity(profile, allEvents){
     const pct=Math.round((a.maxAtt/maxAtt)*100);
     const avail=artistAvailableInWindow(a.name,allEvents);
     const dnaScore_=hasDNA?dnaScore({name:a.name,bcn:0,_networkOnly:true}):null;
-    const fitBadge=hasDNA&&dnaScore_&&dnaScore_.score>20?`<span class="badge badge-${dnaScore_.score>=70?'green':dnaScore_.score>=50?'amber':'red'}" style="margin-left:4px;font-size:0.65rem">${dnaScore_.score}</span>`:'';
+    const fitBadge=hasDNA&&dnaScore_&&dnaScore_.score>20?`<span class="badge badge-${dnaScore_.score>=70?'green':dnaScore_.score>=50?'amber':'red'}" style="margin-left:4px;font-size:0.75rem">${dnaScore_.score}</span>`:'';
     h+=`<div class="intel-artist-row" onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">
       <div class="ia-att">${a.maxAtt>0?fmt(a.maxAtt):'?'}</div>
       <div style="flex:1">
@@ -5410,9 +5574,9 @@ function renderIntelEntity(profile, allEvents){
       <div class="intel-block-title">📅 Upcoming announced</div>`;
     for(const ev of profile.upcoming.slice(0,4)){
       h+=`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:0.8rem">
-        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--amber);margin-bottom:2px">${fdate(ev.date)}</div>
+        <div style="font-family:var(--mono);font-size:0.7rem;color:var(--amber);margin-bottom:2px">${fdate(ev.date)}</div>
         <div style="font-family:var(--sans);font-weight:600;font-size:0.875rem">${esc(ev.title||ev.artists.slice(0,2).map(a=>a.name||a).join(', '))}</div>
-        <div style="color:var(--text-faint);font-size:0.7rem">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(' · '))}</div>
+        <div style="color:var(--text-faint);font-size:0.75rem">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(' · '))}</div>
       </div>`;
     }
     h+=`</div>`;
@@ -5434,7 +5598,7 @@ function renderIntelEntity(profile, allEvents){
         <div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>
         <div class="ri-info">
           <h3>${esc(a.name)}${fitBadge}</h3>
-          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)} · ${a.shows} show${a.shows>1?'s':''}</div>
+          <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)} · ${a.shows} show${a.shows>1?'s':''}</div>
           <div class="ri-actions">
             <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
             <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
@@ -5463,7 +5627,7 @@ function renderIntelEntity(profile, allEvents){
           <div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>
           <div class="ri-info">
             <h3>${esc(a.name)}${fitBadge}</h3>
-            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)}</div>
+            <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)}</div>
             <div class="ri-actions">
               <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
               <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
@@ -5503,33 +5667,33 @@ function renderMomentum(momentum, allEvents){
     const lateLabel=fdate(m.lateFrom)+'–'+fdate(m.lateTo);
 
     // Freshness indicator
-    const freshness=m.daysSinceLast<30?'<span style="color:var(--green);font-size:0.6rem">● Active</span>'
-      :m.daysSinceLast<90?'<span style="color:var(--amber);font-size:0.6rem">● '+m.daysSinceLast+'d ago</span>'
-      :'<span style="color:var(--text-faint);font-size:0.6rem">● '+m.daysSinceLast+'d since last show</span>';
+    const freshness=m.daysSinceLast<30?'<span style="color:var(--green);font-size:0.7rem">● Active</span>'
+      :m.daysSinceLast<90?'<span style="color:var(--amber);font-size:0.7rem">● '+m.daysSinceLast+'d ago</span>'
+      :'<span style="color:var(--text-faint);font-size:0.7rem">● '+m.daysSinceLast+'d since last show</span>';
 
     // Venue spread context
     const spreadNote=m.venueSpread===1
-      ?`<span style="color:var(--amber);font-size:0.6rem">⚠ Only at ${esc(m.venues[0])}. Verify city-wide</span>`
-      :`<span style="font-size:0.6rem;color:var(--text-faint)">${m.venueSpread} venues: ${m.venues.map(esc).join(', ')}</span>`;
+      ?`<span style="color:var(--amber);font-size:0.7rem">⚠ Only at ${esc(m.venues[0])}. Verify city-wide</span>`
+      :`<span style="font-size:0.7rem;color:var(--text-faint)">${m.venueSpread} venues: ${m.venues.map(esc).join(', ')}</span>`;
 
     h+=`<div class="momentum-card" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start">
       <div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
           <span style="font-family:var(--sans);font-weight:800;font-size:1rem">${esc(m.name)}</span>
           <span style="font-family:var(--sans);font-weight:700;font-size:0.875rem;color:var(--green)">↑${pctGain}%</span>
-          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">${trajIcon[m.trajectory]} ${trajLabel[m.trajectory]}</span>
+          <span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint)">${trajIcon[m.trajectory]} ${trajLabel[m.trajectory]}</span>
           ${dnaS&&dnaS.score>20?`<span class="badge badge-${dnaS.score>=70?'green':dnaS.score>=50?'amber':'red'}" style="font-size:0.5rem">${dnaS.score} fit</span>`:''}
           ${freshness}
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;background:var(--surface-2);border-radius:6px;padding:8px 10px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;background:var(--bg3);border-radius:6px;padding:8px 10px">
           <div>
-            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">${earlyLabel}</div>
+            <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">${earlyLabel}</div>
             <div style="font-family:var(--sans);font-weight:700;font-size:1rem;color:var(--text-dim)">${fmt(m.avgEarly)}</div>
             <div style="font-family:var(--mono);font-size:0.5rem;color:var(--text-faint)">avg RA interest</div>
           </div>
           <div>
-            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">${lateLabel}</div>
+            <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">${lateLabel}</div>
             <div style="font-family:var(--sans);font-weight:700;font-size:1rem;color:var(--amber)">${fmt(m.avgLate)}</div>
             <div style="font-family:var(--mono);font-size:0.5rem;color:var(--text-faint)">avg RA interest</div>
           </div>
@@ -5538,15 +5702,15 @@ function renderMomentum(momentum, allEvents){
         <div style="margin-bottom:8px">${spreadNote}</div>
 
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span style="font-family:var(--mono);font-size:0.6rem;font-weight:700;color:${m.windowColor}">${m.windowSignal}</span>
+          <span style="font-family:var(--mono);font-size:0.7rem;font-weight:700;color:${m.windowColor}">${m.windowSignal}</span>
           <span class="intel-avail-badge ${!avail?'intel-avail-yes':'intel-avail-no'}" title="${avail?'Last played: '+fdate(avail.date)+' at '+avail.venue:''}">${!avail?'available':avail.daysAgo>=0?'played '+fdate(avail.date):'upcoming'}</span>
         </div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;padding-top:2px">
-        <button style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="saveArtist('${esc(m.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
-        <button style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="goXrayFromIntel('${esc(m.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
-        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-align:right">${m.shows} shows<br>tracked</span>
+        <button style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="saveArtist('${esc(m.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
+        <button style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="goXrayFromIntel('${esc(m.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
+        <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);text-align:right">${m.shows} shows<br>tracked</span>
       </div>
     </div>`;
   }
@@ -5664,7 +5828,7 @@ async function loadIntelTab(){
     const chips=[...new Set([...qualityVenues,...knownPromoters])].slice(0,16);
     const chipsEl=document.getElementById('intelQuickChips');
     if(chipsEl)chipsEl.innerHTML=
-      `<span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);padding:4px 0;flex-basis:100%">Quick scan →</span>`+
+      `<span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);padding:4px 0;flex-basis:100%">Quick scan →</span>`+
       chips.map(v=>`<span class="intel-quick-chip" onclick="runIntel('${esc(v).replace(/'/g,"\\'")}')">${esc(v)}</span>`).join('');
   }catch(e){console.warn('Chips failed:',e);}
 }
@@ -5698,7 +5862,7 @@ async function runXrayEnhanced(name, date, allEvents){
         <span style="font-family:var(--sans);font-weight:700;color:var(--amber);font-size:0.875rem">${fmt(v.peak)} peak</span>
       </div>
       <div class="intel-bar"><div class="intel-bar-fill" style="width:${bar}%"></div></div>
-      <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-top:2px">${v.shows.length} show${v.shows.length>1?'s':''} · last ${fdate(v.shows[0].date)}</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);margin-top:2px">${v.shows.length} show${v.shows.length>1?'s':''} · last ${fdate(v.shows[0].date)}</div>
     </div>`;
   }
   h+=`</div>`;
@@ -5822,8 +5986,8 @@ async function genReport(){
           for(const[g,c] of bpSorted){
             const pct=Math.round(c/bpTotal*100);
             h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);width:32px;text-align:right">${pct}%</span>
-              <div style="flex:1;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px"></div></div>
+              <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);width:32px;text-align:right">${pct}%</span>
+              <div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px"></div></div>
               <span style="font-size:0.875rem;min-width:120px">${esc(g)}</span>
             </div>`;
           }
@@ -5862,8 +6026,8 @@ async function genReport(){
         for(const[venue,pct] of affinities){
           const barClr=pct>=40?'var(--accent)':pct>=20?'var(--amber)':'var(--text-faint)';
           h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);width:32px;text-align:right">${pct}%</span>
-            <div style="flex:1;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.min(pct,100)}%;background:${barClr};border-radius:3px"></div></div>
+            <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint);width:32px;text-align:right">${pct}%</span>
+            <div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.min(pct,100)}%;background:${barClr};border-radius:3px"></div></div>
             <span style="font-size:0.875rem;min-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(venue)}</span>
           </div>`;
         }
@@ -5900,7 +6064,7 @@ async function genReport(){
         h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
           <span style="font-family:var(--mono);font-size:0.5rem;color:var(--text-faint)">${c}</span>
           <div style="width:100%;height:${pct}%;min-height:2px;background:var(--accent);border-radius:6px 2px 0 0"></div>
-          <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">${label}</span>
+          <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-faint)">${label}</span>
         </div>`;
       }
       h+=`</div></div>`;
@@ -5914,7 +6078,7 @@ async function genReport(){
       <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:10px">Top venues by event count (12 months)</div>`;
     for(const[name,count] of topV){
       const isU=p.venue&&name.toLowerCase().includes(p.venue.toLowerCase());
-      h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.875rem${isU?';color:var(--amber);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--mono);font-size:0.7rem">${count}</span></div>`;
+      h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.875rem${isU?';color:var(--amber);font-weight:600':''}"><span>${esc(name)}${isU?' ← you':''}</span><span style="font-family:var(--mono);font-size:0.75rem">${count}</span></div>`;
     }
     h+=`</div>`;
 
@@ -5959,9 +6123,9 @@ async function loadCalendar(){
   const sorted=[...results].sort((a,b)=>a.count-b.count);
 
   let h='<div style="margin-bottom:16px"><div style="font-family:var(--sans);font-weight:600;font-size:0.8rem;color:var(--green);text-transform:uppercase;margin-bottom:6px">Best dates</div>';
-  for(const r of sorted.slice(0,3))h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.875rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--mono);font-size:0.7rem;color:var(--green)">${r.count} events</span></div>`;
+  for(const r of sorted.slice(0,3))h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.875rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--mono);font-size:0.75rem;color:var(--green)">${r.count} events</span></div>`;
   h+='</div><div><div style="font-family:var(--sans);font-weight:600;font-size:0.8rem;color:var(--amber);text-transform:uppercase;margin-bottom:6px">Busiest dates</div>';
-  for(const r of sorted.slice(-3).reverse())h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.875rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--mono);font-size:0.7rem;color:var(--amber)">${r.count} events</span></div>`;
+  for(const r of sorted.slice(-3).reverse())h+=`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.875rem"><span>${r.dow} ${fdate(r.date)}</span><span style="font-family:var(--mono);font-size:0.75rem;color:var(--amber)">${r.count} events</span></div>`;
   h+='</div><div style="margin-top:16px"><div class="cal-grid">';
   for(const r of results){const cls=r.count<=low?'cal-good':r.count>=high?'cal-bad':'cal-mid';h+=`<div class="cal-cell ${cls}"><div class="cal-day">${r.dow} ${r.date.getDate()} ${r.date.toLocaleDateString('en-GB',{month:'short'})}</div><div class="cal-count">${r.count}</div><div class="cal-label">events</div></div>`}
   h+='</div></div>';grid.innerHTML=h;
@@ -5976,43 +6140,54 @@ function updateFee(name,fee){const s=saved(),a=s.find(x=>x.name===name);if(a){a.
 function updateOutcome(name,outcome){const s=saved(),a=s.find(x=>x.name===name);if(a){a.outcome=a.outcome===outcome?'':outcome;setSaved(s)}const f=fees();if(f[name]){f[name].outcome=a?a.outcome:'';setFees(f)}renderSaved()}
 
 function renderSaved(){
-  // Update saved count in header
   const sc=document.getElementById('npSavedCount');if(sc)sc.textContent=saved().length;
   const c=document.getElementById('sList'),s=saved(),cn=cityName();
   if(!s.length){
-    c.innerHTML=`<div class="empty">
-      <div style="font-family:var(--sans);font-size:1rem;letter-spacing:1px;margin-bottom:8px;color:var(--text)">Your shortlist is empty</div>
-      <div style="font-size:0.8rem;line-height:1.8">Save artists from Book, Routing, or Artist Check.<br>When you confirm a booking here, it's removed from your discovery and routing results.</div>
-    </div>`;
+    c.innerHTML='<div class="empty"><div style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)">Pipeline empty</div><div style="font-size:13px;line-height:1.8">Save artists from Discover or Routing. Track your booking conversations here.</div></div>';
     return;
   }
   const sorted=[...s].sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
-  const dna=getDNA();const hasDNA=dna&&dna.artistCount>0;
 
   c.innerHTML=sorted.map((a,i)=>{
     const [bg,fg]=V3_COLORS[i%V3_COLORS.length];
     const initial=(a.name||'?').charAt(0).toUpperCase();
     const img=a.imageUrl&&a.imageUrl.length>10
-      ?'<div class="v3-ava" style="background:'+bg+';padding:0;overflow:hidden"><img src="'+esc(a.imageUrl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>'
+      ?'<div class="v3-ava" style="background:'+bg+';padding:0;overflow:hidden"><img src="'+esc(a.imageUrl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display=\'none\'"></div>'
       :'<div class="v3-ava" style="background:'+bg+';color:'+fg+'">'+initial+'</div>';
     const savedAgo=a.at?Math.round((Date.now()-new Date(a.at))/(1000*60*60*24)):0;
     const agoText=savedAgo===0?'Today':savedAgo===1?'Yesterday':savedAgo+'d ago';
     const nameE=esc(a.name).replace(/'/g,"\\'");
     const statusLabel=a.outcome==='up'?'Confirmed':a.outcome==='down'?'Passed':a.notes&&a.notes.length>5?'In progress':'New';
-    const statusColor=a.outcome==='up'?'var(--green)':a.outcome==='down'?'var(--text-ghost)':'var(--text-dim)';
+    const statusColor=a.outcome==='up'?'var(--green)':a.outcome==='down'?'var(--text-ghost)':a.notes&&a.notes.length>5?'var(--sky)':'var(--text-dim)';
+    const statusBg=a.outcome==='up'?'var(--g10)':a.outcome==='down'?'rgba(255,255,255,.03)':a.notes&&a.notes.length>5?'var(--s10)':'rgba(255,255,255,.03)';
 
-    return '<div class="saved-card">'+
-      img+
-      '<div style="flex:1;min-width:0">'+
-        '<div class="saved-name">'+esc(a.name)+'</div>'+
-        '<div class="saved-meta">Saved '+agoText+(a.fee?' · €'+a.fee:'')+'</div>'+
-        '<textarea class="notes" placeholder="Notes, agent, fee…" style="margin-top:8px;font-size:13px;min-height:48px" onchange="updateNotes(\''+nameE+'\',this.value)">'+esc(a.notes||'')+'</textarea>'+
+    return '<div class="saved-card" style="flex-direction:column;align-items:stretch;gap:10px">'+
+      '<div style="display:flex;align-items:center;gap:12px">'+
+        img+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="display:flex;align-items:center;gap:8px">'+
+            '<div class="saved-name">'+esc(a.name)+'</div>'+
+            '<span style="font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;color:'+statusColor+';background:'+statusBg+'">'+statusLabel+'</span>'+
+          '</div>'+
+          '<div class="saved-meta">Saved '+agoText+(a.fee?' · €'+a.fee:'')+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:4px;flex-shrink:0">'+
+          '<button class="v3-btn" style="font-size:11px;padding:6px 10px" onclick="goXray(\''+nameE+'\')">Profile</button>'+
+          '<button class="v3-btn" style="font-size:11px;padding:6px 10px" onclick="npDraftEmail(\''+nameE+'\',null)">Email</button>'+
+          '<button class="v3-btn" style="font-size:11px;padding:6px 10px;color:var(--red)" onclick="removeSaved(\''+nameE+'\')">✕</button>'+
+        '</div>'+
       '</div>'+
-      '<div class="saved-actions">'+
-        '<span style="font-family:var(--mono);font-size:10px;color:'+statusColor+';font-weight:600">'+statusLabel+'</span>'+
-        '<button class="btn-ghost" style="font-size:12px;padding:6px 12px" onclick="goXray(\''+nameE+'\')">Profile</button>'+
-        '<button class="btn-ghost" style="font-size:12px;padding:6px 12px;color:var(--red);border-color:var(--r30)" onclick="removeSaved(\''+nameE+'\')">Remove</button>'+
+      '<div style="display:flex;gap:8px">'+
+        '<textarea class="notes" placeholder="Notes, agent, dates…" style="flex:1;font-size:13px;min-height:40px;resize:vertical" onchange="updateNotes(\''+nameE+'\',this.value)">'+esc(a.notes||'')+'</textarea>'+
+        '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">'+
+          '<input type="number" placeholder="Fee €" value="'+(a.fee||'')+'" style="width:90px;font-size:13px;padding:8px;text-align:right" onchange="updateFee(\''+nameE+'\',this.value)">'+
+          '<div style="display:flex;gap:3px">'+
+            '<button class="v3-btn'+(a.outcome==='up'?' p':'')+'" style="font-size:10px;padding:4px 8px;flex:1" onclick="updateOutcome(\''+nameE+'\',\'up\');renderSaved()">✓</button>'+
+            '<button class="v3-btn'+(a.outcome==='down'?' p':'')+'" style="font-size:10px;padding:4px 8px;flex:1;'+(a.outcome==='down'?'background:var(--r10);color:var(--red);border-color:var(--r30)':'')+'" onclick="updateOutcome(\''+nameE+'\',\'down\');renderSaved()">✕</button>'+
+          '</div>'+
+        '</div>'+
       '</div>'+
+      '<div id="emailDraft-'+a.name.replace(/[^a-zA-Z0-9]/g,'')+'" style="display:none;margin-top:8px;padding:16px;background:var(--bg3);border-radius:8px;border:1px solid var(--border-hi)"></div>'+
     '</div>';
   }).join('');
 }
@@ -6020,7 +6195,7 @@ function renderSaved(){
 function exportCSV(){
   const s=saved();if(!s.length)return;
   const csv='Name,'+cityName()+' Spotify,Global Spotify,Fee,Outcome,Notes,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+','+(a.fee||'')+','+(a.outcome||'')+',"'+(a.notes||'').replace(/"/g,'""')+'",'+a.at).join('\n');
-  const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='nightpulse-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
+  const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='subpulse-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
 }
 
 /* ═══════════════════════════════════════════
