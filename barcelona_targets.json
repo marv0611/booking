@@ -1,0 +1,1821 @@
+{
+  "generated": "2026-04-05T17:01:54.180637",
+  "city": "Barcelona",
+  "filter": "12+ artists with 100+ RA followers booked/year",
+  "total_events": 8978,
+  "total_targets": 90,
+  "total_filtered_out": 111,
+  "targets": [
+    {
+      "type": "venue",
+      "id": "911",
+      "name": "Razzmatazz",
+      "events": 141,
+      "total_artists": 652,
+      "notable_artists": 385,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "29975",
+      "name": "Miles Away",
+      "events": 124,
+      "total_artists": 636,
+      "notable_artists": 377,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "48277",
+      "name": "NitsaClub",
+      "events": 122,
+      "total_artists": 410,
+      "notable_artists": 302,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "2072",
+      "name": "Nitsa Club",
+      "events": 124,
+      "total_artists": 414,
+      "notable_artists": 300,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "60710",
+      "name": "INPUT High Fidelity Dance Club",
+      "events": 173,
+      "total_artists": 390,
+      "notable_artists": 299,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "107566",
+      "name": "Les Enfants Brillants",
+      "events": 204,
+      "total_artists": 403,
+      "notable_artists": 265,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "148558",
+      "name": "Human Club",
+      "events": 63,
+      "total_artists": 413,
+      "notable_artists": 265,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "3760",
+      "name": "La Terrrazza",
+      "events": 131,
+      "total_artists": 301,
+      "notable_artists": 183,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "5503",
+      "name": "Parc del F\u00f2rum",
+      "events": 19,
+      "total_artists": 174,
+      "notable_artists": 156,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "67526",
+      "name": "Centris Events",
+      "events": 54,
+      "total_artists": 183,
+      "notable_artists": 136,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "136505",
+      "name": "Bikini Club",
+      "events": 108,
+      "total_artists": 193,
+      "notable_artists": 134,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "92853",
+      "name": "SIGHT Worldwide",
+      "events": 69,
+      "total_artists": 183,
+      "notable_artists": 134,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "2071",
+      "name": "Ku Barcelona",
+      "events": 78,
+      "total_artists": 206,
+      "notable_artists": 133,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "103095",
+      "name": "Brunch Electronik Bcn",
+      "events": 62,
+      "total_artists": 178,
+      "notable_artists": 131,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "149064",
+      "name": "FUEGO",
+      "events": 54,
+      "total_artists": 263,
+      "notable_artists": 127,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "19960",
+      "name": "Loud-Contact",
+      "events": 31,
+      "total_artists": 137,
+      "notable_artists": 121,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "77801",
+      "name": "SOUNDIT",
+      "events": 27,
+      "total_artists": 155,
+      "notable_artists": 115,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "140794",
+      "name": "Output Barcelona",
+      "events": 32,
+      "total_artists": 136,
+      "notable_artists": 115,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "207515",
+      "name": "La Paloma",
+      "events": 88,
+      "total_artists": 154,
+      "notable_artists": 108,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "168852",
+      "name": "Seaseaclub Barcelona",
+      "events": 50,
+      "total_artists": 176,
+      "notable_artists": 108,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "236876",
+      "name": "Bosc Tancat / Diverbosc",
+      "events": 17,
+      "total_artists": 120,
+      "notable_artists": 104,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "20696",
+      "name": "Night Sun Group",
+      "events": 55,
+      "total_artists": 138,
+      "notable_artists": 96,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "129273",
+      "name": "LAUT",
+      "events": 126,
+      "total_artists": 175,
+      "notable_artists": 88,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "3818",
+      "name": "Macarena Club",
+      "events": 368,
+      "total_artists": 332,
+      "notable_artists": 87,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "79130",
+      "name": "MacarenaClub",
+      "events": 367,
+      "total_artists": 330,
+      "notable_artists": 87,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "104527",
+      "name": "TUNNEL BARCELONA",
+      "events": 55,
+      "total_artists": 142,
+      "notable_artists": 87,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "227497",
+      "name": "303 Audiophile Bar",
+      "events": 173,
+      "total_artists": 288,
+      "notable_artists": 79,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "134031",
+      "name": "303AudiophileBar",
+      "events": 168,
+      "total_artists": 276,
+      "notable_artists": 78,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "247928",
+      "name": "TBA - Studio Stereo, close to pl. Catalunya, 08007, Barcelona",
+      "events": 115,
+      "total_artists": 245,
+      "notable_artists": 75,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "127774",
+      "name": "Studio Stereo",
+      "events": 115,
+      "total_artists": 245,
+      "notable_artists": 75,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "163338",
+      "name": "DETROIT CLUB",
+      "events": 91,
+      "total_artists": 137,
+      "notable_artists": 68,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "199432",
+      "name": "Hola Club Sitges (Cala Vallcarca)",
+      "events": 52,
+      "total_artists": 129,
+      "notable_artists": 68,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "150612",
+      "name": "M7 Club",
+      "events": 297,
+      "total_artists": 223,
+      "notable_artists": 67,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "102057",
+      "name": "M7CLUB.net",
+      "events": 289,
+      "total_artists": 201,
+      "notable_artists": 56,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "121797",
+      "name": "Hola Beach Club",
+      "events": 43,
+      "total_artists": 95,
+      "notable_artists": 55,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "146196",
+      "name": "MID SUMMER PRODUCTIONS SL",
+      "events": 27,
+      "total_artists": 84,
+      "notable_artists": 55,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "209974",
+      "name": "TBA",
+      "events": 182,
+      "total_artists": 316,
+      "notable_artists": 54,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "100408",
+      "name": "BRIDGE 48",
+      "events": 90,
+      "total_artists": 220,
+      "notable_artists": 53,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "87924",
+      "name": "NOM Barcelona",
+      "events": 53,
+      "total_artists": 54,
+      "notable_artists": 50,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "104662",
+      "name": "Mostra",
+      "events": 12,
+      "total_artists": 74,
+      "notable_artists": 50,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "39130",
+      "name": "Primavera Sound",
+      "events": 16,
+      "total_artists": 54,
+      "notable_artists": 49,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "20462",
+      "name": "Luz De Gas",
+      "events": 30,
+      "total_artists": 69,
+      "notable_artists": 45,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "143037",
+      "name": "THE GARAGE CLUB BCN",
+      "events": 51,
+      "total_artists": 66,
+      "notable_artists": 43,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "123997",
+      "name": "RED58",
+      "events": 71,
+      "total_artists": 114,
+      "notable_artists": 42,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "108502",
+      "name": "Plaza Monumental de Barcelona",
+      "events": 12,
+      "total_artists": 54,
+      "notable_artists": 41,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "64535",
+      "name": "SWING",
+      "events": 21,
+      "total_artists": 55,
+      "notable_artists": 40,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "98083",
+      "name": "unlockedbcn",
+      "events": 25,
+      "total_artists": 68,
+      "notable_artists": 40,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "163700",
+      "name": "Noizer",
+      "events": 46,
+      "total_artists": 69,
+      "notable_artists": 40,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "3759",
+      "name": "City Hall",
+      "events": 264,
+      "total_artists": 186,
+      "notable_artists": 37,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "41595",
+      "name": "Poble Espanyol",
+      "events": 19,
+      "total_artists": 51,
+      "notable_artists": 37,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "12125",
+      "name": "Rachdingue",
+      "events": 19,
+      "total_artists": 78,
+      "notable_artists": 36,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "101670",
+      "name": "Sala Upload Barcelona",
+      "events": 45,
+      "total_artists": 123,
+      "notable_artists": 36,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "246335",
+      "name": "7833 Soundlab",
+      "events": 84,
+      "total_artists": 170,
+      "notable_artists": 33,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "13740",
+      "name": "Sala Apolo",
+      "events": 52,
+      "total_artists": 76,
+      "notable_artists": 33,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "110089",
+      "name": "Innova Group",
+      "events": 27,
+      "total_artists": 59,
+      "notable_artists": 33,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "200167",
+      "name": "Skyfall Cocktail Club",
+      "events": 39,
+      "total_artists": 80,
+      "notable_artists": 31,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "2253",
+      "name": "Moog Club",
+      "events": 367,
+      "total_artists": 68,
+      "notable_artists": 31,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "277679",
+      "name": "BORIS CLUB",
+      "events": 70,
+      "total_artists": 66,
+      "notable_artists": 31,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "260656",
+      "name": "Forum Station",
+      "events": 89,
+      "total_artists": 189,
+      "notable_artists": 30,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "54055",
+      "name": "Freedonia",
+      "events": 56,
+      "total_artists": 107,
+      "notable_artists": 30,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "159296",
+      "name": "78|33",
+      "events": 76,
+      "total_artists": 157,
+      "notable_artists": 30,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "255661",
+      "name": "Glitch Club",
+      "events": 19,
+      "total_artists": 48,
+      "notable_artists": 29,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "159180",
+      "name": "GLITCH Dance Club",
+      "events": 19,
+      "total_artists": 48,
+      "notable_artists": 29,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "109840",
+      "name": "AUDIODISE",
+      "events": 18,
+      "total_artists": 45,
+      "notable_artists": 28,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "174830",
+      "name": "borisclub",
+      "events": 66,
+      "total_artists": 57,
+      "notable_artists": 28,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "14792",
+      "name": "Opium Barcelona",
+      "events": 28,
+      "total_artists": 45,
+      "notable_artists": 26,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "70609",
+      "name": "Switch Bar",
+      "events": 219,
+      "total_artists": 148,
+      "notable_artists": 25,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "235057",
+      "name": "G Spot Club",
+      "events": 144,
+      "total_artists": 102,
+      "notable_artists": 23,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "243867",
+      "name": "Club Sauvage",
+      "events": 95,
+      "total_artists": 102,
+      "notable_artists": 23,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "90434",
+      "name": "Elektronic Delight",
+      "events": 14,
+      "total_artists": 39,
+      "notable_artists": 23,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "140585",
+      "name": "Gspotclub",
+      "events": 134,
+      "total_artists": 98,
+      "notable_artists": 23,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "35934",
+      "name": "Atlantic Club",
+      "events": 27,
+      "total_artists": 52,
+      "notable_artists": 21,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "107615",
+      "name": "Regia",
+      "events": 22,
+      "total_artists": 46,
+      "notable_artists": 21,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "210932",
+      "name": "TBA - secret location",
+      "events": 42,
+      "total_artists": 110,
+      "notable_artists": 20,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "100495",
+      "name": "LA ASO BY KINETICS",
+      "events": 12,
+      "total_artists": 33,
+      "notable_artists": 19,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "51357",
+      "name": "checkpoint \u25a0",
+      "events": 19,
+      "total_artists": 45,
+      "notable_artists": 19,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "162599",
+      "name": "La Nau",
+      "events": 23,
+      "total_artists": 34,
+      "notable_artists": 18,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "149046",
+      "name": "CDLC Barcelona",
+      "events": 57,
+      "total_artists": 45,
+      "notable_artists": 16,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "152857",
+      "name": "G Spot",
+      "events": 62,
+      "total_artists": 56,
+      "notable_artists": 16,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "121615",
+      "name": "Garage 442",
+      "events": 192,
+      "total_artists": 153,
+      "notable_artists": 15,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "95938",
+      "name": "SUW -Side UP Works-",
+      "events": 22,
+      "total_artists": 45,
+      "notable_artists": 15,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "155557",
+      "name": "SecretGarden.bcn",
+      "events": 39,
+      "total_artists": 61,
+      "notable_artists": 14,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "140312",
+      "name": "microdosis",
+      "events": 15,
+      "total_artists": 16,
+      "notable_artists": 14,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "143288",
+      "name": "LOST BCN",
+      "events": 34,
+      "total_artists": 72,
+      "notable_artists": 14,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "105587",
+      "name": "Purobeach Barcelona",
+      "events": 31,
+      "total_artists": 28,
+      "notable_artists": 13,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "123324",
+      "name": "OFF",
+      "events": 21,
+      "total_artists": 25,
+      "notable_artists": 13,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "109986",
+      "name": "Medio Crew",
+      "events": 20,
+      "total_artists": 40,
+      "notable_artists": 13,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "217335",
+      "name": "Sala Recreo",
+      "events": 242,
+      "total_artists": 73,
+      "notable_artists": 12,
+      "is_target": true
+    },
+    {
+      "type": "venue",
+      "id": "114712",
+      "name": "Absenta del Raval",
+      "events": 185,
+      "total_artists": 98,
+      "notable_artists": 12,
+      "is_target": true
+    },
+    {
+      "type": "promoter",
+      "id": "138390",
+      "name": "TheSupermercat",
+      "events": 428,
+      "total_artists": 136,
+      "notable_artists": 12,
+      "is_target": true
+    }
+  ],
+  "filtered_out": [
+    {
+      "type": "venue",
+      "id": "225461",
+      "name": "Casa Montju\u00efc",
+      "events": 13,
+      "total_artists": 14,
+      "notable_artists": 11,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "113776",
+      "name": "O V E R T O N E",
+      "events": 12,
+      "total_artists": 23,
+      "notable_artists": 11,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "108148",
+      "name": "Simple Times (House)",
+      "events": 15,
+      "total_artists": 26,
+      "notable_artists": 11,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "103983",
+      "name": "garage442",
+      "events": 82,
+      "total_artists": 62,
+      "notable_artists": 10,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "106267",
+      "name": "Slow Club",
+      "events": 178,
+      "total_artists": 41,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "232603",
+      "name": "Atlantic Sound",
+      "events": 12,
+      "total_artists": 26,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "118913",
+      "name": "Glamour Freaks",
+      "events": 168,
+      "total_artists": 39,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "119434",
+      "name": "Slow Club Barcelona",
+      "events": 176,
+      "total_artists": 41,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "131889",
+      "name": "UNREC",
+      "events": 16,
+      "total_artists": 28,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "94701",
+      "name": "ElBassline",
+      "events": 13,
+      "total_artists": 27,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "92991",
+      "name": "GLOVE PARTY",
+      "events": 15,
+      "total_artists": 29,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "57320",
+      "name": "Playground Records",
+      "events": 13,
+      "total_artists": 26,
+      "notable_artists": 9,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "232096",
+      "name": "The Supermercat Gotico",
+      "events": 226,
+      "total_artists": 83,
+      "notable_artists": 8,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "267053",
+      "name": "9D9",
+      "events": 14,
+      "total_artists": 24,
+      "notable_artists": 8,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "274128",
+      "name": "TBA - SIDERAL",
+      "events": 18,
+      "total_artists": 41,
+      "notable_artists": 8,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "128152",
+      "name": "SEGUIM Records",
+      "events": 13,
+      "total_artists": 22,
+      "notable_artists": 8,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "246879",
+      "name": "Chica Club",
+      "events": 16,
+      "total_artists": 24,
+      "notable_artists": 7,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "156480",
+      "name": "ELFENCI",
+      "events": 14,
+      "total_artists": 23,
+      "notable_artists": 7,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "125067",
+      "name": "HOPE",
+      "events": 42,
+      "total_artists": 28,
+      "notable_artists": 7,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "167647",
+      "name": "Buena Onda Social Club",
+      "events": 33,
+      "total_artists": 73,
+      "notable_artists": 6,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "144995",
+      "name": "Meteoro",
+      "events": 22,
+      "total_artists": 52,
+      "notable_artists": 6,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "249835",
+      "name": "Imperial Private Club",
+      "events": 41,
+      "total_artists": 47,
+      "notable_artists": 6,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "157440",
+      "name": "STUDIO 79",
+      "events": 56,
+      "total_artists": 34,
+      "notable_artists": 6,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "168565",
+      "name": "sideral.bcn",
+      "events": 19,
+      "total_artists": 35,
+      "notable_artists": 6,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "260455",
+      "name": "The Supermercat Raval",
+      "events": 105,
+      "total_artists": 64,
+      "notable_artists": 5,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "214362",
+      "name": "Hotel Sofitel Skipper Barcelona",
+      "events": 15,
+      "total_artists": 32,
+      "notable_artists": 5,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "226001",
+      "name": "Puerto Bahia Club de Mar",
+      "events": 17,
+      "total_artists": 31,
+      "notable_artists": 5,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "282388",
+      "name": "PNC Radio",
+      "events": 22,
+      "total_artists": 54,
+      "notable_artists": 5,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "238404",
+      "name": "Nobu Hotel",
+      "events": 20,
+      "total_artists": 22,
+      "notable_artists": 5,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "146223",
+      "name": "alocasia.tv",
+      "events": 18,
+      "total_artists": 41,
+      "notable_artists": 5,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "178343",
+      "name": "Dr. Dou Social Club",
+      "events": 218,
+      "total_artists": 31,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "216950",
+      "name": "Noxe Barcelona",
+      "events": 157,
+      "total_artists": 26,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "207437",
+      "name": "Dr. Resin Social Club",
+      "events": 148,
+      "total_artists": 23,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "258536",
+      "name": "TBA - Mansion Near Plaza Catalunya",
+      "events": 12,
+      "total_artists": 31,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "191234",
+      "name": "Mint Bar",
+      "events": 50,
+      "total_artists": 38,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "269080",
+      "name": "Azul Rooftop Barceloneta",
+      "events": 33,
+      "total_artists": 20,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "232132",
+      "name": "Vraba Terrace",
+      "events": 13,
+      "total_artists": 47,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "148672",
+      "name": "DEXT FORCE Festival",
+      "events": 12,
+      "total_artists": 23,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "123049",
+      "name": "Good Vibes Only Bcn ",
+      "events": 68,
+      "total_artists": 19,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "138745",
+      "name": "&Friends",
+      "events": 19,
+      "total_artists": 48,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "155487",
+      "name": "Magnetic",
+      "events": 12,
+      "total_artists": 14,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "170599",
+      "name": "ANK RECORDS",
+      "events": 25,
+      "total_artists": 30,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "181341",
+      "name": "HARD_TECHNO",
+      "events": 12,
+      "total_artists": 24,
+      "notable_artists": 4,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "271229",
+      "name": "Beso Pedralbes",
+      "events": 16,
+      "total_artists": 19,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "216136",
+      "name": "Localito 3.0",
+      "events": 35,
+      "total_artists": 16,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "239778",
+      "name": "C\u00edrculo",
+      "events": 189,
+      "total_artists": 46,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "190550",
+      "name": "Recreo Bar",
+      "events": 227,
+      "total_artists": 26,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "255553",
+      "name": "Okio Social Club",
+      "events": 21,
+      "total_artists": 27,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "161349",
+      "name": "Above You_ Dance",
+      "events": 16,
+      "total_artists": 16,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "122006",
+      "name": "Paradise.music",
+      "events": 13,
+      "total_artists": 40,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "152153",
+      "name": "Grupo Fomo",
+      "events": 23,
+      "total_artists": 30,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "143094",
+      "name": "JUXTA",
+      "events": 12,
+      "total_artists": 6,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "125508",
+      "name": "Boots & Cats",
+      "events": 12,
+      "total_artists": 32,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "155701",
+      "name": "MYRIEL",
+      "events": 15,
+      "total_artists": 23,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "166605",
+      "name": "IMPERIALCLUB",
+      "events": 16,
+      "total_artists": 25,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "129146",
+      "name": "CabanaLibre",
+      "events": 14,
+      "total_artists": 29,
+      "notable_artists": 3,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "139617",
+      "name": "TOC Hostel",
+      "events": 64,
+      "total_artists": 10,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "175043",
+      "name": "Sala Taro",
+      "events": 23,
+      "total_artists": 28,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "257321",
+      "name": "Eleven BCN",
+      "events": 13,
+      "total_artists": 5,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "31412",
+      "name": "Rouge",
+      "events": 15,
+      "total_artists": 16,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "233536",
+      "name": "Negro Rojo Club",
+      "events": 24,
+      "total_artists": 15,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "103988",
+      "name": "Kw",
+      "events": 44,
+      "total_artists": 13,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "158200",
+      "name": "BT Bcn",
+      "events": 52,
+      "total_artists": 13,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "144493",
+      "name": "Dr. Silver",
+      "events": 13,
+      "total_artists": 23,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "133548",
+      "name": "Matias",
+      "events": 15,
+      "total_artists": 26,
+      "notable_artists": 2,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "212743",
+      "name": "Hotel Negresco Princess",
+      "events": 112,
+      "total_artists": 2,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "198817",
+      "name": "Jamboree Dance Club",
+      "events": 26,
+      "total_artists": 2,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "85215",
+      "name": "Renaissance Barcelona Hotel",
+      "events": 45,
+      "total_artists": 7,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "92068",
+      "name": "Duquesa de Cardona",
+      "events": 14,
+      "total_artists": 4,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "168966",
+      "name": "Unite Hostel",
+      "events": 32,
+      "total_artists": 28,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "264420",
+      "name": "Duquesa Suites Hotel Rooftop",
+      "events": 53,
+      "total_artists": 6,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "166307",
+      "name": "La Perla Club",
+      "events": 29,
+      "total_artists": 7,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "266789",
+      "name": "TBA - El Gat Negre - Gr\u00e0cia - C/ Sant Lluis 47",
+      "events": 33,
+      "total_artists": 13,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "222292",
+      "name": "Casa Rojo",
+      "events": 13,
+      "total_artists": 22,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "272294",
+      "name": "Unplugbcn",
+      "events": 41,
+      "total_artists": 36,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "5792",
+      "name": "Otto Zutz",
+      "events": 28,
+      "total_artists": 10,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "46630",
+      "name": "We sounds",
+      "events": 126,
+      "total_artists": 2,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "145436",
+      "name": "SOUND HUB",
+      "events": 33,
+      "total_artists": 7,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "160974",
+      "name": "Barcelona Rooftop Parties",
+      "events": 112,
+      "total_artists": 8,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "145484",
+      "name": "Skylabbcn",
+      "events": 45,
+      "total_artists": 9,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "86817",
+      "name": "Disco Fever",
+      "events": 36,
+      "total_artists": 4,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "137512",
+      "name": "80's Rooftop",
+      "events": 27,
+      "total_artists": 3,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "72500",
+      "name": "Atik",
+      "events": 27,
+      "total_artists": 6,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "115683",
+      "name": "Housy",
+      "events": 38,
+      "total_artists": 5,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "164597",
+      "name": "La Perla Barcelona",
+      "events": 13,
+      "total_artists": 2,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "126259",
+      "name": "Moods",
+      "events": 37,
+      "total_artists": 12,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "164596",
+      "name": "La Perla Private Club Barcelona",
+      "events": 20,
+      "total_artists": 4,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "165342",
+      "name": "El gato negro - Gr\u00e0cia",
+      "events": 39,
+      "total_artists": 13,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "166980",
+      "name": "hello.indomita",
+      "events": 13,
+      "total_artists": 14,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "169573",
+      "name": "AZUL CLUB",
+      "events": 12,
+      "total_artists": 6,
+      "notable_artists": 1,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "186295",
+      "name": "18",
+      "events": 12,
+      "total_artists": 2,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "211384",
+      "name": "Farola",
+      "events": 55,
+      "total_artists": 17,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "159129",
+      "name": "Can Luis",
+      "events": 14,
+      "total_artists": 18,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "259171",
+      "name": "Sauvage Swinger Club",
+      "events": 12,
+      "total_artists": 11,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "216678",
+      "name": "Gran Hotel Havana",
+      "events": 14,
+      "total_artists": 1,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "272587",
+      "name": "Naranjito Cocktail Bar",
+      "events": 16,
+      "total_artists": 0,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "276043",
+      "name": "Sabda",
+      "events": 23,
+      "total_artists": 6,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "venue",
+      "id": "56857",
+      "name": "Lennon's Club",
+      "events": 22,
+      "total_artists": 1,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "134770",
+      "name": "maadraassoo",
+      "events": 51,
+      "total_artists": 1,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "97814",
+      "name": "wOnK BCN",
+      "events": 18,
+      "total_artists": 9,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "110547",
+      "name": "Funky Summer Vibes",
+      "events": 19,
+      "total_artists": 1,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "164308",
+      "name": "Deep, Tech, House",
+      "events": 50,
+      "total_artists": 2,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "131095",
+      "name": "EVENTS BARCELONA",
+      "events": 47,
+      "total_artists": 11,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "154915",
+      "name": "Psicodelika-Events",
+      "events": 14,
+      "total_artists": 2,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "117681",
+      "name": "Kate",
+      "events": 14,
+      "total_artists": 1,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "156432",
+      "name": "Luca Barbieri ",
+      "events": 16,
+      "total_artists": 27,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "165231",
+      "name": "red.",
+      "events": 19,
+      "total_artists": 6,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "168201",
+      "name": "RITO BARCELONA",
+      "events": 41,
+      "total_artists": 6,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "123045",
+      "name": "DOPAMINE",
+      "events": 16,
+      "total_artists": 11,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "170741",
+      "name": "Digital Pulse",
+      "events": 16,
+      "total_artists": 0,
+      "notable_artists": 0,
+      "is_target": false
+    },
+    {
+      "type": "promoter",
+      "id": "176893",
+      "name": "Nomad House",
+      "events": 17,
+      "total_artists": 0,
+      "notable_artists": 0,
+      "is_target": false
+    }
+  ]
+}
