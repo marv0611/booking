@@ -532,6 +532,7 @@ if __name__ == "__main__":
         print(f"✓ Beatport v4 genre enrichment enabled (user: {BP_USERNAME})")
     else:
         print(f"⚠ No Beatport credentials — genre enrichment disabled")
+    http.server.HTTPServer.allow_reuse_address = True
     with http.server.HTTPServer(("", PORT), LibroHandler) as httpd:
         print(f"SUB PULSE running -> http://localhost:{PORT}")
         try:

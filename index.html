@@ -1328,10 +1328,22 @@ let _imgActive=0;
 const _IMG_MAX_CONCURRENT=3;
 const _imgQueue=[];
 
-// Hydrate from sessionStorage on load
+// Pre-built image index: norm(name) → slug filename
+// Loaded from artist_images.json (built by build_artist_images.py)
+let _imgIndex=null;
+fetch('/artist_images.json').then(r=>r.ok?r.json():null).then(d=>{if(d){_imgIndex=d;console.log('[IMG] Local index loaded:',Object.keys(d).length,'artists')}}).catch(()=>{});
+
+// Hydrate from sessionStorage on load — version check clears stale cache
+const _IMG_CACHE_VERSION='v3_local'; // bump when image source priority changes
 try{
-  const stored=sessionStorage.getItem('np_img_cache');
-  if(stored){const m=JSON.parse(stored);for(const[k,v] of Object.entries(m))_imgCache.set(k,v)}
+  const storedVer=sessionStorage.getItem('np_img_cache_ver');
+  if(storedVer===_IMG_CACHE_VERSION){
+    const stored=sessionStorage.getItem('np_img_cache');
+    if(stored){const m=JSON.parse(stored);for(const[k,v] of Object.entries(m))if(v)_imgCache.set(k,v)} // only hydrate non-empty
+  }else{
+    sessionStorage.removeItem('np_img_cache'); // clear stale cache
+    sessionStorage.setItem('np_img_cache_ver',_IMG_CACHE_VERSION);
+  }
 }catch(e){}
 
 function _imgCacheSave(){
@@ -1348,22 +1360,47 @@ async function getArtistImage(name){
   // Dedup: if already fetching this artist, wait for that result
   if(_imgInflight.has(k))return _imgInflight.get(k);
   
+  // Source 0: Local pre-built thumbnail (instant, no API call)
+  if(_imgIndex){
+    const slug=_imgIndex[norm(name)];
+    if(slug){
+      const localUrl='/img/artists/'+slug+'.webp';
+      _imgCache.set(k,localUrl);
+      return localUrl;
+    }
+  }
+
   const promise=new Promise(resolve=>{
     const doFetch=async()=>{
       _imgActive++;
       try{
-        const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
-        if(!r.ok){_imgCache.set(k,'');resolve('');return}
-        const d=await r.json();
-        const imgs=d?.artist?.image||[];
-        const img=imgs.find(i=>i.size==='extralarge')
-          ||imgs.find(i=>i.size==='large')
-          ||imgs.find(i=>i['#text']&&i['#text'].length>10);
-        const url=img?.['#text']||'';
-        const valid=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http')?url:'';
-        _imgCache.set(k,valid);
-        _imgCacheSave();
-        resolve(valid);
+        // Source 1: RA artist page og:image — best for electronic music
+        const slug=nameToSlug(name);
+        try{
+          const rr=await fetch('/api/ra/image?slug='+encodeURIComponent(slug));
+          if(rr.ok){
+            const rd=await rr.json();
+            if(rd.image&&rd.image.length>10&&!rd.image.includes('default')&&!rd.image.includes('placeholder')){
+              _imgCache.set(k,rd.image);_imgCacheSave();resolve(rd.image);return;
+            }
+          }
+        }catch(e){}
+        // Source 2: Last.fm artist.getInfo — fallback
+        try{
+          const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
+          if(r.ok){
+            const d=await r.json();
+            const imgs=d?.artist?.image||[];
+            const img=imgs.find(i=>i.size==='extralarge')
+              ||imgs.find(i=>i.size==='large')
+              ||imgs.find(i=>i['#text']&&i['#text'].length>10);
+            const url=img?.['#text']||'';
+            const valid=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http')?url:'';
+            if(valid){_imgCache.set(k,valid);_imgCacheSave();resolve(valid);return}
+          }
+        }catch(e){}
+        // No image from any source
+        _imgCache.set(k,'');_imgCacheSave();resolve('');
       }catch(e){_imgCache.set(k,'');resolve('')}
       finally{
         _imgActive--;
@@ -1681,6 +1718,11 @@ async function beatportArtistGenres(artistName){
     const an=artistName.toLowerCase().replace(/[^a-z0-9]/g,'');
     const match=artists.find(a=>(a.name||'').toLowerCase().replace(/[^a-z0-9]/g,'')===an)||artists[0];
     if(!match||!match.id)return null;
+    // Capture Beatport image into shared cache (high quality artist photos)
+    if(match.image&&match.image.length>10){
+      const ik='img_'+norm(artistName);
+      if(!_imgCache.has(ik)||!_imgCache.get(ik)){_imgCache.set(ik,match.image);_imgCacheSave()}
+    }
     // Step 2: get genre breakdown
     const gr=await fetch('/api/beatport/artist/'+match.id+'/genres');
     if(!gr.ok)return null;
