@@ -786,7 +786,7 @@ select{font-family:var(--mono);font-size:13px}
 
     <!-- Collapsible filters -->
     <div id="v3-filters" style="display:none;flex-wrap:wrap;gap:8px;margin-bottom:28px">
-      <div style="width:100%;font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-bottom:8px">FRESHNESS</div>
+      <div style="width:100%;font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:#807C70;margin-bottom:8px">FRESHNESS</div>
       <div class="seg-picker" id="segBack" style="border:1px solid var(--t06)">
         <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
         <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
@@ -794,14 +794,14 @@ select{font-family:var(--mono);font-size:13px}
         <button onclick="setPicker('segBack','filterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
       </div>
       <input type="hidden" id="filterBack" value="6">
-      <div style="width:100%;font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-top:12px;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
+      <div style="width:100%;font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:#807C70;margin-top:12px;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
       <div class="seg-picker" id="segFwd" style="border:1px solid var(--t06)">
         <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
         <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
         <button onclick="setPicker('segFwd','filterFwd',6)" data-v="6">6<span class="seg-sub">months</span></button>
       </div>
       <input type="hidden" id="filterFwd" value="3">
-      <div style="width:100%;font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-top:12px;margin-bottom:8px">DATE &amp; SEEDS</div>
+      <div style="width:100%;font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:#807C70;margin-top:12px;margin-bottom:8px">DATE &amp; SEEDS</div>
       <div class="row" style="width:100%;gap:10px">
         <div class="input-group" style="margin:0">
           <div class="date-wrap">
@@ -845,7 +845,7 @@ select{font-family:var(--mono);font-size:13px}
 
     <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap">
       <div class="input-group" style="margin:0;flex:1;min-width:200px">
-        <label style="font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;color:var(--t22)">YOUR EVENT DATE</label>
+        <label style="font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;color:#807C70">YOUR EVENT DATE</label>
         <div class="date-wrap">
           <input type="date" id="routeDate" onchange="syncDateToAll(this.value)">
         </div>
@@ -861,12 +861,12 @@ select{font-family:var(--mono);font-size:13px}
 
     <!-- Collapsible filters -->
     <details style="margin-bottom:24px">
-      <summary style="font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);cursor:pointer;list-style:none;padding:8px 0;border-top:1px solid var(--t06)">
+      <summary style="font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;text-transform:uppercase;color:#807C70;cursor:pointer;list-style:none;padding:8px 0;border-top:1px solid var(--t06)">
         ▸ AVAILABILITY FILTERS
       </summary>
       <div style="padding-top:16px;display:flex;flex-wrap:wrap;gap:20px">
         <div>
-          <div style="font-family:var(--mono);font-size:0.52rem;color:var(--t22);margin-bottom:8px">HASN'T PLAYED CITY IN</div>
+          <div style="font-family:var(--mono);font-size:0.52rem;color:#807C70;margin-bottom:8px">HASN'T PLAYED CITY IN</div>
           <div class="seg-picker" id="rSegBack" style="border:1px solid var(--t06)">
             <button onclick="setPicker('rSegBack','rFilterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
             <button onclick="setPicker('rSegBack','rFilterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
@@ -876,7 +876,7 @@ select{font-family:var(--mono);font-size:13px}
           <input type="hidden" id="rFilterBack" value="6">
         </div>
         <div>
-          <div style="font-family:var(--mono);font-size:0.52rem;color:var(--t22);margin-bottom:8px">NOT BOOKED FOR NEXT</div>
+          <div style="font-family:var(--mono);font-size:0.52rem;color:#807C70;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
           <div class="seg-picker" id="rSegFwd" style="border:1px solid var(--t06)">
             <button onclick="setPicker('rSegFwd','rFilterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
             <button onclick="setPicker('rSegFwd','rFilterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
@@ -899,7 +899,7 @@ select{font-family:var(--mono);font-size:13px}
     </div>
     <div id="tn-date-row" style="display:none;align-items:flex-end;gap:10px;margin-bottom:24px;flex-wrap:wrap">
       <div class="input-group" style="margin:0">
-        <label style="font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;color:var(--t22)">DATE</label>
+        <label style="font-family:var(--mono);font-size:0.53rem;letter-spacing:2px;color:#807C70">DATE</label>
         <input type="date" id="scanDate" onchange="syncDateToAll(this.value)">
       </div>
       <button class="btn btn-red" onclick="runScan();document.getElementById('tn-date-row').style.display='none'">Scan</button>
@@ -4007,11 +4007,12 @@ function showApp(){
   document.getElementById('onboarding').style.display='none';
   document.getElementById('mainTabs').style.display='none';
 
-  // Show sidebar + bottom nav
-  const sidebar = document.getElementById('npSidebar');
-  const bnav = document.getElementById('npBnav');
-  if (sidebar) sidebar.style.display = 'flex';
-  if (bnav) bnav.style.display = 'flex';
+  // Show top nav tabs + saved button
+  document.querySelector('.np-app').classList.add('app-ready');
+  const tabs = document.getElementById('npTabs');
+  if (tabs) tabs.style.display = 'flex';
+  const savedBtn = document.getElementById('npSavedBtn');
+  if (savedBtn) savedBtn.style.display = 'flex';
 
   // Default to BOOK screen
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
@@ -4051,13 +4052,11 @@ function showApp(){
   updateCityLabels();
   updateContextBanners();
   if(!dnaValid()&&venueName){
-    // DNA not built — redirect to DNA build, don't show app without it
     document.getElementById('onboarding').style.display='block';
     document.getElementById('mainTabs').style.display='none';
-    const sidebar2=document.getElementById('npSidebar');
-    const bnav2=document.getElementById('npBnav');
-    if(sidebar2)sidebar2.style.display='none';
-    if(bnav2)bnav2.style.display='none';
+    document.querySelector('.np-app').classList.remove('app-ready');
+    const tabs2=document.getElementById('npTabs');if(tabs2)tabs2.style.display='none';
+    const savedBtn2=document.getElementById('npSavedBtn');if(savedBtn2)savedBtn2.style.display='none';
     document.querySelectorAll('.tab-panel').forEach(p2=>p2.classList.remove('active'));
     _startDNABuild();
     return;
@@ -4072,6 +4071,15 @@ function showApp(){
       '<br>'+(p2.city||'').toUpperCase()+
       (d2&&d2.topGenres&&d2.topGenres.length?'<br>'+d2.topGenres.slice(0,2).join(' · ').toUpperCase():'');
   }
+
+  // Auto-trigger discover on first load
+  setTimeout(() => {
+    const dRes = document.getElementById('dRes');
+    if (dRes && !dRes.children.length) runDiscover();
+  }, 400);
+
+  // Update saved count
+  const sc=document.getElementById('npSavedCount');if(sc)sc.textContent=saved().length||'0';
 }
 async function rebuildDNA(silent){
   if(!silent)showCacheStatus('Rebuilding venue DNA…');
@@ -6280,13 +6288,12 @@ function exportCSV(){
 </script>
 
   <!-- BOTTOM NAV (mobile) -->
-  <nav class="np-bnav" id="npBnav" style="display:none">
+  <nav class="np-bnav" id="npBnav">
     <div class="np-bn active" data-screen="book" onclick="npNav('book',this)">Discover</div>
     <div class="np-bn" data-screen="tonight" onclick="npNav('tonight',this)">Scanner</div>
     <div class="np-bn" data-screen="track" onclick="npNav('track',this)">Saved</div>
   </nav>
 
-      </div><!-- /shell -->
     </div><!-- /np-content -->
   </div><!-- /np-shell -->
 </div><!-- /np-app -->
