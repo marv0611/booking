@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 from pathlib import Path
 
-PORT = int(os.environ.get("PORT", 8000))
+PORT = int(os.environ.get("PORT", 8001))
 
 # Anthropic Claude API — for smart email drafting
 CLAUDE_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -57,6 +57,7 @@ MB_MIN_INTERVAL = 1.1
 # Beatport v4 API — genre enrichment (the genre authority for electronic music)
 BP_BASE = "https://api.beatport.com/v4"
 BP_TOKEN_URL = "https://api.beatport.com/v4/auth/o/token/"
+BP_CLIENT_ID = "0GIvkCltVIuPkkwSJHp6NDb3s0potTjLBQr388Dd"
 BP_USERNAME = os.environ.get("BP_USERNAME", "dropbcn")
 BP_PASSWORD = os.environ.get("BP_PASSWORD", "Dropbarcelona1!")
 _bp_token = None
@@ -298,7 +299,7 @@ Rules:
     # ── Beatport v4 API ──
 
     def _bp_get_token(self):
-        """Get or refresh Beatport access token using password grant."""
+        """Get or refresh Beatport access token using password grant with client_id."""
         global _bp_token, _bp_token_expires
         with _bp_lock:
             if _bp_token and time.time() < _bp_token_expires - 60:
@@ -306,6 +307,7 @@ Rules:
             try:
                 data = urllib.parse.urlencode({
                     "grant_type": "password",
+                    "client_id": BP_CLIENT_ID,
                     "username": BP_USERNAME,
                     "password": BP_PASSWORD,
                 }).encode()
@@ -323,50 +325,10 @@ Rules:
             except urllib.error.HTTPError as e:
                 body = e.read().decode()
                 print(f"\033[31m[BP AUTH ERROR]\033[0m {e.code}: {body[:300]}")
-                return self._bp_get_token_with_client_id()
+                return None
             except Exception as e:
                 print(f"\033[31m[BP AUTH ERROR]\033[0m {e}")
                 return None
-
-    def _bp_get_token_with_client_id(self):
-        """Fallback: scrape client_id from Beatport docs, then retry password grant."""
-        global _bp_token, _bp_token_expires
-        import re as _re
-        try:
-            req = urllib.request.Request("https://api.beatport.com/v4/docs/", headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-                "Accept": "text/html",
-            })
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                html = resp.read().decode()
-            m = _re.search(r'client_id["\']?\s*[:=]\s*["\']([a-zA-Z0-9_-]+)["\']', html)
-            if not m:
-                m = _re.search(r'"client_id":"([^"]+)"', html)
-            if not m:
-                print(f"\033[31m[BP]\033[0m Could not scrape client_id from docs page")
-                return None
-            client_id = m.group(1)
-            print(f"\033[36m[BP]\033[0m Scraped client_id: {client_id}")
-            data = urllib.parse.urlencode({
-                "grant_type": "password",
-                "client_id": client_id,
-                "username": BP_USERNAME,
-                "password": BP_PASSWORD,
-            }).encode()
-            req2 = urllib.request.Request(BP_TOKEN_URL, data=data, headers={
-                "Content-Type": "application/x-www-form-urlencoded",
-                "User-Agent": "SubPulse/1.0",
-                "Accept": "application/json",
-            })
-            with urllib.request.urlopen(req2, timeout=15) as resp:
-                td = json.loads(resp.read())
-                _bp_token = td.get("access_token", "")
-                _bp_token_expires = time.time() + td.get("expires_in", 3600)
-                print(f"\033[36m[BP]\033[0m Token via client_id OK, expires in {td.get('expires_in', '?')}s")
-                return _bp_token
-        except Exception as e:
-            print(f"\033[31m[BP AUTH FALLBACK]\033[0m {e}")
-            return None
 
     def _bp_api_call(self, path):
         """Make an authenticated GET to Beatport v4 catalog API."""
