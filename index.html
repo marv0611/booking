@@ -1147,6 +1147,33 @@ function addVenueProfile(){
   document.getElementById('ob1').classList.add('active');
   for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i===1);
   document.getElementById('obV').value='';document.getElementById('obC').value='barcelona';
+  // ── DEV: Pre-fill test account for fast testing ──
+  setTimeout(()=>{
+    // Step 1: Set to Promoter + Barcelona
+    setObType('promoter');
+    // Step 2: RA ID + Name
+    const raId=document.getElementById('obPromoterRaId');if(raId)raId.value='83067';
+    const pName=document.getElementById('obPromoterName');if(pName){pName.value='Drop Dance Society';pName.readOnly=false;}
+    // Step 3: Sound artists
+    const s1=document.getElementById('obSoundArtist1');if(s1)s1.value='Kerri Chandler';
+    const s2=document.getElementById('obSoundArtist2');if(s2)s2.value='CC:DISCO!';
+    const s3=document.getElementById('obSoundArtist3');if(s3)s3.value='Antal';
+    // Pre-fill competitors — IDs only, names resolved via RA lookup
+    const compIds=[77801,72357,207515,140794,103095];
+    const compIdInp=document.getElementById('obCompetitorRaId');
+    if(compIdInp){
+      (async()=>{
+        for(const id of compIds){
+          compIdInp.value=id;
+          compIdInp.dispatchEvent(new Event('input'));
+          await new Promise(r=>setTimeout(r,1500));
+          const addBtn=document.getElementById('obCompAddBtn');
+          if(addBtn&&addBtn.style.pointerEvents!=='none')addBtn.click();
+          await new Promise(r=>setTimeout(r,300));
+        }
+      })();
+    }
+  },100);
   // Reset sound anchor fields
   for(let i=1;i<=3;i++){const el=document.getElementById('obSoundArtist'+i);if(el)el.value=''}
   // Reset report fields safely
