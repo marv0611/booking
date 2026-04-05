@@ -1565,17 +1565,17 @@ input[type="number"] { font-family: var(--font-mono); }
         <span class="hint" id="venueHint">Loading venues…</span>
       </div>
       <div class="input-group" id="obPromoterGroup" style="display:none">
-        <label>Promoter Name</label>
-        <div class="ac-wrap"><input type="text" id="obPromoterName" placeholder="Your promoter or party brand name" autocomplete="off"></div>
-        <span class="hint" id="promoterHint"></span>
+        <label>RA Promoter ID <span style="color:var(--accent)">*</span></label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input type="number" id="obPromoterRaId" placeholder="e.g. 83067" style="max-width:180px;font-family:var(--font-mono)">
+          <a id="obPromoterRaLink" href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent);text-decoration:none">Find my ID →</a>
+        </div>
+        <span id="obPromoterRaStatus" style="display:block;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-faint);margin-top:6px"></span>
+        <span class="hint">The number in your ra.co/promoters/[ID] URL</span>
         <div class="input-group" style="margin-top:16px;margin-bottom:0">
-          <label>RA Promoter ID <span style="color:var(--accent)">*</span></label>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <input type="number" id="obPromoterRaId" placeholder="e.g. 83067" style="max-width:180px;font-family:var(--font-mono)">
-            <a id="obPromoterRaLink" href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent);text-decoration:none">Find my ID →</a>
-          </div>
-          <span id="obPromoterRaStatus" style="display:block;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-faint);margin-top:6px"></span>
-          <span class="hint">The number in your ra.co/promoters/[ID] URL</span>
+          <label>Promoter Name</label>
+          <div class="ac-wrap"><input type="text" id="obPromoterName" placeholder="Will auto-fill from your RA ID" autocomplete="off"></div>
+          <span class="hint" id="promoterHint"></span>
         </div>
       </div>
       <button class="btn btn-red" onclick="obDone()" style="margin-top:12px;width:100%;padding:14px;font-size:0.95rem">Next →</button>
@@ -1595,25 +1595,22 @@ input[type="number"] { font-family: var(--font-mono); }
         <span class="hint">These anchor your discovery engine and competition detection</span>
       </div>
       <div class="input-group">
-        <label>What matters most to you? <span style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">reorder by priority</span></label>
+        <label>What matters most to you? <span style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">drag to reorder</span></label>
         <div id="obPriorityRank" style="display:flex;flex-direction:column;gap:6px">
-          <div class="priority-item" data-priority="discover" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;transition:all 0.15s">
+          <div class="priority-item" data-priority="discover" draggable="true" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;cursor:grab;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">1</span>
             <span style="font-size:0.85rem;font-weight:600;flex:1">Discovering new artists</span>
-            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
-            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
+            <span style="color:var(--text);font-size:1rem;letter-spacing:2px;opacity:0.5;cursor:grab">⠿</span>
           </div>
-          <div class="priority-item" data-priority="competition" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;transition:all 0.15s">
+          <div class="priority-item" data-priority="competition" draggable="true" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;cursor:grab;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">2</span>
             <span style="font-size:0.85rem;font-weight:600;flex:1">Avoiding competition</span>
-            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
-            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
+            <span style="color:var(--text);font-size:1rem;letter-spacing:2px;opacity:0.5;cursor:grab">⠿</span>
           </div>
-          <div class="priority-item" data-priority="routing" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;transition:all 0.15s">
+          <div class="priority-item" data-priority="routing" draggable="true" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;cursor:grab;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">3</span>
             <span style="font-size:0.85rem;font-weight:600;flex:1">Finding routing deals</span>
-            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
-            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
+            <span style="color:var(--text);font-size:1rem;letter-spacing:2px;opacity:0.5;cursor:grab">⠿</span>
           </div>
         </div>
       </div>
@@ -1630,14 +1627,10 @@ input[type="number"] { font-family: var(--font-mono); }
       <div class="input-group">
         <label>My Competition <span id="obCompCount" style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">0 of 3 minimum</span></label>
         <div id="obCompetitorList"></div>
-        <div id="obCompInputRow" style="display:flex;gap:8px;align-items:end;margin-top:8px">
-          <div style="width:140px">
-            <input type="number" id="obCompetitorRaId" placeholder="RA ID" style="font-size:0.85rem;font-family:var(--font-mono);width:100%">
-          </div>
-          <div style="flex:1">
-            <input type="text" id="obCompetitorName" placeholder="Name auto-fills from RA" autocomplete="off" style="font-size:0.85rem" readonly>
-          </div>
-          <button type="button" class="btn-ghost" id="obCompAddBtn" onclick="_addCompetitor()" style="padding:10px 14px;white-space:nowrap;opacity:0.4;pointer-events:none">+ Add</button>
+        <div id="obCompInputRow" style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:nowrap">
+          <input type="number" id="obCompetitorRaId" placeholder="RA ID" style="font-size:0.85rem;font-family:var(--font-mono);width:120px;flex-shrink:0">
+          <input type="text" id="obCompetitorName" placeholder="Name auto-fills from RA" autocomplete="off" style="font-size:0.85rem;flex:1;min-width:0" readonly>
+          <button type="button" class="btn-ghost" id="obCompAddBtn" onclick="_addCompetitor()" style="padding:10px 14px;white-space:nowrap;opacity:0.4;pointer-events:none;flex-shrink:0">+ Add</button>
         </div>
         <div id="obCompVerifyStatus" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint);margin-top:6px;min-height:1em"></div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
@@ -2841,25 +2834,30 @@ async function buildDNA(statusCb,artistCb){
       // Primary path — uses confirmed working RA GraphQL queries
       // NEVER use eventListings with promoter filter — it returns all 10k events regardless of ID
       
-      // Check if background prefetch already got our events
+      // Wait for background prefetch from step 1
       if(_prefetchPromise)await _prefetchPromise.catch(()=>{});
-      if(_prefetchedPromoterEvents&&_prefetchedPromoterEvents.events&&_prefetchedPromoterEvents.events.length>0){
-        if(statusCb)statusCb('Using prefetched data ('+_prefetchedPromoterEvents.events.length+' events)');
+      
+      if(_prefetchComplete&&_prefetchedPromoterEvents&&_prefetchedPromoterEvents.events&&_prefetchedPromoterEvents.events.length>0){
+        // Full archive already fetched during onboarding — use it
+        if(statusCb)statusCb('✓ '+_prefetchedPromoterEvents.events.length+' events ready');
         venueEvents.push(..._prefetchedPromoterEvents.events);
+        const pf=_prefetchedPromoterEvents;
+        window._dnaBuildMeta={archiveYearsFetched:pf.yearsFetched,archiveYearsAttempted:4,dnaComplete:pf.yearsFetched>=2,promoterName:pf.promoterName};
+        if(statusCb)statusCb(pf.yearsFetched+' years · '+venueEvents.length+' events for '+pf.promoterName);
         _prefetchedPromoterEvents=null;
       }else{
+      // No prefetch or incomplete — do full archive scan
       if(statusCb)statusCb('Scanning your event history…');
       try{
         // Verify promoter exists
         const checkD=await raPromoterQuery(pid,'PREVIOUS');
         const promoter=checkD?.data?.promoter;
         if(!promoter?.id){
-          if(statusCb)statusCb('⚠ Promoter ID '+pid+' not found on RA — check ra.co/promoters/'+pid);
+          if(statusCb)statusCb('⚠ Promoter ID '+pid+' not found on RA');
           return null;
         }
         if(statusCb)statusCb('Found: '+promoter.name+' · '+promoter.followerCount+' followers · '+promoter.upcomingEventsCount+' upcoming');
 
-        // Collect events: PREVIOUS first (already fetched)
         const seen=new Set();
         const addEvs=(rawEvents)=>{
           for(const ev of (rawEvents||[])){
@@ -2880,7 +2878,17 @@ async function buildDNA(statusCb,artistCb){
         };
         addEvs(promoter.events); // PREVIOUS events
 
-        // ARCHIVE — 4 years back, track completeness
+        // Merge prefetched events if available (dedup via seen set)
+        if(_prefetchedPromoterEvents&&_prefetchedPromoterEvents.events){
+          for(const ev of _prefetchedPromoterEvents.events){
+            if(!ev||seen.has(ev.id||ev.date+ev.title))continue;
+            seen.add(ev.id||ev.date+ev.title);
+            venueEvents.push(ev);
+          }
+          _prefetchedPromoterEvents=null;
+        }
+
+        // ARCHIVE — ALWAYS fetch 4 years back for complete data
         const nowYear=new Date().getFullYear();
         let archiveYearsFetched=0;
         let archiveYearsAttempted=0;
@@ -2904,21 +2912,19 @@ async function buildDNA(statusCb,artistCb){
 
         venueEvents.sort((a,b)=>b.date.localeCompare(a.date));
 
-        // Completeness flag — warn if < 2 years of archive data
         const dnaComplete=archiveYearsFetched>=2;
         if(!dnaComplete&&statusCb){
-          statusCb('⚠ Only '+archiveYearsFetched+' of '+archiveYearsAttempted+' years fetched — DNA may be incomplete. Check ra.co/promoters/'+pid);
+          statusCb('⚠ Only '+archiveYearsFetched+' of '+archiveYearsAttempted+' years fetched');
         }
         if(statusCb)statusCb((dnaComplete?'✓ ':'⚠ ')+venueEvents.length+' events for '+promoter.name+(dnaComplete?'':' (partial data)'));
 
-        // Store completeness on the profile object for display in pill
         window._dnaBuildMeta={archiveYearsFetched,archiveYearsAttempted,dnaComplete,promoterName:promoter.name};
 
       }catch(e){
         if(statusCb)statusCb('Fetch failed: '+e.message);
         return null;
       }
-      } // end else (no prefetch)
+      } // end else (no prefetch available)
     }
   }else{
     // Venue path — use local cache with ID matching
@@ -4074,7 +4080,7 @@ function setupPromoterAC() {
     const extra = titleList.filter(p => !verifiedNorms.has(norm(p.name)));
     const fullList = [...verifiedPromoters, ...extra];
 
-    if (hint) hint.textContent = 'Start typing or enter your RA Promoter ID below.';
+    if (hint) hint.textContent = '';
 
     if (_promoterACListening) return;
     _promoterACListening = true;
@@ -4233,43 +4239,78 @@ function updateCityLabels(){
 let _raIdVerifyTimer=null;
 let _prefetchedPromoterEvents=null;
 let _prefetchPromise=null;
+let _prefetchComplete=false; // true = full 4-year archive, safe to skip buildDNA fetch
 async function verifyRaPromoterId(id){
   const statusEl=document.getElementById('obPromoterRaStatus');
   const linkEl=document.getElementById('obPromoterRaLink');
-  if(!id){if(statusEl)statusEl.textContent='';_prefetchedPromoterEvents=null;return}
+  if(!id){if(statusEl)statusEl.textContent='';_prefetchedPromoterEvents=null;_prefetchComplete=false;return}
   if(linkEl)linkEl.href='https://ra.co/promoters/'+id;
   if(statusEl){statusEl.textContent='Verifying…';statusEl.style.color='var(--text-faint)'}
   try{
-    // Use PREVIOUS — fast, returns ~10 recent events
     const d=await raPromoterQuery(id,'PREVIOUS');
     const promoter=d?.data?.promoter;
     if(!promoter?.id){
-      if(statusEl){statusEl.textContent='⚠ ID not found. Check ra.co/promoters/'+id;statusEl.style.color='var(--amber)'}
+      if(statusEl){statusEl.textContent='⚠ ID not found';statusEl.style.color='var(--amber)'}
       return;
     }
-    const events=promoter.events||[];
-    if(statusEl){
-      statusEl.textContent='✓ '+promoter.name;
-      statusEl.style.color='var(--green)';
-    }
-    // Auto-fill promoter name field from RA canonical name
+    if(statusEl){statusEl.textContent='✓ '+promoter.name;statusEl.style.color='var(--green)'}
     const nameInp=document.getElementById('obPromoterName');
-    if(nameInp&&!nameInp.value.trim()&&promoter.name){
-      nameInp.value=promoter.name;
-    }
-    // ═══ BACKGROUND PREFETCH — start loading full history while user fills step 2 ═══
+    if(nameInp&&!nameInp.value.trim()&&promoter.name)nameInp.value=promoter.name;
+
+    // ═══ FULL BACKGROUND FETCH — start 4-year archive scan NOW ═══
+    // By the time user finishes steps 2+3, this will be done
     _prefetchedPromoterEvents=null;
-    const now=new Date(),ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
-    _prefetchPromise=raBulkFetchByPromoter(id,ago,now,10).then(evts=>{
-      _prefetchedPromoterEvents=evts;
-      console.log('[Prefetch] '+evts.length+' events ready');
-    }).catch(()=>{_prefetchedPromoterEvents=null});
-    // Also start pre-warming the city cache in background
+    _prefetchComplete=false;
+    _prefetchPromise=(async()=>{
+      const seen=new Set();
+      const events=[];
+      const addEvs=(rawEvents)=>{
+        for(const ev of (rawEvents||[])){
+          if(!ev||seen.has(ev.id))continue;
+          seen.add(ev.id);
+          events.push({
+            date:(ev.date||'').slice(0,10),
+            venue:(ev.venue||{}).name||'?',
+            venueId:(ev.venue||{}).id||null,
+            artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),
+            artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),
+            attending:ev.interestedCount||0,
+            title:ev.title||'',
+            startTime:ev.startTime||null,
+            genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)
+          });
+        }
+      };
+      // PREVIOUS events (already fetched)
+      addEvs(promoter.events);
+      // ARCHIVE — 4 years back
+      const nowYear=new Date().getFullYear();
+      let yearsFetched=0;
+      for(let yr=nowYear;yr>=nowYear-3;yr--){
+        try{
+          const ad=await raPromoterQuery(id,'ARCHIVE',yr);
+          const evs=ad?.data?.promoter?.events||[];
+          addEvs(evs);
+          if(evs.length>0)yearsFetched++;
+          console.log('[Prefetch] '+yr+': '+evs.length+' events');
+        }catch(e){console.log('[Prefetch] '+yr+' failed')}
+      }
+      // LATEST — upcoming
+      try{
+        const ld=await raPromoterQuery(id,'LATEST');
+        addEvs(ld?.data?.promoter?.events);
+      }catch(e){}
+      events.sort((a,b)=>b.date.localeCompare(a.date));
+      _prefetchedPromoterEvents={events,yearsFetched,promoterName:promoter.name,followerCount:promoter.followerCount,upcomingCount:promoter.upcomingEventsCount};
+      _prefetchComplete=true;
+      console.log('[Prefetch] COMPLETE: '+events.length+' events, '+yearsFetched+' years');
+    })().catch(()=>{_prefetchComplete=false});
+
+    // Also pre-warm city cache
     const obCity=(document.getElementById('obC')?.value||'barcelona').toLowerCase();
     const cityArea=AREAS[obCity]||20;
     const existingCache=getCache();
     if(!existingCache||existingCache.areaCode!==cityArea){
-      console.log('[Prefetch] Pre-warming city cache for '+obCity);
       const _now=new Date(),_ago=new Date(_now);_ago.setFullYear(_now.getFullYear()-1);
       const _fwd=new Date(_now);_fwd.setMonth(_now.getMonth()+6);
       raBulkFetch(cityArea,_ago,_fwd,40).then(evts=>{
@@ -4288,6 +4329,8 @@ function setupRaIdVerifier(){
   const idInp=document.getElementById('obPromoterRaId');
   if(!idInp||idInp._verifierBound)return;
   idInp._verifierBound=true;
+  // Block 'e' key in number field
+  idInp.addEventListener('keydown',e=>{if(e.key==='e'||e.key==='E'||e.key==='+'||e.key==='-')e.preventDefault()});
   idInp.addEventListener('input',()=>{
     clearTimeout(_raIdVerifyTimer);
     const val=parseInt(idInp.value)||0;
@@ -4415,7 +4458,7 @@ function _setupCompetitorVerifier(){
     }
     if(!val){
       if(status)status.textContent='';
-      if(nameInp){nameInp.value='';nameInp.placeholder='Name will auto-fill from RA'}
+      if(nameInp){nameInp.value='';nameInp.placeholder='Name auto-fills from RA'}
       if(addBtn){addBtn.style.opacity='0.4';addBtn.style.pointerEvents='none'}
       return;
     }
@@ -4475,16 +4518,16 @@ function _addCompetitor(){
   
   const entry=document.createElement('div');
   entry.className='competitor-entry';
-  entry.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px;font-family:var(--font-mono);font-size:0.82rem';
+  entry.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px';
   entry.dataset.name=name;
   entry.dataset.raId=raId||'';
-  entry.innerHTML='<span style="flex:1;font-family:var(--font-head);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">'+esc(name)+'</span>'
-    +(raId?'<a href="https://ra.co/search/?query='+raId+'" target="_blank" style="color:var(--accent);font-size:0.72rem;text-decoration:none">ID '+raId+' ↗</a>':'<span style="color:var(--text-faint);font-size:0.72rem">No ID</span>')
-    +'<span style="cursor:pointer;color:var(--text-faint);padding:2px 6px" onclick="this.parentElement.remove();_updateCompetitorInputVisibility();_updateCompCount()" title="Remove">×</span>';
+  entry.innerHTML='<span style="flex:1;font-family:var(--font-head);font-weight:600;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px">'+esc(name)+'</span>'
+    +(raId?'<span style="font-family:var(--font-mono);color:var(--accent);font-size:0.68rem;flex-shrink:0">ID '+raId+'</span>':'')
+    +'<span style="cursor:pointer;color:var(--text);font-size:1rem;padding:0 4px;line-height:1;flex-shrink:0" onclick="this.parentElement.remove();_updateCompetitorInputVisibility();_updateCompCount()" title="Remove">✕</span>';
   list.appendChild(entry);
   
   // Reset inputs
-  if(nameInp){nameInp.value='';nameInp.readOnly=true;nameInp.placeholder='Name will auto-fill from RA'}
+  if(nameInp){nameInp.value='';nameInp.readOnly=true;nameInp.placeholder='Name auto-fills from RA'}
   if(idInp)idInp.value='';
   if(status)status.textContent='';
   if(addBtn){addBtn.style.opacity='0.4';addBtn.style.pointerEvents='none'}
@@ -4559,28 +4602,88 @@ function obStep2SoundDone(){
 }
 
 /* Move a priority item up (-1) or down (+1) */
-function _movePriority(btn,dir){
-  const item=btn.closest('.priority-item');
-  const container=item.parentElement;
-  const items=[...container.querySelectorAll('.priority-item')];
-  const idx=items.indexOf(item);
-  const target=idx+dir;
-  if(target<0||target>=items.length)return;
-  // Swap
-  if(dir===-1)container.insertBefore(item,items[target]);
-  else container.insertBefore(items[target],item);
-  // Re-number with animation
-  container.querySelectorAll('.priority-item').forEach((el,i)=>{
-    const num=el.querySelector('.priority-num');
-    if(num)num.textContent=i+1;
-    el.style.transform='scale(1.02)';
-    setTimeout(()=>{el.style.transform=''},150);
-  });
-}
-
-/* Setup priority ranking (no drag needed, uses buttons) */
+/* Drag-and-drop priority reorder */
+let _dragItem=null;
 function _setupPriorityDrag(){
-  // Buttons handle everything, no drag setup needed
+  const container=document.getElementById('obPriorityRank');
+  if(!container)return;
+  container.addEventListener('dragstart',e=>{
+    _dragItem=e.target.closest('.priority-item');
+    if(_dragItem){_dragItem.style.opacity='0.4';e.dataTransfer.effectAllowed='move'}
+  });
+  container.addEventListener('dragend',e=>{
+    if(_dragItem)_dragItem.style.opacity='1';
+    _dragItem=null;
+    container.querySelectorAll('.priority-item').forEach(el=>{el.style.borderTop='';el.style.borderBottom=''});
+  });
+  container.addEventListener('dragover',e=>{
+    e.preventDefault();e.dataTransfer.dropEffect='move';
+    const target=e.target.closest('.priority-item');
+    container.querySelectorAll('.priority-item').forEach(el=>{el.style.borderTop='';el.style.borderBottom=''});
+    if(target&&target!==_dragItem){
+      const rect=target.getBoundingClientRect();
+      const mid=rect.top+rect.height/2;
+      if(e.clientY<mid)target.style.borderTop='2px solid var(--accent)';
+      else target.style.borderBottom='2px solid var(--accent)';
+    }
+  });
+  container.addEventListener('drop',e=>{
+    e.preventDefault();
+    const target=e.target.closest('.priority-item');
+    if(target&&_dragItem&&target!==_dragItem){
+      const rect=target.getBoundingClientRect();
+      const mid=rect.top+rect.height/2;
+      if(e.clientY<mid)container.insertBefore(_dragItem,target);
+      else container.insertBefore(_dragItem,target.nextSibling);
+      // Re-number
+      container.querySelectorAll('.priority-item').forEach((el,i)=>{
+        const num=el.querySelector('.priority-num');if(num)num.textContent=i+1;
+      });
+    }
+  });
+  // Touch support for mobile
+  let _touchItem=null,_touchClone=null,_touchStartY=0;
+  container.addEventListener('touchstart',e=>{
+    const item=e.target.closest('.priority-item');
+    if(!item)return;
+    _touchItem=item;_touchStartY=e.touches[0].clientY;
+    _touchItem.style.opacity='0.4';
+  },{passive:true});
+  container.addEventListener('touchmove',e=>{
+    if(!_touchItem)return;
+    e.preventDefault();
+    const y=e.touches[0].clientY;
+    const items=[...container.querySelectorAll('.priority-item')];
+    for(const it of items){
+      it.style.borderTop='';it.style.borderBottom='';
+      if(it===_touchItem)continue;
+      const r=it.getBoundingClientRect();
+      if(y>r.top&&y<r.bottom){
+        if(y<r.top+r.height/2)it.style.borderTop='2px solid var(--accent)';
+        else it.style.borderBottom='2px solid var(--accent)';
+      }
+    }
+  },{passive:false});
+  container.addEventListener('touchend',e=>{
+    if(!_touchItem)return;
+    _touchItem.style.opacity='1';
+    const y=e.changedTouches[0].clientY;
+    const items=[...container.querySelectorAll('.priority-item')];
+    for(const it of items){
+      it.style.borderTop='';it.style.borderBottom='';
+      if(it===_touchItem)continue;
+      const r=it.getBoundingClientRect();
+      if(y>r.top&&y<r.bottom){
+        if(y<r.top+r.height/2)container.insertBefore(_touchItem,it);
+        else container.insertBefore(_touchItem,it.nextSibling);
+        break;
+      }
+    }
+    container.querySelectorAll('.priority-item').forEach((el,i)=>{
+      const num=el.querySelector('.priority-num');if(num)num.textContent=i+1;
+    });
+    _touchItem=null;
+  });
 }
 
 /* Step 3 done (competition) — save and start DNA build */
@@ -4675,6 +4778,8 @@ async function _startDNABuild(){
     det.innerHTML+='<div>'+msg+'</div>';
     const yrMatch=msg.match(/^(\d{4}):\s*(\d+)\s*events/);
     if(yrMatch){state.years.push(parseInt(yrMatch[1]));state.events+=parseInt(yrMatch[2])}
+    const yrsMatch=msg.match(/(\d+)\s*years?\s*·\s*(\d+)\s*events/);
+    if(yrsMatch){const yc=parseInt(yrsMatch[1]);while(state.years.length<yc)state.years.push(0);state.events=Math.max(state.events,parseInt(yrsMatch[2]))}
     const evtMatch=msg.match(/(\d+)\s*events/i);
     if(evtMatch&&parseInt(evtMatch[1])>state.events)state.events=parseInt(evtMatch[1]);
     const artMatch=msg.match(/(\d+)\s*unique\s*artists/);
@@ -4942,7 +5047,7 @@ function updateContextBanners(){
       if(hasDNA){
         const topArtists=(dna.topArtists||dna.profiles||[]).slice(0,5).map(a=>a.name||a).join(', ');
         const topGenres=(dna.topGenres||[]).slice(0,3).map(g=>g.genre||g).join(', ');
-        seedsEl.textContent='DNA: '+dna.artistCount+' artists booked · Top genres: '+(topGenres||'—')+' · Suggest seeds from: '+topArtists;
+        seedsEl.textContent='DNA: '+dna.artistCount+' artists booked · Top genres: '+(topGenres||'none')+' · Suggest seeds from: '+topArtists;
       }else{
         seedsEl.textContent='No DNA yet. Results will not be personalised. Build DNA via the pill menu.';
         seedsEl.style.color='var(--amber)';
@@ -4960,7 +5065,7 @@ function updateContextBanners(){
     if(ctxEl){
       if(hasDNA){
         const topGenres=(dna.topGenres||[]).slice(0,4).map(g=>g.genre||g).join(', ');
-        ctxEl.textContent='Results filtered to your DNA. '+dna.artistCount+' artists in network · Genres: '+(topGenres||'—');
+        ctxEl.textContent='Results filtered to your DNA. '+dna.artistCount+' artists in network · Genres: '+(topGenres||'none');
         ctxEl.style.color='var(--text-dim)';
       }else{
         ctxEl.textContent='⚠ No DNA. Routing results will not be filtered by your scene. Build DNA first for best results.';
@@ -5248,7 +5353,7 @@ function renderDiscover(arts,hasDNA,diag){
     h+=`<div class="result-item" style="animation-delay:${i*30}ms"><div class="ri-rank">${i+1}</div>${img}
       <div class="ri-info"><h3>${esc(a.name)}${dnaBadge}</h3><div class="tags">${tags}${raBadge}${sourceBadge}${genreTags}</div>
         <div class="ri-actions"><button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',${a.bcn||0},${a.global||0},'','${esc(a.imageUrl||'').replace(/'/g,"\\'")}')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button><button onclick="goXray('${esc(a.name).replace(/'/g,"\\'")}')">⚡ check</button></div>
-      </div><div class="ri-number"><div class="big">${a.fusionScore||a.score||'—'}</div><div class="sub">circuit score</div></div></div>`;
+      </div><div class="ri-number"><div class="big">${a.fusionScore||a.score||'?'}</div><div class="sub">circuit score</div></div></div>`;
   });
   c.innerHTML=h;
   // Load images asynchronously — don't block the render
@@ -5355,7 +5460,7 @@ async function runScan(){
         <h3 style="color:var(--blue);margin-bottom:8px">Your Events</h3>`;
       for(const ev of ownEvents)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem">
         <div><div style="font-weight:600">${esc(ev.title)}</div><div style="font-size:0.75rem;color:var(--text-dim)">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div></div>
-        <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--blue);flex-shrink:0">${ev.attending?fmt(ev.attending)+' RA':'—'}</span></div>`;
+        <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--blue);flex-shrink:0">${ev.attending?fmt(ev.attending)+' RA':'?'}</span></div>`;
       h+=`</div>`;
     }
 
@@ -5370,7 +5475,7 @@ async function runScan(){
           :`<span class="badge badge-amber">${esc(t.reason)}</span>`;
         const timeBadge=t.timeMismatch?`<span class="badge" style="border-color:var(--text-faint);color:var(--text-faint);font-size:0.48rem">different time slot</span>`:'';
         h+=`<div class="ev-item" style="border-left:3px solid ${t.tier===1?'var(--accent)':'var(--amber)'};padding-left:11px">
-          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">RA interest</div></div>
+          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
           <div class="ev-detail">
             <div class="ev-v">${esc(ev.venue)}</div>
             <div class="ev-t">${esc(ev.title)}</div>
@@ -5397,7 +5502,7 @@ async function runScan(){
         <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Large events with some audience overlap. Worth knowing about but not direct threats.</p>`;
       for(const ev of tier3.slice(0,4)){
         h+=`<div class="ev-item">
-          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">RA interest</div></div>
+          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
           <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div>
           <div class="ev-a">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div>
           ${ev.genreOverlap.length?`<div style="margin-top:3px"><span class="tag" style="opacity:0.6;font-size:0.55rem">partial: ${ev.genreOverlap.join(', ')}</span></div>`:''}
@@ -5414,7 +5519,7 @@ async function runScan(){
       const borderStyle=t&&t.tier===1&&t.isCompetition?'border-left:3px solid var(--accent);padding-left:11px':t&&t.tier===2&&t.isCompetition?'border-left:3px solid var(--amber);padding-left:11px':'';
       const badge=isOwn?'<span class="badge" style="font-size:0.48rem;border-color:var(--blue);color:var(--blue)">YOURS</span>':t&&t.tier===1&&t.isCompetition?'<span class="badge badge-red" style="font-size:0.48rem">DIRECT</span>':t&&t.tier===2&&t.isCompetition?'<span class="badge badge-amber" style="font-size:0.48rem">GENRE</span>':'';
       h+=`<div class="ev-item"${borderStyle?' style="'+borderStyle+'"':''}>
-        <div class="ev-att">${ev.attending>0?fmt(ev.attending):'—'}<div class="ev-lbl">RA interest</div></div>
+        <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
         <div class="ev-detail">
           <div class="ev-v">${esc(ev.venue)} ${badge}</div>
           <div class="ev-t">${esc(ev.title)}</div>
@@ -5508,7 +5613,7 @@ async function scanAdjacentThreats(dateStr){
         :`<span class="badge badge-amber">Large event</span>`;
       th+=`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);border-left:3px solid ${borderClr};padding-left:11px">
         <div style="text-align:center;min-width:50px">
-          <div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;color:var(--accent)">${t.attending>0?fmt(t.attending):'—'}</div>
+          <div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;color:var(--accent)">${t.attending>0?fmt(t.attending):'?'}</div>
           <div style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-faint);text-transform:uppercase">RA interest</div>
         </div>
         <div style="flex:1">
@@ -5607,7 +5712,7 @@ async function runXray(){
 
     let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start"><div style="display:flex;align-items:center">${imgH}<div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div style="font-size:0.78rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div></div><span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span></div>
       <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-faint);margin:8px 0 4px">Checked against your date: ${fdate(date)} · Exclusion: ${backMo}mo back / ${fwdMo}mo forward</div>
-      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
+      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'?'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
     if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${fdate(cityC.date)} @ ${esc(cityC.venue)}. Within ${backMo}mo before / ${fwdMo}mo after your date</p>`;
     if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">⚠ Playing ${esc(sdC.venue)} (${esc(sdC.area)}) on ${fdate(date)}</p>`;
     if(shows.length){
@@ -5615,7 +5720,7 @@ async function runXray(){
       for(const s of shows.slice(0,5)){
         const isPast=new Date(s.date)<=new Date();
         const isFuture=!isPast;
-        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--font-mono)">UPCOMING</span> ':''}${fdate(s.date)} · ${esc(s.venue)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--accent)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' RA interest':'—'}</span></div>`;
+        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--font-mono)">UPCOMING</span> ':''}${fdate(s.date)} · ${esc(s.venue)}</span><span style="font-family:var(--font-mono);font-size:0.7rem;color:${s.att>0?'var(--accent)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' RA interest':'?'}</span></div>`;
       }
       h+=`</div>`;
     }
@@ -5746,7 +5851,7 @@ async function runRouting(){
         }catch(e){}
       }
     }
-    rteProg(nearbyEvents.size+' artists found in nearby cities',65);
+    rteProg(nearbyEvents.size+' artists touring nearby cities',65);
 
     // ═══ STEP 3: Intersect — which scene artists are actually nearby? ═══
     rteProg('Finding your artists in the region…',70);
@@ -6153,7 +6258,7 @@ function renderIntelEntity(profile, allEvents){
     const dnaScore_=hasDNA?dnaScore({name:a.name,bcn:0,_networkOnly:true}):null;
     const fitBadge=hasDNA&&dnaScore_&&dnaScore_.score>20?`<span class="badge badge-${dnaScore_.score>=70?'green':dnaScore_.score>=50?'amber':'red'}" style="margin-left:4px;font-size:0.48rem">${dnaScore_.score}</span>`:'';
     h+=`<div class="intel-artist-row" onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">
-      <div class="ia-att">${a.maxAtt>0?fmt(a.maxAtt):'—'}</div>
+      <div class="ia-att">${a.maxAtt>0?fmt(a.maxAtt):'?'}</div>
       <div style="flex:1">
         <div class="ia-name">${esc(a.name)}${fitBadge}</div>
         <div class="intel-bar"><div class="intel-bar-fill" style="width:${pct}%"></div></div>
@@ -6568,7 +6673,7 @@ async function genReport(){
       <div class="stats">
         <div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events</div></div>
         <div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div>
-        <div class="stat"><div class="sv">${avgAtt?fmt(avgAtt):'—'}</div><div class="sl">Avg RA interest</div></div>
+        <div class="stat"><div class="sv">${avgAtt?fmt(avgAtt):'?'}</div><div class="sl">Avg RA interest</div></div>
         <div class="stat"><div class="sv">${fmt(totalEv)}</div><div class="sl">${cn} events total</div></div>
       </div>
     </div>`;
@@ -6625,7 +6730,7 @@ async function genReport(){
           <div class="stat"><div class="sv" style="color:var(--accent)">${headliners.length}</div><div class="sl">Headliners (1K+ followers)</div></div>
           <div class="stat"><div class="sv" style="color:var(--green)">${midTier.length}</div><div class="sl">Mid-tier (100-1K)</div></div>
           <div class="stat"><div class="sv" style="color:var(--text-faint)">${local.length}</div><div class="sl">Local / Support (&lt;100)</div></div>
-          <div class="stat"><div class="sv">${dna.avgHeadlinerFollowers?fmt(dna.avgHeadlinerFollowers):'—'}</div><div class="sl">Avg headliner followers</div></div>
+          <div class="stat"><div class="sv">${dna.avgHeadlinerFollowers?fmt(dna.avgHeadlinerFollowers):'?'}</div><div class="sl">Avg headliner followers</div></div>
         </div>
       </div>`;
 
