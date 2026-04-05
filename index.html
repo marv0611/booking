@@ -1141,9 +1141,11 @@ function addVenueProfile(){
   d._adding=true;_setAllProfiles(d);
   // Show onboarding
   document.getElementById('mainTabs').style.display='none';
+  const _tb4=document.getElementById('spTabbar');if(_tb4)_tb4.style.display='none';
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   const ob=document.getElementById('onboarding');ob.style.display='block';
-  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ob-step').forEach(s=>{s.classList.remove('active');s.style.display='none'});
+  document.getElementById('ob1').style.display='block';
   document.getElementById('ob1').classList.add('active');
   for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i===1);
   document.getElementById('obV').value='';document.getElementById('obC').value='barcelona';
@@ -2819,11 +2821,11 @@ function setupAutocomplete(inputEl,onSelect,searchFn){
       try{
         const res=await _search(q,8);
         const seen=new Set(),deduped=[];
-        for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
+        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\s/.test(r.name))continue;seen.add(n);deduped.push(r)}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Render immediately with placeholder, then load images async
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
-          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
+          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.name.charAt(0).toUpperCase()}</div>
           <div><div class="ac-name">${esc(r.name)}</div></div>
         </div>`).join('');
         dd.classList.add('open');idx=-1;
@@ -2876,10 +2878,10 @@ function setupTextareaAC(ta){
         if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Deduplicate by normalized name — keep first (highest ranked) result per name
         const seen=new Set(),deduped=[];
-        for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
+        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\s/.test(r.name))continue;seen.add(n);deduped.push(r)}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
-          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.imageUrl?`<img src="${esc(r.imageUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${r.name.charAt(0).toUpperCase()}'">`:r.name.charAt(0).toUpperCase()}</div>
+          <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.name.charAt(0).toUpperCase()}</div>
           <div><div class="ac-name">${esc(r.name)}</div></div>
         </div>`).join('');
         dd.classList.add('open');
@@ -3586,8 +3588,8 @@ function obStep2SoundDone(){
   
   // Promoters go to Step 3 (Competition), Venues go straight to DNA
   if(p.type==='promoter'){
-    document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
-    document.getElementById('ob3').style.display='';
+    document.querySelectorAll('.ob-step').forEach(s=>{s.classList.remove('active');s.style.display='none'});
+    document.getElementById('ob3').style.display='block';
     document.getElementById('ob3').classList.add('active');
     for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(dot)dot.classList.toggle('active',i<=3);}
     _setupCompetitorVerifier();
@@ -3706,6 +3708,7 @@ async function _startDNABuild(){
   const _isPromo=_obType==='promoter';
   if(!P().venue&&!P().promoterName)return;
   document.querySelectorAll('.ob-step').forEach(s=>{s.classList.remove('active');s.style.display='none'});
+  document.getElementById('ob4').style.display='block';
   document.getElementById('ob4').classList.add('active');
   const totalSteps=_isPromo?4:3;
   for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(!dot)continue;if(i<=totalSteps){dot.style.display='';dot.classList.add('active')}else{dot.style.display='none'}}
@@ -4017,6 +4020,8 @@ function rebuildDNAFromScratch(){
   // Show onboarding step 4 (DNA build) directly
   document.getElementById('onboarding').style.display='';
   document.getElementById('mainTabs').style.display='none';
+  const _tb3=document.getElementById('spTabbar');if(_tb3)_tb3.style.display='none';
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   _startDNABuild();
 }
 
