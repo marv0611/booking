@@ -1595,52 +1595,52 @@ input[type="number"] { font-family: var(--font-mono); }
         <span class="hint">These anchor your discovery engine and competition detection</span>
       </div>
       <div class="input-group">
-        <label>What matters most to you?</label>
+        <label>What matters most to you? <span style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">reorder by priority</span></label>
         <div id="obPriorityRank" style="display:flex;flex-direction:column;gap:6px">
           <div class="priority-item" data-priority="discover" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">1</span>
             <span style="font-size:0.85rem;font-weight:600;flex:1">Discovering new artists</span>
-            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text-dim);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
-            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text-dim);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
+            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
+            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
           </div>
           <div class="priority-item" data-priority="competition" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">2</span>
             <span style="font-size:0.85rem;font-weight:600;flex:1">Avoiding competition</span>
-            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text-dim);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
-            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text-dim);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
+            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
+            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
           </div>
           <div class="priority-item" data-priority="routing" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);user-select:none;transition:all 0.15s">
             <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);width:18px;font-weight:700" class="priority-num">3</span>
             <span style="font-size:0.85rem;font-weight:600;flex:1">Finding routing deals</span>
-            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text-dim);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
-            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text-dim);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
+            <button type="button" onclick="_movePriority(this,-1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move up">▲</button>
+            <button type="button" onclick="_movePriority(this,1)" style="background:none;border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center" title="Move down">▼</button>
           </div>
         </div>
-        <span class="hint">Use arrows to set your priorities</span>
       </div>
-      <button class="btn btn-red" onclick="obStep2SoundDone()" style="margin-top:12px;width:100%;padding:14px;font-size:0.95rem">Next →</button>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn-ghost" onclick="obGo(1)" style="padding:14px">← Back</button>
+        <button class="btn btn-red" onclick="obStep2SoundDone()" style="flex:1;padding:14px;font-size:0.95rem">Next →</button>
+      </div>
     </div>
 
     <!-- STEP 3: COMPETITION (promoter only) -->
     <div class="ob-step" id="ob3" style="display:none">
       <h2>Your Competition</h2>
-      <div class="sub">Tag up to 5 competitors, whether they're venues or party brands. Enter their RA ID and we'll verify them instantly.</div>
+      <div class="sub">Add at least 3 competitors (up to 5). These can be venues or party brands. Enter their RA ID and the name fills in automatically.</div>
       <div class="input-group">
-        <label>My Competition</label>
+        <label>My Competition <span id="obCompCount" style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">0 of 3 minimum</span></label>
         <div id="obCompetitorList"></div>
         <div id="obCompInputRow" style="display:flex;gap:8px;align-items:end;margin-top:8px">
-          <div style="width:160px">
-            <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">RA ID</div>
-            <input type="number" id="obCompetitorRaId" placeholder="e.g. 72357" style="font-size:0.85rem;font-family:var(--font-mono);width:100%">
+          <div style="width:140px">
+            <input type="number" id="obCompetitorRaId" placeholder="RA ID" style="font-size:0.85rem;font-family:var(--font-mono);width:100%">
           </div>
           <div style="flex:1">
-            <div id="obCompVerifyStatus" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-faint);margin-bottom:4px;min-height:1.1em"></div>
-            <input type="text" id="obCompetitorName" placeholder="Name will auto-fill from RA" autocomplete="off" style="font-size:0.85rem" readonly>
+            <input type="text" id="obCompetitorName" placeholder="Name auto-fills from RA" autocomplete="off" style="font-size:0.85rem" readonly>
           </div>
           <button type="button" class="btn-ghost" id="obCompAddBtn" onclick="_addCompetitor()" style="padding:10px 14px;white-space:nowrap;opacity:0.4;pointer-events:none">+ Add</button>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
-          <span class="hint" style="margin:0">Enter a promoter or venue RA ID (up to 5)</span>
+        <div id="obCompVerifyStatus" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint);margin-top:6px;min-height:1em"></div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
           <a href="https://ra.co/promoters" target="_blank" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent);text-decoration:none;white-space:nowrap">Find IDs on RA →</a>
         </div>
       </div>
@@ -1667,8 +1667,8 @@ input[type="number"] { font-family: var(--font-mono); }
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-red" onclick="obStep3Done()" style="flex:1;padding:14px;font-size:0.95rem">Build My DNA →</button>
-        <button class="btn-ghost" onclick="obStep3Done()" style="padding:14px">Skip</button>
+        <button class="btn-ghost" onclick="obGo(2)" style="padding:14px">← Back</button>
+        <button class="btn btn-red" id="obStep3Btn" onclick="obStep3Done()" style="flex:1;padding:14px;font-size:0.95rem">Build My DNA →</button>
       </div>
     </div>
 
@@ -1692,7 +1692,6 @@ input[type="number"] { font-family: var(--font-mono); }
           <div style="text-align:center"><div id="dnaStat1" style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--accent);line-height:1">0</div><div style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Events scanned</div></div>
           <div style="text-align:center"><div id="dnaStat2" style="font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--accent);line-height:1">0</div><div style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Artists booked</div></div>
         </div>
-        <div id="dnaMosaic" class="dna-mosaic" style="margin:8px 0"></div>
         <div class="dna-progress" id="dnaProgress">
           <div class="progress-bar" style="margin-bottom:6px"><div class="progress-fill" id="dnaFill" style="width:0%"></div></div>
           <div id="dnaLbl" style="font-family:var(--font-mono);font-weight:500;font-size:0.55rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px;margin:0"></div>
@@ -1716,7 +1715,7 @@ input[type="number"] { font-family: var(--font-mono); }
     </div>
 
     <div class="input-group">
-      <label>Seed artists <span style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">— optional, leave empty to use your full DNA</span></label>
+      <label>Seed artists <span style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">leave empty to use your full DNA</span></label>
       <div class="ac-wrap"><textarea id="seedInput" placeholder="Leave empty to auto-discover from your DNA, or type specific artists to narrow the search" rows="3"></textarea></div>
       <div id="seedH" style="margin-top:6px"></div>
     </div>
@@ -1867,7 +1866,7 @@ input[type="number"] { font-family: var(--font-mono); }
   <div class="tab-panel" id="panel-report">
     <div id="rOut"><div class="empty" style="padding:40px;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-faint)">Click the Report tab to generate your intelligence report.</div></div>
     <div id="reportCalibration" style="display:none;margin-top:24px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
-      <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Refine Your Report <span style="font-weight:400;color:var(--text-faint);font-size:0.62rem;text-transform:none;letter-spacing:0">— optional, improves accuracy</span></div>
+      <div style="font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Refine Your Report <span style="font-weight:400;color:var(--text-faint);font-size:0.62rem;text-transform:none;letter-spacing:0">optional, improves accuracy</span></div>
       <div class="row" style="gap:16px;flex-wrap:wrap">
         <div class="input-group" style="margin:0;flex:1;min-width:200px">
           <label style="font-size:0.62rem">Artists that crushed it</label>
@@ -2460,32 +2459,57 @@ async function enrichGenresFromLastfm(candidate){
   }catch(e){}
 }
 
-/* RA cache-based artist search — instant, no API calls */
-function raCacheSearch(query,limit=8){
-  const c=getCache();if(!c||!c.events)return[];
-  const q=query.toLowerCase();
-  const found=new Map();
+/* RA cache artist index — ranked by event frequency, with images from cache */
+let _artistIndex=null;
+let _artistIndexArea=null;
+
+function buildArtistIndex(){
+  const c=getCache();if(!c||!c.events)return;
+  if(_artistIndex&&_artistIndexArea===c.areaCode)return; // already built for this city
+  const counts=new Map();
   for(const ev of c.events){
     for(const a of ev.artists){
-      if(a.toLowerCase().includes(q)&&!found.has(norm(a))){
-        found.set(norm(a),{name:a,uuid:null,imageUrl:''});
-        if(found.size>=limit)return[...found.values()];
-      }
+      const n=norm(a);
+      if(!n||n.length<2)continue;
+      if(!counts.has(n))counts.set(n,{name:a,count:0});
+      counts.get(n).count++;
     }
   }
-  return[...found.values()];
+  // Sort by frequency — most active artists first
+  _artistIndex=[...counts.values()]
+    .filter(a=>a.count>=2) // must have played at least 2 events to be a real artist
+    .sort((a,b)=>b.count-a.count);
+  _artistIndexArea=c.areaCode;
 }
 
-/* Search artists — RA cache first (instant), Last.fm fallback (network) */
+function searchArtistIndex(query,limit=8){
+  if(!_artistIndex)buildArtistIndex();
+  if(!_artistIndex)return[];
+  const q=query.toLowerCase();
+  const results=[];
+  for(const a of _artistIndex){
+    if(a.name.toLowerCase().includes(q)){
+      // Get image from cache if available
+      const imgKey='img_'+norm(a.name);
+      const imageUrl=_imgCache.has(imgKey)?_imgCache.get(imgKey):'';
+      // Filter out artists with known low followers
+      const fc=_raFollowerCache.get(norm(a.name));
+      if(fc!==undefined&&fc!==null&&fc<30)continue;
+      results.push({name:a.name,imageUrl,count:a.count});
+      if(results.length>=limit)break;
+    }
+  }
+  return results;
+}
+
+/* Search artists — RA artist index first (instant, ranked), Last.fm fallback */
 async function searchArtists(query,limit=8){
-  // Try local cache first — instant, no network
-  const local=raCacheSearch(query,limit);
+  const local=searchArtistIndex(query,limit);
   if(local.length>=Math.min(3,limit))return local;
-  // Supplement with Last.fm for broader coverage
+  // Supplement with Last.fm for artists not in the city cache
   try{
     const results=await lastfmSearch(query,limit);
     if(results.length){
-      // Merge: Last.fm results first (have images/listeners), then local-only
       const seen=new Set(results.map(r=>norm(r.name)));
       for(const l of local){if(!seen.has(norm(l.name))){results.push(l);seen.add(norm(l.name))}}
       return results.slice(0,limit);
@@ -3600,7 +3624,7 @@ function setCache(data){
   }
   try{localStorage.setItem(CACHE_KEY,JSON.stringify(data))}catch(e){console.warn('Cache write failed (storage full?)',e)}
   // Build artist ID index from fresh cache data
-  if(data&&data.events)setTimeout(()=>buildArtistIdIndex(data.events),100);
+  if(data&&data.events){setTimeout(()=>buildArtistIdIndex(data.events),100);setTimeout(()=>buildArtistIndex(),200)}
 }
 
 /* Is cache fresh, correct city, and has enough data? */
@@ -3785,7 +3809,8 @@ async function raWorldwide(dateStr){
 }
 
 /* ═══ AUTOCOMPLETE ═══ */
-function setupAutocomplete(inputEl,onSelect){
+function setupAutocomplete(inputEl,onSelect,searchFn){
+  const _search=searchFn||searchArtists;
   const wrap=inputEl.closest('.ac-wrap');
   let dd=wrap.querySelector('.ac-dropdown');
   if(!dd){dd=document.createElement('div');dd.className='ac-dropdown';wrap.appendChild(dd)}
@@ -3795,7 +3820,7 @@ function setupAutocomplete(inputEl,onSelect){
     if(q.length<2){dd.classList.remove('open');dd.innerHTML='';return}
     timer=setTimeout(async()=>{
       try{
-        const res=await searchArtists(q,8);
+        const res=await _search(q,8);
         const seen=new Set(),deduped=[];
         for(const r of res){const n=norm(r.name);if(!seen.has(n)){seen.add(n);deduped.push(r)}}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
@@ -4102,7 +4127,16 @@ function setupPromoterAC() {
 /* ═══ INIT ═══ */
 document.addEventListener('DOMContentLoaded',()=>{
   _migrateIfNeeded();
-  if(P().venue)showApp();
+  if(P().venue){
+    if(dnaValid()){
+      showApp();
+    }else{
+      // DNA not built - show onboarding step 4 to build it
+      document.getElementById('onboarding').style.display='block';
+      document.getElementById('mainTabs').style.display='none';
+      _startDNABuild();
+    }
+  }
   const d=new Date();d.setMonth(d.getMonth()+2);
   const ds=d.toISOString().slice(0,10);
   document.getElementById('eventDate').value=ds;
@@ -4163,7 +4197,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   setupVenueAC();
   setupIntelAC();
   setupRaIdVerifier();
-  // Sound anchor autocomplete — wire up all 3 artist inputs in onboarding step 2
+  // Sound anchor autocomplete — uses ranked RA artist index
   for(let i=1;i<=3;i++){
     const el=document.getElementById('obSoundArtist'+i);
     if(el){
@@ -4175,6 +4209,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateCityLabels();
   if(P().venue){
     ensureCache(); // pre-warm cache for active venue's city
+    buildArtistIndex(); // build ranked artist search index
   }else{
     // No profile — make sure cache bar is hidden and no stale state
     const bar=document.getElementById('cacheBar');
@@ -4279,7 +4314,10 @@ function setObType(type){
 }
 
 function obGo(n){
-  if(n===2){
+  // Get current step number
+  const currentStep=[1,2,3,4].find(i=>document.getElementById('ob'+i)?.classList.contains('active'))||1;
+  // Only validate when going FORWARD
+  if(n>currentStep&&n===2){
     const type=document.getElementById('obType').value;
     const nameEl=type==='promoter'?document.getElementById('obPromoterName'):document.getElementById('obV');
     const v=nameEl.value.trim();
@@ -4291,6 +4329,7 @@ function obGo(n){
   }
   document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('ob'+n).classList.add('active');
+  document.getElementById('ob'+n).style.display='';
   for(let i=1;i<=4;i++)document.getElementById('d'+i).classList.toggle('active',i<=n);
 }
 async function obDone(){
@@ -4389,7 +4428,7 @@ function _setupCompetitorVerifier(){
         if(promoter?.id){
           const name=promoter.name||'Unknown';
           if(nameInp){nameInp.value=name;nameInp.placeholder=''}
-          if(status){status.innerHTML='<span style="color:var(--green)">✓ '+esc(name)+'</span>';status.style.color='var(--green)'}
+          if(status)status.textContent='';
           if(addBtn){addBtn.style.opacity='1';addBtn.style.pointerEvents='auto'}
           return;
         }
@@ -4405,14 +4444,14 @@ function _setupCompetitorVerifier(){
         if(venue?.id){
           const name=venue.name||'Unknown';
           if(nameInp){nameInp.value=name;nameInp.placeholder=''}
-          if(status){status.innerHTML='<span style="color:var(--green)">✓ '+esc(name)+'</span>';status.style.color='var(--green)'}
+          if(status)status.textContent='';
           if(addBtn){addBtn.style.opacity='1';addBtn.style.pointerEvents='auto'}
           return;
         }
       }catch(e){}
-      // Not found as either
-      if(status){status.textContent='ID not recognised. Check ra.co for the correct ID.';status.style.color='var(--amber)'}
-      if(nameInp){nameInp.readOnly=false;nameInp.placeholder='Or type name manually';nameInp.focus()}
+      // Not found
+      if(status){status.textContent='ID not recognised';status.style.color='var(--amber)'}
+      if(nameInp){nameInp.readOnly=false;nameInp.placeholder='Type name manually';nameInp.focus()}
       if(addBtn){addBtn.style.opacity='1';addBtn.style.pointerEvents='auto'}
     },600);
   });
@@ -4441,7 +4480,7 @@ function _addCompetitor(){
   entry.dataset.raId=raId||'';
   entry.innerHTML='<span style="flex:1;font-family:var(--font-head);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">'+esc(name)+'</span>'
     +(raId?'<a href="https://ra.co/search/?query='+raId+'" target="_blank" style="color:var(--accent);font-size:0.72rem;text-decoration:none">ID '+raId+' ↗</a>':'<span style="color:var(--text-faint);font-size:0.72rem">No ID</span>')
-    +'<span style="cursor:pointer;color:var(--text-faint);padding:2px 6px" onclick="this.parentElement.remove();_updateCompetitorInputVisibility()" title="Remove">×</span>';
+    +'<span style="cursor:pointer;color:var(--text-faint);padding:2px 6px" onclick="this.parentElement.remove();_updateCompetitorInputVisibility();_updateCompCount()" title="Remove">×</span>';
   list.appendChild(entry);
   
   // Reset inputs
@@ -4451,7 +4490,19 @@ function _addCompetitor(){
   if(addBtn){addBtn.style.opacity='0.4';addBtn.style.pointerEvents='none'}
   
   _updateCompetitorInputVisibility();
+  _updateCompCount();
   if(list.querySelectorAll('.competitor-entry').length<5)idInp.focus();
+}
+
+/* Update competitor count label */
+function _updateCompCount(){
+  const list=document.getElementById('obCompetitorList');
+  const label=document.getElementById('obCompCount');
+  if(!list||!label)return;
+  const count=list.querySelectorAll('.competitor-entry').length;
+  if(count<3)label.textContent=count+' of 3 minimum';
+  else if(count<5)label.textContent=count+' added';
+  else label.textContent='5 of 5';
 }
 
 /* Hide competitor input row when 5 reached */
@@ -4540,6 +4591,11 @@ function obStep3Done(){
     name:(el.dataset.name||'').toLowerCase(),
     raId:parseInt(el.dataset.raId)||null
   })).filter(c=>c.name):[];
+  if(competitors.length<3){
+    const status=document.getElementById('obCompVerifyStatus');
+    if(status){status.textContent='Add at least '+(3-competitors.length)+' more competitor'+(3-competitors.length>1?'s':'');status.style.color='var(--amber)'}
+    return;
+  }
   p.competitors=competitors;
   p.genreFocus=[...document.querySelectorAll('#obGenrePicker button.active')].map(b=>b.dataset.genre).filter(Boolean);
   setP(p);
@@ -4559,10 +4615,9 @@ async function _startDNABuild(){
   const phEl=document.getElementById('dnaPhaseLabel');
   const fill=document.getElementById('dnaFill');
   const lbl=document.getElementById('dnaLbl');
-  const mosaic=document.getElementById('dnaMosaic');
   const det=document.getElementById('dnaDet');
   const s1El=document.getElementById('dnaStat1'),s2El=document.getElementById('dnaStat2');
-  if(mosaic)mosaic.innerHTML='';if(det)det.innerHTML='';
+  if(det)det.innerHTML='';
   if(phEl)phEl.textContent='Scanning your event history';
   if(fill){fill.style.width='0%';fill.style.background='var(--accent)'}
 
@@ -4620,7 +4675,7 @@ async function _startDNABuild(){
     det.innerHTML+='<div>'+msg+'</div>';
     const yrMatch=msg.match(/^(\d{4}):\s*(\d+)\s*events/);
     if(yrMatch){state.years.push(parseInt(yrMatch[1]));state.events+=parseInt(yrMatch[2])}
-    const evtMatch=msg.match(/(\d+)\s*events\s*(for|at|cached)/i);
+    const evtMatch=msg.match(/(\d+)\s*events/i);
     if(evtMatch&&parseInt(evtMatch[1])>state.events)state.events=parseInt(evtMatch[1]);
     const artMatch=msg.match(/(\d+)\s*unique\s*artists/);
     if(artMatch){state.totalArtists=parseInt(artMatch[1]);if(phEl)phEl.textContent='Mapping your artist bookings'}
@@ -4636,15 +4691,6 @@ async function _startDNABuild(){
 
   const artistVisual=prof=>{
     avatarCount++;
-    const d=avatarCount*40;
-    const hasImg=prof.imageUrl&&typeof prof.imageUrl==='string'&&prof.imageUrl.trim().length>10&&!prof.imageUrl.includes('undefined');
-    if(hasImg){
-      const img=document.createElement('img');img.className='dna-avatar';img.style.animationDelay=d+'ms';img.title=prof.name;img.alt=prof.name;
-      img.onerror=()=>{const ph=document.createElement('div');ph.className='dna-avatar-ph';ph.style.animationDelay=d+'ms';ph.textContent=prof.name.charAt(0).toUpperCase();img.replaceWith(ph)};
-      img.src=prof.imageUrl;mosaic.appendChild(img);
-    }else{
-      const ph=document.createElement('div');ph.className='dna-avatar-ph';ph.style.animationDelay=d+'ms';ph.textContent=prof.name.charAt(0).toUpperCase();mosaic.appendChild(ph);
-    }
     if(s2El)s2El.textContent=avatarCount;
   };
 
@@ -4753,8 +4799,12 @@ function showApp(){
   updateCityLabels();
   updateContextBanners();
   if(!dnaValid()&&venueName){
-    // DNA not built — force rebuild immediately, don't show app without it
-    rebuildDNA(false);
+    // DNA not built — redirect to DNA build, don't show app without it
+    document.getElementById('onboarding').style.display='block';
+    document.getElementById('mainTabs').style.display='none';
+    document.querySelectorAll('.tab-panel').forEach(p2=>p2.classList.remove('active'));
+    _startDNABuild();
+    return;
   }
 }
 async function rebuildDNA(silent){
@@ -4946,7 +4996,7 @@ function loadDNASeedsIntoDiscover(){
     return Object.entries(p.traxsourceGenres).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g).join(', ');
   };
   
-  let html='<div class="card" style="border-color:var(--accent);margin-bottom:16px"><h3 style="color:var(--accent);margin-bottom:4px">Your DNA — '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">All artists with ≥100 RA followers from your booking history. Click any artist to use as a discovery seed.</div>';
+  let html='<div class="card" style="border-color:var(--accent);margin-bottom:16px"><h3 style="color:var(--accent);margin-bottom:4px">Your DNA: '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">All artists with ≥100 RA followers from your booking history. Click any artist to use as a discovery seed.</div>';
   
   for(const p of profiles){
     const fc=p.raFollowers!=null?fmt(p.raFollowers):'?';
@@ -6150,7 +6200,7 @@ function renderIntelEntity(profile, allEvents){
   const available=profile.artists.filter(a=>!artistAvailableInWindow(a.name,allEvents)&&a.maxAtt>0);
   if(available.length){
     h+=`<div style="margin-top:20px">
-      <div class="intel-section-divider">✅ Their proven artists — available in ${cityName()} right now</div>
+      <div class="intel-section-divider">✅ Their proven artists, available in ${cityName()} right now</div>
       <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px;font-style:italic">These artists worked for ${esc(profile.name)} and haven't played ${cityName()} in the last 6 months. Validated draw, fresh market.</p>`;
     available.slice(0,12).forEach((a,i)=>{
       const dnaS=hasDNA?dnaScore({name:a.name,bcn:0,_networkOnly:true}):null;
@@ -6179,7 +6229,7 @@ function renderIntelEntity(profile, allEvents){
     const gaps=profile.artists.filter(a=>!myProfiles.has(norm(a.name))&&a.maxAtt>0&&!artistAvailableInWindow(a.name,allEvents));
     if(gaps.length){
       h+=`<div style="margin-top:20px">
-        <div class="intel-section-divider">💡 They've booked these — you haven't. Available now.</div>
+        <div class="intel-section-divider">💡 They've booked these, you haven't. Available now.</div>
         <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px;font-style:italic">Proven in this market, fit your DNA, not in your booking history.</p>`;
       gaps.slice(0,8).forEach((a,i)=>{
         const dnaS=dnaScore({name:a.name,bcn:0,_networkOnly:true});
@@ -6647,7 +6697,7 @@ async function genReport(){
 
     // ═══ CALENDAR ═══
     h+=`<div class="card"><h3 style="color:var(--blue)">Competition Calendar</h3>
-      <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:12px">Fri/Sat event density — next 3 months</div>
+      <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:12px">Fri/Sat event density, next 3 months</div>
       <div id="calGrid"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning…</div></div>
     </div>`;
 
