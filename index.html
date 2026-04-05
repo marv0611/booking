@@ -5227,30 +5227,25 @@ function loadDNASeedsIntoDiscover(){
    3. Mix in co-billing network for broader scene coverage */
 function _buildSmartSeeds(dna){
   const allProfiles=(dna.profiles||[]).slice();
-  if(!allProfiles.length)return[];
-  
   const FOLLOWER_GATE=100;
-  
+
   // Filter: only real artists (≥100 RA followers)
-  // If raFollowers is null (fetch failed), include them — benefit of doubt
   const qualifying=allProfiles.filter(p=>{
-    if(p.raFollowers===null||p.raFollowers===undefined)return true; // unknown = include
+    if(p.raFollowers===null||p.raFollowers===undefined)return true;
     return p.raFollowers>=FOLLOWER_GATE;
   });
-  
-  // Sort by headliner score (computed during DNA build)
+
+  // Sort by headliner score
   qualifying.sort((a,b)=>(b.headlinerScore||0)-(a.headlinerScore||0));
-  
-  // Also mix in co-billing network
-  const coBills=(dna.coBillNetwork||[]).slice(0,5).map(c=>c.name);
-  
-  // All qualifying artists + top co-bills (no artificial limit)
-  const seeds=[
-    ...qualifying.map(a=>a.name),
-    ...coBills.filter(n=>!qualifying.some(p=>norm(p.name)===norm(n)))
-  ].filter(Boolean);
-  
-  return seeds;
+
+  // Sound anchors — user's 3 defining artists, even if never booked
+  const anchors=(dna.soundAnchors||[]).filter(a=>!qualifying.some(p=>norm(p.name)===norm(a)));
+
+  // Top co-bills
+  const coBills=(dna.coBillNetwork||[]).slice(0,5).map(c=>c.name)
+    .filter(n=>!qualifying.some(p=>norm(p.name)===norm(n)));
+
+  return[...qualifying.map(a=>a.name),...anchors,...coBills].filter(Boolean);
 }
 function prog(lbl,pct,detail){const w=document.getElementById('dProg');w.classList.add('visible');if(lbl)document.getElementById('pLbl').textContent=lbl;if(pct!==null)document.getElementById('pFill').style.width=pct+'%';if(detail){const d=document.getElementById('pDet');d.innerHTML+='<div>'+detail+'</div>';const lines=d.querySelectorAll('div');if(lines.length>50)lines[0].remove();d.scrollTop=d.scrollHeight}}
 function progReset(){document.getElementById('dProg').classList.remove('visible');document.getElementById('pDet').innerHTML='';document.getElementById('pFill').style.width='0%'}
@@ -5331,6 +5326,34 @@ async function runDiscover(){
 
     const cands=Array.from(cmap.values());prog(cands.length+' candidates',25);
 
+    // City cache sweep — scan all artists who've played your city for scene relevance
+    // This surfaces artists in your genre who the fusion engine missed (no shared co-bills)
+    if(snapshotDNA?.artistCount){
+      prog('Scanning city artists for scene matches…',27);
+      const fp=getDNAFingerprint(snapshotDNA);
+      if(fp&&fp.dnaSceneGroups.size){
+        const cacheEvents=allEvents||[];
+        const seenInCache=new Set();
+        for(const ev of cacheEvents){
+          for(const a of(ev.artists||[])){
+            const n=norm(a);
+            if(!n||seenInCache.has(n)||cmap.has(n))continue;
+            if(resolved.some(r=>norm(r.name)===n))continue;
+            if(fp.bookedNorms.has(n))continue; // already booked — not a discovery
+            seenInCache.add(n);
+            // Check artist's cached genres against DNA scene groups
+            const artistGenres=(()=>{try{const c=localStorage.getItem('lft_'+n);return c?JSON.parse(c).tags||[]:[];}catch{return[]}})();
+            const groupMatch=artistGenres.some(g=>{const grp=_genreGroupMap.get(g.toLowerCase());return grp&&fp.dnaSceneGroups.has(grp);});
+            if(groupMatch){
+              cmap.set(n,{name:a,uuid:null,imageUrl:_imgCache.get('img_'+n)||'',seeds:['scene'],source:'city_cache',fusionScore:35,raCoBills:0,genres:artistGenres.slice(0,4)});
+            }
+          }
+        }
+        prog(null,28,'City cache sweep: '+(cmap.size-cands.length)+' additional scene artists added');
+      }
+    }
+    const allCands=Array.from(cmap.values());
+
     // Step 3: city exclusion from cache (instant)
     prog('Checking '+cn+' availability…',30);
     const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
@@ -5340,7 +5363,7 @@ async function runDiscover(){
     prog(null,45,cityIdx.size+' artists in exclusion window');
 
     let raX=0;const afterRA=[];
-    for(const c of cands){const hit=idxLookup(cityIdx,c.name);if(hit){raX++;prog(null,50,'✗ '+c.name+' at '+hit.venue+' on '+fdate(hit.date))}else afterRA.push(c)}
+    for(const c of allCands){const hit=idxLookup(cityIdx,c.name);if(hit){raX++;prog(null,50,'✗ '+c.name+' at '+hit.venue+' on '+fdate(hit.date))}else afterRA.push(c)}
     prog(raX+' excluded, '+afterRA.length+' remain',50);
 
     // Step 4: worldwide same-day
@@ -5386,16 +5409,24 @@ async function runDiscover(){
     if(hasDNA){
       for(const a of qual){
         a._dna=sceneRelevance(a.name,snapshotDNA);
-        a._dna.score=a._dna.score; // unified score
+        // For city cache artists with no network connection, boost score if genre matches DNA
+        if(a.source==='city_cache'&&a._dna.score<40&&a.genres?.length){
+          const fp2=getDNAFingerprint(snapshotDNA);
+          if(fp2){
+            const groupMatch=a.genres.some(g=>{const grp=_genreGroupMap.get(g.toLowerCase());return grp&&fp2.dnaSceneGroups.has(grp);});
+            if(groupMatch)a._dna.score=Math.max(a._dna.score,42); // bump to just above tier 3 floor
+          }
+        }
       }
-      qual.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0));
+      // Sort: DNA score first, fusion score as tiebreaker
+      qual.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0)||(b.fusionScore||0)-(a.fusionScore||0));
       prog('Done! '+qual.length+' artists — sorted by venue DNA fit',100);
     }else{
       qual.sort((a,b)=>(b.fusionScore||0)-(a.fusionScore||0));
       prog('Done! '+qual.length+' artists — sorted by circuit relevance',100);
     }
     // Pass diagnostic counts for empty state messaging
-    renderDiscover(qual,hasDNA,{total:cands.length,raExcluded:raX,sdExcluded:sdX,genreExcluded:genreSkipped,belowMin:0});
+    renderDiscover(qual,hasDNA,{total:allCands.length,raExcluded:raX,sdExcluded:sdX,genreExcluded:genreSkipped,belowMin:0});
   }catch(e){prog('Error: '+e.message,100)}
   btn.disabled=false;btn.textContent='Discover';
 }
@@ -5882,6 +5913,7 @@ async function runRouting(){
     // This is the key insight: start from artists YOU'D actually book,
     // not from whoever happens to be playing nearby.
     rteProg('Building your scene pool from DNA…',5);
+    const fp=getDNAFingerprint(dna); // compute once, used in reverse pass too
 
     const scenePool=new Map(); // norm(name) → {name, relevance, reason}
 
@@ -5952,17 +5984,52 @@ async function runRouting(){
     // ═══ STEP 3: Intersect — which scene artists are actually nearby? ═══
     rteProg('Finding your artists in the region…',70);
     const matches=[];
+    const matchedNorms=new Set();
 
-    // Check artists from your scene pool against nearby events
+    // Forward: check your scene pool against nearby events
     for(const[n,sceneArtist] of scenePool){
-      const nearby=nearbyEvents.get(n);
-      if(nearby){
+      const nearbyEv=nearbyEvents.get(n);
+      if(nearbyEv){
         matches.push({
-          ...nearby,
+          ...nearbyEv,
           relevance:sceneArtist.relevance,
           reason:sceneArtist.reason,
           _sceneArtist:true
         });
+        matchedNorms.add(n);
+      }
+    }
+
+    // Reverse: score ALL nearby artists against your DNA — catches scene-relevant artists not in your pool
+    // This surfaces artists who match your scene by genre/network even if not in your co-bill network
+    rteProg('Checking all nearby artists for scene relevance…',73);
+    for(const[n,nearbyEv] of nearbyEvents){
+      if(matchedNorms.has(n))continue; // already matched in forward pass
+      const rel=sceneRelevance(nearbyEv.name,dna);
+      if(rel.score>=50){
+        // Already in tier 2+ via network — include directly
+        matches.push({...nearbyEv,relevance:rel.score,reason:rel.reason,_sceneArtist:false});
+        matchedNorms.add(n);
+      } else {
+        // Check genre match via Last.fm cache — catches scene artists not in co-bill network
+        const artistGenres=(()=>{
+          try{
+            const cached=localStorage.getItem('lft_'+n); // Last.fm tag cache key
+            if(cached){const d=JSON.parse(cached);return(d.tags||[]).map(t=>t.toLowerCase());}
+          }catch(e){}
+          return[];
+        })();
+        if(artistGenres.length&&fp){
+          const genreMatch=artistGenres.some(g=>fp.dnaGenres.has(g));
+          const groupMatch=artistGenres.some(g=>{const grp=_genreGroupMap.get(g);return grp&&fp.dnaSceneGroups.has(grp);});
+          if(groupMatch){
+            matches.push({...nearbyEv,relevance:52,reason:'Genre match: '+artistGenres.slice(0,2).join(', '),_sceneArtist:false});
+            matchedNorms.add(n);
+          } else if(genreMatch){
+            matches.push({...nearbyEv,relevance:45,reason:'Genre adjacent: '+artistGenres.slice(0,2).join(', '),_sceneArtist:false});
+            matchedNorms.add(n);
+          }
+        }
       }
     }
 
@@ -6012,7 +6079,7 @@ function renderRouting(arts, meta={}){
   const byReason={
     booked:arts.filter(a=>a.reason?.includes('booked')),
     coBilled:arts.filter(a=>a.reason?.includes('Co-billed')||a.reason?.includes('lineup')),
-    similar:arts.filter(a=>a.reason?.includes('Similar')||a.reason?.includes('network')||a.reason?.includes('connection')||a.reason?.includes('adjacent')),
+    similar:arts.filter(a=>a.reason?.includes('Similar')||a.reason?.includes('network')||a.reason?.includes('connection')||a.reason?.includes('adjacent')||a.reason?.includes('Genre')),
   };
 
   let h=`<div class="section-head">
