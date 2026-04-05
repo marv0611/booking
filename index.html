@@ -2089,15 +2089,44 @@ const NEARBY_CITIES=(()=>{
   return map;
 })();
 // Genre filters — only keep artists matching these genres
-const RA_GENRES_KEEP=new Set(['acid','acid house','afro house','ambient','baile funk','balearic','club','dancehall','deep house','disco','electro','electronica','experimental','funk','funk / soul','funk/soul','soul','garage','house','italo disco','jazz','jungle','minimal','minimal techno','progressive house','tech house','techno','uk funky']);
+const RA_GENRES_KEEP=new Set(['acid','acid house','afro house','ambient','balearic','club','deep house','disco','electro','electronica','experimental','funk','funk / soul','funk/soul','soul','soulful house','garage','uk garage','house','italo disco','jazz','minimal','minimal techno','nu disco','organic house','progressive house','tech house','techno','uk funky','afrobeat','latin','tropical']);
 const SC_GENRES_KEEP=new Set(['electronic','dance','r&b/soul','r&b','soul']);
+// Hard blocklist — these genres are never relevant regardless of other tags
+const GENRE_BLOCKLIST=new Set(['drum and bass','dnb','d&b','jungle','darkstep','neurofunk','techstep','atmospheric drum and bass','hip-hop','hip hop','rap','grime','dubstep','bassline','post-rock','folk','indie','rock','metal','classical','pop','bubblegum bass','trance','hardcore','hardstyle','reggae']);
 function genreAllowed(genres){
-  if(!genres||!genres.length)return true; // no genre info = let through
+  if(!genres||!genres.length)return false; // no genre info = block, require a real tag
+  // Hard block — if any tag is on the blocklist, reject immediately
+  for(const g of genres){
+    const gl=g.toLowerCase();
+    if(GENRE_BLOCKLIST.has(gl))return false;
+  }
+  // Allowlist — must match at least one allowed genre
   for(const g of genres){
     const gl=g.toLowerCase();
     if(SC_GENRES_KEEP.has(gl)||RA_GENRES_KEEP.has(gl))return true;
-    for(const k of RA_GENRES_KEEP)if(gl.includes(k)||k.includes(gl))return true;
-    for(const k of SC_GENRES_KEEP)if(gl.includes(k)||k.includes(gl))return true;
+    // Substring: only allow if the allowlist term contains the tag (more specific is fine)
+    // e.g. tag='house', key='deep house' → key.includes(tag) → true
+    // Prevent 'all', 'usa', 'belgian' etc. matching by requiring length > 3
+    for(const k of RA_GENRES_KEEP)if(gl.length>3&&k.includes(gl))return true;
+    for(const k of SC_GENRES_KEEP)if(gl.length>3&&k.includes(gl))return true;
+  }
+  return false;
+}
+
+// DNA-aware genre check: also allows genres that appear in your Beatport/Traxsource DNA
+function genreAllowedForDNA(genres, dna){
+  if(genreAllowed(genres))return true;
+  if(!genres||!genres.length)return false;
+  if(!dna)return false;
+  // Check against DNA's Beatport/Traxsource genre vocabulary
+  const fp=getDNAFingerprint(dna);
+  if(!fp||!fp.dnaBPGenres||!fp.dnaBPGenres.size)return false;
+  for(const g of genres){
+    const gl=g.toLowerCase();
+    if(fp.dnaBPGenres.has(gl))return true;
+    // Also allow if same scene group as any DNA Beatport genre
+    const grp=_genreGroupMap.get(gl);
+    if(grp&&fp.dnaSceneGroups.has(grp))return true;
   }
   return false;
 }
@@ -3368,8 +3397,27 @@ const RA_GENRE_GROUPS={
   other:      ['Hip-Hop / R&B','Reggae / Dancehall','Latin / Tropical'],
 };
 
+// Beatport genre names → scene groups (Beatport uses slightly different naming)
+const BEATPORT_GENRE_GROUPS={
+  house:    ['House','Deep House','Tech House','Afro House','Soulful House','Jackin House','Funky House','Classic House','Electronica / Downtempo','Organic House'],
+  techno:   ['Techno (Peak Time / Driving)','Techno (Raw / Deep / Hypnotic)','Hard Techno','Industrial'],
+  melodic:  ['Melodic House & Techno','Progressive House'],
+  minimal:  ['Minimal / Deep Tech'],
+  disco:    ['Disco / Nu-Disco','Nu Disco / Indie Dance','Disco'],
+  electronic:['Electronica','Ambient / Drone','Experimental / Avant-Garde'],
+  dnb:      ['Drum & Bass','Jungle'],
+};
+
+// Traxsource genre names → scene groups
+const TRAXSOURCE_GENRE_GROUPS={
+  house:    ['House','Deep House','Tech House','Afro House','Soulful House','Jackin House','Classic House','Funky House'],
+  techno:   ['Techno'],
+  melodic:  ['Melodic House & Techno','Progressive House'],
+  disco:    ['Disco / Nu Disco','Nu Disco'],
+  minimal:  ['Minimal'],
+};
+
 // Cross-group affinities — audiences that heavily overlap.
-// Key = group, value = groups that count as partial competition (0.5× weight)
 const GENRE_CROSS_AFFINITY={
   house:   ['melodic','minimal','disco'],
   techno:  ['melodic','minimal'],
@@ -3379,9 +3427,15 @@ const GENRE_CROSS_AFFINITY={
   electronic:['disco','melodic'],
 };
 
-// Flatten to norm→group map for O(1) lookup
+// Flatten all three sources into a single norm→group map for O(1) lookup
 const _genreGroupMap=new Map();
 for(const[group,genres] of Object.entries(RA_GENRE_GROUPS)){
+  for(const g of genres)_genreGroupMap.set(g.toLowerCase(),group);
+}
+for(const[group,genres] of Object.entries(BEATPORT_GENRE_GROUPS)){
+  for(const g of genres)_genreGroupMap.set(g.toLowerCase(),group);
+}
+for(const[group,genres] of Object.entries(TRAXSOURCE_GENRE_GROUPS)){
   for(const g of genres)_genreGroupMap.set(g.toLowerCase(),group);
 }
 
@@ -3421,22 +3475,46 @@ function getDNAFingerprint(dna){
   const cloudNorms=new Set((dna.cloud||[]).map(n=>norm(n)));
   const secondDegree=new Set(dna.secondDegree||[]);
 
-  // Genre fingerprint from DNA's top genres
-  // These come from Last.fm tags aggregated across all booked artists
+  // Genre fingerprint from DNA's top genres (Last.fm)
   const dnaGenres=new Set((dna.topGenres||[]).map(g=>(g.genre||g).toLowerCase()));
 
-  // Scene group fingerprint — which RA genre groups does this DNA represent?
-  // Prefer RA's own genre tags (raSceneGroups) over Last.fm-derived groups
+  // Scene group fingerprint — build from all three sources, priority: RA tags > Beatport > Traxsource > Last.fm
   const dnaSceneGroups=new Set();
+
+  // Source 1: RA curated genre tags from your events (most reliable)
   if(dna.raSceneGroups&&dna.raSceneGroups.length){
-    // Use RA's curated genre classification — most accurate
     for(const g of dna.raSceneGroups)dnaSceneGroups.add(g);
-  } else {
-    // Fall back to Last.fm-derived groups
+  }
+
+  // Source 2: Beatport genres from your booked artists — very precise
+  for(const prof of(dna.profiles||[])){
+    if(prof.beatportGenres){
+      for(const g of Object.keys(prof.beatportGenres)){
+        const group=_genreGroupMap.get(g.toLowerCase());
+        if(group)dnaSceneGroups.add(group);
+      }
+    }
+    if(prof.traxsourceGenres){
+      for(const g of Object.keys(prof.traxsourceGenres)){
+        const group=_genreGroupMap.get(g.toLowerCase());
+        if(group)dnaSceneGroups.add(group);
+      }
+    }
+  }
+
+  // Source 3: Last.fm fallback — less precise but broad coverage
+  if(!dnaSceneGroups.size){
     for(const g of dnaGenres){
       const group=_genreGroupMap.get(g);
       if(group)dnaSceneGroups.add(group);
     }
+  }
+
+  // Build Beatport/Traxsource genre set for use in genreAllowed checks
+  const dnaBPGenres=new Set();
+  for(const prof of(dna.profiles||[])){
+    if(prof.beatportGenres)for(const g of Object.keys(prof.beatportGenres))dnaBPGenres.add(g.toLowerCase());
+    if(prof.traxsourceGenres)for(const g of Object.keys(prof.traxsourceGenres))dnaBPGenres.add(g.toLowerCase());
   }
 
   // Most recent bookings get 2× weight — your 2024 sound matters more than 2021
@@ -3460,7 +3538,7 @@ function getDNAFingerprint(dna){
     dnaIsDaytime=daytimeEvents.length/dna._venueEvents.length>0.4;
   }
 
-  const fp={bookedNorms,anchorNorms,coBillMap,cloudNorms,secondDegree,dnaGenres,dnaSceneGroups,recentArtists,dnaIsDaytime};
+  const fp={bookedNorms,anchorNorms,coBillMap,cloudNorms,secondDegree,dnaGenres,dnaBPGenres,dnaSceneGroups,recentArtists,dnaIsDaytime};
   dna._fingerprint=fp; // cache it
   return fp;
 }
@@ -5440,10 +5518,10 @@ async function runDiscover(){
         try{
           // Skip Last.fm fetch if genres already set (city_cache artists pre-populated)
           if(!c.genres||!c.genres.length)await enrichGenresFromLastfm(c);
-          // Genre filter — skip for city_cache artists (already genre-matched in sweep)
-          if(c.source!=='city_cache'&&c.genres&&c.genres.length>0&&!genreAllowed(c.genres)){
+          // Genre filter — block artists with wrong genres OR no genre data at all
+          if(c.source!=='city_cache'&&!genreAllowedForDNA(c.genres,snapshotDNA)){
             genreSkipped++;
-            prog(null,70+Math.round((i/afterSD.length)*25),'✗ '+c.name+' genre excluded ('+c.genres.slice(0,2).join(', ')+')');
+            prog(null,70+Math.round((i/afterSD.length)*25),'✗ '+c.name+(c.genres?.length?' genre excluded ('+c.genres.slice(0,2).join(', ')+')':' no genre data'));
             return;
           }
           c.bcn=0;c.global=0;
@@ -5962,8 +6040,6 @@ async function runRouting(){
     const scanDates=[dayBStr,dayAStr];
 
     // ═══ STEP 1: Build YOUR scene artist pool from DNA ═══
-    // This is the key insight: start from artists YOU'D actually book,
-    // not from whoever happens to be playing nearby.
     rteProg('Building your scene pool from DNA…',5);
     const fp=getDNAFingerprint(dna); // compute once, used in reverse pass too
 
@@ -5988,30 +6064,48 @@ async function runRouting(){
     }
     rteProg(null,12,coBilled.length+' co-billed artists added');
 
-    // Layer 3: RA official related artists for your top 5 DNA artists
-    // RA's own similarity algorithm — exactly what shows on their artist pages
-    const topDnaArtists=yourArtists.slice(0,5);
+    // Layer 3: RA official related artists — extended to top 8 DNA artists
+    const topDnaArtists=yourArtists.slice(0,8);
     rteProg('Fetching similar artists for your top bookings…',15);
     let raRelatedCount=0;
-    for(const seedName of topDnaArtists){
+    // Run in parallel pairs for speed
+    for(let i=0;i<topDnaArtists.length;i+=2){
+      const batch=topDnaArtists.slice(i,i+2);
+      await Promise.all(batch.map(async seedName=>{
+        try{
+          const related=await raOfficialRelated(seedName);
+          for(const r of related){
+            const n=norm(r.name);
+            if(!scenePool.has(n)){
+              const rel=sceneRelevance(r.name,dna);
+              scenePool.set(n,{name:r.name,relevance:rel.score,reason:rel.reason||('Similar to '+seedName)});
+              raRelatedCount++;
+            }
+          }
+          rteProg(null,null,'Related artists for '+seedName+': '+related.length+' found');
+        }catch(e){}
+      }));
+    }
+
+    // Layer 4: Sound anchors — add their RA related artists too
+    for(const anchor of (dna.soundAnchors||[]).slice(0,3)){
       try{
-        const related=await raOfficialRelated(seedName);
+        const related=await raOfficialRelated(anchor);
         for(const r of related){
           const n=norm(r.name);
           if(!scenePool.has(n)){
             const rel=sceneRelevance(r.name,dna);
-            scenePool.set(n,{name:r.name,relevance:rel.score,reason:rel.reason||('Similar to '+seedName)});
+            scenePool.set(n,{name:r.name,relevance:Math.max(rel.score,45),reason:rel.reason||('Similar to anchor: '+anchor)});
             raRelatedCount++;
           }
         }
-        rteProg(null,null,'Related artists for '+seedName+': '+related.length+' found');
       }catch(e){}
     }
     rteProg(null,30,'Scene pool: '+scenePool.size+' artists ('+raRelatedCount+' from similar artist data)');
 
     // ═══ STEP 2: Scan nearby cities for those dates ═══
     rteProg('Scanning '+nearby.length+' nearby cities…',35);
-    // Map: norm(artistName) → {name, city, date, venue, attending, title}
+    // Map: norm(artistName) → {name, city, date, venue, attending, title, genres}
     const nearbyEvents=new Map();
 
     for(let ci=0;ci<nearby.length;ci++){
@@ -6024,7 +6118,8 @@ async function runRouting(){
             for(const a of ev.artists){
               const n=norm(a);
               if(n&&!nearbyEvents.has(n)){
-                nearbyEvents.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending||0,title:ev.title||''});
+                // Store RA genres from the event — used in reverse pass for genre matching
+                nearbyEvents.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending||0,title:ev.title||'',raGenres:(ev.genres||[]).map(g=>typeof g==='string'?g:g.name||'').filter(Boolean)});
               }
             }
           }
@@ -6033,54 +6128,55 @@ async function runRouting(){
     }
     rteProg(nearbyEvents.size+' artists touring nearby cities',65);
 
-    // ═══ STEP 3: Intersect — which scene artists are actually nearby? ═══
+    // ═══ STEP 3: Intersect + Reverse pass ═══
     rteProg('Finding your artists in the region…',70);
     const matches=[];
     const matchedNorms=new Set();
 
-    // Forward: check your scene pool against nearby events
+    // Forward: your scene pool artists that are nearby
     for(const[n,sceneArtist] of scenePool){
       const nearbyEv=nearbyEvents.get(n);
       if(nearbyEv){
-        matches.push({
-          ...nearbyEv,
-          relevance:sceneArtist.relevance,
-          reason:sceneArtist.reason,
-          _sceneArtist:true
-        });
+        matches.push({...nearbyEv,relevance:sceneArtist.relevance,reason:sceneArtist.reason,_sceneArtist:true});
         matchedNorms.add(n);
       }
     }
 
-    // Reverse: score ALL nearby artists against your DNA — catches scene-relevant artists not in your pool
-    // This surfaces artists who match your scene by genre/network even if not in your co-bill network
+    // Reverse: score all nearby artists against DNA
+    // Uses RA event genres (stored above), Last.fm cache, and DNA-aware genre check
     rteProg('Checking all nearby artists for scene relevance…',73);
     for(const[n,nearbyEv] of nearbyEvents){
-      if(matchedNorms.has(n))continue; // already matched in forward pass
+      if(matchedNorms.has(n))continue;
       const rel=sceneRelevance(nearbyEv.name,dna);
       if(rel.score>=50){
-        // Already in tier 2+ via network — include directly
-        matches.push({...nearbyEv,relevance:rel.score,reason:rel.reason,_sceneArtist:false});
+        // Network match — include directly
+        const attBoost=nearbyEv.attending>500?5:nearbyEv.attending>200?3:0;
+        matches.push({...nearbyEv,relevance:Math.min(100,rel.score+attBoost),reason:rel.reason,_sceneArtist:false});
         matchedNorms.add(n);
       } else {
-        // Check genre match via Last.fm cache — catches scene artists not in co-bill network
-        const artistGenres=(()=>{
-          try{
-            const cached=localStorage.getItem('lft_'+n); // Last.fm tag cache key
-            if(cached){const d=JSON.parse(cached);return(d.tags||[]).map(t=>t.toLowerCase());}
-          }catch(e){}
-          return[];
-        })();
-        if(artistGenres.length&&fp){
-          const genreMatch=artistGenres.some(g=>fp.dnaGenres.has(g));
-          const groupMatch=artistGenres.some(g=>{const grp=_genreGroupMap.get(g);return grp&&fp.dnaSceneGroups.has(grp);});
-          if(groupMatch){
-            matches.push({...nearbyEv,relevance:52,reason:'Genre match: '+artistGenres.slice(0,2).join(', '),_sceneArtist:false});
-            matchedNorms.add(n);
-          } else if(genreMatch){
-            matches.push({...nearbyEv,relevance:45,reason:'Genre adjacent: '+artistGenres.slice(0,2).join(', '),_sceneArtist:false});
-            matchedNorms.add(n);
-          }
+        // Genre match — check RA event genres first (most reliable), then Last.fm cache
+        const raGenreGroups=eventSceneGroups(nearbyEv.raGenres);
+        const raGroupMatch=raGenreGroups.some(g=>fp.dnaSceneGroups.has(g));
+
+        // Last.fm cache fallback
+        const lfGenres=(()=>{
+          try{const cached=localStorage.getItem('lft_'+n);return cached?JSON.parse(cached).tags||[]:[]}catch{return[];}
+        })().map(t=>t.toLowerCase());
+
+        const lfGroupMatch=lfGenres.some(g=>{const grp=_genreGroupMap.get(g);return grp&&fp.dnaSceneGroups.has(grp);});
+
+        // DNA-aware genre check using Beatport/Traxsource vocabulary
+        const dnaGenreMatch=genreAllowedForDNA(lfGenres.length?lfGenres:nearbyEv.raGenres.map(g=>g.toLowerCase()),dna);
+
+        if(raGroupMatch){
+          // RA genre is the strongest signal — same scene group confirmed
+          const attBoost=nearbyEv.attending>500?8:nearbyEv.attending>200?5:2;
+          matches.push({...nearbyEv,relevance:52+attBoost,reason:'Scene match: '+raGenreGroups.join(', '),_sceneArtist:false});
+          matchedNorms.add(n);
+        } else if(lfGroupMatch||dnaGenreMatch){
+          const attBoost=nearbyEv.attending>500?6:nearbyEv.attending>200?3:0;
+          matches.push({...nearbyEv,relevance:45+attBoost,reason:'Genre adjacent: '+(lfGenres.slice(0,2).join(', ')||nearbyEv.raGenres.slice(0,2).join(', ')),_sceneArtist:false});
+          matchedNorms.add(n);
         }
       }
     }
