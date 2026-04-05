@@ -54,6 +54,15 @@ _mb_lock = threading.Lock()
 _mb_last_call = 0.0
 MB_MIN_INTERVAL = 1.1
 
+# Beatport v4 API — genre enrichment (the genre authority for electronic music)
+BP_BASE = "https://api.beatport.com/v4"
+BP_TOKEN_URL = "https://api.beatport.com/v4/auth/o/token/"
+BP_USERNAME = os.environ.get("BP_USERNAME", "dropbcn")
+BP_PASSWORD = os.environ.get("BP_PASSWORD", "Dropbarcelona1!")
+_bp_token = None
+_bp_token_expires = 0
+_bp_lock = threading.Lock()
+
 
 class LibroHandler(http.server.SimpleHTTPRequestHandler):
 
@@ -73,6 +82,8 @@ class LibroHandler(http.server.SimpleHTTPRequestHandler):
             return self._proxy_mb()
         if self.path.startswith("/api/ra/image"):
             return self._ra_artist_image()
+        if self.path.startswith("/api/beatport/"):
+            return self._proxy_beatport()
         if self.path == "/api/claude/status":
             return self._claude_status()
         if self.path == "/":
@@ -284,6 +295,174 @@ Rules:
         except Exception as e:
             self._send(502, json.dumps({"error": str(e)}).encode())
 
+    # ── Beatport v4 API ──
+
+    def _bp_get_token(self):
+        """Get or refresh Beatport access token using password grant."""
+        global _bp_token, _bp_token_expires
+        with _bp_lock:
+            if _bp_token and time.time() < _bp_token_expires - 60:
+                return _bp_token
+            try:
+                data = urllib.parse.urlencode({
+                    "grant_type": "password",
+                    "username": BP_USERNAME,
+                    "password": BP_PASSWORD,
+                }).encode()
+                req = urllib.request.Request(BP_TOKEN_URL, data=data, headers={
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "User-Agent": "SubPulse/1.0",
+                    "Accept": "application/json",
+                })
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    td = json.loads(resp.read())
+                    _bp_token = td.get("access_token", "")
+                    _bp_token_expires = time.time() + td.get("expires_in", 3600)
+                    print(f"\033[36m[BP]\033[0m Token obtained, expires in {td.get('expires_in', '?')}s")
+                    return _bp_token
+            except urllib.error.HTTPError as e:
+                body = e.read().decode()
+                print(f"\033[31m[BP AUTH ERROR]\033[0m {e.code}: {body[:300]}")
+                return self._bp_get_token_with_client_id()
+            except Exception as e:
+                print(f"\033[31m[BP AUTH ERROR]\033[0m {e}")
+                return None
+
+    def _bp_get_token_with_client_id(self):
+        """Fallback: scrape client_id from Beatport docs, then retry password grant."""
+        global _bp_token, _bp_token_expires
+        import re as _re
+        try:
+            req = urllib.request.Request("https://api.beatport.com/v4/docs/", headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+                "Accept": "text/html",
+            })
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                html = resp.read().decode()
+            m = _re.search(r'client_id["\']?\s*[:=]\s*["\']([a-zA-Z0-9_-]+)["\']', html)
+            if not m:
+                m = _re.search(r'"client_id":"([^"]+)"', html)
+            if not m:
+                print(f"\033[31m[BP]\033[0m Could not scrape client_id from docs page")
+                return None
+            client_id = m.group(1)
+            print(f"\033[36m[BP]\033[0m Scraped client_id: {client_id}")
+            data = urllib.parse.urlencode({
+                "grant_type": "password",
+                "client_id": client_id,
+                "username": BP_USERNAME,
+                "password": BP_PASSWORD,
+            }).encode()
+            req2 = urllib.request.Request(BP_TOKEN_URL, data=data, headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent": "SubPulse/1.0",
+                "Accept": "application/json",
+            })
+            with urllib.request.urlopen(req2, timeout=15) as resp:
+                td = json.loads(resp.read())
+                _bp_token = td.get("access_token", "")
+                _bp_token_expires = time.time() + td.get("expires_in", 3600)
+                print(f"\033[36m[BP]\033[0m Token via client_id OK, expires in {td.get('expires_in', '?')}s")
+                return _bp_token
+        except Exception as e:
+            print(f"\033[31m[BP AUTH FALLBACK]\033[0m {e}")
+            return None
+
+    def _bp_api_call(self, path):
+        """Make an authenticated GET to Beatport v4 catalog API."""
+        token = self._bp_get_token()
+        if not token:
+            return None
+        url = f"{BP_BASE}{path}"
+        req = urllib.request.Request(url, headers={
+            "Authorization": f"Bearer {token}",
+            "User-Agent": "SubPulse/1.0",
+            "Accept": "application/json",
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read())
+
+    def _proxy_beatport(self):
+        """Handle /api/beatport/* requests.
+
+        Routes:
+          /api/beatport/search?q=NAME     → search artists, return {artists: [{id, name}]}
+          /api/beatport/artist/ID/genres   → get artist tracks, aggregate genres
+        """
+        parsed = urllib.parse.urlparse(self.path)
+        params = urllib.parse.parse_qs(parsed.query)
+        path = parsed.path.replace("/api/beatport", "")
+
+        try:
+            if path == "/search":
+                q = urllib.parse.unquote(params.get("q", [""])[0])
+                if not q:
+                    self._send(400, b'{"error":"missing q param"}')
+                    return
+                data = self._bp_api_call(f"/catalog/artists/?q={urllib.parse.quote(q)}&per_page=5")
+                if data is None:
+                    self._send(401, b'{"error":"beatport auth failed"}')
+                    return
+                results = data.get("results", data.get("data", []))
+                if isinstance(data, list):
+                    results = data
+                artists = []
+                for a in (results if isinstance(results, list) else []):
+                    artists.append({
+                        "id": a.get("id"),
+                        "name": a.get("name", ""),
+                        "slug": a.get("slug", ""),
+                        "image": (a.get("image", {}) or {}).get("uri", "") if isinstance(a.get("image"), dict) else "",
+                    })
+                self._send(200, json.dumps({"artists": artists}).encode())
+
+            elif "/artist/" in path and path.endswith("/genres"):
+                parts = path.strip("/").split("/")
+                if len(parts) < 3:
+                    self._send(400, b'{"error":"invalid path"}')
+                    return
+                artist_id = parts[1]
+                data = self._bp_api_call(f"/catalog/tracks/?artist_id={artist_id}&per_page=100")
+                if data is None:
+                    self._send(401, b'{"error":"beatport auth failed"}')
+                    return
+                tracks = data.get("results", data.get("data", []))
+                if isinstance(data, list):
+                    tracks = data
+                genres = {}
+                subgenres = {}
+                for t in (tracks if isinstance(tracks, list) else []):
+                    g = t.get("genre") or {}
+                    sg = t.get("sub_genre") or {}
+                    if isinstance(g, dict) and g.get("name"):
+                        genres[g["name"]] = genres.get(g["name"], 0) + 1
+                    elif isinstance(g, list):
+                        for gi in g:
+                            gn = gi.get("name", str(gi)) if isinstance(gi, dict) else str(gi)
+                            genres[gn] = genres.get(gn, 0) + 1
+                    if isinstance(sg, dict) and sg.get("name"):
+                        subgenres[sg["name"]] = subgenres.get(sg["name"], 0) + 1
+                    elif isinstance(sg, list):
+                        for si in sg:
+                            sn = si.get("name", str(si)) if isinstance(si, dict) else str(si)
+                            subgenres[sn] = subgenres.get(sn, 0) + 1
+                self._send(200, json.dumps({
+                    "genres": genres,
+                    "subgenres": subgenres,
+                    "tracks": len(tracks) if isinstance(tracks, list) else 0,
+                }).encode())
+
+            else:
+                self._send(404, json.dumps({"error": "unknown beatport action"}).encode())
+
+        except urllib.error.HTTPError as e:
+            body = e.read().decode()
+            print(f"\033[31m[BP ERROR]\033[0m {e.code}: {body[:200]}")
+            self._send(e.code, json.dumps({"error": f"beatport {e.code}"}).encode())
+        except Exception as e:
+            print(f"\033[31m[BP ERROR]\033[0m {e}")
+            self._send(502, json.dumps({"error": str(e)}).encode())
+
     def _send(self, code, body):
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
@@ -309,6 +488,10 @@ if __name__ == "__main__":
         print(f"✓ Claude AI email drafting enabled")
     else:
         print(f"⚠ No ANTHROPIC_API_KEY — email drafting will use templates")
+    if BP_USERNAME and BP_PASSWORD:
+        print(f"✓ Beatport v4 genre enrichment enabled (user: {BP_USERNAME})")
+    else:
+        print(f"⚠ No Beatport credentials — genre enrichment disabled")
     with http.server.HTTPServer(("", PORT), LibroHandler) as httpd:
         print(f"SUB PULSE running -> http://localhost:{PORT}")
         try:
