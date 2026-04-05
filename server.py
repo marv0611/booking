@@ -438,15 +438,16 @@ Rules:
                 if not q:
                     self._send(400, b'{"error":"missing q param"}')
                     return
-                data = self._bp_api_call(f"/catalog/artists/?q={urllib.parse.quote(q)}&per_page=5")
+                data = self._bp_api_call(f"/catalog/search/?q={urllib.parse.quote(q)}&type=artists&per_page=5")
                 if data is None:
                     self._send(401, b'{"error":"beatport auth failed"}')
                     return
-                results = data.get("results", data.get("data", []))
-                if isinstance(data, list):
-                    results = data
+                # Search returns {artists: [...], releases: [...], tracks: [...]}
+                results = data.get("artists", data.get("results", []))
+                if not isinstance(results, list):
+                    results = []
                 artists = []
-                for a in (results if isinstance(results, list) else []):
+                for a in results:
                     artists.append({
                         "id": a.get("id"),
                         "name": a.get("name", ""),
