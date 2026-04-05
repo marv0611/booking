@@ -323,7 +323,6 @@ Rules:
                 return _bp_token
 
             import http.cookiejar
-            import re as _re
             
             redirect_uri = f"{BP_BASE}/auth/o/post-message/"
             cj = http.cookiejar.CookieJar()
@@ -357,29 +356,25 @@ Rules:
                     "client_id": BP_CLIENT_ID,
                     "redirect_uri": redirect_uri,
                 })
-                auth_url = f"{BP_BASE}/auth/o/authorize/?{auth_params}"
-                req2 = urllib.request.Request(auth_url, headers={
+                # Use raw http.client to avoid urllib's automatic redirect following
+                import http.client as _hc
+                conn = _hc.HTTPSConnection("api.beatport.com", timeout=15)
+                cookie_hdr = "; ".join(f"{c.name}={c.value}" for c in cj)
+                conn.request("GET", f"/v4/auth/o/authorize/?{auth_params}", headers={
                     "User-Agent": "Mozilla/5.0",
-                    "Accept": "text/html",
+                    "Cookie": cookie_hdr,
                 })
-                # Use a no-redirect opener for this step only
-                no_redir = urllib.request.build_opener(
-                    urllib.request.HTTPCookieProcessor(cj),
-                    _CodeCaptureHandler()
-                )
-                try:
-                    resp2 = no_redir.open(req2, timeout=15)
-                    resp2.read()
-                    resp2.close()
-                except urllib.error.HTTPError as e:
-                    # 302 is expected — check Location header
-                    location = e.headers.get("Location", "")
-                    e.close()
-                    m = _re.search(r'code=([^&]+)', location)
-                    if m:
-                        _CodeCaptureHandler.captured_code = m.group(1)
+                resp2 = conn.getresponse()
+                location = resp2.getheader("Location", "")
+                resp2.read()
+                conn.close()
+                print(f"\033[36m[BP]\033[0m Step 2: status={resp2.status} Location={location[:120]}")
 
-                code = _CodeCaptureHandler.captured_code
+                code = None
+                import re as _re
+                m = _re.search(r'code=([^&]+)', location)
+                if m:
+                    code = m.group(1)
                 if not code:
                     print(f"\033[31m[BP]\033[0m No auth code in redirect")
                     return None
