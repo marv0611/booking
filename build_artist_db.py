@@ -40,7 +40,7 @@ except ImportError:
     sys.exit(1)
 
 # ── Config ──────────────────────────────────────────────────────
-SERVER = "http://localhost:8001"
+SERVER = "http://localhost:8000"
 IMG_DIR = Path("img/artists")
 INDEX_FILE = Path("artist_images.json")
 PROGRESS_FILE = Path("_artist_db_progress.json")

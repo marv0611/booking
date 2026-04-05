@@ -7,7 +7,7 @@
 <title>SubPulse · Booking Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ═══ SUBPULSE v3 — Design System ═══ */
 :root {
@@ -18,17 +18,18 @@
   --green:#52C97A; --g10:rgba(82,201,122,.10); --g30:rgba(82,201,122,.30);
   --red:#E06060; --r10:rgba(224,96,96,.10); --r30:rgba(224,96,96,.30);
   --blue:#60a5fa;
-  --mono:'JetBrains Mono','Courier New',monospace;
+  --mono:'IBM Plex Mono','Courier New',monospace;
   --disp:'Barlow Condensed','Arial Narrow',sans-serif;
-  --body:'DM Sans',system-ui,-apple-system,sans-serif;
+  --body:'Inter',system-ui,-apple-system,sans-serif;
+  --logo:'Orbitron',sans-serif;
   /* Legacy compat */
   --accent:#E8A912; --accent-dim:#7c5a06; --accent-glow:rgba(232,169,18,.10);
   --surface:#0d0d0a; --surface-2:#141410;
   --border:rgba(237,232,220,.07); --border-hi:rgba(237,232,220,.14);
   --text-dim:#9E9888; --text-faint:#706C62;
   --font-head:'Barlow Condensed','Arial Narrow',sans-serif;
-  --font-body:'DM Sans',system-ui,-apple-system,sans-serif;
-  --font-mono:'JetBrains Mono','Courier New',monospace;
+  --font-body:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono','Courier New',monospace;
   --radius:2px; --radius-sm:2px;
   --shadow:none; --shadow-lg:none;
   --green-dim:rgba(82,201,122,.10); --amber-dim:rgba(232,169,18,.10);
@@ -62,7 +63,7 @@ button:focus{outline:none}
   height:54px;padding:0 32px;flex-shrink:0;
   border-bottom:1px solid var(--t06);background:var(--bg);z-index:100;
 }
-.logo{font-family:var(--disp);font-weight:800;font-size:1.15rem;letter-spacing:2px;color:var(--text);text-transform:uppercase;cursor:default}
+.logo{font-family:var(--logo);font-weight:500;font-size:1.05rem;letter-spacing:3px;color:var(--text);text-transform:uppercase;cursor:default}
 .logo span,.logo b{color:var(--amber)}
 
 .venue-pill{
@@ -2025,41 +2026,26 @@ async function buildDNA(statusCb,artistCb){
     // RA-only profile — always available
     const raShows=venueEvents.filter(ev=>ev.artists.some(a=>norm(a)===norm(name)));
     const avgAtt=raShows.length?Math.round(raShows.reduce((s,e)=>s+(e.attending||0),0)/raShows.length):0;
-    const profile={name,uuid:null,bcn:0,global:0,genres:[],imageUrl:'',raShows:raShows.length,raAvgAtt:avgAtt};
 
-    // Last.fm info — gets genres AND image in one call (free, no quota)
-    // Uses the shared image cache to avoid duplicate fetches later
+    // Genres from RA event tags — zero API calls, instant, curated data
+    const genreSet=new Set();
+    for(const ev of raShows)for(const g of(ev.genres||[]))genreSet.add((g.name||g).toLowerCase());
+    const genres=[...genreSet].slice(0,8);
+
+    // Image from local pre-built index — zero API calls, instant
     const lfk='img_'+norm(name);
-    try{
-      let lfData=null;
-      // Check if we already have cached image data — if so, skip the fetch for image
-      // but still need genres, so fetch if no genre data cached
-      const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
-      if(r.ok){
-        const d=await r.json();
-        const artist=d?.artist;
-        if(artist){
-          // Tags/genres
-          const tags=(artist.tags?.tag||[]).map(t=>t.name.toLowerCase()).slice(0,8);
-          if(tags.length)profile.genres=tags;
-          // Image — populate the shared image cache so getArtistImage() never re-fetches
-          const imgs=artist.image||[];
-          const img=imgs.find(i=>i.size==='extralarge')||imgs.find(i=>i.size==='large')||imgs[imgs.length-1];
-          const imgUrl=img?.['#text']||'';
-          if(imgUrl&&!imgUrl.includes('2a96cbd8b46e442fc41c2b86b821562f')){
-            profile.imageUrl=imgUrl;
-            _imgCache.set(lfk,imgUrl);
-          }else{
-            _imgCache.set(lfk,'');
-          }
-        }else{_imgCache.set(lfk,'')}
-      }else{_imgCache.set(lfk,'')}
-    }catch(e){_imgCache.set(lfk,'')}
+    let imageUrl='';
+    if(_imgIndex){
+      const slug=_imgIndex[norm(name)];
+      if(slug){imageUrl='/img/artists/'+slug+'.webp';_imgCache.set(lfk,imageUrl)}
+    }
+
+    const profile={name,uuid:null,bcn:0,global:0,genres,imageUrl,raShows:raShows.length,raAvgAtt:avgAtt};
 
     profiles.push(profile);
     if(artistCb)artistCb(profile);
   }
-  if(statusCb)statusCb('Building DNA from '+profiles.length+' artists (Last.fm genres)…');
+  if(statusCb)statusCb('Building DNA from '+profiles.length+' artists (RA event genres)…');
 
   // ═══ NEW: Compute billing position + title matches from event data ═══
   // Billing: position 1-2 in artist array = headliner, 3+ = support
@@ -2880,7 +2866,7 @@ function setupAutocomplete(inputEl,onSelect,searchFn){
       try{
         const res=await _search(q,8);
         const seen=new Set(),deduped=[];
-        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\s/.test(r.name))continue;seen.add(n);deduped.push(r)}
+        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\.?\s|\sand\s|\sfeat\.?\s|\sft\.?\s|\sb2b\s/i.test(r.name))continue;if(/\(|BBC|Radio\s?\d|Live\sSet|DJ\sSet|Mix\b/i.test(r.name))continue;seen.add(n);deduped.push(r)}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Render immediately with placeholder, then load images async
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
@@ -2937,7 +2923,7 @@ function setupTextareaAC(ta){
         if(!res.length){dd.classList.remove('open');dd.innerHTML='';return}
         // Deduplicate by normalized name — keep first (highest ranked) result per name
         const seen=new Set(),deduped=[];
-        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\s/.test(r.name))continue;seen.add(n);deduped.push(r)}
+        for(const r of res){const n=norm(r.name);if(seen.has(n))continue;if(/\s[&\/]\s|\svs\.?\s|\sand\s|\sfeat\.?\s|\sft\.?\s|\sb2b\s/i.test(r.name))continue;if(/\(|BBC|Radio\s?\d|Live\sSet|DJ\sSet|Mix\b/i.test(r.name))continue;seen.add(n);deduped.push(r)}
         if(!deduped.length){dd.classList.remove('open');dd.innerHTML='';return}
         dd.innerHTML=deduped.map((r,i)=>`<div class="ac-item" data-idx="${i}">
           <div class="ac-img-wrap" data-name="${esc(r.name)}" data-idx="${i}" style="width:32px;height:32px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:0.75rem;color:var(--text-faint)">${r.name.charAt(0).toUpperCase()}</div>
