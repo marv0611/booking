@@ -1,0 +1,2733 @@
+{
+  "generated": "2026-04-05T12:26:30.333234",
+  "range": [
+    "2025-04-05",
+    "2026-04-05"
+  ],
+  "cities": {
+    "copenhagen": {
+      "city": "Copenhagen",
+      "country": "Denmark",
+      "events_12m": 1685,
+      "events_fetched": 1685,
+      "unique_artists": 1660,
+      "avg_events_per_night": 6.7,
+      "venues_active": 165,
+      "venues_12plus": 22,
+      "venues_20plus": 17,
+      "venues_50plus": 9,
+      "promoters_active": 187,
+      "promoters_12plus": 14,
+      "promoters_20plus": 8,
+      "promoters_50plus": 4,
+      "overlap_12plus": 7,
+      "customers_12plus": 29,
+      "customers_20plus": 18,
+      "top_venues": [
+        {
+          "name": "MODULE",
+          "events": 160
+        },
+        {
+          "name": "Den Anden Side",
+          "events": 150
+        },
+        {
+          "name": "Jolene",
+          "events": 149
+        },
+        {
+          "name": "Baggen",
+          "events": 143
+        },
+        {
+          "name": "Culture Box",
+          "events": 112
+        },
+        {
+          "name": "Sigurd CPH",
+          "events": 108
+        },
+        {
+          "name": "Hangaren",
+          "events": 105
+        },
+        {
+          "name": "H15 Scene & Studio",
+          "events": 71
+        },
+        {
+          "name": "RUST Natklub",
+          "events": 57
+        },
+        {
+          "name": "ALICE",
+          "events": 39
+        },
+        {
+          "name": "Pumpehuset",
+          "events": 32
+        },
+        {
+          "name": "RUST",
+          "events": 28
+        },
+        {
+          "name": "Byhaven",
+          "events": 28
+        },
+        {
+          "name": "Arch",
+          "events": 26
+        },
+        {
+          "name": "VEGA",
+          "events": 25
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Den Anden Side",
+          "events": 155
+        },
+        {
+          "name": "Culture Box",
+          "events": 111
+        },
+        {
+          "name": "SIGURD CPH",
+          "events": 105
+        },
+        {
+          "name": "Hangaren",
+          "events": 96
+        },
+        {
+          "name": "MODULECPH",
+          "events": 48
+        },
+        {
+          "name": "ERRORCPH",
+          "events": 30
+        },
+        {
+          "name": "Kiny\u014dbi",
+          "events": 22
+        },
+        {
+          "name": "Jolene Bar",
+          "events": 21
+        },
+        {
+          "name": "ESCAPISM",
+          "events": 19
+        },
+        {
+          "name": "Brian Williamson",
+          "events": 13
+        },
+        {
+          "name": "Klub Werkstatt",
+          "events": 13
+        },
+        {
+          "name": "GravityCPH",
+          "events": 13
+        },
+        {
+          "name": "RUST",
+          "events": 13
+        },
+        {
+          "name": "Ludvig Poll",
+          "events": 12
+        },
+        {
+          "name": "Maria Barfod",
+          "events": 11
+        }
+      ]
+    },
+    "brussels": {
+      "city": "Brussels",
+      "country": "Belgium",
+      "events_12m": 1635,
+      "events_fetched": 1635,
+      "unique_artists": 2090,
+      "avg_events_per_night": 6.2,
+      "venues_active": 227,
+      "venues_12plus": 30,
+      "venues_20plus": 22,
+      "venues_50plus": 9,
+      "promoters_active": 330,
+      "promoters_12plus": 16,
+      "promoters_20plus": 11,
+      "promoters_50plus": 4,
+      "overlap_12plus": 6,
+      "customers_12plus": 40,
+      "customers_20plus": 27,
+      "top_venues": [
+        {
+          "name": "Fuse",
+          "events": 89
+        },
+        {
+          "name": "C12",
+          "events": 86
+        },
+        {
+          "name": "Cafe Central",
+          "events": 68
+        },
+        {
+          "name": "Illegaal",
+          "events": 67
+        },
+        {
+          "name": "UMI",
+          "events": 66
+        },
+        {
+          "name": "Botanique",
+          "events": 63
+        },
+        {
+          "name": "Society",
+          "events": 55
+        },
+        {
+          "name": "Jungle Bar",
+          "events": 54
+        },
+        {
+          "name": "Bozar",
+          "events": 52
+        },
+        {
+          "name": "La Fabriek",
+          "events": 49
+        },
+        {
+          "name": "Les Ateliers Claus",
+          "events": 40
+        },
+        {
+          "name": "Lavall\u00e9e",
+          "events": 40
+        },
+        {
+          "name": "La Cabane",
+          "events": 36
+        },
+        {
+          "name": "AB Club (Ancienne Belgique)",
+          "events": 36
+        },
+        {
+          "name": "Barrio Cafe",
+          "events": 34
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Fuse Brussels",
+          "events": 86
+        },
+        {
+          "name": "C-12",
+          "events": 71
+        },
+        {
+          "name": "Le Botanique",
+          "events": 62
+        },
+        {
+          "name": "SOCIETY",
+          "events": 52
+        },
+        {
+          "name": "UMI",
+          "events": 44
+        },
+        {
+          "name": "La Cabane",
+          "events": 36
+        },
+        {
+          "name": "Listen Festival",
+          "events": 31
+        },
+        {
+          "name": "Jalousy",
+          "events": 23
+        },
+        {
+          "name": "blur.brussels",
+          "events": 22
+        },
+        {
+          "name": "Bozar",
+          "events": 21
+        },
+        {
+          "name": "Play Label",
+          "events": 21
+        },
+        {
+          "name": "Kolossal Events ",
+          "events": 18
+        },
+        {
+          "name": "HORST Arts & Music",
+          "events": 14
+        },
+        {
+          "name": "Abrupt",
+          "events": 14
+        },
+        {
+          "name": "La fabriek",
+          "events": 13
+        }
+      ]
+    },
+    "bristol": {
+      "city": "Bristol",
+      "country": "United Kingdom",
+      "events_12m": 1859,
+      "events_fetched": 1859,
+      "unique_artists": 1649,
+      "avg_events_per_night": 6.5,
+      "venues_active": 123,
+      "venues_12plus": 33,
+      "venues_20plus": 26,
+      "venues_50plus": 11,
+      "promoters_active": 342,
+      "promoters_12plus": 14,
+      "promoters_20plus": 7,
+      "promoters_50plus": 3,
+      "overlap_12plus": 2,
+      "customers_12plus": 45,
+      "customers_20plus": 31,
+      "top_venues": [
+        {
+          "name": "The Love Inn",
+          "events": 196
+        },
+        {
+          "name": "Lakota",
+          "events": 148
+        },
+        {
+          "name": "The Clock Factory",
+          "events": 116
+        },
+        {
+          "name": "Strange Brew",
+          "events": 112
+        },
+        {
+          "name": "The Crown",
+          "events": 104
+        },
+        {
+          "name": "The Jam Jar",
+          "events": 75
+        },
+        {
+          "name": "The Croft",
+          "events": 70
+        },
+        {
+          "name": "Lost Horizon",
+          "events": 63
+        },
+        {
+          "name": "The Loco Klub",
+          "events": 62
+        },
+        {
+          "name": "Cosies",
+          "events": 62
+        },
+        {
+          "name": "The Brass Pig",
+          "events": 51
+        },
+        {
+          "name": "Exchange",
+          "events": 38
+        },
+        {
+          "name": "Basement 45",
+          "events": 36
+        },
+        {
+          "name": "Document",
+          "events": 32
+        },
+        {
+          "name": "The Full Moon Pub & Attic Bar",
+          "events": 31
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Lakota",
+          "events": 159
+        },
+        {
+          "name": "Clock Factory",
+          "events": 97
+        },
+        {
+          "name": "Triangle Tuesdays",
+          "events": 54
+        },
+        {
+          "name": "Utopia Bristol Events",
+          "events": 41
+        },
+        {
+          "name": "MotionBristol",
+          "events": 28
+        },
+        {
+          "name": "StrangeBrew",
+          "events": 26
+        },
+        {
+          "name": "In Document Ltd",
+          "events": 23
+        },
+        {
+          "name": "Off Record",
+          "events": 18
+        },
+        {
+          "name": "In:Motion",
+          "events": 15
+        },
+        {
+          "name": "The Underground Bristol",
+          "events": 14
+        },
+        {
+          "name": "Headset",
+          "events": 14
+        },
+        {
+          "name": "Undivide",
+          "events": 13
+        },
+        {
+          "name": "The Students' Union at UWE",
+          "events": 13
+        },
+        {
+          "name": "The Love Inn",
+          "events": 12
+        },
+        {
+          "name": "Terrain",
+          "events": 11
+        }
+      ]
+    },
+    "budapest": {
+      "city": "Budapest",
+      "country": "Hungary",
+      "events_12m": 1695,
+      "events_fetched": 1695,
+      "unique_artists": 1103,
+      "avg_events_per_night": 6.3,
+      "venues_active": 153,
+      "venues_12plus": 24,
+      "venues_20plus": 18,
+      "venues_50plus": 12,
+      "promoters_active": 226,
+      "promoters_12plus": 18,
+      "promoters_20plus": 11,
+      "promoters_50plus": 7,
+      "overlap_12plus": 6,
+      "customers_12plus": 36,
+      "customers_20plus": 23,
+      "top_venues": [
+        {
+          "name": "Pavilon",
+          "events": 153
+        },
+        {
+          "name": "Turbina",
+          "events": 128
+        },
+        {
+          "name": "Kassa Boat",
+          "events": 125
+        },
+        {
+          "name": "Toldi Klub",
+          "events": 117
+        },
+        {
+          "name": "Aether Club Budapest",
+          "events": 109
+        },
+        {
+          "name": "Arzenal",
+          "events": 87
+        },
+        {
+          "name": "Viadukt Bar",
+          "events": 84
+        },
+        {
+          "name": "A38",
+          "events": 78
+        },
+        {
+          "name": "TBA - DOJO Boutique Club, 1051 Budapest, Zr\u00ednyi utca 4/A",
+          "events": 70
+        },
+        {
+          "name": "Very Small Club",
+          "events": 65
+        },
+        {
+          "name": "Akv\u00e1rium Klub",
+          "events": 60
+        },
+        {
+          "name": "Atno",
+          "events": 50
+        },
+        {
+          "name": "Pontoon Budapest",
+          "events": 47
+        },
+        {
+          "name": "Palazzo Permanens",
+          "events": 32
+        },
+        {
+          "name": "TBA",
+          "events": 27
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Kassa",
+          "events": 118
+        },
+        {
+          "name": "AETHER Club",
+          "events": 109
+        },
+        {
+          "name": "Toldi Klub",
+          "events": 107
+        },
+        {
+          "name": "Viadukt Bar",
+          "events": 78
+        },
+        {
+          "name": "Oneticket",
+          "events": 73
+        },
+        {
+          "name": "Turbina",
+          "events": 64
+        },
+        {
+          "name": "Very Small Club",
+          "events": 50
+        },
+        {
+          "name": "Atno",
+          "events": 46
+        },
+        {
+          "name": "Arzen\u00e1l Club",
+          "events": 39
+        },
+        {
+          "name": "MAF",
+          "events": 28
+        },
+        {
+          "name": "Telep Budapest",
+          "events": 21
+        },
+        {
+          "name": "SPONTAN",
+          "events": 18
+        },
+        {
+          "name": "Cruisin",
+          "events": 18
+        },
+        {
+          "name": "Obuda.Bay",
+          "events": 16
+        },
+        {
+          "name": "Truesounds",
+          "events": 14
+        }
+      ]
+    },
+    "vienna": {
+      "city": "Vienna",
+      "country": "Austria",
+      "events_12m": 2136,
+      "events_fetched": 2136,
+      "unique_artists": 1583,
+      "avg_events_per_night": 7.0,
+      "venues_active": 186,
+      "venues_12plus": 33,
+      "venues_20plus": 25,
+      "venues_50plus": 12,
+      "promoters_active": 305,
+      "promoters_12plus": 9,
+      "promoters_20plus": 3,
+      "promoters_50plus": 0,
+      "overlap_12plus": 1,
+      "customers_12plus": 41,
+      "customers_20plus": 27,
+      "top_venues": [
+        {
+          "name": "SASS Music Club",
+          "events": 196
+        },
+        {
+          "name": "FLUCC",
+          "events": 171
+        },
+        {
+          "name": "Das Werk",
+          "events": 151
+        },
+        {
+          "name": "PRST",
+          "events": 112
+        },
+        {
+          "name": "Grelle Forelle",
+          "events": 107
+        },
+        {
+          "name": "Pratersauna",
+          "events": 88
+        },
+        {
+          "name": "Tagada",
+          "events": 79
+        },
+        {
+          "name": "The Loft",
+          "events": 75
+        },
+        {
+          "name": "Celeste",
+          "events": 66
+        },
+        {
+          "name": "Porto Pollo",
+          "events": 63
+        },
+        {
+          "name": "Kramladen",
+          "events": 61
+        },
+        {
+          "name": "Rhiz",
+          "events": 50
+        },
+        {
+          "name": "Club Lucia",
+          "events": 46
+        },
+        {
+          "name": "Das Lot",
+          "events": 41
+        },
+        {
+          "name": "Flex",
+          "events": 36
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "christoph mangold",
+          "events": 30
+        },
+        {
+          "name": "Grelle Forelle",
+          "events": 26
+        },
+        {
+          "name": "Gesindel der Nacht",
+          "events": 22
+        },
+        {
+          "name": "PRATERNOSTRA",
+          "events": 19
+        },
+        {
+          "name": "merk.wuerdig",
+          "events": 17
+        },
+        {
+          "name": "HERZFREQUENZ TECHNO",
+          "events": 16
+        },
+        {
+          "name": "Mathias Schubert",
+          "events": 16
+        },
+        {
+          "name": "das techno cafe",
+          "events": 15
+        },
+        {
+          "name": "RaveOnSociety",
+          "events": 12
+        },
+        {
+          "name": "Amore AG",
+          "events": 11
+        },
+        {
+          "name": "Tickets",
+          "events": 11
+        },
+        {
+          "name": "norg3N",
+          "events": 11
+        },
+        {
+          "name": "Du Tanzt Mich Mal",
+          "events": 10
+        },
+        {
+          "name": "HYPERTRASH",
+          "events": 10
+        },
+        {
+          "name": "Groove Revival",
+          "events": 10
+        }
+      ]
+    },
+    "prague": {
+      "city": "Prague",
+      "country": "Czech Republic",
+      "events_12m": 2812,
+      "events_fetched": 2812,
+      "unique_artists": 1516,
+      "avg_events_per_night": 7.7,
+      "venues_active": 223,
+      "venues_12plus": 30,
+      "venues_20plus": 23,
+      "venues_50plus": 17,
+      "promoters_active": 272,
+      "promoters_12plus": 18,
+      "promoters_20plus": 12,
+      "promoters_50plus": 8,
+      "overlap_12plus": 7,
+      "customers_12plus": 41,
+      "customers_20plus": 28,
+      "top_venues": [
+        {
+          "name": "Cross Club",
+          "events": 393
+        },
+        {
+          "name": "Tendance",
+          "events": 214
+        },
+        {
+          "name": "Groove Bar",
+          "events": 193
+        },
+        {
+          "name": "Fuchs2",
+          "events": 126
+        },
+        {
+          "name": "Bar v Krymsk\u00fd",
+          "events": 125
+        },
+        {
+          "name": "Twist Bar",
+          "events": 115
+        },
+        {
+          "name": "Bike Jesus",
+          "events": 109
+        },
+        {
+          "name": "Bukanyr Boat",
+          "events": 108
+        },
+        {
+          "name": "Roxy",
+          "events": 107
+        },
+        {
+          "name": "Ankali & Planeta Za",
+          "events": 106
+        },
+        {
+          "name": "Rev\u00edr Karl\u00edn",
+          "events": 97
+        },
+        {
+          "name": "Kolektor",
+          "events": 94
+        },
+        {
+          "name": "2. Patro",
+          "events": 75
+        },
+        {
+          "name": "Altenburg 1964",
+          "events": 66
+        },
+        {
+          "name": "Chapeau Rouge",
+          "events": 63
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Fuchs2",
+          "events": 118
+        },
+        {
+          "name": "Crossclub",
+          "events": 115
+        },
+        {
+          "name": "Bukanyr Boat",
+          "events": 108
+        },
+        {
+          "name": "ROXY Prague",
+          "events": 99
+        },
+        {
+          "name": "Rev\u00edr Karl\u00edn",
+          "events": 94
+        },
+        {
+          "name": "Ankali",
+          "events": 72
+        },
+        {
+          "name": "Klubovna 2.patro",
+          "events": 64
+        },
+        {
+          "name": "Altenburg 1964",
+          "events": 54
+        },
+        {
+          "name": "EPIC Prague",
+          "events": 37
+        },
+        {
+          "name": "Bike Jesus",
+          "events": 36
+        },
+        {
+          "name": "Twist Bar",
+          "events": 30
+        },
+        {
+          "name": "Mama Shelter Prague",
+          "events": 26
+        },
+        {
+          "name": "Part Time Locals",
+          "events": 19
+        },
+        {
+          "name": "Compact Disco",
+          "events": 18
+        },
+        {
+          "name": "Pulse 22",
+          "events": 16
+        }
+      ]
+    },
+    "lyon": {
+      "city": "Lyon",
+      "country": "France",
+      "events_12m": 782,
+      "events_fetched": 782,
+      "unique_artists": 800,
+      "avg_events_per_night": 2.8,
+      "venues_active": 92,
+      "venues_12plus": 9,
+      "venues_20plus": 6,
+      "venues_50plus": 3,
+      "promoters_active": 95,
+      "promoters_12plus": 5,
+      "promoters_20plus": 5,
+      "promoters_50plus": 3,
+      "overlap_12plus": 1,
+      "customers_12plus": 13,
+      "customers_20plus": 10,
+      "top_venues": [
+        {
+          "name": "Super5",
+          "events": 205
+        },
+        {
+          "name": "Le Sucre",
+          "events": 186
+        },
+        {
+          "name": "To\u00ef To\u00ef, Le Zinc",
+          "events": 88
+        },
+        {
+          "name": "P\u00e9niche Loupika",
+          "events": 25
+        },
+        {
+          "name": "Le Petit Salon",
+          "events": 23
+        },
+        {
+          "name": "Le Transbordeur",
+          "events": 22
+        },
+        {
+          "name": "CCO La Rayonne",
+          "events": 17
+        },
+        {
+          "name": "Caf\u00e9 Galerie",
+          "events": 12
+        },
+        {
+          "name": "Halle Tony Garnier",
+          "events": 12
+        },
+        {
+          "name": "Rock\u2019N\u2019Eat",
+          "events": 11
+        },
+        {
+          "name": "La Commune",
+          "events": 10
+        },
+        {
+          "name": "TBA",
+          "events": 9
+        },
+        {
+          "name": "TBA - SECRET PLACE",
+          "events": 8
+        },
+        {
+          "name": "Groom",
+          "events": 8
+        },
+        {
+          "name": "Boat - Le Sonic",
+          "events": 7
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "aurelien jacob",
+          "events": 207
+        },
+        {
+          "name": "Le Sucre",
+          "events": 184
+        },
+        {
+          "name": "To\u00ef To\u00ef le Zinc",
+          "events": 88
+        },
+        {
+          "name": "2359",
+          "events": 23
+        },
+        {
+          "name": "Encore Production",
+          "events": 22
+        },
+        {
+          "name": "HIDDEN GARDEN MUSIC",
+          "events": 11
+        },
+        {
+          "name": "Everybody Trance",
+          "events": 11
+        },
+        {
+          "name": "DISCO PATIO",
+          "events": 8
+        },
+        {
+          "name": "Nuits Sonores",
+          "events": 8
+        },
+        {
+          "name": "ORIGINS TECHNO",
+          "events": 7
+        },
+        {
+          "name": "ORACLE",
+          "events": 7
+        },
+        {
+          "name": "Meilleurs Medium Voyant Marabout de l'Afrique",
+          "events": 7
+        },
+        {
+          "name": "PNP",
+          "events": 6
+        },
+        {
+          "name": "Happiness Therapy",
+          "events": 5
+        },
+        {
+          "name": "OFF EVENT",
+          "events": 5
+        }
+      ]
+    },
+    "tbilisi": {
+      "city": "Tbilisi",
+      "country": "Georgia",
+      "events_12m": 1515,
+      "events_fetched": 1515,
+      "unique_artists": 1030,
+      "avg_events_per_night": 6.1,
+      "venues_active": 118,
+      "venues_12plus": 19,
+      "venues_20plus": 16,
+      "venues_50plus": 10,
+      "promoters_active": 85,
+      "promoters_12plus": 9,
+      "promoters_20plus": 7,
+      "promoters_50plus": 5,
+      "overlap_12plus": 4,
+      "customers_12plus": 24,
+      "customers_20plus": 19,
+      "top_venues": [
+        {
+          "name": "TES",
+          "events": 191
+        },
+        {
+          "name": "Dedaena Bar",
+          "events": 129
+        },
+        {
+          "name": "Left Bank",
+          "events": 112
+        },
+        {
+          "name": "Makerspace",
+          "events": 111
+        },
+        {
+          "name": "Bassiani",
+          "events": 104
+        },
+        {
+          "name": "KHIDI",
+          "events": 101
+        },
+        {
+          "name": "Mtkvarze",
+          "events": 92
+        },
+        {
+          "name": "PLUS ONE",
+          "events": 75
+        },
+        {
+          "name": "Love Bar",
+          "events": 60
+        },
+        {
+          "name": "Sama",
+          "events": 50
+        },
+        {
+          "name": "Kick",
+          "events": 49
+        },
+        {
+          "name": "Bude",
+          "events": 48
+        },
+        {
+          "name": "Kibe",
+          "events": 46
+        },
+        {
+          "name": "Reflector",
+          "events": 44
+        },
+        {
+          "name": "Noble Savage",
+          "events": 29
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "RATI_RA",
+          "events": 445
+        },
+        {
+          "name": "leftbank_tbs",
+          "events": 108
+        },
+        {
+          "name": "KHIDI",
+          "events": 100
+        },
+        {
+          "name": "Bassiani",
+          "events": 97
+        },
+        {
+          "name": "Mtkvarze",
+          "events": 86
+        },
+        {
+          "name": "KIBE",
+          "events": 47
+        },
+        {
+          "name": "Dila",
+          "events": 33
+        },
+        {
+          "name": "Giorgi Kuvshinov",
+          "events": 17
+        },
+        {
+          "name": "Straus Entertainment",
+          "events": 12
+        },
+        {
+          "name": "HELHEIM",
+          "events": 9
+        },
+        {
+          "name": "Pluto\u2019s Records",
+          "events": 8
+        },
+        {
+          "name": "Phloxy",
+          "events": 7
+        },
+        {
+          "name": "GEORGE ESVANJIA",
+          "events": 7
+        },
+        {
+          "name": "Molen",
+          "events": 6
+        },
+        {
+          "name": "IG: Eau De Cologne",
+          "events": 5
+        }
+      ]
+    },
+    "stuttgart": {
+      "city": "Stuttgart",
+      "country": "Germany",
+      "events_12m": 929,
+      "events_fetched": 929,
+      "unique_artists": 779,
+      "avg_events_per_night": 3.4,
+      "venues_active": 56,
+      "venues_12plus": 9,
+      "venues_20plus": 7,
+      "venues_50plus": 5,
+      "promoters_active": 103,
+      "promoters_12plus": 8,
+      "promoters_20plus": 5,
+      "promoters_50plus": 2,
+      "overlap_12plus": 2,
+      "customers_12plus": 15,
+      "customers_20plus": 10,
+      "top_venues": [
+        {
+          "name": "Romantica",
+          "events": 289
+        },
+        {
+          "name": "Climax-Institutes",
+          "events": 177
+        },
+        {
+          "name": "Lehmann Club",
+          "events": 106
+        },
+        {
+          "name": "Fridas Pier",
+          "events": 97
+        },
+        {
+          "name": "Proton the Club",
+          "events": 70
+        },
+        {
+          "name": "Kowalski",
+          "events": 28
+        },
+        {
+          "name": "Kulturbetrieb Zappa",
+          "events": 21
+        },
+        {
+          "name": "White Noise",
+          "events": 17
+        },
+        {
+          "name": "Lerche22",
+          "events": 13
+        },
+        {
+          "name": "Romy S.",
+          "events": 9
+        },
+        {
+          "name": "TBA",
+          "events": 9
+        },
+        {
+          "name": "Kulturinsel",
+          "events": 8
+        },
+        {
+          "name": "Sunny High",
+          "events": 7
+        },
+        {
+          "name": "Im Wizemann",
+          "events": 6
+        },
+        {
+          "name": "Wagenhallen",
+          "events": 5
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "LEHMANN CLUB STUTTGART",
+          "events": 89
+        },
+        {
+          "name": "Climax Institutes",
+          "events": 87
+        },
+        {
+          "name": "Proton The Club",
+          "events": 37
+        },
+        {
+          "name": "Narkose Music",
+          "events": 21
+        },
+        {
+          "name": "Tim Finest",
+          "events": 20
+        },
+        {
+          "name": "Kowalski",
+          "events": 19
+        },
+        {
+          "name": "Benztown Artists",
+          "events": 18
+        },
+        {
+          "name": "Alexander Maier",
+          "events": 12
+        },
+        {
+          "name": "Uwe Lexe ",
+          "events": 11
+        },
+        {
+          "name": "Haus4Elektro",
+          "events": 11
+        },
+        {
+          "name": "Adono",
+          "events": 11
+        },
+        {
+          "name": "Jochen Junker",
+          "events": 11
+        },
+        {
+          "name": "Discotronic Crew",
+          "events": 11
+        },
+        {
+          "name": "Marlon",
+          "events": 9
+        },
+        {
+          "name": "Lerche 22 GmbH",
+          "events": 9
+        }
+      ]
+    },
+    "sofia": {
+      "city": "Sofia",
+      "country": "Bulgaria",
+      "events_12m": 935,
+      "events_fetched": 935,
+      "unique_artists": 549,
+      "avg_events_per_night": 3.7,
+      "venues_active": 130,
+      "venues_12plus": 15,
+      "venues_20plus": 9,
+      "venues_50plus": 4,
+      "promoters_active": 115,
+      "promoters_12plus": 10,
+      "promoters_20plus": 6,
+      "promoters_50plus": 2,
+      "overlap_12plus": 2,
+      "customers_12plus": 23,
+      "customers_20plus": 13,
+      "top_venues": [
+        {
+          "name": "Tell Me",
+          "events": 209
+        },
+        {
+          "name": "Taba Record Store",
+          "events": 115
+        },
+        {
+          "name": "\u041a\u0443\u043f\u0435 / Kupe",
+          "events": 90
+        },
+        {
+          "name": "Mesmeric Sofia",
+          "events": 52
+        },
+        {
+          "name": "DOM",
+          "events": 48
+        },
+        {
+          "name": "Club Pave",
+          "events": 38
+        },
+        {
+          "name": "Asylum",
+          "events": 34
+        },
+        {
+          "name": "Clwd",
+          "events": 28
+        },
+        {
+          "name": "Yalta Club",
+          "events": 25
+        },
+        {
+          "name": "Nutone Sofia",
+          "events": 19
+        },
+        {
+          "name": "Bunker Club",
+          "events": 18
+        },
+        {
+          "name": "Zoki Warehouse",
+          "events": 15
+        },
+        {
+          "name": "Factory",
+          "events": 12
+        },
+        {
+          "name": "Toplocentrala",
+          "events": 12
+        },
+        {
+          "name": "TBA",
+          "events": 12
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "TABA record store",
+          "events": 124
+        },
+        {
+          "name": "EXE Club",
+          "events": 51
+        },
+        {
+          "name": "Club DOM",
+          "events": 37
+        },
+        {
+          "name": "KUPE / \u041a\u0423\u041f\u0415",
+          "events": 37
+        },
+        {
+          "name": "Club Pave",
+          "events": 35
+        },
+        {
+          "name": "Kink Corp",
+          "events": 34
+        },
+        {
+          "name": "ROBOLOCO",
+          "events": 19
+        },
+        {
+          "name": "SOLAR festivals",
+          "events": 18
+        },
+        {
+          "name": "Urban Gatherings",
+          "events": 13
+        },
+        {
+          "name": "Sweet Boys Club",
+          "events": 13
+        },
+        {
+          "name": "BLVKCAT",
+          "events": 11
+        },
+        {
+          "name": "Rave Cage Events",
+          "events": 10
+        },
+        {
+          "name": "FACTORY PROMOTIONS",
+          "events": 10
+        },
+        {
+          "name": "SIMETRIA",
+          "events": 10
+        },
+        {
+          "name": "WAUU",
+          "events": 10
+        }
+      ]
+    },
+    "warsaw": {
+      "city": "Warsaw",
+      "country": "Poland",
+      "events_12m": 1880,
+      "events_fetched": 1880,
+      "unique_artists": 1373,
+      "avg_events_per_night": 8.0,
+      "venues_active": 159,
+      "venues_12plus": 34,
+      "venues_20plus": 30,
+      "venues_50plus": 10,
+      "promoters_active": 209,
+      "promoters_12plus": 7,
+      "promoters_20plus": 7,
+      "promoters_50plus": 5,
+      "overlap_12plus": 2,
+      "customers_12plus": 39,
+      "customers_20plus": 35,
+      "top_venues": [
+        {
+          "name": "MASTAK Records",
+          "events": 154
+        },
+        {
+          "name": "Smolna",
+          "events": 135
+        },
+        {
+          "name": "Jasna 1",
+          "events": 122
+        },
+        {
+          "name": "K-Bar Powi\u015ble",
+          "events": 89
+        },
+        {
+          "name": "Luzztro",
+          "events": 83
+        },
+        {
+          "name": "MONKEY LOVE",
+          "events": 69
+        },
+        {
+          "name": "OCZKI",
+          "events": 61
+        },
+        {
+          "name": "B-SIDE",
+          "events": 57
+        },
+        {
+          "name": "Chmury",
+          "events": 55
+        },
+        {
+          "name": "BarKa",
+          "events": 50
+        },
+        {
+          "name": "Klub SPATiF",
+          "events": 46
+        },
+        {
+          "name": "Moon Warsaw",
+          "events": 43
+        },
+        {
+          "name": "Kawasaki - cocktail bar & club",
+          "events": 43
+        },
+        {
+          "name": "barStudio",
+          "events": 42
+        },
+        {
+          "name": "underiolo",
+          "events": 37
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Smolna 38",
+          "events": 135
+        },
+        {
+          "name": "Mastak",
+          "events": 122
+        },
+        {
+          "name": "Jasna Jeden",
+          "events": 118
+        },
+        {
+          "name": "faron",
+          "events": 74
+        },
+        {
+          "name": "B-SIDE",
+          "events": 54
+        },
+        {
+          "name": "MOON WARSAW",
+          "events": 43
+        },
+        {
+          "name": "Rave Alarm",
+          "events": 39
+        },
+        {
+          "name": "Svmerki",
+          "events": 11
+        },
+        {
+          "name": "ARK",
+          "events": 11
+        },
+        {
+          "name": "Miazmat",
+          "events": 10
+        },
+        {
+          "name": "Unsound",
+          "events": 10
+        },
+        {
+          "name": "Ephemera",
+          "events": 10
+        },
+        {
+          "name": "Mugshot Gang",
+          "events": 9
+        },
+        {
+          "name": "derschein label",
+          "events": 9
+        },
+        {
+          "name": "GIORNO",
+          "events": 8
+        }
+      ]
+    },
+    "liverpool": {
+      "city": "Liverpool",
+      "country": "United Kingdom",
+      "events_12m": 986,
+      "events_fetched": 986,
+      "unique_artists": 761,
+      "avg_events_per_night": 5.0,
+      "venues_active": 108,
+      "venues_12plus": 21,
+      "venues_20plus": 12,
+      "venues_50plus": 4,
+      "promoters_active": 197,
+      "promoters_12plus": 4,
+      "promoters_20plus": 3,
+      "promoters_50plus": 0,
+      "overlap_12plus": 2,
+      "customers_12plus": 23,
+      "customers_20plus": 13,
+      "top_venues": [
+        {
+          "name": "Kazimier Garden",
+          "events": 106
+        },
+        {
+          "name": "24 Kitchen Street",
+          "events": 84
+        },
+        {
+          "name": "Suono",
+          "events": 64
+        },
+        {
+          "name": "WaV",
+          "events": 50
+        },
+        {
+          "name": "Meraki",
+          "events": 48
+        },
+        {
+          "name": "Commune",
+          "events": 47
+        },
+        {
+          "name": "Arts Club",
+          "events": 45
+        },
+        {
+          "name": "Simone's",
+          "events": 39
+        },
+        {
+          "name": "Invisible Wind Factory",
+          "events": 38
+        },
+        {
+          "name": "Kapsule",
+          "events": 36
+        },
+        {
+          "name": "Future Yard",
+          "events": 31
+        },
+        {
+          "name": "Blackstone Street Warehouse",
+          "events": 22
+        },
+        {
+          "name": "District",
+          "events": 18
+        },
+        {
+          "name": "The Dome",
+          "events": 18
+        },
+        {
+          "name": "The Bakery",
+          "events": 17
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "24 Kitchen Street",
+          "events": 29
+        },
+        {
+          "name": "Conduit Sound",
+          "events": 21
+        },
+        {
+          "name": "Circus",
+          "events": 20
+        },
+        {
+          "name": "Invisible Wind Factory",
+          "events": 14
+        },
+        {
+          "name": "Earth at the Bakery",
+          "events": 11
+        },
+        {
+          "name": "AlineaEvents",
+          "events": 9
+        },
+        {
+          "name": "Lazy Wax",
+          "events": 8
+        },
+        {
+          "name": "Meraki Liverpool",
+          "events": 7
+        },
+        {
+          "name": "Alfredo Levo",
+          "events": 7
+        },
+        {
+          "name": "Future Yard",
+          "events": 7
+        },
+        {
+          "name": "QueenswaY",
+          "events": 7
+        },
+        {
+          "name": "Thomas Anderson",
+          "events": 6
+        },
+        {
+          "name": "Kazimier Bookings",
+          "events": 6
+        },
+        {
+          "name": "Soulfultiz",
+          "events": 6
+        },
+        {
+          "name": "Dance for Plants",
+          "events": 6
+        }
+      ]
+    },
+    "stockholm": {
+      "city": "Stockholm",
+      "country": "Sweden",
+      "events_12m": 643,
+      "events_fetched": 643,
+      "unique_artists": 695,
+      "avg_events_per_night": 3.5,
+      "venues_active": 97,
+      "venues_12plus": 11,
+      "venues_20plus": 6,
+      "venues_50plus": 3,
+      "promoters_active": 126,
+      "promoters_12plus": 8,
+      "promoters_20plus": 2,
+      "promoters_50plus": 2,
+      "overlap_12plus": 2,
+      "customers_12plus": 17,
+      "customers_20plus": 6,
+      "top_venues": [
+        {
+          "name": "Timebar",
+          "events": 107
+        },
+        {
+          "name": "Slakthuset",
+          "events": 65
+        },
+        {
+          "name": "Under Bron",
+          "events": 61
+        },
+        {
+          "name": "Tr\u00e4dg\u00e5rden",
+          "events": 39
+        },
+        {
+          "name": "TBA - Stockholm",
+          "events": 37
+        },
+        {
+          "name": "Slaktkyrkan",
+          "events": 21
+        },
+        {
+          "name": "Hosoi",
+          "events": 18
+        },
+        {
+          "name": "Kollektivet Livet Bar & Scen",
+          "events": 17
+        },
+        {
+          "name": "Gazebo",
+          "events": 17
+        },
+        {
+          "name": "Fotografiska",
+          "events": 16
+        },
+        {
+          "name": "NEU",
+          "events": 12
+        },
+        {
+          "name": "Hus 7",
+          "events": 11
+        },
+        {
+          "name": "F\u00e5llan",
+          "events": 10
+        },
+        {
+          "name": "Bar15",
+          "events": 10
+        },
+        {
+          "name": "TBA - Open Air",
+          "events": 10
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Under Bron",
+          "events": 93
+        },
+        {
+          "name": "GirlzWithGoodTaste",
+          "events": 83
+        },
+        {
+          "name": "Studio Sven",
+          "events": 18
+        },
+        {
+          "name": "Hosoi",
+          "events": 15
+        },
+        {
+          "name": "NATT\u00d6GA ",
+          "events": 14
+        },
+        {
+          "name": "AFIA",
+          "events": 14
+        },
+        {
+          "name": "TechnoStockholm",
+          "events": 13
+        },
+        {
+          "name": "Black Planet",
+          "events": 12
+        },
+        {
+          "name": "Bastun",
+          "events": 10
+        },
+        {
+          "name": "Amie Lindberg Kebbeh",
+          "events": 9
+        },
+        {
+          "name": "Fotografiska Stockholm",
+          "events": 8
+        },
+        {
+          "name": "NEU",
+          "events": 8
+        },
+        {
+          "name": "Soulmates Stockholm",
+          "events": 8
+        },
+        {
+          "name": "Resebyr\u00e5n",
+          "events": 7
+        },
+        {
+          "name": "Kollektivet Livet",
+          "events": 7
+        }
+      ]
+    },
+    "rotterdam": {
+      "city": "Rotterdam",
+      "country": "Netherlands",
+      "events_12m": 744,
+      "events_fetched": 744,
+      "unique_artists": 1017,
+      "avg_events_per_night": 4.3,
+      "venues_active": 105,
+      "venues_12plus": 11,
+      "venues_20plus": 9,
+      "venues_50plus": 5,
+      "promoters_active": 159,
+      "promoters_12plus": 6,
+      "promoters_20plus": 6,
+      "promoters_50plus": 3,
+      "overlap_12plus": 3,
+      "customers_12plus": 14,
+      "customers_20plus": 12,
+      "top_venues": [
+        {
+          "name": "Perron",
+          "events": 104
+        },
+        {
+          "name": "Toffler",
+          "events": 95
+        },
+        {
+          "name": "160k",
+          "events": 89
+        },
+        {
+          "name": "Time is the new space",
+          "events": 86
+        },
+        {
+          "name": "Mono",
+          "events": 65
+        },
+        {
+          "name": "export",
+          "events": 35
+        },
+        {
+          "name": "BIRD",
+          "events": 30
+        },
+        {
+          "name": "Koda",
+          "events": 26
+        },
+        {
+          "name": "Worm",
+          "events": 23
+        },
+        {
+          "name": "Maassilo",
+          "events": 17
+        },
+        {
+          "name": "Cult=us",
+          "events": 12
+        },
+        {
+          "name": "Now&Wow",
+          "events": 11
+        },
+        {
+          "name": "Reverse Rotterdam",
+          "events": 11
+        },
+        {
+          "name": "Rotterdam Centre",
+          "events": 6
+        },
+        {
+          "name": "Club Centraal",
+          "events": 5
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Cultuurpodium Perron",
+          "events": 102
+        },
+        {
+          "name": "TOFFLER",
+          "events": 83
+        },
+        {
+          "name": "Time is the new space",
+          "events": 52
+        },
+        {
+          "name": "MONO Rotterdam",
+          "events": 43
+        },
+        {
+          "name": "Export",
+          "events": 31
+        },
+        {
+          "name": "FOCUS Luistersessies",
+          "events": 24
+        },
+        {
+          "name": "Festival Downtown",
+          "events": 11
+        },
+        {
+          "name": "160K",
+          "events": 8
+        },
+        {
+          "name": "The Project Group",
+          "events": 6
+        },
+        {
+          "name": "DP&A events",
+          "events": 6
+        },
+        {
+          "name": "BIRD Rotterdam",
+          "events": 6
+        },
+        {
+          "name": "Vrijmiboot",
+          "events": 5
+        },
+        {
+          "name": "POING CLUB",
+          "events": 5
+        },
+        {
+          "name": "Frederik Teixeira",
+          "events": 4
+        },
+        {
+          "name": "Tonyz Collective",
+          "events": 4
+        }
+      ]
+    },
+    "porto": {
+      "city": "Porto",
+      "country": "Portugal",
+      "events_12m": 611,
+      "events_fetched": 611,
+      "unique_artists": 521,
+      "avg_events_per_night": 2.6,
+      "venues_active": 84,
+      "venues_12plus": 8,
+      "venues_20plus": 7,
+      "venues_50plus": 3,
+      "promoters_active": 74,
+      "promoters_12plus": 6,
+      "promoters_20plus": 5,
+      "promoters_50plus": 3,
+      "overlap_12plus": 3,
+      "customers_12plus": 11,
+      "customers_20plus": 9,
+      "top_venues": [
+        {
+          "name": "Plano B",
+          "events": 155
+        },
+        {
+          "name": "Gare Porto",
+          "events": 110
+        },
+        {
+          "name": "Era uma vez no Porto",
+          "events": 85
+        },
+        {
+          "name": "Lottus",
+          "events": 40
+        },
+        {
+          "name": "P\u00e9rola Negra Club",
+          "events": 33
+        },
+        {
+          "name": "Ferro Bar",
+          "events": 24
+        },
+        {
+          "name": "Passos Manuel",
+          "events": 22
+        },
+        {
+          "name": "Hard Club",
+          "events": 14
+        },
+        {
+          "name": "TBA - Honi Beach - P\u00f3voa de Varzim",
+          "events": 10
+        },
+        {
+          "name": "TBA - Catraio (Porto)",
+          "events": 9
+        },
+        {
+          "name": "TBA",
+          "events": 7
+        },
+        {
+          "name": "TBA - Real Companhia Velha",
+          "events": 5
+        },
+        {
+          "name": "Barragem da Queimadela",
+          "events": 4
+        },
+        {
+          "name": "TBA - Madame Travessa (Porto)",
+          "events": 4
+        },
+        {
+          "name": "Gate13",
+          "events": 3
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "PlanoB",
+          "events": 155
+        },
+        {
+          "name": "Gare Porto",
+          "events": 109
+        },
+        {
+          "name": "R4W",
+          "events": 53
+        },
+        {
+          "name": "Lottus",
+          "events": 40
+        },
+        {
+          "name": "P\u00e9rola Negra Club",
+          "events": 24
+        },
+        {
+          "name": "RDZ Agency",
+          "events": 17
+        },
+        {
+          "name": "Octopus Odyssey, Lda",
+          "events": 10
+        },
+        {
+          "name": "Counterpoint.pt",
+          "events": 8
+        },
+        {
+          "name": "Quarta Bass",
+          "events": 7
+        },
+        {
+          "name": "2ndMoment",
+          "events": 7
+        },
+        {
+          "name": "\u00d6l\u00f2",
+          "events": 6
+        },
+        {
+          "name": "Baile y Libertad",
+          "events": 5
+        },
+        {
+          "name": "SUB Music",
+          "events": 5
+        },
+        {
+          "name": "Flextone ",
+          "events": 5
+        },
+        {
+          "name": "Bloom",
+          "events": 5
+        }
+      ]
+    },
+    "geneva": {
+      "city": "Geneva",
+      "country": "Switzerland",
+      "events_12m": 683,
+      "events_fetched": 683,
+      "unique_artists": 584,
+      "avg_events_per_night": 3.9,
+      "venues_active": 73,
+      "venues_12plus": 8,
+      "venues_20plus": 6,
+      "venues_50plus": 5,
+      "promoters_active": 49,
+      "promoters_12plus": 6,
+      "promoters_20plus": 5,
+      "promoters_50plus": 3,
+      "overlap_12plus": 1,
+      "customers_12plus": 13,
+      "customers_20plus": 10,
+      "top_venues": [
+        {
+          "name": "La Gravi\u00e8re",
+          "events": 134
+        },
+        {
+          "name": "Chez Jean-Luc",
+          "events": 126
+        },
+        {
+          "name": "Zoo",
+          "events": 96
+        },
+        {
+          "name": "Audio Club",
+          "events": 94
+        },
+        {
+          "name": "Motel Campo",
+          "events": 54
+        },
+        {
+          "name": "Rooftop105",
+          "events": 22
+        },
+        {
+          "name": "Salle du Terreau",
+          "events": 17
+        },
+        {
+          "name": "TBA",
+          "events": 13
+        },
+        {
+          "name": "Grand Central \u2013 Warehouse",
+          "events": 11
+        },
+        {
+          "name": "L'abri",
+          "events": 10
+        },
+        {
+          "name": "L'industrie",
+          "events": 9
+        },
+        {
+          "name": "Pal\u00e9o Festival",
+          "events": 6
+        },
+        {
+          "name": "Groove",
+          "events": 4
+        },
+        {
+          "name": "La R\u00e9plique",
+          "events": 4
+        },
+        {
+          "name": "Les Caves des Vollandes",
+          "events": 3
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Audio Club",
+          "events": 93
+        },
+        {
+          "name": "Motel Campo (CH)",
+          "events": 64
+        },
+        {
+          "name": "L'Animalerie (Usine)",
+          "events": 61
+        },
+        {
+          "name": "Electron",
+          "events": 21
+        },
+        {
+          "name": "Di\u00e8ze",
+          "events": 21
+        },
+        {
+          "name": "iyffa",
+          "events": 14
+        },
+        {
+          "name": "360fever",
+          "events": 6
+        },
+        {
+          "name": "Dubquake",
+          "events": 5
+        },
+        {
+          "name": "La B\u00e2tie Festival de Gen\u00e8ve",
+          "events": 5
+        },
+        {
+          "name": "Proxima",
+          "events": 4
+        },
+        {
+          "name": "SONATE",
+          "events": 4
+        },
+        {
+          "name": "EQUINOX",
+          "events": 4
+        },
+        {
+          "name": "Dieze",
+          "events": 3
+        },
+        {
+          "name": "LE TEMPLE GENEVA",
+          "events": 3
+        },
+        {
+          "name": "RAW",
+          "events": 3
+        }
+      ]
+    },
+    "oslo": {
+      "city": "Oslo",
+      "country": "Norway",
+      "events_12m": 732,
+      "events_fetched": 732,
+      "unique_artists": 482,
+      "avg_events_per_night": 3.9,
+      "venues_active": 56,
+      "venues_12plus": 11,
+      "venues_20plus": 7,
+      "venues_50plus": 5,
+      "promoters_active": 73,
+      "promoters_12plus": 3,
+      "promoters_20plus": 3,
+      "promoters_50plus": 1,
+      "overlap_12plus": 2,
+      "customers_12plus": 12,
+      "customers_20plus": 8,
+      "top_venues": [
+        {
+          "name": "Jaeger",
+          "events": 130
+        },
+        {
+          "name": "Kafe H\u00e6rverk",
+          "events": 111
+        },
+        {
+          "name": "Geh\u00f8r",
+          "events": 108
+        },
+        {
+          "name": "Bl\u00e5",
+          "events": 105
+        },
+        {
+          "name": "The Villa",
+          "events": 67
+        },
+        {
+          "name": "Smelteverket",
+          "events": 34
+        },
+        {
+          "name": "Becco",
+          "events": 28
+        },
+        {
+          "name": "Trekanten",
+          "events": 15
+        },
+        {
+          "name": "Hausmania",
+          "events": 15
+        },
+        {
+          "name": "Storgata 26",
+          "events": 14
+        },
+        {
+          "name": "5 1/2 - Den Halve",
+          "events": 12
+        },
+        {
+          "name": "TBA - Oslo",
+          "events": 9
+        },
+        {
+          "name": "Ingensteds",
+          "events": 7
+        },
+        {
+          "name": "Ta\u00f0",
+          "events": 5
+        },
+        {
+          "name": "Boksen",
+          "events": 4
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Jaeger Oslo",
+          "events": 123
+        },
+        {
+          "name": "The Villa",
+          "events": 26
+        },
+        {
+          "name": "The Villa",
+          "events": 20
+        },
+        {
+          "name": "Esperanto",
+          "events": 8
+        },
+        {
+          "name": "Ale Casablanca",
+          "events": 7
+        },
+        {
+          "name": "Flux Collective",
+          "events": 7
+        },
+        {
+          "name": "Det Gode Selskab",
+          "events": 5
+        },
+        {
+          "name": "Fragments",
+          "events": 5
+        },
+        {
+          "name": "Smelt",
+          "events": 4
+        },
+        {
+          "name": "Moving Heads",
+          "events": 4
+        },
+        {
+          "name": "MNMT",
+          "events": 4
+        },
+        {
+          "name": "Lunaflicks",
+          "events": 4
+        },
+        {
+          "name": "Mike Pereez",
+          "events": 4
+        },
+        {
+          "name": "Ta\u00f0 Club",
+          "events": 4
+        },
+        {
+          "name": "D\u00f8rum AS",
+          "events": 4
+        }
+      ]
+    },
+    "basel": {
+      "city": "Basel",
+      "country": "Switzerland",
+      "events_12m": 338,
+      "skipped": true
+    },
+    "helsinki": {
+      "city": "Helsinki",
+      "country": "Finland",
+      "events_12m": 525,
+      "events_fetched": 525,
+      "unique_artists": 515,
+      "avg_events_per_night": 2.7,
+      "venues_active": 61,
+      "venues_12plus": 5,
+      "venues_20plus": 4,
+      "venues_50plus": 3,
+      "promoters_active": 57,
+      "promoters_12plus": 2,
+      "promoters_20plus": 2,
+      "promoters_50plus": 2,
+      "overlap_12plus": 1,
+      "customers_12plus": 6,
+      "customers_20plus": 5,
+      "top_venues": [
+        {
+          "name": "Post Bar",
+          "events": 145
+        },
+        {
+          "name": "Kaiku",
+          "events": 111
+        },
+        {
+          "name": "Stidil\u00e4",
+          "events": 97
+        },
+        {
+          "name": "\u00c4\u00e4niwalli",
+          "events": 48
+        },
+        {
+          "name": "Grotesk",
+          "events": 12
+        },
+        {
+          "name": "Kuudes Linja",
+          "events": 9
+        },
+        {
+          "name": "Lepakkomies",
+          "events": 8
+        },
+        {
+          "name": "Old Morgue / Vanha Ruumishuone",
+          "events": 7
+        },
+        {
+          "name": "TBA",
+          "events": 5
+        },
+        {
+          "name": "Suvilahti Power Plant",
+          "events": 5
+        },
+        {
+          "name": "Valkoinen sali",
+          "events": 3
+        },
+        {
+          "name": "Kult",
+          "events": 3
+        },
+        {
+          "name": "TBA - Multiple Venues ",
+          "events": 3
+        },
+        {
+          "name": "Rukatunturi",
+          "events": 3
+        },
+        {
+          "name": "Vanha Ylioppilastalo",
+          "events": 3
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Post Bar",
+          "events": 140
+        },
+        {
+          "name": "four1seven",
+          "events": 98
+        },
+        {
+          "name": "Grotesk Plus",
+          "events": 8
+        },
+        {
+          "name": "INTERLINK",
+          "events": 6
+        },
+        {
+          "name": "Solstice Festival",
+          "events": 6
+        },
+        {
+          "name": "The Oilery ",
+          "events": 6
+        },
+        {
+          "name": "Club Fury",
+          "events": 5
+        },
+        {
+          "name": "Aleksi Myllykoski",
+          "events": 4
+        },
+        {
+          "name": "SoundVault",
+          "events": 4
+        },
+        {
+          "name": "Live Nation Finland",
+          "events": 3
+        },
+        {
+          "name": "Kaiku",
+          "events": 3
+        },
+        {
+          "name": "Mr.A",
+          "events": 3
+        },
+        {
+          "name": "Platypus Trax Events",
+          "events": 3
+        },
+        {
+          "name": "NOSLEEP",
+          "events": 3
+        },
+        {
+          "name": "Bywired.eu",
+          "events": 3
+        }
+      ]
+    },
+    "naples": {
+      "city": "Naples",
+      "country": "Italy",
+      "events_12m": 1229,
+      "events_fetched": 1229,
+      "unique_artists": 651,
+      "avg_events_per_night": 4.0,
+      "venues_active": 111,
+      "venues_12plus": 19,
+      "venues_20plus": 13,
+      "venues_50plus": 6,
+      "promoters_active": 107,
+      "promoters_12plus": 16,
+      "promoters_20plus": 13,
+      "promoters_50plus": 5,
+      "overlap_12plus": 5,
+      "customers_12plus": 30,
+      "customers_20plus": 21,
+      "top_venues": [
+        {
+          "name": "MOS' > Mystery of Sound",
+          "events": 253
+        },
+        {
+          "name": "Happening Napoli",
+          "events": 120
+        },
+        {
+          "name": "Vesuvius Soul Records",
+          "events": 107
+        },
+        {
+          "name": "Audioteca",
+          "events": 101
+        },
+        {
+          "name": "Lento Hi Fi Bar",
+          "events": 92
+        },
+        {
+          "name": "Duel Club",
+          "events": 51
+        },
+        {
+          "name": "Basic Club",
+          "events": 44
+        },
+        {
+          "name": "Rumore Nightclub Capri",
+          "events": 41
+        },
+        {
+          "name": "Maya Beach Experience",
+          "events": 34
+        },
+        {
+          "name": "REC Napoli",
+          "events": 33
+        },
+        {
+          "name": "Calatheabeachclub",
+          "events": 29
+        },
+        {
+          "name": "The Wall Club",
+          "events": 28
+        },
+        {
+          "name": "TBA",
+          "events": 25
+        },
+        {
+          "name": "Umoya",
+          "events": 17
+        },
+        {
+          "name": "Discoteca Paradiso",
+          "events": 14
+        }
+      ],
+      "top_promoters": [
+        {
+          "name": "Mos' Napoli",
+          "events": 255
+        },
+        {
+          "name": "Corrado Vittoria",
+          "events": 119
+        },
+        {
+          "name": "Vesuvius Soul Records",
+          "events": 107
+        },
+        {
+          "name": "Audioteca",
+          "events": 101
+        },
+        {
+          "name": "Lento Hi-Fi Bar",
+          "events": 90
+        },
+        {
+          "name": "Duel Club",
+          "events": 49
+        },
+        {
+          "name": "BASIC CLUB",
+          "events": 44
+        },
+        {
+          "name": "Rumore Nightclub Capri",
+          "events": 38
+        },
+        {
+          "name": "Tendenza",
+          "events": 33
+        },
+        {
+          "name": "REC Club",
+          "events": 32
+        },
+        {
+          "name": "Sunny People",
+          "events": 28
+        },
+        {
+          "name": "ADUNANZA MUSIC",
+          "events": 27
+        },
+        {
+          "name": "Soul Express",
+          "events": 20
+        },
+        {
+          "name": "Logout",
+          "events": 18
+        },
+        {
+          "name": "VINYL BOX",
+          "events": 13
+        }
+      ]
+    }
+  },
+  "last_updated": "2026-04-05T12:35:59.127197"
+}
