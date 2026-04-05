@@ -2431,7 +2431,7 @@ async function mbArtistTags(artistName){
    3. RA worldwide co-billing (25%) — global circuit connections
    4. MusicBrainz label network (10%) — scene categorisation bonus
    No SC calls. Result: richer, more electronic-specific, zero quota cost. */
-async function fusionRelatedArtists(seedName, localEvents, limit=40){
+async function fusionRelatedArtists(seedName, localEvents, limit=40, skipWorldwide=false){
   const results=new Map();
 
   const addArtist=(name,score,source)=>{
@@ -2444,9 +2444,6 @@ async function fusionRelatedArtists(seedName, localEvents, limit=40){
   };
 
   // Source 1: RA OFFICIAL related artists (60pts) — RA's own algorithm
-  // This is what shows at the bottom of every RA artist page.
-  // Built from RA's global event data + fan follow patterns.
-  // Highest weight: RA knows their own scene better than any other signal.
   const raOfficial=await raOfficialRelated(seedName).catch(()=>[]);
   for(const a of raOfficial)addArtist(a.name,60,'ra_official');
 
@@ -2454,20 +2451,21 @@ async function fusionRelatedArtists(seedName, localEvents, limit=40){
   const localRel=raRelated(seedName,localEvents);
   for(const r of localRel.slice(0,25))addArtist(r.name,Math.min(40,r.count*10),'ra_local');
 
-  // Source 3: RA worldwide co-billing (25pts max) — global circuit
-  const raGlobal=await raWorldwideRelated(seedName).catch(()=>[]);
-  for(const r of raGlobal.slice(0,25))addArtist(r.name,Math.min(25,r.count*6),'ra_global');
+  // Source 3: RA worldwide co-billing (25pts max) — slow (6 pages), skip for lower-priority seeds
+  if(!skipWorldwide){
+    const raGlobal=await raWorldwideRelated(seedName).catch(()=>[]);
+    for(const r of raGlobal.slice(0,25))addArtist(r.name,Math.min(25,r.count*6),'ra_global');
+  }
 
-  // Source 4: Last.fm similar (15pts max) — broad genre signal, lowest weight
-  // Useful for finding artists outside the live circuit but in the same sonic space
+  // Source 4: Last.fm similar (15pts max) — broad genre signal
   const lfSimilar=await lastfmSimilar(seedName,50);
   for(const a of lfSimilar)addArtist(a.name,Math.round(a.match*15),'lastfm');
 
-  // Cross-validation bonus: appearing in multiple sources = strong signal
+  // Cross-validation bonus
   for(const[,r] of results){
     if(r.sources.length>=2)r.score+=15;
     if(r.sources.length>=3)r.score+=15;
-    if(r.sources.includes('ra_official')&&r.sources.includes('ra_local'))r.score+=20; // RA official + local = very strong
+    if(r.sources.includes('ra_official')&&r.sources.includes('ra_local'))r.score+=20;
   }
 
   return[...results.values()]
@@ -3693,7 +3691,8 @@ async function enrichGenres(candidate){
 /* ═══ CACHED RA ENGINE ═══ */
 
 const CACHE_KEY='libro_ra_cache_v3';
-const CACHE_MAX_AGE=12*60*60*1000; // 12 hours
+const CACHE_MAX_AGE=24*60*60*1000;    // 24 hours — after this, refetch
+const CACHE_STALE_AGE=7*24*60*60*1000; // 7 days — force invalidate no matter what
 
 /* Get/set the event cache from localStorage */
 function getCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY))||null}catch{return null}}
@@ -3718,6 +3717,7 @@ function cacheValid(){
   if(!c)return false;
   if(c.areaCode!==areaId())return false;
   if(Date.now()-c.ts>CACHE_MAX_AGE)return false;
+  if(Date.now()-c.ts>CACHE_STALE_AGE)return false; // hard cap — never use cache older than 7 days
   if(!c.events||c.events.length<500)return false; // Barcelona should have thousands — reject tiny caches
   // Reject old format: missing genres/startTime or object artists
   const s=c.events[0];
@@ -3756,59 +3756,56 @@ async function ensureCache(force=false){
     showCacheStatus('Loading '+cityName()+' event data…');
     try{
       const now=new Date();
-      const ago=new Date(now);ago.setFullYear(now.getFullYear()-1);
-      const fwd=new Date(now);fwd.setMonth(now.getMonth()+6);
-      const gte=ago.toISOString().slice(0,10),lte=fwd.toISOString().slice(0,10);
       const area=areaId();
-
-      // First call to get total count
-      const first=await ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p:1,s:50});
-      const total=first?.data?.eventListings?.totalResults||0;
-      const totalPages=Math.ceil(total/50);
       const events=[];
+      const seen=new Set();
 
-      // Parse first page
-      for(const el of(first?.data?.eventListings?.data||[])){
+      const parseEv=el=>{
         const ev=el.event||{};
-        events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
-      }
-      showCacheStatus('Loading events… 1/'+totalPages+' pages ('+total+' total)');
+        return{date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)};
+      };
 
-      // Fetch remaining pages in batches of 5 for speed
-      for(let batch=2;batch<=totalPages;batch+=5){
-        const pageNums=[];
-        for(let p=batch;p<batch+5&&p<=totalPages;p++)pageNums.push(p);
-        const promises=pageNums.map(p=>ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p,s:50}).catch(()=>null));
-        const results=await Promise.all(promises);
-        const failedPages=[];
-        for(let i=0;i<results.length;i++){
-          const d=results[i];
-          if(!d){failedPages.push(pageNums[i]);continue}
-          for(const el of(d?.data?.eventListings?.data||[])){
-            const ev=el.event||{};
-            events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
+      // Fetch month by month — each month has ~150-400 events, well under RA's 2000-result cap.
+      // A single 18-month query hits the cap at ~2.5 months and misses all recent data.
+      // Covers 12 months back + 4 months forward = 16 months total.
+      const months=[];
+      for(let m=-12;m<=4;m++){
+        const start=new Date(now.getFullYear(),now.getMonth()+m,1);
+        const end=new Date(now.getFullYear(),now.getMonth()+m+1,0);
+        months.push({gte:start.toISOString().slice(0,10),lte:end.toISOString().slice(0,10)});
+      }
+
+      let fetched=0;
+      for(const chunk of months){
+        showCacheStatus('Loading '+chunk.gte.slice(0,7)+'… ('+events.length+' events so far)');
+        try{
+          const first=await ra({f:{areas:{eq:area},listingDate:{gte:chunk.gte,lte:chunk.lte}},fo:{},p:1,s:50});
+          const total=first?.data?.eventListings?.totalResults||0;
+          const totalPages=Math.min(Math.ceil(total/50),40);
+          for(const el of(first?.data?.eventListings?.data||[])){
+            const e=parseEv(el);const k=e.date+'|'+e.venue+'|'+(e.title||'');
+            if(!seen.has(k)){seen.add(k);events.push(e);}
           }
-        }
-        showCacheStatus('Loading events… '+Math.min(batch+4,totalPages)+'/'+totalPages+' pages'+(failedPages.length?' ('+failedPages.length+' retrying)':'')); 
-        // Retry only the specific pages that failed — not the whole batch range
-        for(const p of failedPages){
-          try{
-            const d=await ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p,s:50});
-            for(const el of(d?.data?.eventListings?.data||[])){
-              const ev=el.event||{};
-              events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
+          for(let batch=2;batch<=totalPages;batch+=5){
+            const pageNums=[];
+            for(let p=batch;p<batch+5&&p<=totalPages;p++)pageNums.push(p);
+            const results=await Promise.all(pageNums.map(p=>ra({f:{areas:{eq:area},listingDate:{gte:chunk.gte,lte:chunk.lte}},fo:{},p,s:50}).catch(()=>null)));
+            for(const d of results){
+              for(const el of(d?.data?.eventListings?.data||[])){
+                const e=parseEv(el);const k=e.date+'|'+e.venue+'|'+(e.title||'');
+                if(!seen.has(k)){seen.add(k);events.push(e);}
+              }
             }
-          }catch(e){}
-        }
+          }
+          fetched++;
+        }catch(e){}
       }
 
-      // Only save cache if we got a reasonable amount of data
-      const expectedMin=Math.floor(total*0.7); // at least 70% of reported total
-      if(events.length>=expectedMin||events.length>=500){
-        setCache({areaCode:area,ts:Date.now(),events,total});
-        showCacheStatus(events.length+'/'+total+' events cached ✓',true);
+      if(events.length>=200){
+        setCache({areaCode:area,ts:Date.now(),events,total:events.length});
+        showCacheStatus(events.length+' events cached ✓ ('+fetched+' months)',true);
       }else{
-        showCacheStatus('Partial data ('+events.length+'/'+total+') — not caching, will retry',true);
+        showCacheStatus('Partial data ('+events.length+') — not caching, will retry',true);
       }
       return events;
     }catch(e){
@@ -3821,8 +3818,17 @@ async function ensureCache(force=false){
 
 /* Tiny status bar for cache loading */
 function showCacheStatus(msg,autoHide){
-  // Cache loading is invisible to the user — magic happens behind the scenes
   console.log('[Cache] '+msg);
+  let bar=document.getElementById('cacheBar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='cacheBar';
+    bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--bg);border-bottom:1px solid var(--border);padding:0 16px;height:24px;display:flex;align-items:center;font-family:var(--font-mono);font-size:0.58rem;font-weight:500;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;overflow:hidden';
+    document.body.appendChild(bar);
+  }
+  bar.textContent=msg;
+  bar.style.display='flex';
+  if(autoHide)setTimeout(()=>{if(bar)bar.style.display='none';},3000);
 }
 
 /* Get cached events filtered to a date range. Instant, no API calls. */
@@ -3837,8 +3843,36 @@ function getCachedEvents(from,to){
 async function getCityEvents(from,to){
   await ensureCache();
   const cached=getCachedEvents(from,to);
+
+  // Always supplement with a live fetch for recent events (past 60 days)
+  // This catches shows that happened after the cache was built
+  const now=new Date();
+  const recentFrom=new Date(now);recentFrom.setDate(now.getDate()-60);
+  const recentFromStr=recentFrom.toISOString().slice(0,10);
+  const toStr=to instanceof Date?to.toISOString().slice(0,10):to;
+  const fromStr=from instanceof Date?from.toISOString().slice(0,10):from;
+
+  // Only do the live fetch if the requested range overlaps with recent past
+  if(fromStr<=recentFromStr||toStr>=recentFromStr){
+    try{
+      const liveFrom=recentFromStr>fromStr?recentFromStr:fromStr;
+      const liveTo=toStr<now.toISOString().slice(0,10)?toStr:now.toISOString().slice(0,10);
+      if(liveFrom<=liveTo){
+        const fresh=await raBulkFetch(areaId(),liveFrom,liveTo,10);
+        if(fresh.length){
+          // Merge fresh into cached, deduplicate by date+venue+title
+          const seen=new Set(cached.map(e=>e.date+'|'+e.venue+'|'+(e.title||'')));
+          for(const ev of fresh){
+            const k=ev.date+'|'+ev.venue+'|'+(ev.title||'');
+            if(!seen.has(k)){cached.push(ev);seen.add(k);}
+          }
+        }
+      }
+    }catch(e){}
+  }
+
   if(cached.length>0)return cached;
-  // Fallback: cache might not cover this range, try live
+  // Fallback: cache might not cover this range at all, try live
   try{return await raBulkFetch(areaId(),from,to,40)}catch(e){return[]}
 }
 
@@ -5303,26 +5337,47 @@ async function runDiscover(){
     if(!resolved.length){prog('No seeds found.',10);btn.disabled=false;btn.textContent='Find Artists';return}
 
     // Step 2: related artists — fusion engine (RA co-billing + Last.fm + RA worldwide)
-    // Zero SC calls here. SC only used later for Spotify listener counts in X-Ray.
     prog('Finding related artists…',15);
     const cmap=new Map();
     const allEvents=await ensureCache()||[];
 
-    for(const s of resolved){
-      prog(null,17,'Scanning connections for '+s.name+'…');
-      try{
-        const fused=await fusionRelatedArtists(s.name,allEvents,50);
-        let added=0;
-        for(const r of fused){
-          const key=norm(r.name);
-          if(resolved.some(x=>norm(x.name)===key))continue;
-          if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:r.imageUrl||'',seeds:[s.seed],source:'fusion',fusionScore:r.score,raCoBills:r.sources.filter(x=>x.startsWith('ra')).length>0?r.score:0});
-          else{const e=cmap.get(key);e.seeds.push(s.seed);e.fusionScore=(e.fusionScore||0)+r.score}
-          added++;
-        }
-        prog(null,20,s.name+': '+fused.length+' related artists (RA+Last.fm fusion)');
-      }catch(e){prog(null,20,s.name+': fusion error — '+e.message)}
+    // Cap seeds: top 8 by priority (headliners first, anchors, co-bills)
+    // Running fusion on 40+ seeds sequentially is the main bottleneck
+    const cappedSeeds=resolved.slice(0,8);
+    const bonusSeeds=resolved.slice(8); // remaining seeds: local co-billing only (fast)
+
+    // Run fusion on top seeds in parallel batches of 3
+    const FUSION_BATCH=3;
+    for(let i=0;i<cappedSeeds.length;i+=FUSION_BATCH){
+      const batch=cappedSeeds.slice(i,i+FUSION_BATCH);
+      await Promise.all(batch.map(async (s,batchIdx)=>{
+        const globalIdx=i+batchIdx;
+        const skipWorldwide=globalIdx>=3; // worldwide only for top 3 seeds — it's the slowest step
+        prog(null,17,'Scanning connections for '+s.name+(skipWorldwide?' (fast)':(': full scan'))+'…');
+        try{
+          const fused=await fusionRelatedArtists(s.name,allEvents,50,skipWorldwide);
+          for(const r of fused){
+            const key=norm(r.name);
+            if(resolved.some(x=>norm(x.name)===key))continue;
+            if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:r.imageUrl||'',seeds:[s.seed],source:'fusion',fusionScore:r.score,raCoBills:r.sources.filter(x=>x.startsWith('ra')).length>0?r.score:0});
+            else{const e=cmap.get(key);e.seeds.push(s.seed);e.fusionScore=(e.fusionScore||0)+r.score;}
+          }
+          prog(null,20,s.name+': '+fused.length+' related artists');
+        }catch(e){prog(null,20,s.name+': error — '+e.message);}
+      }));
     }
+
+    // Bonus seeds: local co-billing only (no API calls — instant from city cache)
+    for(const s of bonusSeeds){
+      const localRel=raRelated(s.name,allEvents);
+      for(const r of localRel.slice(0,20)){
+        const key=norm(r.name);
+        if(resolved.some(x=>norm(x.name)===key))continue;
+        if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:'',seeds:[s.seed],source:'fusion',fusionScore:Math.min(40,r.count*10),raCoBills:r.count});
+        else{const e=cmap.get(key);e.seeds.push(s.seed);e.fusionScore=(e.fusionScore||0)+Math.min(20,r.count*5);}
+      }
+    }
+    if(bonusSeeds.length)prog(null,24,bonusSeeds.length+' additional seeds (local co-billing only)');
 
     const cands=Array.from(cmap.values());prog(cands.length+' candidates',25);
 
@@ -5374,26 +5429,23 @@ async function runDiscover(){
     for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' at '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
     prog(sdX+' same-day conflicts, '+afterSD.length+' remain',65);
 
-    // Step 5: Genres (Last.fm — free, no quota) + Spotify listeners (SC, optional)
+    // Step 5: Genres (Last.fm — free, no quota)
     prog('Fetching genre data…',70);
     const wd=[];
     let genreSkipped=0;
-    // Fetch genres in parallel batches of 5 (Last.fm is fast)
-    const batchSize=5;
+    const batchSize=10; // increased from 5 — Last.fm handles parallel fine
     for(let i=0;i<afterSD.length;i+=batchSize){
       const batch=afterSD.slice(i,i+batchSize);
       await Promise.all(batch.map(async c=>{
         try{
-          // Get genres from Last.fm — free, electronic-specific, no SC needed
-          await enrichGenresFromLastfm(c);
-          // Genre filter
-          if(c.genres&&c.genres.length>0&&!genreAllowed(c.genres)){
+          // Skip Last.fm fetch if genres already set (city_cache artists pre-populated)
+          if(!c.genres||!c.genres.length)await enrichGenresFromLastfm(c);
+          // Genre filter — skip for city_cache artists (already genre-matched in sweep)
+          if(c.source!=='city_cache'&&c.genres&&c.genres.length>0&&!genreAllowed(c.genres)){
             genreSkipped++;
             prog(null,70+Math.round((i/afterSD.length)*25),'✗ '+c.name+' genre excluded ('+c.genres.slice(0,2).join(', ')+')');
             return;
           }
-          // Spotify city listeners — SC, but only if uuid known (X-Ray path)
-          // In Discover, we skip SC entirely and sort by DNA/fusion score
           c.bcn=0;c.global=0;
           wd.push(c);
           prog(null,70+Math.round((i/afterSD.length)*25),'✓ '+c.name+(c.genres?.length?' ('+c.genres[0]+')':''));
