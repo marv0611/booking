@@ -1,202 +1,1520 @@
 name,type,events,total_artists,notable_artists,is_target
-Razzmatazz,venue,141,652,385,True
-Miles Away,promoter,124,636,377,True
-NitsaClub,promoter,122,410,302,True
-Nitsa Club,venue,124,414,300,True
-INPUT High Fidelity Dance Club,promoter,173,390,299,True
-Les Enfants Brillants,promoter,204,403,265,True
-Human Club,promoter,63,413,265,True
-La Terrrazza,venue,131,301,183,True
+Razzmatazz,venue,140,646,380,True
+Miles Away,promoter,123,630,372,True
+NitsaClub,promoter,121,406,299,True
+Nitsa Club,venue,123,410,297,True
+INPUT High Fidelity Dance Club,promoter,172,388,297,True
+Les Enfants Brillants,promoter,203,400,263,True
+Human Club,promoter,62,406,260,True
+La Terrrazza,venue,130,300,183,True
 Parc del Fòrum,venue,19,174,156,True
 Centris Events,promoter,54,183,136,True
-Bikini Club,venue,108,193,134,True
+Bikini Club,venue,107,193,134,True
 SIGHT Worldwide,promoter,69,183,134,True
 Ku Barcelona,venue,78,206,133,True
 Brunch Electronik Bcn,promoter,62,178,131,True
 FUEGO,promoter,54,263,127,True
 Loud-Contact,promoter,31,137,121,True
-SOUNDIT,promoter,27,155,115,True
 Output Barcelona,promoter,32,136,115,True
-La Paloma,venue,88,154,108,True
+SOUNDIT,promoter,25,149,111,True
 Seaseaclub Barcelona,venue,50,176,108,True
+La Paloma,venue,87,152,106,True
 Bosc Tancat / Diverbosc,venue,17,120,104,True
 Night Sun Group,promoter,55,138,96,True
-LAUT,venue,126,175,88,True
-Macarena Club,venue,368,332,87,True
-MacarenaClub,promoter,367,330,87,True
+Macarena Club,venue,368,333,88,True
+MacarenaClub,promoter,367,331,88,True
+LAUT,venue,125,173,87,True
 TUNNEL BARCELONA,promoter,55,142,87,True
-303 Audiophile Bar,venue,173,288,79,True
-303AudiophileBar,promoter,168,276,78,True
-"TBA - Studio Stereo, close to pl. Catalunya, 08007, Barcelona",venue,115,245,75,True
-Studio Stereo,promoter,115,245,75,True
-DETROIT CLUB,venue,91,137,68,True
+303 Audiophile Bar,venue,172,287,79,True
+303AudiophileBar,promoter,167,275,78,True
+"TBA - Studio Stereo, close to pl. Catalunya, 08007, Barcelona",venue,114,243,74,True
+Studio Stereo,promoter,114,243,74,True
+Sónar Festival / Advanced Music,promoter,5,86,72,True
 Hola Club Sitges (Cala Vallcarca),venue,52,129,68,True
-M7 Club,venue,297,223,67,True
-M7CLUB.net,promoter,289,201,56,True
+M7 Club,venue,295,222,67,True
+DETROIT CLUB,venue,90,135,66,True
+OFFWEEK FESTIVAL,promoter,9,67,66,True
+Parc Nou. El Prat de Llobregat,venue,2,69,57,True
+M7CLUB.net,promoter,287,200,56,True
 Hola Beach Club,promoter,43,95,55,True
 MID SUMMER PRODUCTIONS SL,promoter,27,84,55,True
-TBA,venue,182,316,54,True
+TBA,venue,181,315,53,True
 BRIDGE 48,promoter,90,220,53,True
-NOM Barcelona,promoter,53,54,50,True
+NOM Barcelona,promoter,52,54,50,True
 Mostra,promoter,12,74,50,True
+Brunch Electronik Festival,promoter,7,61,50,True
+Fira Barcelona,venue,5,65,49,True
 Primavera Sound,promoter,16,54,49,True
 Luz De Gas,venue,30,69,45,True
-THE GARAGE CLUB BCN,promoter,51,66,43,True
-RED58,venue,71,114,42,True
-Plaza Monumental de Barcelona,venue,12,54,41,True
+Fira Gran Via,venue,5,59,45,True
+RED58,venue,70,113,42,True
+THE GARAGE CLUB BCN,promoter,50,64,41,True
+Pacha Barcelona Off Bcn,promoter,6,51,41,True
 SWING,promoter,21,55,40,True
 unlockedbcn,promoter,25,68,40,True
 Noizer,promoter,46,69,40,True
-City Hall,venue,264,186,37,True
+OFFBCN Festival,promoter,5,40,39,True
+E4D Marketing,promoter,5,40,39,True
+ELEMENTS 4 DANCE,promoter,5,40,39,True
+Defected,promoter,4,40,39,True
+City Hall,venue,264,182,37,True
+Plaza Monumental de Barcelona,venue,11,49,37,True
 Poble Espanyol,venue,19,51,37,True
-Rachdingue,venue,19,78,36,True
 Sala Upload Barcelona,venue,45,123,36,True
-7833 Soundlab,venue,84,170,33,True
+Pyramid Ibiza,promoter,3,37,36,True
+Amnesia Ibiza,promoter,2,37,36,True
+BlackWorks,promoter,3,37,36,True
+Rachdingue,venue,18,75,35,True
 Sala Apolo,venue,52,76,33,True
 Innova Group,promoter,27,59,33,True
-Skyfall Cocktail Club,venue,39,80,31,True
+7833 Soundlab,venue,83,169,32,True
+Castell de BEN Viure,venue,4,32,32,True
+Duro Festival,promoter,4,37,32,True
 Moog Club,venue,367,68,31,True
+Skyfall Cocktail Club,venue,38,79,31,True
 BORIS CLUB,venue,70,66,31,True
-Forum Station,venue,89,189,30,True
 Freedonia,venue,56,107,30,True
-78|33,promoter,76,157,30,True
-Glitch Club,venue,19,48,29,True
-GLITCH Dance Club,promoter,19,48,29,True
+ZAMNA.EU,promoter,3,30,30,True
+Forum Station,venue,88,188,29,True
+Glitch Club,venue,18,44,28,True
+78|33,promoter,74,155,28,True
+GLITCH Dance Club,promoter,18,44,28,True
 AUDIODISE,promoter,18,45,28,True
 borisclub,promoter,66,57,28,True
+Ombra Festival,promoter,7,36,27,True
 Opium Barcelona,venue,28,45,26,True
-Switch Bar,venue,219,148,25,True
-G Spot Club,venue,144,102,23,True
-Club Sauvage,venue,95,102,23,True
-Elektronic Delight,promoter,14,39,23,True
-Gspotclub,promoter,134,98,23,True
-Atlantic Club,venue,27,52,21,True
-Regia,promoter,22,46,21,True
+Switch Bar,venue,218,147,25,True
+Multi-Venue Event - Fabra i Coats and Vall D'hebron Olympic Pavilion,venue,4,29,25,True
+Les Tres Xemeneies,venue,4,32,25,True
+Yoyaku,promoter,4,37,25,True
+G Spot Club,venue,143,102,23,True
+Gspotclub,promoter,133,98,23,True
+Club Sauvage,venue,93,98,22,True
+Elektronic Delight,promoter,13,36,22,True
+OFFSónar,promoter,9,24,22,True
+Atlantic Club,venue,26,50,21,True
+Circuit de Barcelona - Catalunya,venue,2,21,21,True
+Parc de la Trinitat,venue,8,32,21,True
+TheRootsEvent,promoter,11,31,21,True
+Regia,promoter,21,43,21,True
+TRANCE NXC,promoter,9,42,21,True
+Afterlife,promoter,2,21,21,True
+AF logistics,promoter,2,21,21,True
+Circuit-Barcelona,promoter,2,21,21,True
 TBA - secret location,venue,42,110,20,True
-LA ASO BY KINETICS,promoter,12,33,19,True
+Antigua Fábrica Enmasa Mercedes-Benz,venue,5,22,20,True
+Jackies,promoter,11,24,20,True
+BAHN·,promoter,4,30,20,True
+ZT Hotel Villa Olimpica,venue,4,22,19,True
+Organic Signs,promoter,3,34,19,True
 checkpoint ■,promoter,19,45,19,True
+ESCANDALO,promoter,3,27,19,True
+Paral·lel Festival,promoter,4,21,19,True
+Mira Festival,promoter,2,26,19,True
 La Nau,venue,23,34,18,True
-CDLC Barcelona,venue,57,45,16,True
-G Spot,promoter,62,56,16,True
-Garage 442,venue,192,153,15,True
+PINKCLOUD,promoter,8,32,18,True
+MUSA,promoter,6,36,18,True
+Fury,promoter,8,21,18,True
+Casa Montjuïc & Vall d'Hebron Olympic Pavilion,venue,4,24,17,True
+tINI and the gang,promoter,3,21,17,True
+Go Beach Club,promoter,7,23,17,True
+CDLC Barcelona,venue,56,45,16,True
+Montmelo,venue,3,18,16,True
+Port del Comte,venue,3,17,16,True
+Me siento extraña,promoter,7,33,16,True
+Punto Cuántico,promoter,3,23,16,True
+The Society,promoter,10,25,16,True
+LATINEO,promoter,8,25,16,True
+PIV,promoter,4,19,16,True
+OFFWEEK WAREHOUSE AIE,promoter,3,17,16,True
+LA ASO BY KINETICS,promoter,11,25,16,True
+Garage 442,venue,191,150,15,True
+G Spot,promoter,61,55,15,True
 SUW -Side UP Works-,promoter,22,45,15,True
-SecretGarden.bcn,promoter,39,61,14,True
+Happy Techno Music,promoter,10,22,15,True
+Beeyou Records,promoter,1,15,15,True
+Limousine Dream,promoter,1,15,15,True
 microdosis,promoter,15,16,14,True
+Fake Out!,promoter,10,36,14,True
 LOST BCN,promoter,34,72,14,True
+Razzmatazz 3,venue,11,16,13,True
 Purobeach Barcelona,venue,31,28,13,True
-OFF,promoter,21,25,13,True
-Medio Crew,promoter,20,40,13,True
-Sala Recreo,venue,242,73,12,True
+"Dance, Shake, Swing!",promoter,10,29,13,True
+SecretGarden.bcn,promoter,38,60,13,True
+MARICAS,promoter,3,19,13,True
+OFF,promoter,20,24,13,True
+Valhalla,promoter,10,26,13,True
+Praxis Barcelona,promoter,4,25,13,True
+DROP Dance Society,promoter,8,29,13,True
+Herrensauna,promoter,3,22,13,True
+Machine,promoter,1,20,13,True
+DEMBOOTY,promoter,2,25,13,True
+Soul Feeder,promoter,2,22,13,True
+Sala Recreo,venue,240,73,12,True
 Absenta del Raval,venue,185,98,12,True
-TheSupermercat,promoter,428,136,12,True
+Downtown Barcelona,venue,5,23,12,True
+TheSupermercat,promoter,426,135,12,True
+Medio Crew,promoter,18,37,12,True
+Rotary,promoter,7,24,12,True
+No Tags,promoter,5,39,12,True
+Mad Radio Barcelona,promoter,8,30,12,True
 Casa Montjuïc,venue,13,14,11,False
+Hotel El Bruc,venue,2,17,11,False
 O V E R T O N E,promoter,12,23,11,False
 Simple Times (House),promoter,15,26,11,False
-garage442,promoter,82,62,10,False
-Slow Club,venue,178,41,9,False
+Modern Funktion,promoter,2,15,11,False
+Secret-Sessions,promoter,3,15,11,False
+Moxy Muzik,promoter,2,14,11,False
+Fuse London,promoter,1,12,11,False
+POLYGLOT,promoter,4,20,11,False
+Alta Fidelidad,promoter,8,24,11,False
+Teletech,promoter,1,14,11,False
+WOLF Barcelona,venue,6,13,10,False
+TBA - SECRET OFF BEACH OASIS,venue,2,14,10,False
+SmallBlackDots,promoter,8,27,10,False
+garage442,promoter,81,59,10,False
+NXXT KOLLEKTIV,promoter,6,17,10,False
+78l33,promoter,9,27,10,False
+Príncipe Discos,promoter,1,13,10,False
+TraTraTrax,promoter,1,13,10,False
+Kaluki Promotion Ltd,promoter,1,11,10,False
+Kaluki,promoter,1,11,10,False
 Atlantic Sound,venue,12,26,9,False
-Glamour Freaks,promoter,168,39,9,False
-Slow Club Barcelona,promoter,176,41,9,False
+La Daurada Beach Club,venue,5,14,9,False
+TBA - TERMINAL SABADELL,venue,2,11,9,False
 UNREC,promoter,16,28,9,False
 ElBassline,promoter,13,27,9,False
 GLOVE PARTY,promoter,15,29,9,False
 Playground Records,promoter,13,26,9,False
-The Supermercat Gotico,venue,226,83,8,False
+Bünker,promoter,9,22,9,False
+RestlessMusic,promoter,6,21,9,False
+VERKNIPT,promoter,2,10,9,False
+fabric,promoter,1,9,9,False
+Metamorfosi,promoter,2,9,9,False
+24Seven Records,promoter,6,21,9,False
+Andami,promoter,5,23,9,False
+The Supermercat Gotico,venue,225,83,8,False
+Slow Club,venue,177,40,8,False
+Zt Hotel + Wolf Club,venue,1,8,8,False
 9D9,venue,14,24,8,False
+Audiodise Beach Club Playa del Forum,venue,4,13,8,False
 TBA - SIDERAL,venue,18,41,8,False
+THE DIGGIN' CREW,promoter,11,29,8,False
+Glamour Freaks,promoter,167,38,8,False
+Slow Club Barcelona,promoter,175,40,8,False
+MUTEK.ES,promoter,2,10,8,False
+Poly-Rythmo Club,promoter,7,14,8,False
+BAF! Entertainment Company,promoter,8,24,8,False
+Cupula Recordings,promoter,11,21,8,False
+Outopia,promoter,2,12,8,False
+YO•YO colectivo,promoter,3,17,8,False
 SEGUIM Records,promoter,13,22,8,False
+GMC WORLDWIDE PRODUCTIONS SL,promoter,4,15,8,False
+Eastenderz,promoter,1,8,8,False
+You&Me,promoter,1,8,8,False
+Hayes,promoter,1,14,8,False
+SELECTORS,promoter,1,12,8,False
+Placa Major de Nou Barris,venue,5,9,7,False
 Chica Club,venue,16,24,7,False
-ELFENCI,promoter,14,23,7,False
+Nica,venue,10,21,7,False
+Wolv Barcelona,venue,3,18,7,False
+W Barcelona,venue,7,11,7,False
+"TBA - Sant Jordi Desvalls, Girona",venue,2,10,7,False
+L'amagatall DE CAL Tonedor,venue,6,26,7,False
+Bünker Mataró,venue,6,17,7,False
+Atlas Presenta,promoter,5,12,7,False
+Perros Disquería,promoter,5,14,7,False
+Ameba Bcn,promoter,11,29,7,False
+Underground Rebels,promoter,5,14,7,False
+Automata Drum & Bass,promoter,10,11,7,False
 HOPE,promoter,42,28,7,False
-Buena Onda Social Club,venue,33,73,6,False
-Meteoro,venue,22,52,6,False
+Mechatronica Music,promoter,1,10,7,False
+ELFENCI,promoter,13,23,7,False
+ROSTRO,promoter,4,15,7,False
+Siku,promoter,8,25,7,False
+Dimensions,promoter,1,7,7,False
+bamboleo,promoter,2,9,7,False
+MVSON EVENTS,promoter,1,8,7,False
+Berg Audio,promoter,1,8,7,False
+Midnight Entertainment,promoter,2,10,7,False
+Menosmal Production,promoter,2,9,7,False
+CULPA,promoter,1,12,7,False
+MAREO,promoter,1,12,7,False
+Girltoy,promoter,1,12,7,False
+Hivernacle Pop Up Club Barcelona,promoter,2,7,7,False
+Buena Onda Social Club,venue,32,73,6,False
 Imperial Private Club,venue,41,47,6,False
+Can Tarranc,venue,3,9,6,False
+Sabadell,venue,3,16,6,False
+MiradorBCN,promoter,9,25,6,False
+The Kitchen,promoter,5,10,6,False
+Terminal MX,promoter,3,15,6,False
+WARM,promoter,4,9,6,False
 STUDIO 79,promoter,56,34,6,False
+Outcast Torino,promoter,2,8,6,False
+334533BCN,promoter,10,12,6,False
+Associació Juvenil Sabadell Sona Jove,promoter,2,15,6,False
+Troopers,promoter,10,20,6,False
+Afrodanz,promoter,6,11,6,False
+MyGarage,promoter,4,18,6,False
+ITALO MODERNI,promoter,5,10,6,False
+Paralel Agency Bcn,promoter,4,12,6,False
+After Caposile,promoter,1,7,6,False
+Dskonnect,promoter,1,7,6,False
+Half Baked,promoter,2,6,6,False
+INPUT,promoter,3,9,6,False
+Metrica,promoter,1,8,6,False
+Distrikt Paris,promoter,1,8,6,False
+somewhere...,promoter,1,8,6,False
+23 Degrees,promoter,1,13,6,False
+01366,promoter,9,15,6,False
+bsideworld,promoter,2,32,6,False
 sideral.bcn,promoter,19,35,6,False
-The Supermercat Raval,venue,105,64,5,False
+REDSESSIONSCOMMUNITY,promoter,8,19,6,False
+Mala Junta,promoter,1,8,6,False
+leftbank_tbs,promoter,1,11,6,False
+CaliuFest,promoter,1,9,6,False
+Keep Hush,promoter,2,17,6,False
+The Supermercat Raval,venue,104,63,5,False
 Hotel Sofitel Skipper Barcelona,venue,15,32,5,False
+Meteoro,venue,21,51,5,False
+Paral•lel 62,venue,9,21,5,False
+Caixaforum,venue,5,8,5,False
 Puerto Bahia Club de Mar,venue,17,31,5,False
 PNC Radio,venue,22,54,5,False
 Nobu Hotel,venue,20,22,5,False
+El Pumarejo Barcelona,venue,9,25,5,False
+MR Porter Barcelona,venue,3,8,5,False
+Hotel Hesperia Tower,venue,1,7,5,False
+Tanit Beach Club,venue,3,7,5,False
+AUDIODISE AIRCLUB Barceloneta,venue,2,9,5,False
+"TBA - La Garrotxa, Catalunya",venue,4,13,5,False
+Alta Fidelidad Club Vraba,venue,4,17,5,False
+Toy Tonics,promoter,2,6,5,False
 alocasia.tv,promoter,18,41,5,False
-Dr. Dou Social Club,venue,218,31,4,False
-Noxe Barcelona,venue,157,26,4,False
+OblicuoHiFi,promoter,3,13,5,False
+Algorythm,promoter,8,26,5,False
+DNIT,promoter,5,8,5,False
+Kommuna,promoter,9,18,5,False
+Mainline,promoter,2,6,5,False
+RBL Barcelona,promoter,8,21,5,False
+KHIDI,promoter,1,13,5,False
+DISTRITO 91,promoter,3,9,5,False
+Retro Future Disco Club,promoter,3,11,5,False
+Golpe De Amistad,promoter,2,6,5,False
+ID BCN,promoter,5,16,5,False
+Sociedad Groove,promoter,5,16,5,False
+Digital Freedom,promoter,4,9,5,False
+tu culito colombiano,promoter,1,5,5,False
+Georgina Asuncion Guasch,promoter,1,5,5,False
+Clone,promoter,1,5,5,False
+Soundvision,promoter,3,14,5,False
+22Recordings,promoter,2,6,5,False
+Somos Humanos,promoter,2,9,5,False
+Outlook,promoter,1,12,5,False
+Mass Music,promoter,2,13,5,False
+WeareAnims,promoter,1,8,5,False
+Fast Forward Productions,promoter,1,9,5,False
+Salto,promoter,5,15,5,False
+Lanna Club,promoter,1,11,5,False
+fauna & flora,promoter,2,11,5,False
+Houston Party,promoter,5,5,5,False
+Mixmag,promoter,1,6,5,False
+Mixmag Live,promoter,1,6,5,False
+GoBeachClub,promoter,1,6,5,False
+Noxe Barcelona,venue,158,26,4,False
 Dr. Resin Social Club,venue,148,23,4,False
 TBA - Mansion Near Plaza Catalunya,venue,12,31,4,False
+Dr. Dou Social Club,venue,217,31,4,False
 Mint Bar,venue,50,38,4,False
+TBA - Parc de L'Estació del Nord Barcelona,venue,1,8,4,False
+Frankie Gallo Cha Cha Cha (Raval),venue,3,13,4,False
+ID On Wax Record Store,venue,4,13,4,False
+TBA - Plaça de l'Odissea,venue,1,6,4,False
+Sutton Barcelona,venue,6,8,4,False
 Azul Rooftop Barceloneta,venue,33,20,4,False
+TBA - Secret Location (20 min from city center),venue,1,9,4,False
+"Sa Caleta, Lloret de Mar",venue,2,10,4,False
 Vraba Terrace,venue,13,47,4,False
-DEXT FORCE Festival,promoter,12,23,4,False
-Good Vibes Only Bcn ,promoter,68,19,4,False
+"TBA - Josep Maria Lladò, 3 (Barcelona)",venue,1,5,4,False
+Plaza Mayor de El Poble Espanyol,venue,1,4,4,False
 &Friends,promoter,19,48,4,False
+DEXT FORCE Festival,promoter,11,22,4,False
+Outsiders,promoter,4,7,4,False
+Unison Records,promoter,4,10,4,False
+Liquid Palms,promoter,7,19,4,False
+Kazanova Club,promoter,8,19,4,False
 Magnetic,promoter,12,14,4,False
+Good Vibes Only Bcn ,promoter,67,19,4,False
+Less is More,promoter,7,18,4,False
+Ibiza Talents,promoter,1,6,4,False
+47,promoter,1,4,4,False
+Landaways Labs,promoter,1,4,4,False
+Svogue,promoter,6,10,4,False
+Dropset Events,promoter,4,7,4,False
+perros disqueria,promoter,4,16,4,False
+CLHUB.ART,promoter,5,15,4,False
+Somnia,promoter,3,6,4,False
+IN ACT,promoter,1,4,4,False
+Solid AM,promoter,1,5,4,False
+VBX,promoter,1,4,4,False
+latenite [hotstuff],promoter,1,5,4,False
+mooz-biz,promoter,2,6,4,False
+Pascale Voltaire,promoter,2,9,4,False
+technoleftmespeechless,promoter,2,9,4,False
+Hyper Dreams,promoter,1,4,4,False
+SlapFunk,promoter,2,6,4,False
+Slow Life,promoter,1,6,4,False
+Michael Ritter,promoter,1,8,4,False
+DEEP TALES,promoter,1,8,4,False
+FLY CLUB,promoter,1,4,4,False
+FLY Open Air Festival,promoter,1,4,4,False
+Crunch events,promoter,1,4,4,False
+hush.,promoter,1,4,4,False
+Miguel Bastida,promoter,1,8,4,False
+MUCHOBOMBO,promoter,1,8,4,False
+seekers,promoter,3,12,4,False
+TheSoundSociety,promoter,4,4,4,False
+IKLECTIK,promoter,1,5,4,False
+Sunwaves,promoter,1,4,4,False
+INKIET,promoter,2,10,4,False
+Blackhole.ent,promoter,2,6,4,False
 ANK RECORDS,promoter,25,30,4,False
+Modern Obscure Music,promoter,1,5,4,False
+Privatbeat,promoter,1,6,4,False
+Abstractechno,promoter,1,5,4,False
+BRIDGE-DISTRICT,promoter,1,6,4,False
+Hedonika,promoter,2,6,4,False
+Subliminal State,promoter,4,8,4,False
+Soundset Sessions,promoter,4,10,4,False
+WetYourSelf!,promoter,1,4,4,False
+Cloaca,promoter,1,12,4,False
+Antidoto Club,promoter,1,14,4,False
+FLOORGASM,promoter,1,8,4,False
+Chernobyl ,promoter,1,8,4,False
 HARD_TECHNO,promoter,12,24,4,False
-Beso Pedralbes,venue,16,19,3,False
-Localito 3.0,venue,35,16,3,False
-Círculo,venue,189,46,3,False
-Recreo Bar,venue,227,26,3,False
+Círculo,venue,188,46,3,False
+Recreo Bar,venue,226,26,3,False
 Okio Social Club,venue,21,27,3,False
-Above You_ Dance,promoter,16,16,3,False
+Localito 3.0,venue,34,16,3,False
+TBA - Mad Record Shop,venue,1,5,3,False
+TBA - Location Will Be Emailed To Registered Guests,venue,2,9,3,False
+Port Olimpic,venue,3,11,3,False
+Astoria,venue,1,4,3,False
+Dot Hi-Fi Club,venue,1,3,3,False
+Casa Panot,venue,2,9,3,False
+TBA - SECRET LOCATION OUTSIDE BARCELONA,venue,1,4,3,False
+TBA - Cosmico - SLS Barcelona ,venue,5,3,3,False
+"Gualba, Montseny",venue,1,4,3,False
+"TBA - TBA - Audiodise Beach Club Playa Del Forum, Sun Sea Bar, Carrer de la Pau, 08930 Sant Adrià de Besòs, Barcelona",venue,2,7,3,False
+TBA - Castell de Torre Cellers - Parets del Vallès,venue,1,21,3,False
+Alta Fidelidad Club at Reial Club Maritim,venue,2,4,3,False
+Sala Dresden,venue,2,5,3,False
+Kompound.,promoter,3,8,3,False
+Kraneal,promoter,8,12,3,False
 Paradise.music,promoter,13,40,3,False
+Last Tour International,promoter,3,3,3,False
 Grupo Fomo,promoter,23,30,3,False
 JUXTA,promoter,12,6,3,False
+Casaveo,promoter,3,10,3,False
+REVERB,promoter,7,12,3,False
 Boots & Cats,promoter,12,32,3,False
+Ascendancy,promoter,4,12,3,False
+SOUNDMATE,promoter,3,10,3,False
+TiZi,promoter,3,8,3,False
+AMORES,promoter,4,11,3,False
+Krewe,promoter,3,7,3,False
+Above You_ Dance,promoter,15,15,3,False
+Give Soul,promoter,1,4,3,False
+SENSES,promoter,5,13,3,False
+High Tea Music,promoter,2,5,3,False
+Libertine,promoter,2,5,3,False
+Vortex.Productora,promoter,5,9,3,False
+Outside In,promoter,3,8,3,False
+RELOAD,promoter,3,9,3,False
+Bizarre Trax,promoter,1,4,3,False
+Legwork,promoter,1,3,3,False
+Recordeep,promoter,3,10,3,False
+dbartists,promoter,2,5,3,False
+Laster Club,promoter,1,4,3,False
+trommel.,promoter,1,5,3,False
+Marginalia,promoter,1,6,3,False
+Elwei,promoter,9,21,3,False
+PinealBCN,promoter,4,10,3,False
+Act Like Adults,promoter,1,5,3,False
 MYRIEL,promoter,15,23,3,False
 IMPERIALCLUB,promoter,16,25,3,False
+elsucproducció,promoter,2,4,3,False
 CabanaLibre,promoter,14,29,3,False
-TOC Hostel,venue,64,10,2,False
-Sala Taro,venue,23,28,2,False
+FÜNDAY,promoter,2,5,3,False
+Distorted,promoter,4,9,3,False
+Cosmico Rooftop Club ,promoter,5,3,3,False
+Upload,promoter,2,6,3,False
+Trancecore,promoter,1,6,3,False
+Kumquat,promoter,2,4,3,False
+L'A Cultural,promoter,3,11,3,False
+Mutant Magic,promoter,3,11,3,False
+sverabsm,promoter,1,4,3,False
+SACRO BY MËSTIZA,promoter,1,3,3,False
+Scenarios,promoter,1,4,3,False
+Ritter Butzke,promoter,1,5,3,False
+Club 23,venue,6,16,2,False
+Sala Taro,venue,22,26,2,False
+Clap Mataró,venue,4,6,2,False
 Eleven BCN,venue,13,5,2,False
+Oblicuo Hi-Fi,venue,5,12,2,False
+TOC Hostel,venue,63,10,2,False
 Rouge,venue,15,16,2,False
+Roca Umbert Sound Factory,venue,3,2,2,False
+Mas Corts,venue,1,5,2,False
+Estació de França - Espai Gastronomic,venue,11,14,2,False
+Opposite,venue,2,9,2,False
+TBA - Secret Warehouse,venue,1,5,2,False
+33/45 Bar,venue,9,7,2,False
 Negro Rojo Club,venue,24,15,2,False
+Eternal Mataró,venue,2,5,2,False
+Beso Pedralbes,venue,15,16,2,False
+BASSHAUS,venue,1,5,2,False
+White Rabbit · The Off-Museum of Barcelona,venue,1,2,2,False
+Hyde Club,venue,7,18,2,False
+Audiodise Park Montjuic,venue,4,6,2,False
+Ocaña,venue,10,11,2,False
+Fading Shapes Studios,venue,2,2,2,False
+Casa Seat,venue,1,3,2,False
+Sala Vol,venue,3,9,2,False
+TBA - SECRET FINCA outside Barcelona,venue,1,7,2,False
+The Room Barcelona,venue,1,2,2,False
+Espai Salvadiscos,venue,9,14,2,False
+TBA - La Boquería,venue,1,5,2,False
+TBA - LOST BEACH PLATJA DEL FORUM BARCELONA ,venue,2,10,2,False
+Konvent de Cal Rosal,venue,3,8,2,False
+TBA - LosT Beach Party Platja Del Forum,venue,2,8,2,False
+TBA - LosT Beach Platja Del Litoral BCN 3 Chimeneas,venue,1,7,2,False
+Cohete Disco BAR,venue,3,4,2,False
+Soho Little Beach House Barcelona,venue,1,5,2,False
+TBA - DM FOR MORE INFO,venue,1,8,2,False
+TBA - Seven Seas Mataró,venue,1,3,2,False
+TBA - Club Electrònic at Secret Location ,venue,2,9,2,False
+Razzmatazz 2,venue,2,2,2,False
+Esferic Bcn,venue,1,2,2,False
+TBA - Diffusion Concept Store,venue,2,2,2,False
+Maloa Club,venue,1,5,2,False
+Alta Fidelidad Club Maritim,venue,1,4,2,False
+TBA -  SECRET GREENHOUSE,venue,1,4,2,False
+TBA - Sun Sea Bar Beach (Platja Port Forum),venue,1,5,2,False
 Kw,promoter,44,13,2,False
 BT Bcn,promoter,52,13,2,False
+Diffuse Reality Records,promoter,7,13,2,False
+Chez Doc,promoter,6,12,2,False
 Dr. Silver,promoter,13,23,2,False
+Hyperaktivist,promoter,1,5,2,False
+ON AIR,promoter,4,5,2,False
+ROOM 128,promoter,4,6,2,False
+PIREXIA,promoter,1,4,2,False
+BCCO,promoter,1,3,2,False
+Azadi Sound,promoter,4,8,2,False
+From Hell to Disco,promoter,4,10,2,False
+HOOVE,promoter,1,4,2,False
+PUNKY,promoter,6,7,2,False
+Polymorph,promoter,3,5,2,False
+hypnotone,promoter,2,6,2,False
+Mario Guitián,promoter,6,13,2,False
+Art Sounds,promoter,2,2,2,False
+BAAROOM,promoter,2,5,2,False
+That's it.,promoter,4,9,2,False
+Respoke,promoter,1,2,2,False
+Spacer,promoter,3,4,2,False
+The Room Space,promoter,9,19,2,False
+Disonante,promoter,3,7,2,False
+Bejaus Sessions,promoter,11,14,2,False
+AURA-Barcelona,promoter,10,17,2,False
+Vertigo Sessions,promoter,6,8,2,False
+Boogie House,promoter,1,2,2,False
+Baang,promoter,2,6,2,False
+BESO,promoter,2,5,2,False
+Furious Project,promoter,2,3,2,False
+Get In Tone Records,promoter,2,5,2,False
+Sensoria,promoter,3,10,2,False
+Atlantic Sound BCN,promoter,7,17,2,False
+arteyamor,promoter,1,6,2,False
+Wes Colstock,promoter,1,8,2,False
+JIWA WORLD,promoter,1,8,2,False
+Pager,promoter,1,2,2,False
+UnderWater Events,promoter,2,8,2,False
+TMPL MUSIC,promoter,1,5,2,False
+Vassnova,promoter,1,3,2,False
+The Detroit I Love,promoter,1,3,2,False
+COCO Beats,promoter,1,2,2,False
+pieces,promoter,1,2,2,False
+That Divine,promoter,1,5,2,False
+Innercore Agency,promoter,4,6,2,False
+eed,promoter,2,2,2,False
+Zuku,promoter,1,4,2,False
+True Color Recs,promoter,4,8,2,False
+Maai Records,promoter,1,3,2,False
+Lost Boys,promoter,1,4,2,False
+casatres,promoter,1,4,2,False
+DJ Serviced Records / Call Now,promoter,4,15,2,False
+Derrick Burns ,promoter,3,5,2,False
+Fullhouse,promoter,2,6,2,False
+ElectroWick,promoter,1,4,2,False
+El Suc,promoter,1,2,2,False
+Nerve Melb,promoter,1,2,2,False
+Heritage collective,promoter,1,2,2,False
+Ciutat Electronica,promoter,1,5,2,False
+No_Stone,promoter,2,3,2,False
+LE CLUB™,promoter,3,3,2,False
+Bonanza Sound,promoter,2,8,2,False
+KGS,promoter,1,3,2,False
+tresydos,promoter,1,2,2,False
+SMALL EWOK ,promoter,1,4,2,False
+GOME + The Gang,promoter,1,2,2,False
+Sintetics,promoter,1,2,2,False
+giegling,promoter,2,5,2,False
+Primes Media,promoter,3,6,2,False
+DIGIT,promoter,2,3,2,False
+Stansa,promoter,3,7,2,False
+ORBITAL2.0,promoter,4,9,2,False
+Godbless,promoter,1,2,2,False
+Y,promoter,3,12,2,False
+Natural Mind,promoter,1,4,2,False
+Festival•B,promoter,1,2,2,False
+Silencio,promoter,3,7,2,False
 Matias,promoter,15,26,2,False
-Hotel Negresco Princess,venue,112,2,1,False
-Jamboree Dance Club,venue,26,2,1,False
+Jazztrònica Barcelona,promoter,2,3,2,False
+Afrodise,promoter,1,3,2,False
+Ousia,promoter,2,9,2,False
+Delirio Electronic,promoter,1,5,2,False
+El.Pumarejo,promoter,1,11,2,False
+Pleasure Club,promoter,1,2,2,False
+BEAT MAG MUSIC,promoter,10,11,2,False
+SNOOZ PARTIES,promoter,1,3,2,False
+observer,promoter,5,13,2,False
+PROGRAMA HOLOGRAMA,promoter,1,3,2,False
+Move Your Body,promoter,10,8,2,False
+endlessbcn,promoter,1,5,2,False
+Technopolis.Music,promoter,1,5,2,False
+Mood Nation,promoter,6,12,2,False
+PPL UNITED,promoter,1,2,2,False
+Dissart Electronik,promoter,1,9,2,False
+Sutton,promoter,1,4,2,False
+Watermelonbcn,promoter,1,3,2,False
+glamer,promoter,1,2,2,False
+Jazztrònica,promoter,1,2,2,False
 Renaissance Barcelona Hotel,venue,45,7,1,False
+"D.E.R Bar - Drink, Eat, Repeat",venue,3,4,1,False
+Jamboree Dance Club,venue,25,2,1,False
 Duquesa de Cardona,venue,14,4,1,False
+Fractal Estudios,venue,3,9,1,False
+TBA - Frankie Gallo Cha Cha Cha Raval,venue,1,3,1,False
+Centre Cívic Convent de Sant Agustí,venue,4,7,1,False
+Hotel Negresco Princess,venue,111,2,1,False
+Twenties Barcelona,venue,10,2,1,False
+WARE CLUB,venue,2,4,1,False
+EL Cinco,venue,1,2,1,False
 Unite Hostel,venue,32,28,1,False
+TBA - NAVU GRANOLLERS,venue,1,2,1,False
+TBA - Doppler Space Barcelona,venue,1,1,1,False
+La Font Del Gat,venue,4,5,1,False
+TBA - Galería LastCrit C/ Mendez Nuñez 7,venue,2,1,1,False
+TBA - Palau Electrónic (Private Loft in City Center),venue,1,6,1,False
 Duquesa Suites Hotel Rooftop,venue,53,6,1,False
+Bejaus Cafè,venue,7,7,1,False
+TBA - Disco Q,venue,1,4,1,False
+TBA - Secret Modernism House Barcelona Centre,venue,1,2,1,False
+"TBA - SABDA, Carrer Muntaner 83, Barcelona",venue,1,4,1,False
 La Perla Club,venue,29,7,1,False
+"TBA - KOAH CLUB · Av. de Jaume I, 184, 08226 Terrassa, Barcelona",venue,5,4,1,False
+La Pizzeria x Nossa,venue,2,3,1,False
+Be Disco,venue,2,6,1,False
+Lo Submarino,venue,3,8,1,False
+"TBA - Los Angeles Studio / Carrer de Salvador 22, 08902, L ´Hospitalet de Llobregat",venue,1,2,1,False
+Amfiteatre del Parc Catalunya,venue,1,1,1,False
+Casino La Foresta,venue,3,9,1,False
+Small Black Dots - Record Shop & Distribution,venue,2,3,1,False
+TBA - Mansion Near Urquinaona,venue,1,3,1,False
+TBA - Private Basement (City Center),venue,1,7,1,False
+TBA - LULU & FLYN,venue,1,3,1,False
 TBA - El Gat Negre - Gràcia - C/ Sant Lluis 47,venue,33,13,1,False
 Casa Rojo,venue,13,22,1,False
+Anonymo,venue,2,2,1,False
+Wapa BCN,venue,2,5,1,False
+"TBA - Esferic Plaça de Dante, Sants-Montjuïc, 08038 Barcelona",venue,1,1,1,False
+Za'atar Pool & Bar,venue,6,8,1,False
+TBA - SECRET LOCATION // SANT MARTI,venue,2,3,1,False
+TBA - Secret Cursi Mansion,venue,1,4,1,False
+TBA - Edifici de Capitanía Marítima de Badalona,venue,1,7,1,False
+Particular Mataró,venue,2,5,1,False
+TBA - Edifici Capitanía Badalona,venue,1,3,1,False
+TBA - SIDERAL VERNEDA,venue,3,5,1,False
+TBA - NOVOTEL BARCELONA CITY,venue,2,5,1,False
+"TBA - Sky Garden, Sallés Hotel ",venue,2,1,1,False
+TBA - SOTTOCOSTA BOAT BARCELONA,venue,1,3,1,False
+TBA - Motor Oil Barcelona,venue,2,4,1,False
+TBA - LosT Beach Platja del Forum ,venue,1,5,1,False
 Unplugbcn,venue,41,36,1,False
+Torredembarra Open AIR Festival,venue,1,2,1,False
+TBA - Lost Beach Barcelona Forum,venue,1,6,1,False
+TBA - LA GUINGUETTE DU ROY,venue,2,2,1,False
+TBA - Mad record shop - calle palma de sant just 9,venue,1,5,1,False
+Bluesman Club,venue,9,9,1,False
+TBA - Cursi Mansion,venue,1,5,1,False
+TBA - Level Granollers,venue,1,5,1,False
+Skate Love Barcelona,venue,3,4,1,False
+Oasis Hotel Rooftop,venue,1,1,1,False
+La Deskomunal,venue,4,6,1,False
 Otto Zutz,venue,28,10,1,False
-We sounds,promoter,126,2,1,False
+E66,venue,1,1,1,False
+Munay Beach Club,venue,1,3,1,False
+Cervecera Almogavers,venue,1,3,1,False
+TBA - Secret Mansion,venue,1,4,1,False
+"TBA - Jardins de Magalí (Carrer del Vallespir, 194, Les Corts, 08014 Barcelo",venue,1,5,1,False
+TBA - KTRSIS,venue,1,3,1,False
+TBA - SECRET GREENHOUSE,venue,1,4,1,False
+TBA - Un lugar Mágico.,venue,1,9,1,False
+TBA - Locacion Secreta,venue,1,4,1,False
+Diggin' at Vraba,venue,2,12,1,False
+"TBA - Secret Warehouse (La Pau, BCN)",venue,1,5,1,False
+TBA - SECRET MANSION - BARCELONA CENTRE,venue,1,3,1,False
+TBA - Mad Record Shop (Calle Palma de Sant Just 9) ,venue,2,7,1,False
+TBA - Rambla de Catalunya,venue,1,5,1,False
+TBA - Secret Warehouse (Barcelona),venue,3,5,1,False
+Seawolf Records,venue,1,4,1,False
+TBA - Secret Location (Private Villa),venue,2,3,1,False
+TBA - Carrer d´aribau 191,venue,1,4,1,False
+Plaza Urquinaona,venue,2,3,1,False
+Curtis Audio Cafe,venue,1,1,1,False
+Theodora Extra,venue,2,1,1,False
+Shôko,venue,1,1,1,False
+Penny Banger,venue,2,1,1,False
+"TBA - MOTOR OIL, Carrer Ample 46, Barceloneta ",venue,2,4,1,False
+TBA - Sala Las Vegas ,venue,1,1,1,False
+"TBA - Mad Radio - Carrer de Sant Pere mes alt 31, ciutat vella",venue,1,4,1,False
 SOUND HUB,promoter,33,7,1,False
 Barcelona Rooftop Parties,promoter,112,8,1,False
-Skylabbcn,promoter,45,9,1,False
+OhBlah,promoter,5,2,1,False
+D.E.R. Events,promoter,3,4,1,False
+Club Expansivo,promoter,4,13,1,False
+Skylabbcn,promoter,46,9,1,False
 Disco Fever,promoter,36,4,1,False
 80's Rooftop,promoter,27,3,1,False
+vermell,promoter,2,5,1,False
+We sounds,promoter,125,2,1,False
+Deprerreo,promoter,7,12,1,False
+Aperitivo House Club,promoter,3,6,1,False
+WARE IGUALADA,promoter,1,3,1,False
+Attitude,promoter,1,1,1,False
+NO ALIBI,promoter,5,12,1,False
+Lumya,promoter,4,14,1,False
+CHAPTERS,promoter,10,9,1,False
+ANGEL GARCIA PEREZ ,promoter,1,1,1,False
+INTERNAL OPERATOR,promoter,2,4,1,False
+Organikka,promoter,6,3,1,False
+Re.Clubbing,promoter,11,20,1,False
+Planet Venus,promoter,4,9,1,False
+Hook,promoter,6,10,1,False
+DOPPLER SPACE,promoter,4,4,1,False
 Atik,promoter,27,6,1,False
+SIDE MUSIC BCN,promoter,3,10,1,False
+ITEM,promoter,4,5,1,False
 Housy,promoter,38,5,1,False
+House of Ley,promoter,1,4,1,False
+MÖDULAR KOLLEKTV,promoter,2,1,1,False
+[Hi-Fi],promoter,1,2,1,False
+babylon.bcn,promoter,2,1,1,False
+MAGICROOM__,promoter,4,18,1,False
+Mihai Latis,promoter,5,12,1,False
+Oxido,promoter,1,2,1,False
+Ladradora,promoter,1,2,1,False
+Matraca,promoter,2,6,1,False
+PANDA House Club,promoter,2,1,1,False
+Laura Ibáñez,promoter,2,3,1,False
+Classparties,promoter,1,4,1,False
+Melodeep,promoter,3,7,1,False
+Island Noize,promoter,1,4,1,False
+KINYXX,promoter,8,8,1,False
+Jokkoo,promoter,3,6,1,False
+OpenLab,promoter,2,3,1,False
 La Perla Barcelona,promoter,13,2,1,False
+Teuf Kulture Barcelona,promoter,4,7,1,False
+Pineapple Electronic Events,promoter,3,1,1,False
+Ecolecua,promoter,1,2,1,False
+Bondance,promoter,2,7,1,False
+TORO,promoter,1,3,1,False
+Distorted_bcn,promoter,1,3,1,False
+Ritmo Nativo,promoter,5,6,1,False
+BANDARRA REMEMBER FESTIVAL ,promoter,2,2,1,False
+LUSTME CLUB,promoter,2,6,1,False
 Moods,promoter,37,12,1,False
 La Perla Private Club Barcelona,promoter,20,4,1,False
+Crime Lése,promoter,1,4,1,False
 El gato negro - Gràcia,promoter,39,13,1,False
+Disco Marisco,promoter,1,3,1,False
+Rooftop Tapes,promoter,2,4,1,False
+Zilzal Platform,promoter,3,17,1,False
+DISCURSIVA,promoter,2,8,1,False
+Houseum,promoter,1,4,1,False
+Miguel Recio ,promoter,1,2,1,False
+Histoire d'un Soir ,promoter,2,5,1,False
+High Fade,promoter,1,1,1,False
+Garage Kidds,promoter,2,2,1,False
+Presabene,promoter,4,4,1,False
+Felix Holzhauser - MGNFY,promoter,1,1,1,False
+Cami Sosa,promoter,2,1,1,False
+Mirrors,promoter,2,6,1,False
+Windcatcher Production,promoter,1,1,1,False
+Georgia Records,promoter,1,1,1,False
+George Ainslie,promoter,1,1,1,False
+Fabricio Oliveira,promoter,4,13,1,False
+CELOSOPHY,promoter,2,3,1,False
+AcidCandle,promoter,7,9,1,False
+Petit Comité of House,promoter,9,5,1,False
+wayout.ldn,promoter,1,6,1,False
+Ritmo Futuro,promoter,1,5,1,False
+Majesty,promoter,3,9,1,False
+MELOMANIE,promoter,2,4,1,False
+Desde adentro,promoter,3,10,1,False
+The Magic Sun,promoter,2,5,1,False
+Asociación Cultural D_LATIA,promoter,1,5,1,False
+Bademuzik,promoter,3,2,1,False
+Funky fruits,promoter,1,2,1,False
+Cabana Libre,promoter,1,7,1,False
+Xeii,promoter,2,15,1,False
+felii,promoter,2,15,1,False
+BrunchCast Music,promoter,3,7,1,False
+KRANK,promoter,6,8,1,False
+Xavi Sinthetic,promoter,1,6,1,False
+CELOSIA,promoter,3,4,1,False
+Distortion Unidad Records,promoter,2,4,1,False
+Departure Label,promoter,3,11,1,False
+CLUB FANTAZIA,promoter,2,2,1,False
+DCS4 Agency,promoter,1,5,1,False
+Mari Delgado ,promoter,1,1,1,False
+GK Records,promoter,1,1,1,False
 hello.indomita,promoter,13,14,1,False
+sinergia.music,promoter,2,3,1,False
+Pablo Maneiro,promoter,1,4,1,False
+Drivin',promoter,8,8,1,False
+Junika,promoter,2,4,1,False
+Hypnotic,promoter,8,5,1,False
 AZUL CLUB,promoter,12,6,1,False
-18,venue,12,2,0,False
+Beatlab,promoter,6,11,1,False
+Echoes of Karma,promoter,3,4,1,False
+Wavesfm ,promoter,1,3,1,False
+,promoter,1,3,1,False
+berecat,promoter,3,9,1,False
+NATE LEE,promoter,1,3,1,False
+Max Dcibel aka Maxupiciu,promoter,1,5,1,False
+Panbarlab SL,promoter,3,4,1,False
+Sagitaria,promoter,1,3,1,False
+2CPERREA,promoter,1,5,1,False
+Drakis Barcelona,promoter,1,5,1,False
+Island of Angels,promoter,1,5,1,False
+Synchrostation,promoter,2,3,1,False
+Sonidos Flotantes,promoter,1,2,1,False
+Portal,promoter,1,5,1,False
+PLGRN Milano,promoter,1,1,1,False
+HVOB,promoter,1,1,1,False
+Inherencia Events,promoter,2,7,1,False
+vazz,promoter,2,7,1,False
+pulsar,promoter,6,18,1,False
+Doings Entertainment,promoter,1,1,1,False
+#ketapasando,promoter,1,4,1,False
+Day Of The Droids,promoter,1,4,1,False
+Flux Æterna,promoter,1,3,1,False
+4ones.net,promoter,1,3,1,False
+Coda Ground,promoter,2,5,1,False
+Avoiding The Issue,promoter,1,2,1,False
+Antic,promoter,1,2,1,False
+Dogma,promoter,1,3,1,False
+Moonamour BCN,promoter,5,15,1,False
+Adriana Gutierrez,promoter,3,3,1,False
+Machangomusic,promoter,1,2,1,False
+Oscar Castellanos,promoter,4,7,1,False
+HORIZONS,promoter,1,4,1,False
+MrBarney,promoter,2,2,1,False
+KOOLLAGE,promoter,1,4,1,False
+Sinergia Music,promoter,2,5,1,False
+Zapped,promoter,1,3,1,False
+Pure Wax,promoter,2,4,1,False
+Siko Tech,promoter,1,2,1,False
+SikoTech,promoter,1,2,1,False
+Destination,promoter,2,6,1,False
+Gatzara Sound,promoter,2,2,1,False
+KUZZAPOPY,promoter,3,1,1,False
+Missing Page Records,promoter,1,5,1,False
+Buffoona,promoter,1,3,1,False
+Cory John Scozzari,promoter,1,5,1,False
+DK_,promoter,1,1,1,False
+EXORA,promoter,2,5,1,False
+Matias Mendez,promoter,1,2,1,False
+Enem Sunet ,promoter,1,2,1,False
+Vulture,promoter,1,4,1,False
+Sideways,promoter,1,4,1,False
+Clubkids Records,promoter,1,3,1,False
+Symbiotical Records,promoter,1,4,1,False
+moveyourbody,promoter,1,4,1,False
+Supervibe Music,promoter,1,4,1,False
+Mund Radio,promoter,2,3,1,False
+Nicole Karev,promoter,1,1,1,False
+N-EAR,promoter,2,3,1,False
+Palaï,promoter,2,1,1,False
+bradeazy,promoter,1,1,1,False
+UNCHAIN,promoter,1,1,1,False
+La Pocilga,promoter,1,4,1,False
+SIDEWAYS COLLECTIVE,promoter,1,4,1,False
+Overthink Records,promoter,1,3,1,False
+mondreo,promoter,1,1,1,False
+XENIA CLUB,promoter,1,2,1,False
+Akindra,promoter,1,2,1,False
+House al Parc,promoter,1,3,1,False
+Sharameet,promoter,1,4,1,False
+Dreamers,promoter,1,4,1,False
+TBA - SECRET LOCATION  (Plaza Catalunya - Eixample),venue,4,3,0,False
+TBA - Casa Moura - Cristobal de Moura 105,venue,1,4,0,False
+Club Soda,venue,5,3,0,False
+Diobar,venue,6,1,0,False
 Farola,venue,55,17,0,False
+18,venue,11,2,0,False
+Samambahia,venue,7,2,0,False
 Can Luis,venue,14,18,0,False
+New Bananas BCN,venue,10,7,0,False
+Mercat del Passatge,venue,1,4,0,False
+Generator Barcelona,venue,11,7,0,False
+"TBA - Tennis Club Badalona -Carrer de Joan d'Àustria, 58-60, 08915 Badalona, Barcelona",venue,1,3,0,False
+Terrassa Voramar,venue,1,1,0,False
+Jaiba MX,venue,1,2,0,False
+La Mansion Coworking,venue,1,4,0,False
+TBA - Flor Gelato,venue,1,2,0,False
+Soho House Barcelona,venue,6,2,0,False
+"TBA - Hermita del Roser, Sant Climent del Llobregat",venue,1,4,0,False
+Sala River,venue,4,6,0,False
+L'Occulta,venue,2,2,0,False
+Fabra I Coats,venue,2,4,0,False
+Fluid,venue,8,5,0,False
 Sauvage Swinger Club,venue,12,11,0,False
+Mirablau Club,venue,4,5,0,False
+Ce La Vi,venue,3,6,0,False
+L'automàtica,venue,1,1,0,False
+Sauvage Club,venue,2,3,0,False
+TBA - Jardins tres chimeneas Poble Sec,venue,1,2,0,False
+Wake Up • Day Club,venue,1,3,0,False
+Polaroid,venue,3,7,0,False
+TBA - CLUB BOXA GRAN PRICE,venue,1,2,0,False
+Estruch Bar,venue,3,1,0,False
+Pagano Barcelona,venue,2,2,0,False
+TBA - Reflejo 44,venue,1,5,0,False
+EL Sielu,venue,4,1,0,False
+Space Cowboy,venue,5,1,0,False
+45/33 Bar,venue,6,5,0,False
+Pl. Sant Agustí,venue,1,1,0,False
+Nativa Chiringuito,venue,4,8,0,False
+Canluisbar,venue,1,3,0,False
+"TBA - Parc Jordi Vilamitjana, Girona",venue,1,2,0,False
+TBA - Paam Project Gallery ,venue,2,2,0,False
+TBA - GOLDEN CLUB ,venue,1,3,0,False
+Ona Discoteca,venue,3,4,0,False
+TBA - Secret Location Mansion - Near Plaza Cataluña,venue,2,6,0,False
+"Jardins de la Devesa, Girona",venue,1,3,0,False
+Sala Salamandra,venue,5,1,0,False
+TBA - BUENA ONDA SOLCIAL CLUB,venue,2,1,0,False
+Mau Mau,venue,1,3,0,False
+"TBA - El gato negro: C/ Sant Lluis 47, Gràcia - Barcelona",venue,5,2,0,False
+EL Molino,venue,2,2,0,False
+TBA - Latin Palace Rooftop,venue,1,2,0,False
+Botánic Miramar,venue,3,2,0,False
+TBA - Les Quadres de Cal Reig,venue,1,3,0,False
+Secret Rooftop,venue,3,2,0,False
+Materic.ORG - Espacio de Arte de Performance,venue,1,1,0,False
 Gran Hotel Havana,venue,14,1,0,False
-Naranjito Cocktail Bar,venue,16,0,0,False
+TBA - Secret Location MANSION,venue,1,3,0,False
+TBA - SAUVAGE SWINGER CLUB,venue,1,2,0,False
+Habana Blue Chiringuito,venue,2,6,0,False
+Duvet Barcelona,venue,3,6,0,False
+TBA - Poblenou Community Radio,venue,1,5,0,False
+Keanu Izakaya Bar,venue,2,3,0,False
+TBA - Secret Location (Limited Capacity),venue,1,4,0,False
+"TBA - EL NOA NOA, Carrer de Villarroel, 71, L'Eixample, 08015 Barcelona",venue,1,1,0,False
+TBA - Mansion Near Plaça Catalunya,venue,2,4,0,False
+Never,venue,9,4,0,False
+Almanac,venue,6,7,0,False
+Area 420,venue,1,2,0,False
+Palau Alòs,venue,1,1,0,False
+Altell Mescladís,venue,3,1,0,False
+EX,venue,1,1,0,False
+TBA - Moco Museum,venue,1,1,0,False
+TBA - Reus (Parc de Mas Iglesias),venue,1,3,0,False
+TBA - Vermuteria Santa Rita (Manresa),venue,1,1,0,False
+TBA - Radio Station,venue,1,2,0,False
+TBA - Vida Festival (Vilanova),venue,1,1,0,False
+Mítics Club,venue,3,11,0,False
+TBA - Secret Location close to Hostalric,venue,2,4,0,False
+"TBA - l'Avenc, Carrer de l'Avenc, 37, 43840 Xalets de Salou, Tarragona",venue,1,1,0,False
+"TBA - EL NOA NOA, C/ Villarroel 71, 08015 Barcelona",venue,1,1,0,False
+Discoteca Ona,venue,2,2,0,False
+TBA - Espai Vapor 2025 (Terrassa),venue,1,1,0,False
+TBA - maymanta rooftop,venue,3,4,0,False
+Hotel Nautic Park — Platja D’Aro,venue,7,9,0,False
+Scorpia,venue,1,4,0,False
+Dreamboat Bar & Deli,venue,6,2,0,False
+"TBA - Sala Nexus, Discoteca Ona",venue,2,3,0,False
+Atheneu Santboiá,venue,3,3,0,False
+TBA - Hipica in Montjuic,venue,1,6,0,False
+Papillon Platja D'aro,venue,2,1,0,False
+Impact Hub,venue,1,2,0,False
+Jacqueline Barcelona,venue,1,1,0,False
+Shimmy Gallery,venue,2,1,0,False
+The Club 191,venue,2,3,0,False
+Charlzz,venue,3,4,0,False
+Sospechoso Bar,venue,1,1,0,False
+Forum,venue,1,8,0,False
+Nori Matcha,venue,1,1,0,False
+TBA - Festa Major Martorell 2025 (Martorell),venue,1,1,0,False
+TBA - Vilassar de Mar (La Caleta),venue,1,3,0,False
+TBA - Sala Or,venue,1,1,0,False
+TBA - Uniq Sitges,venue,1,2,0,False
+TBA - Open Air - Barcelona Special Location ,venue,1,1,0,False
+Cristal Disco Pub,venue,3,3,0,False
+Luv Bar,venue,2,2,0,False
+"Monk Bar, Timeout Market",venue,2,3,0,False
+TBA - Mansion Near Plaza Catalunya -  LOCATION VIA INSTAGRAM,venue,1,3,0,False
+"TBA - La Miranda Asociació Cultural (Av. del Coll del Portell, 74)",venue,1,3,0,False
+"TBA - Platja del Forum, Carrer de la Pau, 08930, Sant Adrià de Besos, Barcelona",venue,1,7,0,False
+TBA - MONTJUIC,venue,1,2,0,False
+TBA - Selva del Mar 140,venue,1,6,0,False
+TBA - SECRET LOCATION MANSION - BARCELONA CENTRE,venue,4,10,0,False
+Hotel El Avenida Palace,venue,7,1,0,False
+Pla de Palau,venue,3,1,0,False
+TBA - Hotel Niu Barcelona,venue,1,1,0,False
+TBA - LosT Beach Platja Del Forum BCN,venue,1,5,0,False
+TBA - Secret Garden Location (Outside Barcelona),venue,1,2,0,False
+Barraca Restaurant,venue,1,1,0,False
+TBA - PLATJA DEL FORUM BARCELONA ,venue,1,5,0,False
+TBA - Secret Location in Gracia,venue,1,1,0,False
+"TBA - Sala Zero, Carrer de Sant Magí, 12, 43004 Tarragona",venue,1,1,0,False
+Montjuic,venue,1,2,0,False
+TBA - LosT Beach Platja litoral Barcelona ,venue,1,3,0,False
+TBA - XL Xtralrge (Valencia),venue,1,1,0,False
+TBA - SB RAMPS,venue,1,4,0,False
+Mas Maria,venue,1,1,0,False
+TBA - Poblenou,venue,1,1,0,False
+TBA - El Sielu (Manresa),venue,2,1,0,False
+TBA - Verne: C/ Aribau 150,venue,1,4,0,False
+TBA - SECRET LOCATION ALFONS X METRO L4,venue,1,3,0,False
+TBA - Poble Nou,venue,5,1,0,False
+Perros Mediterraneos,venue,1,1,0,False
+Amateur,venue,1,1,0,False
 Sabda,venue,23,6,0,False
+La Infinita de L'hospitalet,venue,1,1,0,False
+Dilla Barcelona,venue,1,1,0,False
+Club Vermell,venue,1,1,0,False
+"TBA - HALVEMAANSTEEG 14, AMSTERDAM",venue,1,1,0,False
+El Caso Born,venue,1,1,0,False
+"TBA - Club 23, 5 min. from Pl. Catalunya, 08007, Barcelona",venue,1,4,0,False
+"TBA - KINYXX WAREHOUSE - Carrer del Plom 1, Barcelona",venue,3,3,0,False
+Seayou Restaurant,venue,1,2,0,False
+TBA - RECREO BAR GÓTICO ,venue,1,1,0,False
+TBA - Sideral / Katharsis,venue,1,4,0,False
+Just Pita &BAR,venue,2,2,0,False
+Holalà Ribes Rojes,venue,1,1,0,False
+TBA - Parallel62,venue,2,2,0,False
+TBA - hostel amistat city,venue,3,1,0,False
+TBA - Parada de metro L4 Alfons X,venue,1,2,0,False
+El Kiff,venue,1,2,0,False
+Gruv,venue,1,1,0,False
 Lennon's Club,venue,22,1,0,False
-maadraassoo,promoter,51,1,0,False
+Nomad House,venue,1,4,0,False
+2046 Granollers,venue,1,2,0,False
+"TBA - Mont, Barcelona",venue,1,1,0,False
+"TBA - Carrer d'Aribau, 191, Sarrià-Sant Gervasi, 08021 Barcelona",venue,1,1,0,False
+Oasys,venue,5,9,0,False
+BAR Mariatchi,venue,4,1,0,False
+Tehran Bar,venue,1,1,0,False
+TBA - Central Barcelona secret location,venue,2,7,0,False
+The Bonding Hub,venue,3,4,0,False
+"TBA - Carrer Creu Coberta, 100",venue,1,3,0,False
+TBA - Secret Location Metro L4(Alfons X),venue,1,2,0,False
+TBA - XTR∆ R∆DI,venue,1,1,0,False
+"TBA - Sunday Mansion, Streets: Rambla Catalunya x Gran Via de Les Corts Catalanes, 08007, Barcelona / +34 692 819 957",venue,1,5,0,False
+Inspiral,venue,1,2,0,False
+"TBA - Maraña - Rambla de Catalunya, 65",venue,1,3,0,False
+Ogham,venue,1,2,0,False
+La Biblio Barcelona,venue,5,1,0,False
+TBA - MIG BARCELONA,venue,1,1,0,False
+TBA - EAST BARCELONA ,venue,2,3,0,False
+Libertine (Casa Bonay),venue,1,1,0,False
+Strain Hunters Club,venue,1,1,0,False
+"TBA - Carrer d'Alfons XII, 8, Sarrià-Sant Gervasi, 08006 Barcelona",venue,1,4,0,False
+TBA - LA COUR DES MIRACLES - BEZIERS  ,venue,1,3,0,False
+TBA - MOTOR OIL CARRER AMPLE 46 BARCELONA,venue,1,3,0,False
+TBA - Vida For Musicians (Vilanova),venue,1,1,0,False
+Negro y Rojo,venue,1,1,0,False
+RE-Clubbing X-MAS Gathering Barcelona,venue,1,5,0,False
+TBA - MALOA Club (Sabadell),venue,2,1,0,False
+Can Fugarolas,venue,1,1,0,False
+TBA - VRABA,venue,1,3,0,False
+Bifragma Discos,venue,1,4,0,False
+Secret Garden BCN,venue,1,4,0,False
+"TBA - Moll d'espanya 8 , Barcelona ( Port Vell)",venue,1,3,0,False
+Mamut Beach Club,venue,2,7,0,False
+Marula Cafe,venue,4,1,0,False
+TBA - Terminal Zero,venue,5,2,0,False
+Hotel SLS Barcelona,venue,2,3,0,False
+TBA - C/Carme 33 (Raval),venue,1,5,0,False
+Restaurant MOS Cadaqués,venue,1,2,0,False
+"TBA - CALLE BADAJOZ 115, 08018 BARCELONA",venue,1,5,0,False
+TBA - ULTRA BAR SITGES ,venue,1,1,0,False
+TBA - Secret Rooftop in Gracia,venue,1,1,0,False
+Porteño Cocktail Bar,venue,1,1,0,False
+TBA - Rambla catalunya 65,venue,1,2,0,False
+TBA - secret record store (city center),venue,1,3,0,False
+Palau Dalmases,venue,3,3,0,False
+TBA - Sala Padró ,venue,2,1,0,False
+Sala Oasys,venue,1,2,0,False
+TBA - MOTOR OIL BCN,venue,3,2,0,False
+TBA - Vraba Terrace,venue,1,4,0,False
+L’Ovella Negra,venue,1,1,0,False
+TBA - Dolcevita Boqueria,venue,1,2,0,False
+Choko,venue,3,4,0,False
+TBA - Seawolf Records ,venue,1,3,0,False
+TBA - L'AMOROSO - AVINGUIDA DIAGONAL 423,venue,2,6,0,False
+TBA - private rooftop (marina metro station),venue,2,9,0,False
+TBA - Revelaremos la ubicación el mismo día del evento.,venue,1,1,0,False
+Lab Twenty Two,venue,2,2,0,False
+TBA - Can Balmes (Santa Maria de Palautordera),venue,1,2,0,False
+"TBA - CARRER DE LA VOLTA DELS TAMBORETS, 5 BARCELONA",venue,1,2,0,False
+"TBA - Carrer Ample, 46 (MOTOR OIL CLUB)",venue,1,1,0,False
+TBA - American Lake Gavà,venue,1,2,0,False
+"TBA - Secret Location, Poblenou - 1min by Metro Marina",venue,1,2,0,False
+Ultra.Sitges,venue,1,3,0,False
+"TBA - Moll d'Espanya, 8, Ciutat Vella, 08039 Barcelona",venue,1,2,0,False
+TBA - ROOTS AUDIOPHILE ,venue,1,2,0,False
+Perritos Calientes,venue,1,4,0,False
+TBA - Barcelona secret location,venue,1,6,0,False
+TBA - Exact location to be shared with ticket holders before the event,venue,1,3,0,False
+Maloa Club Sabadell,venue,1,3,0,False
+Re-Clubbing & Roots Basement,venue,1,8,0,False
+Bonavista Rooftop,venue,1,3,0,False
+La Terraza de Anna by Vida Mona,venue,4,5,0,False
+Rei de Copes,venue,2,1,0,False
+Ateneu del Raval,venue,1,1,0,False
+Cuatro Club,venue,2,3,0,False
+Wydwwyh,venue,1,4,0,False
+Baldona,venue,1,1,0,False
+TBA - Federal Café Sant Antoni,venue,1,1,0,False
+TBA - Sala Ricson - Hangar,venue,2,4,0,False
+Django Surf House,venue,1,1,0,False
+TBA - Secret Location in Selva de Mar,venue,1,5,0,False
+"TBA - carrer Alfons XII,8,08006",venue,1,4,0,False
+Llibreria Byron,venue,1,1,0,False
+Elbus Barcelona,venue,3,6,0,False
+TBA - RUTA N2 URBAN FOOD (BADALONA-MONTGAT),venue,1,4,0,False
+TBA - Secret location L2 Sant Martí,venue,1,2,0,False
+"TBA - Carrer Corretger, 5",venue,1,1,0,False
+"TBA - Vía laietana 64 , Barcelona ",venue,1,1,0,False
+TBA - Theodora Extra ,venue,1,1,0,False
+TBA - Magnifico Club - Magic (Bcn),venue,1,1,0,False
+"TBA - CARRER DEL COMERÇ, 21",venue,5,3,0,False
+TBA - Sun Sea Bar Beach Club at Platja del Forum,venue,1,4,0,False
+TBA - Secret location in Poblenou,venue,1,1,0,False
+NEFS,promoter,1,2,0,False
+NEFS BCN,promoter,2,2,0,False
+Club 86,promoter,1,5,0,False
+Yallah Barcelona,promoter,4,3,0,False
+Sezen Entertainment,promoter,4,2,0,False
+NAVEART,promoter,1,2,0,False
+Certain Music Records,promoter,1,3,0,False
 wOnK BCN,promoter,18,9,0,False
 Funky Summer Vibes,promoter,19,1,0,False
+Afrodita,promoter,2,2,0,False
 "Deep, Tech, House",promoter,50,2,0,False
+Empty 6 Pack,promoter,2,1,0,False
+Hop on The Top,promoter,9,3,0,False
+GROOVERS GONNA GROOVE,promoter,9,11,0,False
 EVENTS BARCELONA,promoter,47,11,0,False
+GROOVY Inc.,promoter,2,1,0,False
+LOOP BCN,promoter,1,2,0,False
+PRISMATICA,promoter,5,13,0,False
+Folia Sounds,promoter,5,3,0,False
+Special Delivery,promoter,2,2,0,False
+Fragment A,promoter,5,6,0,False
+ESQUIRLA,promoter,1,1,0,False
+KI.K_BCN,promoter,3,6,0,False
+Gravity Collective,promoter,1,4,0,False
+Apocaliptica,promoter,1,4,0,False
 Psicodelika-Events,promoter,14,2,0,False
+Communion,promoter,1,2,0,False
+Barna Groove,promoter,3,7,0,False
+Jakt:IN,promoter,3,7,0,False
+Zenith,promoter,1,5,0,False
+B SIDE,promoter,1,2,0,False
+TANTRÜMofc,promoter,1,2,0,False
+All We Humans,promoter,6,7,0,False
+OXYDSYSTEMS,promoter,3,1,0,False
+Calçotada Electrónica ,promoter,2,2,0,False
+HyperClubBCN,promoter,1,2,0,False
+Ellie Nor,promoter,1,2,0,False
+Juanguerra23,promoter,8,14,0,False
+MOOVIN,promoter,1,3,0,False
+Throwback,promoter,11,3,0,False
+The 90s Party,promoter,3,1,0,False
+Moonamour ,promoter,2,3,0,False
+Bonkers,promoter,1,2,0,False
+Lemon Agency Events,promoter,7,2,0,False
+Gola,promoter,2,4,0,False
+Funk It!,promoter,8,12,0,False
+Juan guerra,promoter,7,9,0,False
+Thoid Channel,promoter,1,4,0,False
+DiscoSour,promoter,1,2,0,False
 Kate,promoter,14,1,0,False
+Palmito Group,promoter,1,3,0,False
+Dystopia,promoter,2,1,0,False
+Titi Calor,promoter,1,4,0,False
+PISTA! KOLEKTIVE,promoter,1,1,0,False
+South Plug,promoter,9,2,0,False
+vinyagroupmusic,promoter,4,6,0,False
+Dejaboom,promoter,1,2,0,False
+BOND Events,promoter,1,2,0,False
+Mango Latin Fest,promoter,1,2,0,False
+Rodo Garcia,promoter,1,2,0,False
+Club Clap Back,promoter,5,4,0,False
+El Mambo,promoter,1,1,0,False
+Post Panic,promoter,1,3,0,False
+K ó s m i c,promoter,1,4,0,False
 Luca Barbieri ,promoter,16,27,0,False
+¡oyna!,promoter,4,3,0,False
+Bhasti B,promoter,1,2,0,False
+SUBconscious BCN,promoter,5,11,0,False
+Funky Salad,promoter,3,3,0,False
+Deliann,promoter,1,1,0,False
+Cucumelo producciones ,promoter,4,3,0,False
+Pantha Pit,promoter,1,2,0,False
+Pantha,promoter,5,2,0,False
+The Dollhouse BCN,promoter,1,3,0,False
+EDIT ALGARVE,promoter,3,1,0,False
+9000,promoter,1,1,0,False
+Cloud 9 Sound System,promoter,3,4,0,False
+In essence,promoter,2,6,0,False
+plurALL,promoter,2,7,0,False
+Kumbia Psicodelika,promoter,1,1,0,False
+Awaken,promoter,5,2,0,False
+Carlos De Castro,promoter,4,3,0,False
+Synestepside,promoter,1,4,0,False
+maadraassoo,promoter,50,1,0,False
+TheRoom.404,promoter,6,2,0,False
+Zayra,promoter,1,2,0,False
+Mutarte.Experience,promoter,1,1,0,False
+Sonder Oficial,promoter,1,4,0,False
+Prymal,promoter,6,2,0,False
+Onda Tropikal,promoter,1,1,0,False
+Lemon Eye Records,promoter,3,7,0,False
+Nau Collective,promoter,3,7,0,False
+SpinnArts,promoter,4,4,0,False
+Kaze Club,promoter,5,5,0,False
+MASI.TECH,promoter,1,2,0,False
+TUDANZAS,promoter,1,1,0,False
+PreKum,promoter,1,4,0,False
+SAYARI,promoter,3,2,0,False
+TS.MUSICCLUB,promoter,4,3,0,False
+THE MINIMAL LEGENDS,promoter,2,2,0,False
+Casacinco Sessions,promoter,1,6,0,False
+Pflugschar Collective,promoter,1,6,0,False
+I.LEGAL Collective,promoter,1,2,0,False
+Obi Nwizugbo (Richard Creams),promoter,1,2,0,False
+Haus of Welcome Productions ,promoter,1,2,0,False
+Big Kharma,promoter,3,9,0,False
+Adrenalog,promoter,2,4,0,False
+Pepita Royal,promoter,6,7,0,False
+I.LEGAL,promoter,7,5,0,False
+T-Music Group,promoter,2,2,0,False
+RHC,promoter,2,3,0,False
+Associació 33 45,promoter,1,3,0,False
+solki,promoter,1,2,0,False
+Barbatus D. Wreckords,promoter,1,2,0,False
+renzomichelena@gmail.com,promoter,3,2,0,False
+Dead Air Disco,promoter,1,3,0,False
+Playgirlparty,promoter,4,8,0,False
+RicardoDias,promoter,1,4,0,False
+Carmatronica,promoter,1,4,0,False
+Carmatronica (EU),promoter,1,4,0,False
+Barcelona Digital Nomads,promoter,4,3,0,False
+Rytmika,promoter,1,3,0,False
+afterworkbcn,promoter,1,5,0,False
+Disco Exotic,promoter,2,5,0,False
+BOTANIC MIRAMAR,promoter,3,2,0,False
+KeepSilent,promoter,5,7,0,False
+Dymension,promoter,3,3,0,False
+Vibesliveorficial,promoter,2,2,0,False
+WAD Sessions,promoter,3,6,0,False
+La Flia Society,promoter,9,1,0,False
 red.,promoter,19,6,0,False
+LUXUS,promoter,4,5,0,False
+Wayuuwa Tribe,promoter,1,1,0,False
+Liquid Spirit,promoter,1,1,0,False
+Video Jam,promoter,1,1,0,False
+Andim,promoter,1,2,0,False
+Vicious Events,promoter,1,6,0,False
+GERMEN,promoter,1,2,0,False
+INNER CIRCLE AGENCY,promoter,2,10,0,False
+Soundwave BCN,promoter,3,5,0,False
+Barcelona Coffee Rave,promoter,8,2,0,False
+Duvet,promoter,1,3,0,False
+Fänk Party ,promoter,4,6,0,False
+The MUDD Show,promoter,1,6,0,False
+Miracle Mgmt,promoter,1,5,0,False
+shockwerk,promoter,1,6,0,False
+2Lovers5683,promoter,1,5,0,False
+RawProd,promoter,7,17,0,False
+LUKAS303,promoter,1,2,0,False
+Stonechrom,promoter,1,2,0,False
+Primate,promoter,2,1,0,False
+After Deluxe,promoter,1,1,0,False
+Paranoid,promoter,2,3,0,False
+House at the Mansion,promoter,2,4,0,False
+BRINKO,promoter,1,4,0,False
+NEOPERREO,promoter,1,3,0,False
+Fake City Quiet Pills,promoter,1,3,0,False
+Almanac Barcelona,promoter,6,7,0,False
+45Min.collective,promoter,2,5,0,False
+The stoke travel,promoter,2,1,0,False
+The Unknown ibiza,promoter,1,2,0,False
+Tardeo93,promoter,2,1,0,False
+Disco(Nnected),promoter,1,5,0,False
+A•BUNDAH,promoter,2,2,0,False
+dantzmusik,promoter,1,3,0,False
+LANUIT.,promoter,1,4,0,False
+Trocadero.event,promoter,1,2,0,False
+L'Infern,promoter,3,2,0,False
+La Santa Bcn,promoter,1,5,0,False
+Intimate Barcelona,promoter,1,2,0,False
+Intimate bcn,promoter,1,2,0,False
+Ibiza in the City Team,promoter,1,1,0,False
+Nebo.hq,promoter,1,1,0,False
+Espresso Beats,promoter,2,4,0,False
+alboroto,promoter,5,8,0,False
+Garage68,promoter,1,2,0,False
+FREE ENTRANCE BEFORE 00:00,promoter,2,2,0,False
+Music For Airports S.L,promoter,5,5,0,False
+Cottage,promoter,2,4,0,False
+LICANCORP,promoter,1,2,0,False
+PLUS-PROMOTER,promoter,5,5,0,False
 RITO BARCELONA,promoter,41,6,0,False
+Tenderete,promoter,1,1,0,False
+4YOU_BCN,promoter,4,11,0,False
+TDBCN,promoter,1,2,0,False
+LOS ROQUES.,promoter,3,2,0,False
+INTO THE WOODS,promoter,1,3,0,False
+Fontana,promoter,1,3,0,False
+Santé Salud,promoter,1,2,0,False
+CYBERFUNK CREW,promoter,3,3,0,False
+Outf1tDj,promoter,1,2,0,False
 DOPAMINE,promoter,16,11,0,False
-Digital Pulse,promoter,16,0,0,False
-Nomad House,promoter,17,0,0,False
+The Basement ,promoter,1,2,0,False
+Sebastián cardenas,promoter,3,3,0,False
+Tribalesque,promoter,9,5,0,False
+Generator_Barcelona,promoter,7,4,0,False
+Befake,promoter,2,3,0,False
+wearenomadah,promoter,1,1,0,False
+Soulful City,promoter,7,2,0,False
+yusuke morimoto,promoter,3,1,0,False
+The Retrospective,promoter,8,5,0,False
+GARDEN GROOVES,promoter,1,3,0,False
+Sala Or,promoter,1,1,0,False
+Introspection,promoter,7,4,0,False
+Soufix,promoter,2,2,0,False
+MUCHO TECH,promoter,5,3,0,False
+Nugs On Board,promoter,1,4,0,False
+Hot Chili,promoter,7,2,0,False
+Ababol Party and Shows,promoter,1,2,0,False
+Kovak Collective,promoter,1,2,0,False
+Bumbum,promoter,2,1,0,False
+HATEDCLVB,promoter,1,3,0,False
+UFObyskyfall,promoter,5,7,0,False
+KARMA21,promoter,2,4,0,False
+Lumina,promoter,2,4,0,False
+DANCEFLOOR,promoter,2,5,0,False
+MXED Event Design,promoter,2,5,0,False
+GrooveJackers,promoter,2,5,0,False
+MARTHAROSE,promoter,1,1,0,False
+Lethal Events,promoter,1,1,0,False
+Placeo,promoter,1,2,0,False
+Cabina Agency,promoter,1,1,0,False
+NUUP,promoter,3,5,0,False
+Hakkebcn,promoter,1,4,0,False
+Hakke BCN,promoter,2,7,0,False
+Perro Pako Bar,promoter,2,1,0,False
+Restaurante Talos Canyet,promoter,2,1,0,False
+Dulce Villarrica,promoter,2,1,0,False
+Oroko Radio,promoter,1,4,0,False
+Yallah Oriental Vibes,promoter,1,2,0,False
+Will Grant,promoter,2,1,0,False
+Olivia,promoter,2,3,0,False
+Elektr-Âme,promoter,1,4,0,False
+Kosmozoo Barcelona,promoter,1,1,0,False
+Born Districte Gastronòmic,promoter,3,1,0,False
+AMARS,promoter,1,1,0,False
+Synk,promoter,1,1,0,False
+Le Petit Brunch,promoter,1,1,0,False
+Silicona,promoter,2,7,0,False
+darkfrequency,promoter,4,4,0,False
+GOLDEN GROOVE,promoter,1,3,0,False
+Tiffaniemusyckrave,promoter,1,1,0,False
+JIRAFA GRIS,promoter,1,2,0,False
+98.3,promoter,1,6,0,False
+The Lion and Lamb,promoter,1,2,0,False
+Mganz,promoter,7,10,0,False
+Javi Sabatino,promoter,6,8,0,False
+martyon,promoter,1,1,0,False
+Clubbing City,promoter,2,3,0,False
+Pa'volar,promoter,2,3,0,False
+VanguardPremiere,promoter,2,1,0,False
+Sottobosco.,promoter,1,1,0,False
+USE Recordings,promoter,4,4,0,False
+santyyyyyyyya,promoter,3,2,0,False
+FRERES COL,promoter,2,5,0,False
+vikki,promoter,1,4,0,False
+Lucasbarreda,promoter,3,10,0,False
+His&Hers,promoter,6,1,0,False
+Hey Rocker!!! Productions ,promoter,2,1,0,False
+Dance To The Underground,promoter,2,1,0,False
+Barcelona Nautic Bar,promoter,1,1,0,False
+Mariano Cima ,promoter,1,4,0,False
+Pryma,promoter,1,2,0,False
+Amy Madness,promoter,1,1,0,False
+Behind ,promoter,3,9,0,False
+MUCHO electrònic,promoter,2,2,0,False
+DnBabes,promoter,3,1,0,False
+Pemsa Leisure ,promoter,2,6,0,False
+Cat Friendly Music (Barcelona),promoter,1,1,0,False
+Nation of Locals,promoter,1,5,0,False
+Dj Grounchoo,promoter,2,6,0,False
+DJ Marchello,promoter,2,2,0,False
+Reza Momadi,promoter,9,2,0,False
+jorgi,promoter,1,1,0,False
+oswaldo berri,promoter,1,1,0,False
+derschein label,promoter,2,2,0,False
+The Dutch Night BCN,promoter,1,2,0,False
+ELSUNDANCE,promoter,1,2,0,False
+More Amor X Favor,promoter,2,4,0,False
+Cris Lagos,promoter,2,3,0,False
+D TTU,promoter,1,1,0,False
+Sirocco,promoter,2,2,0,False
+KINKY GALORE,promoter,2,2,0,False
+welovebcn,promoter,2,3,0,False
+Girls on Decks,promoter,1,2,0,False
+Overdose Music,promoter,1,2,0,False
+after society,promoter,2,2,0,False
+Allegory Of Beats,promoter,1,5,0,False
+Copacabana Aribau,promoter,1,1,0,False
+GINNHOUSE,promoter,2,1,0,False
+this is a prøject.,promoter,2,3,0,False
+Roomors Event Lab RRPP,promoter,2,1,0,False
+DARK PARTIES,promoter,1,2,0,False
+Amaphonic,promoter,1,1,0,False
+T-MusicGroup,promoter,1,3,0,False
+Zoxta,promoter,9,3,0,False
+Spellbound Sessions,promoter,1,1,0,False
+RUIDO JONDO,promoter,1,2,0,False
+LOOPAINA RECORDS SL,promoter,1,1,0,False
+Vinya Group,promoter,1,4,0,False
+Rene Fiser,promoter,1,5,0,False
+Music Mansion,promoter,1,5,0,False
+4TC The Club,promoter,9,1,0,False
+Andrés Felipe Santana Sánchez ,promoter,2,4,0,False
+Raw&Sweat,promoter,3,4,0,False
+The Secrets,promoter,2,1,0,False
+High Feelings,promoter,2,2,0,False
+The Protocol,promoter,9,1,0,False
+Drifting Echoes,promoter,1,2,0,False
+Point of View,promoter,3,6,0,False
+ENIXHA,promoter,3,2,0,False
+Get Physical Music,promoter,1,1,0,False
+Tempo Nomads,promoter,1,1,0,False
+Matteo Bigliardi,promoter,1,2,0,False
+Restless Company,promoter,4,11,0,False
+LeMirage,promoter,1,1,0,False
+VERMOOD,promoter,2,5,0,False
+DUSKGROOVE,promoter,4,7,0,False
+Caffeine Social Club,promoter,1,1,0,False
+MAD PARTIES,promoter,2,4,0,False
+Karonte,promoter,2,2,0,False
+Drifting_Echoes,promoter,1,2,0,False
+EchoSystems,promoter,1,4,0,False
+Simian,promoter,2,2,0,False
+Ticket Normal ,promoter,1,3,0,False
+Techies,promoter,2,1,0,False
+Not Only Studios,promoter,2,3,0,False
+IN KLASS COLLECTIVE,promoter,1,1,0,False
+MOS CADAQUÉS,promoter,1,2,0,False
+Bruno Juárez,promoter,1,1,0,False
+Luca Carlo,promoter,1,5,0,False
+IMPURE,promoter,4,3,0,False
+Neon Frequency,promoter,1,1,0,False
+alienonlyhardbcn,promoter,4,4,0,False
+Imaginary Friends,promoter,1,1,0,False
+MOTOR OIL ,promoter,10,2,0,False
+B-Plastic,promoter,2,4,0,False
+IDEAS,promoter,1,3,0,False
+ZIJ festival,promoter,1,1,0,False
+SPICY,promoter,1,2,0,False
+Smoothie Joints,promoter,1,3,0,False
+Dutch Night BCN,promoter,1,2,0,False
+Bucle Collective,promoter,1,1,0,False
+RAW,promoter,1,3,0,False
+Michele La Fiandra,promoter,1,1,0,False
+Terapia Mediterránea,promoter,1,1,0,False
+Oriol Temprado,promoter,1,2,0,False
+AETHER,promoter,1,4,0,False
+Bcn Electro Colective,promoter,1,1,0,False
+Sonus Experience,promoter,1,2,0,False
+Deep Secrets,promoter,1,1,0,False
+MattNS,promoter,1,2,0,False
+Le Mirage elona,promoter,1,2,0,False
+Groove Parade,promoter,3,3,0,False
+FUNKEY.BCN,promoter,2,2,0,False
+Plasma | Mixes & Talks,promoter,1,3,0,False
+Richi Kamara,promoter,1,2,0,False
+The Jabba,promoter,3,8,0,False
+Happy Tickets,promoter,2,1,0,False
+Analog Jam Sessions,promoter,2,1,0,False
+Tales of Dakno,promoter,1,3,0,False
+Higher,promoter,1,5,0,False
+ORGANIC COMMUNITY,promoter,1,4,0,False
+HOFT Barcelona,promoter,2,5,0,False
+Hold'Em,promoter,2,7,0,False
+Unlisted,promoter,1,4,0,False
+Phonodisco Club,promoter,3,1,0,False
+STIL. SOUND,promoter,1,3,0,False
+Lowpress®,promoter,1,2,0,False
+Others To The Front,promoter,2,4,0,False
+Shambala BCN,promoter,1,3,0,False
+NOMAD MEDIA,promoter,1,1,0,False
+Trencadisc,promoter,2,4,0,False
+caliu,promoter,1,3,0,False
+6SIX7,promoter,1,7,0,False
+what you do with what you have,promoter,1,4,0,False
+MA House,promoter,2,1,0,False
+RAVAGE,promoter,1,1,0,False
+Kukul Records,promoter,8,2,0,False
+Angel Lobo,promoter,8,2,0,False
+Kukul,promoter,8,2,0,False
+Akasha,promoter,1,2,0,False
+DRIFTING__ECHOES,promoter,2,6,0,False
+Inpulse,promoter,1,2,0,False
+Bobare Records,promoter,2,3,0,False
+Violeta Reynal,promoter,1,1,0,False
+Aura Experience,promoter,1,4,0,False
+The Garden Grooves,promoter,1,4,0,False
+NUDETOPIA by Maty Chevrière,promoter,1,1,0,False
+La Tomatera Records,promoter,2,2,0,False
+Beat & Bite,promoter,2,2,0,False
+Comparsa Records,promoter,2,2,0,False
+LOAD BCN,promoter,1,2,0,False
+Nalgótika by Pink Id,promoter,1,1,0,False
+VOLTAGE EVENTS,promoter,1,3,0,False
+The Planet Amsterdam,promoter,1,3,0,False
+ReConexión,promoter,1,2,0,False
+Ninshū,promoter,1,1,0,False
+FFE Producciones,promoter,1,3,0,False
+Cuates Y Techno,promoter,1,2,0,False
+SUNSEABAR BEACH CLUB,promoter,1,4,0,False

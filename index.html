@@ -77,27 +77,33 @@ button:focus{outline:none}
 /* Body shell */
 .np-shell{display:flex;flex:1;overflow:hidden}
 
-/* Sidebar */
+/* Sidebar — hidden until .app-ready, dimmer than content */
 .np-sidebar{
-  width:160px;flex-shrink:0;border-right:1px solid var(--t06);
-  padding:40px 0;display:flex;flex-direction:column;background:var(--bg);
+  width:200px;flex-shrink:0;border-right:1px solid var(--t06);
+  padding:28px 0 0;display:none;flex-direction:column;background:var(--bg);
 }
+.np-app.app-ready .np-sidebar{display:flex}
 .np-nav{
-  display:flex;align-items:center;padding:14px 32px;
-  font-family:var(--mono);font-size:0.59rem;letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--t22);cursor:pointer;border-left:2px solid transparent;
+  display:flex;align-items:center;justify-content:space-between;padding:11px 24px 11px 20px;
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;
+  color:#5C5850;cursor:pointer;border-left:2px solid transparent;
   transition:all .12s;user-select:none;
 }
-.np-nav:hover{color:var(--t45);border-left-color:var(--t10)}
-.np-nav.active{color:var(--amber);border-left-color:var(--amber)}
+.np-nav:hover{color:#9E9888;border-left-color:var(--t10)}
+.np-nav.active{color:var(--text);border-left-color:var(--text)}
+.np-nav-count{
+  font-family:var(--mono);font-size:0.55rem;font-weight:700;
+  color:var(--amber);min-width:14px;text-align:right;
+}
 .np-sidebar-foot{
-  margin-top:auto;padding:0 32px 32px;
-  font-family:var(--mono);font-size:0.6rem;letter-spacing:1px;
-  color:var(--t22);line-height:2.1;text-transform:uppercase;
+  margin-top:auto;padding:16px 20px 20px;
+  font-family:var(--mono);font-size:0.55rem;letter-spacing:0.8px;
+  color:#5C5850;line-height:2;text-transform:uppercase;
+  border-top:1px solid var(--t06);
 }
 
-/* Content area */
-.np-content{flex:1;overflow-y:auto;background:var(--bg)}
+/* Content area — slightly lighter than sidebar for depth */
+.np-content{flex:1;overflow-y:auto;background:var(--bg2)}
 
 /* Tab panels — now inside np-content */
 .shell{max-width:860px;padding:0 48px}
@@ -324,7 +330,7 @@ input[type="number"]{font-family:var(--mono)}
 
 /* ── Responsive ── */
 @media(max-width:640px){
-  .np-sidebar{display:none}
+  .np-app.app-ready .np-sidebar{display:none}
   .np-bnav{display:flex}
   .tab-panel{padding:24px 20px 60px}
   .np-hdr{padding:0 20px}
@@ -345,12 +351,9 @@ input[type="number"]{font-family:var(--mono)}
 #onboarding{overflow:hidden;max-height:calc(100vh - 60px);max-width:480px;margin:60px auto;padding:0 20px}
 .ob-step{animation:fadeIn .2s ease}
 
-/* ── SubPulse Tab Bar ── */
-.sp-tabbar{display:flex;gap:0;padding:0 48px;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;-webkit-overflow-scrolling:touch}
-.sp-tab{font-family:var(--body);font-weight:600;font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint);padding:14px 20px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .12s,border-color .12s}
-.sp-tab:hover{color:var(--t45)}
-.sp-tab.active{color:var(--amber);border-bottom-color:var(--amber)}
-@media(max-width:640px){.sp-tabbar{padding:0 12px}.sp-tab{padding:12px 14px;font-size:0.65rem}}
+/* ── SubPulse Tab Bar — hidden, replaced by sidebar ── */
+.sp-tabbar{display:none!important}
+.sp-tab{display:none}
 
 /* ── Enhanced Card Detail ── */
 .v3-facts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:16px 0}
@@ -497,10 +500,13 @@ input[type="number"]{font-family:var(--mono)}
   </div>
 
   <div class="np-shell">
-    <nav class="np-sidebar" id="npSidebar" style="display:none">
-      <div class="np-nav active" data-screen="book" onclick="npNav('book',this)">BOOK</div>
-      <div class="np-nav" data-screen="tonight" onclick="npNav('tonight',this)">TONIGHT</div>
-      <div class="np-nav" data-screen="track" onclick="npNav('track',this)">TRACK</div>
+    <nav class="np-sidebar" id="npSidebar">
+      <div class="np-nav active" data-screen="book" onclick="npNav('book',this)">FIND ARTISTS<span class="np-nav-count" id="navCountBook"></span></div>
+      <div class="np-nav" data-screen="routing" onclick="npNav('routing',this)">ROUTING<span class="np-nav-count" id="navCountRouting"></span></div>
+      <div class="np-nav" data-screen="tonight" onclick="npNav('tonight',this)">WHAT'S ON<span class="np-nav-count" id="navCountTonight"></span></div>
+      <div class="np-nav" data-screen="intel" onclick="npNav('intel',this)">SCENE INTEL</div>
+      <div class="np-nav" data-screen="check" onclick="npNav('check',this)">ARTIST CHECK</div>
+      <div class="np-nav" data-screen="track" onclick="npNav('track',this)">MY PIPELINE<span class="np-nav-count" id="navCountTrack"></span></div>
       <div class="np-sidebar-foot" id="npSidebarFoot"></div>
     </nav>
 
@@ -684,45 +690,57 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ FIND ARTISTS ═══ -->
   <div class="tab-panel" id="panel-discover">
-    <!-- v3 BOOK screen header -->
-    <div class="sc-label">FIND ARTISTS</div>
-    <div class="sc-ctx" id="v3-discover-ctx">
-      For your next event · Hasn't played city in 6 months
-      <span class="sc-edit" onclick="document.getElementById('v3-filters').style.display=document.getElementById('v3-filters').style.display==='flex'?'none':'flex'">Edit</span>
-    </div>
 
-    <!-- Collapsible filters -->
-    <div id="v3-filters" style="display:none;flex-wrap:wrap;gap:8px;margin-bottom:28px">
-      <div style="width:100%;font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-bottom:8px">FRESHNESS</div>
-      <div class="seg-picker" id="segBack" style="border:1px solid var(--t06)">
-        <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
-        <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
-        <button onclick="setPicker('segBack','filterBack',12)" data-v="12">12<span class="seg-sub">months</span></button>
-        <button onclick="setPicker('segBack','filterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
+    <!-- Clean landing state -->
+    <div id="discoverLanding" style="max-width:640px;margin:0 auto;padding-top:40px">
+      <div style="font-family:var(--disp);font-weight:800;font-size:1.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:6px">Find Artists</div>
+      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);line-height:1.7;margin-bottom:28px">Discover who to book next. Enter seed artists or let your DNA pick them automatically.</div>
+
+      <!-- Search area -->
+      <div style="margin-bottom:20px">
+        <div class="ac-wrap" style="position:relative">
+          <textarea id="seedInput" placeholder="Enter artist names (one per line) or leave empty to use your DNA" rows="3" style="width:100%;font-size:0.88rem;padding:14px;resize:vertical"></textarea>
+        </div>
+        <div id="seedH" style="margin-top:4px"></div>
       </div>
-      <input type="hidden" id="filterBack" value="6">
-      <div style="width:100%;font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-top:12px;margin-bottom:8px">NOT BOOKED FOR NEXT</div>
-      <div class="seg-picker" id="segFwd" style="border:1px solid var(--t06)">
-        <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
-        <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
-        <button onclick="setPicker('segFwd','filterFwd',6)" data-v="6">6<span class="seg-sub">months</span></button>
-      </div>
-      <input type="hidden" id="filterFwd" value="3">
-      <div style="width:100%;font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-top:12px;margin-bottom:8px">DATE &amp; SEEDS</div>
-      <div class="row" style="width:100%;gap:10px">
-        <div class="input-group" style="margin:0">
+
+      <!-- Date + result count -->
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px">
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">YOUR EVENT DATE</div>
           <div class="date-wrap">
             <input type="date" id="eventDate" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
             <span class="date-display" id="eventDateDisplay"></span>
           </div>
         </div>
-        <div class="input-group" style="margin:0;max-width:160px"><select id="minBcn" style="font-size:0.78rem"><option value="0">All matches</option><option value="20" selected>Top 20</option><option value="40">Top 40</option></select></div>
+        <div style="min-width:120px">
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">RESULTS</div>
+          <select id="minBcn" style="font-size:0.78rem;width:100%"><option value="0">All matches</option><option value="20" selected>Top 20</option><option value="40">Top 40</option></select>
+        </div>
+        <button class="btn btn-red" id="dBtn" onclick="runDiscover()" style="padding:14px 28px;font-size:0.85rem;white-space:nowrap">Find Artists</button>
       </div>
-      <div class="input-group" style="margin:8px 0 0;width:100%">
-        <div class="ac-wrap"><textarea id="seedInput" placeholder="Specific seed artists (optional — leave empty to use full DNA)" rows="2"></textarea></div>
-        <div id="seedH" style="margin-top:4px"></div>
+
+      <!-- Filters toggle -->
+      <div style="margin-bottom:20px">
+        <span class="sc-edit" onclick="document.getElementById('v3-filters').style.display=document.getElementById('v3-filters').style.display==='flex'?'none':'flex'" style="font-family:var(--mono);font-size:0.65rem;color:var(--amber);cursor:pointer;letter-spacing:1px">Advanced filters ▾</span>
+        <div id="v3-filters" style="display:none;flex-wrap:wrap;gap:8px;margin-top:12px;padding:16px;background:var(--bg2);border:1px solid var(--t06);border-radius:2px">
+          <div style="width:100%;font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">HASN'T PLAYED CITY IN</div>
+          <div class="seg-picker" id="segBack" style="border:1px solid var(--t06)">
+            <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',12)" data-v="12">12<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segBack','filterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
+          </div>
+          <input type="hidden" id="filterBack" value="6">
+          <div style="width:100%;font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:6px">NOT BOOKED FOR NEXT</div>
+          <div class="seg-picker" id="segFwd" style="border:1px solid var(--t06)">
+            <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
+            <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
+            <button onclick="setPicker('segFwd','filterFwd',6)" data-v="6">6<span class="seg-sub">months</span></button>
+          </div>
+          <input type="hidden" id="filterFwd" value="3">
+        </div>
       </div>
-      <button class="btn btn-red" id="dBtn" onclick="runDiscover()" style="margin-top:8px">Find Artists</button>
     </div>
 
     <!-- Hidden legacy IDs for JS compat -->
@@ -816,16 +834,40 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ ARTIST CHECK ═══ -->
   <div class="tab-panel" id="panel-verify">
-    <div class="sc-label">ARTIST PROFILE</div>
-    <div class="sc-ctx" style="margin-bottom:28px">Availability, history, and performance in your city</div>
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap">
-      <div class="input-group" style="margin:0;flex:1;min-width:200px">
-        <div class="ac-wrap"><input type="text" id="xIn" placeholder="Artist name…" autocomplete="off"></div>
+    <div style="max-width:640px;margin:0 auto;padding-top:20px">
+      <div style="font-family:var(--disp);font-weight:800;font-size:1.4rem;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:6px">Artist Check</div>
+      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);line-height:1.7;margin-bottom:24px">Check if an artist is available for your event — hasn't played your city recently and isn't booked on your date.</div>
+
+      <!-- Artist + Date row -->
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">ARTIST</div>
+          <div class="ac-wrap"><input type="text" id="xIn" placeholder="e.g. Kerri Chandler, Folamour, Hunee…" autocomplete="off"></div>
+        </div>
+        <div style="min-width:160px">
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">YOUR EVENT DATE</div>
+          <div class="date-wrap">
+            <input type="date" id="xDate" onchange="syncDateToAll(this.value)">
+            <span class="date-display" id="xDateDisplay"></span>
+          </div>
+        </div>
       </div>
-      <div class="input-group" style="margin:0;min-width:160px">
-        <input type="date" id="xDate" onchange="syncDateToAll(this.value)">
+
+      <!-- Exclusivity window -->
+      <div style="background:var(--bg2);border:1px solid var(--t06);border-radius:2px;padding:16px;margin-bottom:16px">
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px">EXCLUSIVITY WINDOW</div>
+        <div style="font-family:var(--body);font-size:0.82rem;color:var(--text-dim);line-height:1.6;margin-bottom:14px">
+          I want an artist who hasn't played <span style="color:var(--text)" class="xCityLabel">your city</span> in the past
+          <select id="xBackMo" style="font-size:0.82rem;width:auto;display:inline;padding:4px 8px;margin:0 2px;background:var(--bg);border:1px solid var(--t10)">
+            <option value="3">3</option><option value="6" selected>6</option><option value="9">9</option><option value="12">12</option><option value="18">18</option>
+          </select> months, and isn't booked for the next
+          <select id="xFwdMo" style="font-size:0.82rem;width:auto;display:inline;padding:4px 8px;margin:0 2px;background:var(--bg);border:1px solid var(--t10)">
+            <option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="6">6</option>
+          </select> months.
+        </div>
       </div>
-      <button class="btn btn-red" onclick="runXray()">Check</button>
+
+      <button class="btn btn-red" onclick="runXray()" style="width:100%;padding:14px;font-size:0.88rem;margin-bottom:24px">Check Availability</button>
     </div>
     <div id="xRes"></div>
   </div>
@@ -1064,23 +1106,21 @@ function raVenueId(name){
   return null;
 }
 
+// Top 30 European RA cities by event volume (excludes Tbilisi)
+const TOP30_EU=['london','berlin','barcelona','amsterdam','paris','madrid','manchester','milan','lisbon','ibiza','glasgow','dublin','edinburgh','hamburg','munich','bristol','vienna','prague','brussels','leeds','warsaw','budapest','copenhagen','cologne','rome','naples','zurich','lyon','porto','stockholm'];
 const NEARBY_CITIES=(()=>{
   const map={};
-  for(const city of EU_CITIES){
-    if(AREAS[city])map[city]=EU_CITIES.filter(c=>c!==city);
-  }
+  for(const city of TOP30_EU)map[city]=TOP30_EU.filter(c=>c!==city);
   return map;
 })();
 // Genre filters — only keep artists matching these genres
 const RA_GENRES_KEEP=new Set(['acid','acid house','afro house','ambient','baile funk','balearic','club','dancehall','deep house','disco','electro','electronica','experimental','funk','funk / soul','funk/soul','soul','garage','house','italo disco','jazz','jungle','minimal','minimal techno','progressive house','tech house','techno','uk funky']);
-const SC_GENRES_KEEP=new Set(['electronic','dance','r&b/soul','r&b','soul']);
 function genreAllowed(genres){
   if(!genres||!genres.length)return true; // no genre info = let through
   for(const g of genres){
     const gl=g.toLowerCase();
-    if(SC_GENRES_KEEP.has(gl)||RA_GENRES_KEEP.has(gl))return true;
+    if(RA_GENRES_KEEP.has(gl))return true;
     for(const k of RA_GENRES_KEEP)if(gl.includes(k)||k.includes(gl))return true;
-    for(const k of SC_GENRES_KEEP)if(gl.includes(k)||k.includes(gl))return true;
   }
   return false;
 }
@@ -1202,7 +1242,8 @@ function addVenueProfile(){
   // Temporarily set active to a blank key so onboarding saves a new one
   const d=_getAllProfiles()||{active:'',venues:{}};
   d._adding=true;_setAllProfiles(d);
-  // Show onboarding
+  // Show onboarding — hide sidebar via removing app-ready
+  document.querySelector('.np-app').classList.remove('app-ready');
   document.getElementById('mainTabs').style.display='none';
   const _tb4=document.getElementById('spTabbar');if(_tb4)_tb4.style.display='none';
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
@@ -1270,69 +1311,10 @@ async function sc(path){const r=await fetch('/api/soundcharts'+path);if(!r.ok)th
 
 // SC kept ONLY for Spotify city listener counts — X-Ray only
 async function scSearch(name){try{const d=await sc('/api/v2/artist/search/'+encodeURIComponent(name)+'?limit=1');return d.items?.length?d.items[0]:null}catch(e){return null}}
-async function scSpotifyOnly(name){
-  // Minimal SC usage: search → get city listeners. Used only in X-Ray.
-  try{const a=await scSearch(name);if(!a)return{g:0,c:0,uuid:null,imageUrl:''};
-    const sp=await scSpotify(a.uuid);return{...sp,uuid:a.uuid,imageUrl:a.imageUrl||''}}catch(e){return{g:0,c:0,uuid:null,imageUrl:''}}
-}
 
-/* ═══ LAST.FM API — free, no quota, electronic-aware similarity ═══ */
-const _lfSimilarCache=new Map();
-async function lastfmSimilar(artistName,limit=50){
-  const ck='lfs_'+norm(artistName)+'_'+limit;
-  if(_lfSimilarCache.has(ck))return _lfSimilarCache.get(ck);
-  try{
-    const r=await fetch('/api/lastfm/similar?artist='+encodeURIComponent(artistName)+'&limit='+limit);
-    if(!r.ok)return[];
-    const d=await r.json();
-    const result=(d.similarartists?.artist||[]).map(a=>({name:a.name,match:parseFloat(a.match)||0,source:'lastfm'}));
-    _lfSimilarCache.set(ck,result);
-    return result;
-  }catch(e){return[]}
-}
-const _lfTagsCache=new Map();
-async function lastfmTags(artistName){
-  const ck='lft_'+norm(artistName);
-  if(_lfTagsCache.has(ck))return _lfTagsCache.get(ck);
-  try{
-    const r=await fetch('/api/lastfm/tags?artist='+encodeURIComponent(artistName));
-    if(!r.ok)return[];
-    const d=await r.json();
-    const result=(d.toptags?.tag||[]).map(t=>t.name.toLowerCase()).slice(0,8);
-    _lfTagsCache.set(ck,result);
-    return result;
-  }catch(e){return[]}
-}
-async function lastfmSearch(query,limit=5){
-  try{
-    const r=await fetch('/api/lastfm/search?artist='+encodeURIComponent(query)+'&limit='+limit*3); // fetch more, filter down
-    if(!r.ok)return[];
-    const d=await r.json();
-    const all=(d.results?.artistmatches?.artist||[]);
-    const q=query.toLowerCase().trim();
-    // Filter: name must start with query OR query must be substring of name (for exact-ish matches)
-    // This removes Last.fm's fuzzy garbage like "Homebird" when searching "Lovebird"
-    const filtered=all.filter(a=>{
-      const n=(a.name||'').toLowerCase();
-      return n.startsWith(q)||n===q||(q.length>=4&&n.includes(q));
-    });
-    return filtered.slice(0,limit).map(a=>{
-      // Try extralarge first, then large, then any non-empty
-      const imgs=a.image||[];
-      const img=imgs.find(i=>i.size==='extralarge')
-        ||imgs.find(i=>i.size==='large')
-        ||imgs.find(i=>i['#text']&&i['#text'].length>10);
-      const url=img?.['#text']||'';
-      // Filter Last.fm placeholder (grey star)
-      const imageUrl=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')?url:'';
-      return{name:a.name,imageUrl,listeners:parseInt(a.listeners)||0};
-    });
-  }catch(e){return[]}
-}
 
 /* ═══ ARTIST IMAGE CACHE ═══
-   Shared image lookup for all parts of the app.
-   Source: Last.fm artist.getInfo (free, no quota).
+   Source priority: Local pre-built index → RA og:image → Beatport (during DNA build).
    Cache: sessionStorage per artist name to avoid repeat fetches.
    Concurrency: max 3 parallel requests to avoid flooding the server. */
 const _imgCache=new Map();
@@ -1398,20 +1380,6 @@ async function getArtistImage(name){
             }
           }
         }catch(e){}
-        // Source 2: Last.fm artist.getInfo — fallback
-        try{
-          const r=await fetch('/api/lastfm/info?artist='+encodeURIComponent(name));
-          if(r.ok){
-            const d=await r.json();
-            const imgs=d?.artist?.image||[];
-            const img=imgs.find(i=>i.size==='extralarge')
-              ||imgs.find(i=>i.size==='large')
-              ||imgs.find(i=>i['#text']&&i['#text'].length>10);
-            const url=img?.['#text']||'';
-            const valid=url&&!url.includes('2a96cbd8b46e442fc41c2b86b821562f')&&!url.includes('placeholder')&&url.startsWith('http')?url:'';
-            if(valid){_imgCache.set(k,valid);_imgCacheSave();resolve(valid);return}
-          }
-        }catch(e){}
         // No image from any source
         _imgCache.set(k,'');_imgCacheSave();resolve('');
       }catch(e){_imgCache.set(k,'');resolve('')}
@@ -1435,38 +1403,11 @@ function artistImgTag(name,imageUrl,size=40){
   if(!imageUrl||imageUrl.length<10)return ph;
   return`<img src="${esc(imageUrl)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0" onerror="this.outerHTML='${ph.replace(/'/g,"\\'")}'">`;
 }
-async function mbArtistTags(artistName){
-  try{
-    const r=await fetch('/api/musicbrainz/artist?name='+encodeURIComponent(artistName));
-    if(!r.ok)return{tags:[],labels:[]};
-    const d=await r.json();
-    const artists=d.artists||[];
-    if(!artists.length)return{tags:[],labels:[]};
-    const best=artists[0];
-    const tags=(best.tags||[]).map(t=>t.name.toLowerCase());
-    // Fetch label relationships from full lookup
-    if(best.id){
-      try{
-        const r2=await fetch('/api/musicbrainz/lookup?mbid='+best.id);
-        const d2=await r2.json();
-        const labels=(d2.relations||[])
-          .filter(rel=>rel['target-type']==='label')
-          .map(rel=>rel.label?.name).filter(Boolean).slice(0,3);
-        const allTags=[...(d2.tags||[]).map(t=>t.name.toLowerCase()),...tags];
-        return{tags:[...new Set(allTags)].slice(0,10),labels};
-      }catch(e){}
-    }
-    return{tags,labels:[]};
-  }catch(e){return{tags:[],labels:[]}}
-}
-
 /* ═══ FUSION SIMILAR ARTISTS ENGINE ═══
-   Combines 4 sources into a single ranked list:
-   1. RA co-billing (35%) — actual promoter decisions, strongest live signal
-   2. Last.fm similar (30%) — fan listening co-occurrence, electronic-weighted
-   3. RA worldwide co-billing (25%) — global circuit connections
-   4. MusicBrainz label network (10%) — scene categorisation bonus
-   No SC calls. Result: richer, more electronic-specific, zero quota cost. */
+   Combines 3 RA sources into a single ranked list:
+   1. RA official related (60pts) — RA's own algorithm
+   2. RA local co-billing (40pts) — actual promoter decisions in YOUR city
+   3. RA worldwide co-billing (25pts) — global circuit connections */
 async function fusionRelatedArtists(seedName, localEvents, limit=40){
   const results=new Map();
 
@@ -1494,11 +1435,6 @@ async function fusionRelatedArtists(seedName, localEvents, limit=40){
   const raGlobal=await raWorldwideRelated(seedName).catch(()=>[]);
   for(const r of raGlobal.slice(0,25))addArtist(r.name,Math.min(25,r.count*6),'ra_global');
 
-  // Source 4: Last.fm similar (15pts max) — broad genre signal, lowest weight
-  // Useful for finding artists outside the live circuit but in the same sonic space
-  const lfSimilar=await lastfmSimilar(seedName,50);
-  for(const a of lfSimilar)addArtist(a.name,Math.round(a.match*15),'lastfm');
-
   // Cross-validation bonus: appearing in multiple sources = strong signal
   for(const[,r] of results){
     if(r.sources.length>=2)r.score+=15;
@@ -1512,12 +1448,27 @@ async function fusionRelatedArtists(seedName, localEvents, limit=40){
     .map(r=>({name:r.name,score:r.score,sources:r.sources,uuid:null,imageUrl:'',seeds:[seedName]}));
 }
 
-/* ═══ GENRE ENRICHMENT — Last.fm replaces SC for genres ═══ */
-async function enrichGenresFromLastfm(candidate){
+/* ═══ GENRE ENRICHMENT — Beatport primary, RA event genres fallback ═══ */
+async function enrichGenres(candidate, cityEvents){
   if(candidate.genres&&candidate.genres.length>0)return; // already have genres
+  // Check RA event genres first (zero API calls, instant)
+  if(cityEvents&&cityEvents.length){
+    const n=norm(candidate.name);
+    const genres=new Set();
+    for(const ev of cityEvents){
+      if((ev.artists||[]).some(a=>norm(a)===n)){
+        for(const g of(ev.genres||[]))genres.add((g.name||g).toLowerCase());
+      }
+    }
+    if(genres.size){candidate.genres=[...genres].slice(0,8);return}
+  }
+  // Only call Beatport if RA had nothing (saves 2 API calls per candidate)
   try{
-    const tags=await lastfmTags(candidate.name);
-    if(tags.length)candidate.genres=tags;
+    const bp=await beatportArtistGenres(candidate.name);
+    if(bp&&bp.genres&&Object.keys(bp.genres).length){
+      candidate.genres=Object.keys(bp.genres).slice(0,8).map(g=>g.toLowerCase());
+      return;
+    }
   }catch(e){}
 }
 
@@ -1564,25 +1515,28 @@ function searchArtistIndex(query,limit=8){
   return results;
 }
 
-/* Search artists — RA artist index first (instant, ranked), Last.fm fallback */
+/* Search artists — RA artist index first (instant, ranked), Beatport fallback */
 async function searchArtists(query,limit=8){
   const local=searchArtistIndex(query,limit);
   if(local.length>=Math.min(3,limit))return local;
-  // Supplement with Last.fm for artists not in the city cache
+  // Supplement with Beatport search for artists not in the city cache
   try{
-    const results=await lastfmSearch(query,limit);
-    if(results.length){
-      const seen=new Set(results.map(r=>norm(r.name)));
-      for(const l of local){if(!seen.has(norm(l.name))){results.push(l);seen.add(norm(l.name))}}
-      return results.slice(0,limit);
+    const r=await fetch('/api/beatport/search?q='+encodeURIComponent(query));
+    if(r.ok){
+      const d=await r.json();
+      const bpResults=(d.artists||[]).map(a=>({name:a.name,imageUrl:a.image||'',count:0}));
+      if(bpResults.length){
+        const seen=new Set(local.map(l=>norm(l.name)));
+        const merged=[...local];
+        for(const b of bpResults){if(!seen.has(norm(b.name))){merged.push(b);seen.add(norm(b.name))}}
+        return merged.slice(0,limit);
+      }
     }
   }catch(e){}
   return local;
 }
 
-// Legacy SC functions kept for X-Ray Spotify data only
-async function scSearchMulti(query,limit=5){try{const d=await sc('/api/v2/artist/search/'+encodeURIComponent(query)+'?limit='+limit);return d.items||[]}catch(e){return[]}}
-async function scRelated(uuid){return[]} // disabled — use fusionRelatedArtists instead
+
 
 /* RA-based related artists: artists who share events/lineups with seed artists.
    This is more accurate for booking because it's based on real co-billing patterns. */
@@ -1747,27 +1701,7 @@ async function beatportArtistGenres(artistName){
 }
 
 /* ═══ TRAXSOURCE GENRE ENRICHMENT ═══ */
-const _tsGenreCache=new Map();
-async function traxsourceArtistGenres(artistName){
-  const ck=norm(artistName);
-  if(_tsGenreCache.has(ck))return _tsGenreCache.get(ck);
-  try{
-    const sr=await fetch('/api/traxsource/search?q='+encodeURIComponent(artistName));
-    if(!sr.ok)return null;
-    const sd=await sr.json();
-    const artists=sd.artists||[];
-    if(!artists.length)return null;
-    const an=artistName.toLowerCase().replace(/[^a-z0-9]/g,'');
-    const match=artists.find(a=>(a.name||'').toLowerCase().replace(/[^a-z0-9]/g,'')===an)||artists[0];
-    if(!match||!match.id)return null;
-    const gr=await fetch('/api/traxsource/artist/'+match.id+'/genres');
-    if(!gr.ok)return null;
-    const gd=await gr.json();
-    const result={traxsourceId:match.id,genres:gd.genres||{}};
-    _tsGenreCache.set(ck,result);
-    return result;
-  }catch(e){return null}
-}
+
 
 const _raOfficialCache=new Map();
 async function raOfficialRelated(seedName){
@@ -1865,9 +1799,6 @@ async function scSpotify(uuid){
   const cp=(i.cityPlots||[]).find(c=>c.cityName&&c.cityName.toLowerCase().includes(city));
   return{g:i.value||0,c:cp?cp.value||0:0};
 }
-async function scMeta(uuid){
-  try{const d=await sc('/api/v2.9/artist/'+uuid);return d.object||d||null}catch(e){return null}
-}
 
 /* ═══ VENUE DNA ENGINE ═══ */
 
@@ -1886,7 +1817,7 @@ function dnaValid(){
 /* Build DNA from venue/promoter's past 3 years of bookings.
    Promoters: uses RA promoter ID → ARCHIVE per year + LATEST + PREVIOUS (confirmed working).
    Venues: uses RA venue ID from cache → name match fallback.
-   Genres: Last.fm (free, electronic-specific). SC only for X-Ray Spotify. */
+   Genres: Beatport (primary) + RA event tags (fallback). SC only for X-Ray Spotify. */
 async function buildDNA(statusCb,artistCb){
   const p=P(),venueName=p.venue,city=p.city||'barcelona';
   const isPromoter=p.type==='promoter';
@@ -2029,7 +1960,7 @@ async function buildDNA(statusCb,artistCb){
   const artistNames=[...artistSet.values()];
   if(statusCb)statusCb(artistNames.length+' unique artists — analyzing…');
 
-  // Build profiles — RA data first, Last.fm genres (free, electronic-specific), SC Spotify optional
+  // Build profiles — RA data + Beatport genres for headliners
   const profiles=[];
   for(let i=0;i<artistNames.length;i++){
     const name=artistNames[i];
@@ -2207,6 +2138,14 @@ async function buildDNA(statusCb,artistCb){
   // Build genre weights
   const genreCounts={};let totalGenreTags=0;
   for(const p of profiles)for(const g of p.genres){genreCounts[g]=(genreCounts[g]||0)+1;totalGenreTags++}
+  // Include anchor Beatport genres — user's aspirational artists define their scene
+  if(p._anchorGenres){
+    for(const[g,c] of Object.entries(p._anchorGenres)){
+      const gl=g.toLowerCase();
+      genreCounts[gl]=(genreCounts[gl]||0)+Math.ceil(c/10); // weight by track count
+      totalGenreTags+=Math.ceil(c/10);
+    }
+  }
   const genreWeights={};
   for(const[g,c] of Object.entries(genreCounts))genreWeights[g]=c/totalGenreTags;
   const sortedGenres=Object.entries(genreWeights).sort((a,b)=>b[1]-a[1]);
@@ -2232,7 +2171,7 @@ async function buildDNA(statusCb,artistCb){
     for(const r of rel.slice(0,10))secondDegreeSet.add(norm(r.name));
   }
 
-  // Compute RA genre groups from actual event genre tags — far more reliable than Last.fm
+  // Compute RA genre groups from actual event genre tags — the primary genre source for events
   const raGenreCount=new Map();
   for(const ev of venueEvents){
     for(const g of(ev.genres||[])){
@@ -2242,6 +2181,16 @@ async function buildDNA(statusCb,artistCb){
   }
   const raTopGenres=[...raGenreCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name])=>name);
   const raSceneGroupsSet=new Set(raTopGenres.map(g=>_genreGroupMap.get(g.toLowerCase())).filter(Boolean));
+  
+  // Include user's genre focus from onboarding — they told us their scene explicitly
+  const userGenreFocus=p.genreFocus||[];
+  for(const g of userGenreFocus){
+    // Map genre name to scene group
+    const group=_genreGroupMap.get(g.toLowerCase());
+    if(group)raSceneGroupsSet.add(group);
+    // Also add raw genre name to ensure direct matching works
+    raGenreCount.set(g, (raGenreCount.get(g)||0)+10); // high weight — user said it explicitly
+  }
 
   // Auto-detect venues from promoter's event history
   if(isPromoter&&venueEvents.length){
@@ -2327,11 +2276,12 @@ async function buildDNA(statusCb,artistCb){
     genres:genreWeights,
     topGenres:sortedGenres.slice(0,8).map(([g,w])=>({genre:g,weight:Math.round(w*100)})),
     raTopGenres,                          // RA curated genre tags from your events
-    raSceneGroups:[...raSceneGroupsSet],  // e.g. ['house','disco','melodic']
+    raSceneGroups:[...raSceneGroupsSet],  // e.g. ['house_disco','techno','melodic']
+    _userGenreFocus:userGenreFocus,  // user's onboarding genre picks — preserved for fingerprint
     cloud:extendedCloud,
     secondDegree:[...secondDegreeSet],
     coBillNetwork:coBillNetwork.slice(0,30).map(c=>({name:c.name,coBills:c.totalCoBills,via:c.connectedTo.slice(0,3)})),
-    profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl,raShows:p.raShows||1,raAvgAtt:p.raAvgAtt||0,raFollowers:p.raFollowers,isReal:p.isReal,avgBillingPos:p.avgBillingPos,titleMatches:p.titleMatches,headlinerScore:p.headlinerScore||0,beatportGenres:p.beatportGenres||null,beatportSubgenres:p.beatportSubgenres||null,traxsourceGenres:p.traxsourceGenres||null})),
+    profiles:profiles.map(p=>({name:p.name,uuid:p.uuid,bcn:p.bcn,global:p.global,genres:p.genres,imageUrl:p.imageUrl,raShows:p.raShows||1,raAvgAtt:p.raAvgAtt||0,raFollowers:p.raFollowers,isReal:p.isReal,avgBillingPos:p.avgBillingPos,titleMatches:p.titleMatches,headlinerScore:p.headlinerScore||0,beatportGenres:p.beatportGenres||null,beatportSubgenres:p.beatportSubgenres||null})),
     archiveYearsFetched:window._dnaBuildMeta?.archiveYearsFetched??null,
     dnaComplete:window._dnaBuildMeta?.dnaComplete??true,
     venueAffinity:venueAffinityMap,
@@ -2361,17 +2311,15 @@ async function buildDNA(statusCb,artistCb){
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── RA GENRE TAXONOMY ──
-   RA's own curated genres for electronic music — far more precise than Last.fm.
+   RA's own curated genres for electronic music — the primary genre source for electronic music events.
    Grouped by scene affinity so we can compute overlap intelligently. */
 const RA_GENRE_GROUPS={
-  techno:     ['Techno','Industrial / EBM','Noise','Hardcore'],
-  house:      ['House','Deep House','Tech House','Afro House','Organic House / Downtempo'],
-  melodic:    ['Melodic House & Techno','Progressive House','Electronica'],
-  minimal:    ['Minimal / Deep Tech'],
-  disco:      ['Disco / Funk','Nu Disco / Indie Dance'],
-  electronic: ['Electronica','Ambient','Experimental / Avant-garde'],
-  dnb:        ['Drum & Bass / Jungle','Breaks / Breakbeat / UK Bass'],
-  other:      ['Hip-Hop / R&B','Reggae / Dancehall','Latin / Tropical'],
+  house_disco: ['House','Deep House','Tech House','Afro House','Organic House / Downtempo','Disco / Funk','Nu Disco / Indie Dance','Soulful House','Jackin House'],
+  techno:      ['Techno','Industrial / EBM','Noise','Hardcore','Minimal / Deep Tech'],
+  melodic:     ['Melodic House & Techno','Progressive House'],
+  electronic:  ['Electronica','Ambient','Experimental / Avant-garde'],
+  dnb:         ['Drum & Bass / Jungle','Breaks / Breakbeat / UK Bass'],
+  urban:       ['Hip-Hop / R&B','Reggae / Dancehall','Latin / Tropical'],
 };
 
 // Flatten to norm→group map for O(1) lookup
@@ -2406,6 +2354,8 @@ function isEventDaytime(startTime){
 function getDNAFingerprint(dna){
   if(!dna)return null;
   if(dna._fingerprint)return dna._fingerprint; // cached
+  // Invalidate cache if user genre focus changed
+  delete dna._fingerprint;
 
   // Artist sets for O(1) lookup
   const bookedNorms=new Set((dna.profiles||[]).map(p=>norm(p.name)));
@@ -2415,17 +2365,21 @@ function getDNAFingerprint(dna){
   const secondDegree=new Set(dna.secondDegree||[]);
 
   // Genre fingerprint from DNA's top genres
-  // These come from Last.fm tags aggregated across all booked artists
+  // These come from RA event genre tags + Beatport artist genres + user's onboarding picks
   const dnaGenres=new Set((dna.topGenres||[]).map(g=>(g.genre||g).toLowerCase()));
+  // Add user's explicit genre picks — they know their scene better than any algorithm
+  if(dna._userGenreFocus){
+    for(const g of dna._userGenreFocus)dnaGenres.add(g.toLowerCase());
+  }
 
   // Scene group fingerprint — which RA genre groups does this DNA represent?
-  // Prefer RA's own genre tags (raSceneGroups) over Last.fm-derived groups
+  // Prefer RA's own genre tags (raSceneGroups) — most reliable for scene detection
   const dnaSceneGroups=new Set();
   if(dna.raSceneGroups&&dna.raSceneGroups.length){
     // Use RA's curated genre classification — most accurate
     for(const g of dna.raSceneGroups)dnaSceneGroups.add(g);
   } else {
-    // Fall back to Last.fm-derived groups
+    // Fall back to Beatport-derived genre groups
     for(const g of dnaGenres){
       const group=_genreGroupMap.get(g);
       if(group)dnaSceneGroups.add(group);
@@ -2492,7 +2446,7 @@ function sceneRelevance(artistName, dna){
   // Tier 3: No direct connection — try genre matching
   if(tier===4){
     // We don't have genre data for this artist at scoring time
-    // Genre matching happens at display time via enrichGenresFromLastfm
+    // Genre matching happens at display time via enrichGenres (Beatport + RA event genres)
     // So here we give a neutral score — it gets refined when genres load
     score=20;tier=4;reason='Not in your network';breakdown={circuit:0};
   }
@@ -2504,7 +2458,7 @@ function sceneRelevance(artistName, dna){
 /* ── EVENT THREAT CLASSIFICATION ──
    Is this event competition for your audience?
    
-   Uses RA's own genre tags (far better than Last.fm for events).
+   Uses RA's own curated genre tags.
    Also considers time-of-day — daytime vs nighttime audiences don't overlap.
    
    Returns {tier:1-4, score:0-100, reason, isCompetition:bool}
@@ -2519,11 +2473,6 @@ function eventThreat(event, dna){
   const p=P();
   const isPromoterMode=p.type==='promoter';
 
-  // Time-of-day mismatch — daytime vs nighttime audiences don't compete as hard
-  const eventIsDaytime=isEventDaytime(event.startTime);
-  const timeMismatch=fp.dnaIsDaytime!==eventIsDaytime&&(fp.dnaIsDaytime||eventIsDaytime);
-  const timePenalty=timeMismatch?0.6:1.0;
-
   // ═══ STEP 1: EXPLICIT COMPETITOR CHECK ═══
   if(isPromoterMode){
     const competitors=p.competitors||[];
@@ -2532,119 +2481,97 @@ function eventThreat(event, dna){
     const matchedComp=competitors.find(c=>{const cn=norm(c.name||c);return cn.length>2&&(evVenue.includes(cn)||evTitle.includes(cn))});
     if(matchedComp){
       return{
-        tier:1,score:Math.round(95*timePenalty),
+        tier:1,score:95,
         reason:'Tagged competitor: '+(matchedComp.name||matchedComp),
-        isCompetition:true,timeMismatch,
+        isCompetition:true,
         signals:{competitor:100}
       };
     }
   }
 
-  // ═══ STEP 2: ARTIST THREAT (0-100) ═══
+  // ═══ STEP 2: GENRE MATCH (primary signal) ═══
+  let genreScore=0,genreReason='',matchingGroups=[];
+  const raGenreNames=(event.genres||[]).map(g=>typeof g==='string'?g:g.name||'');
+  const eventGroups=eventSceneGroups(raGenreNames);
+  
+  if(eventGroups.length&&fp.dnaSceneGroups.size){
+    matchingGroups=eventGroups.filter(g=>fp.dnaSceneGroups.has(g));
+    if(matchingGroups.length){
+      genreScore=70;
+      genreReason='Same audience: '+matchingGroups.join(', ');
+    }
+  }
+  // Direct genre name match fallback (catches subgenres not in group map)
+  if(!genreScore){
+    const evGenresLower=raGenreNames.map(g=>g.toLowerCase());
+    if(evGenresLower.length&&fp.dnaGenres.size){
+      const matches=evGenresLower.filter(g=>fp.dnaGenres.has(g));
+      if(matches.length>=1){genreScore=60;genreReason='Genre match: '+matches[0]}
+    }
+  }
+
+  // ═══ STEP 3: ARTIST OVERLAP (amplifier, not primary) ═══
   const artists=event.artists||[];
   let artistScore=0,artistReason='';
   for(const a of artists){
     const n=norm(a.name||a);
-    const aName=a.name||a;
     let s=0,type='';
-    if(fp.bookedNorms.has(n))      {s=85;type='Played your events'}
-    else if(fp.coBillMap.has(n))   {s=70;type='Shares lineups'}
-    else if(fp.cloudNorms.has(n))  {s=55;type='In your network'}
-    else if(fp.secondDegree.has(n)){s=40;type='2nd-degree connection'}
+    if(fp.bookedNorms.has(n))      {s=90;type='Played your events'}
+    else if(fp.coBillMap.has(n))   {s=75;type='Shares lineups'}
+    else if(fp.cloudNorms.has(n))  {s=60;type='In your network'}
+    else if(fp.secondDegree.has(n)){s=40;type='2nd-degree'}
     if(!s)continue;
-    
-    // Follower gate — skip tiny local acts
-    const profMatch=(dna.profiles||[]).find(pp=>norm(pp.name)===n);
-    const followers=profMatch?.raFollowers;
-    if(followers!==null&&followers!==undefined&&followers<100)continue;
-    
-    // Caliber amplifier — bigger artists are bigger threats
-    if(followers&&dna.avgHeadlinerFollowers>0){
-      const ratio=followers/dna.avgHeadlinerFollowers;
-      if(ratio>2)s=Math.min(100,Math.round(s*1.3));      // much bigger than your avg = amplified threat
-      else if(ratio<0.3)s=Math.round(s*0.7);             // much smaller = reduced threat
-    }
-    
-    if(s>artistScore){artistScore=s;artistReason=type+': '+aName}
+    if(s>artistScore){artistScore=s;artistReason=type+': '+(a.name||a)}
   }
 
-  // ═══ STEP 3: VENUE AFFINITY (0-100) ═══
-  let venueAffinityScore=0,venueAffinityReason='';
+  // ═══ STEP 4: VENUE AFFINITY ═══
+  let venueScore=0,venueReason='';
   const affinity=dna.venueAffinity||{};
-  const evVenueName=event.venue||'';
-  const aff=affinity[evVenueName]||0;
-  if(aff>=50)     {venueAffinityScore=90;venueAffinityReason=evVenueName+' ('+aff+'% artist overlap)'}
-  else if(aff>=30){venueAffinityScore=70;venueAffinityReason=evVenueName+' ('+aff+'% overlap)'}
-  else if(aff>=15){venueAffinityScore=45;venueAffinityReason=evVenueName+' ('+aff+'% overlap)'}
-  else if(aff>=5) {venueAffinityScore=20;venueAffinityReason=evVenueName+' ('+aff+'% overlap)'}
+  const aff=affinity[event.venue||'']||0;
+  if(aff>=30)     {venueScore=80;venueReason=(event.venue||'')+' ('+aff+'% artist overlap)'}
+  else if(aff>=15){venueScore=50;venueReason=(event.venue||'')+' ('+aff+'% overlap)'}
+  else if(aff>=5) {venueScore=25;venueReason=(event.venue||'')+' ('+aff+'% overlap)'}
 
-  // ═══ STEP 4: GENRE MATCH (0-100) ═══
-  let genreScore=0,genreReason='';
-  const raGenreNames=(event.genres||[]).map(g=>typeof g==='string'?g:g.name||'');
-  const eventGroups=eventSceneGroups(raGenreNames);
-  if(eventGroups.length&&fp.dnaSceneGroups.size){
-    const matchingGroups=eventGroups.filter(g=>fp.dnaSceneGroups.has(g));
-    if(matchingGroups.length>=1){
-      genreScore=50;
-      genreReason='Same scene: '+matchingGroups.join(', ');
-      // Subgenre precision bonus — Beatport/Traxsource data
-    }
-  }
-  // Last.fm fallback
-  if(!genreScore){
-    const lastfmGenres=(event.genres_lastfm||[]);
-    if(lastfmGenres.length&&fp.dnaGenres.size){
-      const matches=lastfmGenres.filter(g=>fp.dnaGenres.has(g.toLowerCase()));
-      if(matches.length>=1){genreScore=30;genreReason='Genre adjacent: '+matches[0]}
-    }
-  }
-
-  // ═══ STEP 5: ATTENDANCE THREAT (0-100) ═══
-  let attendScore=0,attendReason='';
+  // ═══ STEP 5: ATTENDANCE WEIGHT ═══
+  let attendScore=0;
   const evAtt=event.attending||0;
   const myAvg=dna.avgAttendance||100;
   if(evAtt>0){
     const ratio=evAtt/myAvg;
-    if(ratio>=2)      {attendScore=90;attendReason=fmt(evAtt)+' interest (2×+ your avg)'}
-    else if(ratio>=1) {attendScore=70;attendReason=fmt(evAtt)+' interest (same league)'}
-    else if(ratio>=0.5){attendScore=50;attendReason=fmt(evAtt)+' interest'}
-    else              {attendScore=20;attendReason=fmt(evAtt)+' interest (smaller)'}
+    if(ratio>=2)       attendScore=90;
+    else if(ratio>=1)  attendScore=70;
+    else if(ratio>=0.5)attendScore=50;
+    else               attendScore=20;
   }
 
-  // ═══ STEP 6: COMBINE WITH FLOOR PROTECTION ═══
-  const weighted=Math.round(
-    artistScore      * 0.35 +
-    venueAffinityScore * 0.25 +
-    genreScore       * 0.20 +
+  // ═══ STEP 6: COMBINE — genre is primary signal ═══
+  const finalScore=Math.round(
+    genreScore       * 0.40 +
+    artistScore      * 0.25 +
+    venueScore       * 0.15 +
     attendScore      * 0.20
   );
-  
-  // Floor: strong single signals shouldn't be diluted
-  const artistFloor=Math.round(artistScore*0.7);
-  const venueFloor=Math.round(venueAffinityScore*0.7);
-  const attendFloor=Math.round(attendScore*0.5);
-  
-  let finalScore=Math.max(weighted,artistFloor,venueFloor,attendFloor);
-  
-  // Apply time penalty
-  finalScore=Math.round(finalScore*timePenalty);
-  
+
   // Build reason from strongest signal
   let reason='';
-  const signals={artist:artistScore,venue:venueAffinityScore,genre:genreScore,attendance:attendScore};
-  if(artistScore>=venueAffinityScore&&artistScore>=genreScore&&artistScore>=attendScore)reason=artistReason;
-  else if(venueAffinityScore>=artistScore&&venueAffinityScore>=genreScore)reason=venueAffinityReason;
-  else if(genreScore>=attendScore)reason=genreReason;
-  else reason=attendReason;
-  
-  if(timeMismatch&&reason)reason+=' (different time of day)';
-  if(!reason)reason='Different scene';
+  if(artistScore>=70)reason=artistReason;
+  else if(genreScore>=60)reason=genreReason;
+  else if(venueScore>=50)reason=venueReason;
+  else if(genreScore>0)reason=genreReason;
+  else reason='Different scene';
 
-  // Tier classification
-  const tier=finalScore>=75?1:finalScore>=50?2:finalScore>=25?3:4;
-  const isCompetition=tier<=2&&!timeMismatch;
+  const signals={genre:genreScore,artist:artistScore,venue:venueScore,attendance:attendScore};
 
-  return{tier,score:finalScore,reason,isCompetition,timeMismatch,signals};
+  // Tier: genre match alone is enough for Tier 2 (Same Audience)
+  let tier;
+  if(finalScore>=70||(artistScore>=75))tier=1; // Direct competition
+  else if(finalScore>=40||(genreScore>=60))tier=2; // Same audience
+  else if(finalScore>=20||(genreScore>=30))tier=3; // Adjacent
+  else tier=4; // Different scene
+
+  const isCompetition=tier<=2;
+
+  return{tier,score:finalScore,reason,isCompetition,matchingGroups,signals};
 }
 
 /* Legacy wrapper — keeps existing callers working during transition */
@@ -2655,12 +2582,7 @@ function dnaScore(candidate,dna){
   return{score:rel.score,flags:[],label:rel.label,listenerScore:0,networkScore:rel.score,cloudBonus:0};
 }
 
-/* Get genre info for a candidate — Last.fm fallback when RA genres unavailable */
-async function enrichGenres(candidate){
-  if(candidate.genres&&candidate.genres.length>0)return;
-  await enrichGenresFromLastfm(candidate);
-}
-
+/* Get genre info for a candidate — Beatport primary, RA event genres fallback */
 /* ═══ CACHED RA ENGINE ═══ */
 
 const CACHE_KEY='libro_ra_cache_v3';
@@ -2688,8 +2610,16 @@ function cacheValid(){
   const c=getCache();
   if(!c)return false;
   if(c.areaCode!==areaId())return false;
-  if(Date.now()-c.ts>CACHE_MAX_AGE)return false;
-  if(!c.events||c.events.length<500)return false; // Barcelona should have thousands — reject tiny caches
+  // Missing or invalid timestamp = stale (was causing year-old caches to persist)
+  if(!c.ts||typeof c.ts!=='number'||Date.now()-c.ts>CACHE_MAX_AGE)return false;
+  // Reject cache whose date range doesn't cover today (catches year-old data)
+  if(c.events&&c.events.length>0){
+    const dates=c.events.map(e=>e.date).filter(Boolean).sort();
+    const newest=dates[dates.length-1];
+    const today=new Date().toISOString().slice(0,10);
+    if(newest<today){console.warn('[Cache] Stale: newest event is',newest);return false}
+  }
+  if(!c.events||c.events.length<500)return false;
   // Reject old format: missing genres/startTime or object artists
   const s=c.events[0];
   if(s&&(typeof s.artists?.[0]==='object'||s.genres===undefined)){
@@ -3953,8 +3883,31 @@ function npNav(screen, el) {
       (getDNA()&&getDNA().topGenres?(getDNA().topGenres.slice(0,2).join(' · ').toUpperCase()):'');
   }
 
+  if (screen === 'check') {
+    document.querySelectorAll('.xCityLabel').forEach(el=>el.textContent=cityName());
+    const xd=document.getElementById('xDate');
+    const xdd=document.getElementById('xDateDisplay');
+    if(xd&&xd.value&&xdd)xdd.textContent=new Date(xd.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  }
+
   // Show routing opportunity banner on BOOK screen
   if (screen === 'book') maybeShowRoutingBanner();
+
+  // Update nav count badges
+  updateNavCounts();
+}
+
+/* Update sidebar nav count badges from current DOM state */
+function updateNavCounts(){
+  const bc=document.getElementById('navCountBook');
+  const rc=document.getElementById('navCountRouting');
+  const tc=document.getElementById('navCountTrack');
+  // Discover results
+  if(bc){const r=document.getElementById('dRes');const n=r?r.querySelectorAll('.v3-card').length:0;bc.textContent=n||''}
+  // Routing results
+  if(rc){const r=document.getElementById('rteRes');const n=r?r.querySelectorAll('.v3-rcard').length:0;rc.textContent=n||''}
+  // Pipeline count
+  if(tc){const n=saved().length;tc.textContent=n||''}
 }
 
 function injectTonightHeader() {
@@ -3977,9 +3930,7 @@ function showApp(){
   document.getElementById('onboarding').style.display='none';
   document.getElementById('mainTabs').style.display='none';
 
-  // Show tab bar
-  const tabbar = document.getElementById('spTabbar');
-  if (tabbar) tabbar.style.display = 'flex';
+  // Show sidebar via app-ready class (CSS-gated)
   document.querySelector('.np-app').classList.add('app-ready');
 
   // Default to BOOK screen
@@ -4020,7 +3971,6 @@ function showApp(){
   if(wrap)wrap.style.display='inline-block';
   updateCityLabels();
   updateContextBanners();
-  setTimeout(()=>{const dRes=document.getElementById('dRes');if(dRes&&!dRes.children.length)runDiscover()},400);
 
   if(!dnaValid()&&venueName){
     document.getElementById('onboarding').style.display='block';
@@ -4040,6 +3990,7 @@ function showApp(){
       '<br>'+(p2.city||'').toUpperCase()+
       (d2&&d2.topGenres&&d2.topGenres.length?'<br>'+d2.topGenres.slice(0,2).join(' · ').toUpperCase():'');
   }
+  updateNavCounts();
 }
 async function rebuildDNA(silent){
   if(!silent)showCacheStatus('Rebuilding venue DNA…');
@@ -4075,6 +4026,7 @@ function rebuildDNAFromScratch(){
   if(!confirm('Rebuild DNA? This re-scans all your bookings (takes ~60 seconds).'))return;
   localStorage.removeItem('np_dna_'+_vk());
   // Show onboarding step 4 (DNA build) directly
+  document.querySelector('.np-app').classList.remove('app-ready');
   document.getElementById('onboarding').style.display='';
   document.getElementById('mainTabs').style.display='none';
   const _tb3=document.getElementById('spTabbar');if(_tb3)_tb3.style.display='none';
@@ -4228,8 +4180,7 @@ function loadDNASeedsIntoDiscover(){
     return Object.entries(p.beatportGenres).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g).join(', ');
   };
   const tsGenreStr=p=>{
-    if(!p.traxsourceGenres||!Object.keys(p.traxsourceGenres).length)return'';
-    return Object.entries(p.traxsourceGenres).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g).join(', ');
+    return'';
   };
   
   let html='<div class="card" style="border-color:var(--amber);margin-bottom:16px"><h3 style="color:var(--amber);margin-bottom:4px">Your DNA: '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">All artists with ≥100 RA followers from your booking history. Click any artist to use as a discovery seed.</div>';
@@ -4301,7 +4252,8 @@ async function runDiscover(){
   const maxResults=parseInt(document.getElementById('minBcn').value)||0; // 0 = all
   const backMo=parseInt(document.getElementById('filterBack').value)||7,fwdMo=parseInt(document.getElementById('filterFwd').value)||3;
   
-  // If no seeds typed, auto-load from DNA — use smart filtering
+  // If no seeds typed, auto-load from DNA but DON'T auto-execute
+  // Just populate the field so the user can see and edit before running
   if(!text){
     const dna=getDNA();
     if(dna&&dna.artistCount>0){
@@ -4312,39 +4264,39 @@ async function runDiscover(){
         document.getElementById('seedInput').dispatchEvent(new Event('blur'));
       }
     }
-    if(!text)return;
+    if(!text){_discoverRunning=false;return}
+    // Seeds populated but user didn't click — stop here, let them review
+    _discoverRunning=false;
+    return;
   }
   const seedList=text.split('\n').map(s=>s.trim()).filter(Boolean);
   saveSeeds(seedList);const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='Working…';
+  // Hide landing, show progress
+  const _landing=document.getElementById('discoverLanding');if(_landing)_landing.style.display='none';
   progReset();document.getElementById('dRes').innerHTML='';const cn=cityName();
   // Snapshot DNA at search start — prevents race condition if background rebuild finishes mid-search
   const snapshotDNA=getDNA();
 
   try{
-    // Step 1: resolve seeds — use Last.fm search + RA cache (no SC)
+    // Step 1: resolve seeds — RA cache index (instant, no API calls)
     prog('Resolving seeds…',5);
     const resolved=[];
     for(const seed of seedList){
-      try{
-        // Try Last.fm first for canonical name + image
-        const lfResults=await lastfmSearch(seed,1);
-        if(lfResults.length){
-          const a=lfResults[0];
-          resolved.push({name:a.name||seed,uuid:null,imageUrl:a.imageUrl||'',seed});
-          prog(null,10,'✓ '+seed);
-        }else{
-          // Fall back to RA cache name (always works if artist has played locally)
-          resolved.push({name:seed,uuid:null,imageUrl:'',seed});
-          prog(null,10,'✓ '+seed+' (from seeds)');
-        }
-      }catch(e){
+      // Resolve seed name from RA cache (instant, no API call)
+      const localMatch=searchArtistIndex(seed,1);
+      if(localMatch.length){
+        const a=localMatch[0];
+        resolved.push({name:a.name||seed,uuid:null,imageUrl:a.imageUrl||'',seed});
+        prog(null,10,'✓ '+seed);
+      }else{
+        // Use seed as-is — works for any artist name
         resolved.push({name:seed,uuid:null,imageUrl:'',seed});
         prog(null,10,'✓ '+seed);
       }
     }
     if(!resolved.length){prog('No seeds found.',10);btn.disabled=false;btn.textContent='Find Artists';return}
 
-    // Step 2: related artists — fusion engine (RA co-billing + Last.fm + RA worldwide)
+    // Step 2: related artists — fusion engine (RA co-billing + RA official + RA worldwide)
     // Zero SC calls here. SC only used later for Spotify listener counts in X-Ray.
     prog('Finding related artists…',15);
     const cmap=new Map();
@@ -4362,7 +4314,7 @@ async function runDiscover(){
           else{const e=cmap.get(key);e.seeds.push(s.seed);e.fusionScore=(e.fusionScore||0)+r.score}
           added++;
         }
-        prog(null,20,s.name+': '+fused.length+' related artists (RA+Last.fm fusion)');
+        prog(null,20,s.name+': '+fused.length+' related artists (RA fusion)');
       }catch(e){prog(null,20,s.name+': fusion error — '+e.message)}
     }
 
@@ -4388,18 +4340,18 @@ async function runDiscover(){
     for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' — '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
     prog(sdX+' same-day conflicts, '+afterSD.length+' remain',65);
 
-    // Step 5: Genres (Last.fm — free, no quota) + Spotify listeners (SC, optional)
+    // Step 5: Genres (Beatport primary, RA event genres fallback)
     prog('Fetching genre data…',70);
     const wd=[];
     let genreSkipped=0;
-    // Fetch genres in parallel batches of 5 (Last.fm is fast)
+    // Fetch genres in parallel batches of 5 (Beatport + RA fallback)
     const batchSize=5;
     for(let i=0;i<afterSD.length;i+=batchSize){
       const batch=afterSD.slice(i,i+batchSize);
       await Promise.all(batch.map(async c=>{
         try{
-          // Get genres from Last.fm — free, electronic-specific, no SC needed
-          await enrichGenresFromLastfm(c);
+          // Get genres from Beatport / RA event data
+          await enrichGenres(c, allEvents);
           // Genre filter
           if(c.genres&&c.genres.length>0&&!genreAllowed(c.genres)){
             genreSkipped++;
@@ -4414,8 +4366,8 @@ async function runDiscover(){
         }catch(e){c.bcn=0;c.global=0;wd.push(c)}
       }));
     }
-    if(genreSkipped)prog(null,95,genreSkipped+' artists excluded by genre filter (Last.fm)');
-    else prog(null,95,'Genre data from Last.fm ✓');
+    if(genreSkipped)prog(null,95,genreSkipped+' artists excluded by genre filter (Beatport/RA)');
+    else prog(null,95,'Genre data enriched ✓');
     const qual=wd.slice(0, maxResults>0?maxResults:wd.length); // cap by maxResults
 
     // Score and sort by DNA if available — use snapshot from search start to avoid race conditions
@@ -4479,7 +4431,7 @@ function renderDiscover(arts,hasDNA,diag){
   }
   injectDiscoverHeader(arts.length, hasDNA, cn);
 
-  const allEv=(()=>{try{return JSON.parse(localStorage.getItem('np_events_'+(p.city||'barcelona')))||[]}catch(e){return[]}})();
+  const allEv=(()=>{try{const c=JSON.parse(localStorage.getItem('libro_ra_cache_v3'));return(c&&c.events)||[]}catch(e){return[]}})();
   function compBook(name){
     const n=norm(name),out=[];
     for(const ev of allEv){
@@ -4639,47 +4591,40 @@ async function runScan(){
       else tier4.push(ev);
     }
 
-    // For events without RA genres, enrich async and re-render threat if needed
-    // (done after initial render so UI appears fast)
-    const noGenreEvents=otherEvents.filter(ev=>(!ev.genres||!ev.genres.length)&&ev._threat.tier>=3);
-    if(hasDNA&&noGenreEvents.length){
-      // Async enrich — will update display if tier changes
-      Promise.all(noGenreEvents.slice(0,20).map(async ev=>{
-        await enrichGenresFromLastfm(ev);
-        if(ev.genres&&ev.genres.length){
-          ev.genres_lastfm=ev.genres.map(g=>g.toLowerCase());
-        }
-      }));
-    }
-
-    // Competition summary
-    const directCompetition=[...tier1,...tier2].filter(ev=>ev._threat.isCompetition);
-    const timeMismatchWarnings=[...tier1,...tier2].filter(ev=>ev._threat.timeMismatch);
+    // Saturation analysis
     const totalAtt=all.reduce((s,e)=>s+(e.attending||0),0);
+    const sameAudienceCount=tier1.length+tier2.length;
 
-    const directLevel=directCompetition.length===0?'None':directCompetition.length<=2?'Low':directCompetition.length<=5?'Medium':'High';
-    const directClr=directCompetition.length===0?'var(--green)':directCompetition.length<=2?'var(--amber)':'var(--accent)';
+    // Saturation level
+    let satLevel,satColor,satMsg;
+    if(sameAudienceCount>=5||(all.length>=25&&sameAudienceCount>=3)){
+      satLevel='crowded';satColor='var(--red)';
+      satMsg='Crowded night \u2014 '+sameAudienceCount+' events target your audience out of '+all.length+' total. High risk of split attendance. Consider rescheduling.';
+    }else if(sameAudienceCount>=2||all.length>=20){
+      satLevel='moderate';satColor='var(--amber)';
+      satMsg='Moderate competition \u2014 '+sameAudienceCount+' events share your audience. '+all.length+' total events on this night.';
+    }else{
+      satLevel='clear';satColor='var(--green)';
+      satMsg=sameAudienceCount===0
+        ?'Clear night \u2014 no events target your audience. '+all.length+' events total, all different scenes. Good date to book.'
+        :'Low competition \u2014 '+sameAudienceCount+' event'+(sameAudienceCount>1?'s':'')+' with audience overlap out of '+all.length+'. Manageable.';
+    }
 
     let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2>
-      <span class="count">${all.length} events${ownEvents.length?' · '+ownEvents.length+' yours':''}</span></div>
+      <span class="count">${all.length} events${ownEvents.length?' \xb7 '+ownEvents.length+' yours':''}</span></div>
+    <div class="card" style="border-color:${satColor};margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-family:var(--disp);font-weight:800;font-size:1.1rem;color:${satColor};text-transform:uppercase">${satLevel==='clear'?'\u2713 Clear Night':satLevel==='moderate'?'\u26a0 Moderate':'\u26a0 Crowded Night'}</span>
+      </div>
+      <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.6;margin:0">${satMsg}</p>
+      ${dna.topGenres?.length?`<div style="margin-top:10px;font-size:0.72rem;color:var(--text-faint)">Your scene: ${dna.topGenres.slice(0,4).map(g=>g.genre||g).join(' \xb7 ')}</div>`:''}
+    </div>
     <div class="stats">
-      <div class="stat"><div class="sv" style="color:${directClr}">${directLevel}</div><div class="sl">Direct competition</div></div>
-      <div class="stat"><div class="sv" style="color:${directClr}">${directCompetition.length}</div><div class="sl">Competing for your audience</div></div>
-      <div class="stat"><div class="sv">${tier4.length}</div><div class="sl">Different scene</div></div>
+      <div class="stat"><div class="sv" style="color:${sameAudienceCount?'var(--amber)':'var(--green)'}">${sameAudienceCount}</div><div class="sl">Same audience</div></div>
+      <div class="stat"><div class="sv">${tier3.length}</div><div class="sl">Adjacent scene</div></div>
+      <div class="stat"><div class="sv" style="color:var(--text-faint)">${tier4.length}</div><div class="sl">Different scene</div></div>
       <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total RA interest</div></div>
     </div>`;
-
-    // ═══ SATURATION OVERLAY ═══
-    // Count events in your genre on this date
-    const yourGenreEvents=[...tier1,...tier2].length;
-    const saturationLevel=yourGenreEvents>=7?'saturated':yourGenreEvents>=4?'crowded':'normal';
-    if(saturationLevel!=='normal'){
-      const satColor=saturationLevel==='saturated'?'var(--accent)':'var(--amber)';
-      const satMsg=saturationLevel==='saturated'
-        ?'⚠ SATURATED NIGHT — '+yourGenreEvents+' events competing for your audience. Consider moving your date.'
-        :'Crowded night — '+yourGenreEvents+' events in your scene. Expect split attendance.';
-      h+=`<div style="margin-top:12px;padding:10px 14px;background:rgba(232,169,18,0.08);border:1px solid ${satColor};border-radius:var(--radius);font-family:var(--mono);font-size:0.72rem;color:${satColor}">${satMsg}</div>`;
-    }
 
     // Own events
     if(ownEvents.length){
@@ -4691,71 +4636,50 @@ async function runScan(){
       h+=`</div>`;
     }
 
-    if(directCompetition.length){
+    // Competing for Your Audience (Tiers 1 & 2)
+    if(sameAudienceCount){
       h+=`<div class="card" style="border-color:var(--amber);margin-top:16px">
-        <h3 style="color:var(--amber);margin-bottom:2px">⚠ Direct Competition</h3>
-        <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">These events target the same audience. Same artists or same genre${timeMismatchWarnings.length?' (some flagged different time-of-day)':''}</p>`;
-      for(const ev of directCompetition.sort((a,b)=>(b.attending||0)-(a.attending||0))){
+        <h3 style="color:var(--amber);margin-bottom:2px">\u26a0 Competing for Your Audience</h3>
+        <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">${sameAudienceCount} event${sameAudienceCount>1?'s':''} targeting the same audience \u2014 same genres, shared artists, or overlapping venue profiles.</p>`;
+      const competingEvents=[...tier1,...tier2].sort((a,b)=>(b.attending||0)-(a.attending||0));
+      for(const ev of competingEvents){
         const t=ev._threat;
-        const tierBadge=t.tier===1
-          ?`<span class="badge badge-red">${esc(t.reason)}</span>`
-          :`<span class="badge badge-amber">${esc(t.reason)}</span>`;
-        const timeBadge=t.timeMismatch?`<span class="badge" style="border-color:var(--text-faint);color:var(--text-faint);font-size:0.65rem">different time slot</span>`:'';
-        h+=`<div class="ev-item" style="border-left:3px solid ${t.tier===1?'var(--accent)':'var(--amber)'};padding-left:11px">
+        const badge=t.tier===1
+          ?`<span class="badge badge-red" style="font-size:0.65rem">${esc(t.reason)}</span>`
+          :`<span class="badge badge-amber" style="font-size:0.65rem">${esc(t.reason)}</span>`;
+        h+=`<div class="ev-item" style="border-left:3px solid ${t.tier===1?'var(--red)':'var(--amber)'};padding-left:11px">
           <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
           <div class="ev-detail">
             <div class="ev-v">${esc(ev.venue)}</div>
             <div class="ev-t">${esc(ev.title)}</div>
             <div class="ev-a">${esc(ev.artists.map(a=>a.name||a).join(', '))}</div>
-            <div style="margin-top:4px">${tierBadge}${timeBadge}</div>
+            <div style="margin-top:4px">${badge}${(ev.genres||[]).length?` <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">${ev.genres.slice(0,3).map(g=>g.name||g).join(' \xb7 ')}</span>`:''}</div>
           </div></div>`;
       }
       h+=`</div>`;
-    }else if(hasDNA){
-      h+=`<div class="card" style="border-color:var(--green);margin-top:16px">
-        <h3 style="color:var(--green);margin-bottom:4px">✓ Clear</h3>
-        <p style="font-size:0.82rem;color:var(--text-dim)">No events on this date target your audience. ${tier4.length>0?tier4.length+' events are different scenes entirely.':''} Good date to book.</p>
-        ${dna.topGenres?.length?`<div style="margin-top:8px;font-size:0.72rem;color:var(--text-faint)">Your scene: ${dna.topGenres.slice(0,4).map(g=>g.genre||g).join(' · ')}</div>`:''}
-      </div>`;
-    }else{
-      h+=`<div class="card" style="margin-top:16px;border-color:var(--amber)">
-        <p style="font-size:0.82rem;color:var(--amber)">Build DNA to see genre-aware competition analysis. <span style="cursor:pointer;text-decoration:underline" onclick="rebuildDNA()">Build now</span></p></div>`;
     }
 
-    // Awareness tier (partial overlap, large events)
+    // Adjacent (Tier 3) — collapsed behind click
     if(tier3.length){
-      h+=`<div style="margin-top:20px"><div class="section-head"><h2>Awareness</h2>
-        <span class="count">${tier3.length} events · partial genre overlap</span></div>
-        <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Large events with some audience overlap. Worth knowing about but not direct threats.</p>`;
-      for(const ev of tier3.slice(0,4)){
+      h+=`<div style="margin-top:16px">
+        <div style="font-family:var(--mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;cursor:pointer" onclick="const el=document.getElementById('adjList');el.style.display=el.style.display==='none'?'block':'none'">
+          Adjacent Scene \xb7 ${tier3.length} events \u25be</div>
+        <div id="adjList" style="display:none">`;
+      for(const ev of tier3.sort((a,b)=>(b.attending||0)-(a.attending||0)).slice(0,6)){
         h+=`<div class="ev-item">
-          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
+          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA</div></div>
           <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div>
-          <div class="ev-a">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div>
-          ${ev.genreOverlap.length?`<div style="margin-top:3px"><span class="tag" style="opacity:0.6;font-size:0.65rem">partial: ${ev.genreOverlap.join(', ')}</span></div>`:''}
-          </div></div>`;
+          <div class="ev-a">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div></div></div>`;
       }
-      h+=`</div>`;
+      h+=`</div></div>`;
     }
 
-    h+=`<div style="margin-top:20px">
-      <div class="section-head"><h2>All Events</h2><span class="count">${all.length} total · different scenes included</span></div>`;
-    for(const ev of all){
-      const t=ev._threat;
-      const isOwn=ownEvents.some(d=>d.title===ev.title&&d.venue===ev.venue);
-      const borderStyle=t&&t.tier===1&&t.isCompetition?'border-left:3px solid var(--accent);padding-left:11px':t&&t.tier===2&&t.isCompetition?'border-left:3px solid var(--amber);padding-left:11px':'';
-      const badge=isOwn?'<span class="badge" style="font-size:0.65rem;border-color:var(--blue);color:var(--blue)">YOURS</span>':t&&t.tier===1&&t.isCompetition?'<span class="badge badge-red" style="font-size:0.65rem">DIRECT</span>':t&&t.tier===2&&t.isCompetition?'<span class="badge badge-amber" style="font-size:0.65rem">GENRE</span>':'';
-      h+=`<div class="ev-item"${borderStyle?' style="'+borderStyle+'"':''}>
-        <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
-        <div class="ev-detail">
-          <div class="ev-v">${esc(ev.venue)} ${badge}</div>
-          <div class="ev-t">${esc(ev.title)}</div>
-          <div class="ev-a">${esc((ev.artists||[]).map(a=>a.name||a).slice(0,3).join(', '))}</div>
-          ${(ev.genres||[]).length?`<div style="margin-top:2px">${ev.genres.map(g=>`<span class="tag" style="font-size:0.65rem;opacity:0.6">${esc(g.name||g)}</span>`).join('')}</div>`:''}
-        </div></div>`;
+    // Different Scene (Tier 4) — just a count
+    if(tier4.length){
+      h+=`<div style="margin-top:12px;font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);letter-spacing:1px">${tier4.length} other events \xb7 different scene entirely</div>`;
     }
-    h+=`</div>`;
-    h+=`<div id="adjacentThreats" style="margin-top:20px"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning adjacent days…</div></div>`;
+
+    h+=`<div id="adjacentThreats" style="margin-top:20px"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning adjacent days\u2026</div></div>`;
 
     c.innerHTML=h;
     scanAdjacentThreats(date);
@@ -4927,7 +4851,8 @@ async function runXray(){
     }
 
     // City conflict: check shows within exclusion window around the user's date
-    const backMo=parseInt(document.getElementById('filterBack')?.value)||7,fwdMo=parseInt(document.getElementById('filterFwd')?.value)||3;
+    const backMo=parseInt(document.getElementById('xBackMo')?.value||document.getElementById('filterBack')?.value)||6;
+    const fwdMo=parseInt(document.getElementById('xFwdMo')?.value||document.getElementById('filterFwd')?.value)||3;
     const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
     exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
     let cityC={hit:false};
@@ -5069,25 +4994,29 @@ async function runRouting(){
 
     // ═══ STEP 2: Scan nearby cities for those dates ═══
     rteProg('Scanning '+nearby.length+' nearby cities…',35);
-    // Map: norm(artistName) → {name, city, date, venue, attending, title}
     const nearbyEvents=new Map();
 
-    for(let ci=0;ci<nearby.length;ci++){
-      const ncity=nearby[ci],nArea=AREAS[ncity];if(!nArea)continue;
-      rteProg('Scanning '+ncity+'…',35+Math.round((ci/nearby.length)*30));
-      for(const dt of scanDates){
-        try{
-          const events=await raBulkFetch(nArea,dt,dt,6);
-          for(const ev of events){
-            for(const a of ev.artists){
-              const n=norm(a);
-              if(n&&!nearbyEvents.has(n)){
-                nearbyEvents.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending||0,title:ev.title||''});
+    // Fetch cities in parallel batches of 5 for speed
+    const CITY_BATCH=5;
+    for(let ci=0;ci<nearby.length;ci+=CITY_BATCH){
+      const cityBatch=nearby.slice(ci,ci+CITY_BATCH);
+      await Promise.all(cityBatch.map(async ncity=>{
+        const nArea=AREAS[ncity];if(!nArea)return;
+        for(const dt of scanDates){
+          try{
+            const events=await raBulkFetch(nArea,dt,dt,6);
+            for(const ev of events){
+              for(const a of ev.artists){
+                const n=norm(a);
+                if(n&&!nearbyEvents.has(n)){
+                  nearbyEvents.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending||0,title:ev.title||''});
+                }
               }
             }
-          }
-        }catch(e){}
-      }
+          }catch(e){}
+        }
+      }));
+      rteProg('Scanning cities… '+Math.min(ci+CITY_BATCH,nearby.length)+'/'+nearby.length,35+Math.round(((ci+CITY_BATCH)/nearby.length)*30));
     }
     rteProg(nearbyEvents.size+' artists touring nearby cities',65);
 
@@ -5108,11 +5037,11 @@ async function runRouting(){
       }
     }
 
-    // ═══ STEP 4: City exclusion — already booked in your city? ═══
+    // ═══ STEP 4: City exclusion — already booked in your city in last 8 months? ═══
     rteProg('Checking '+cityName()+' exclusion…',75);
-    const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
-    exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
-    const cityEvents=await getCityEvents(exFrom,exTo);
+    const anchor=new Date(date),exFrom8=new Date(anchor);
+    exFrom8.setMonth(anchor.getMonth()-8); // 8 months back only
+    const cityEvents=await getCityEvents(exFrom8,anchor);
     const cityIdx=buildIndex(cityEvents);
 
     const routingOpps=[];
@@ -5932,8 +5861,8 @@ async function genReport(){
       
       // Aggregate Traxsource genres
       const tsAgg={};
-      for(const prof of profiles.filter(pp=>pp.traxsourceGenres)){
-        for(const[g,c] of Object.entries(prof.traxsourceGenres))tsAgg[g]=(tsAgg[g]||0)+c;
+      // Traxsource removed — no public API
+      {
       }
       const tsSorted=Object.entries(tsAgg).sort((a,b)=>b[1]-a[1]).slice(0,6);
 

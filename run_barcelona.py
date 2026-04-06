@@ -171,43 +171,61 @@ def main():
                 promos[pid]["events"] += 1
                 promos[pid]["artists"].update(eartists)
 
-    # Filter to 12+ events
-    v12 = {vid: v for vid, v in venues.items() if v["events"] >= 12}
-    p12 = {pid: p for pid, p in promos.items() if p["events"] >= 12}
+    # No event minimum — score everyone
+    # But skip venues/promoters with 0 artists (no lineup data)
+    v_all = {vid: v for vid, v in venues.items() if v["artists"]}
+    p_all = {pid: p for pid, p in promos.items() if p["artists"]}
 
-    print(f"  Venues with 12+ events:   {len(v12)}")
-    print(f"  Promoters with 12+ events: {len(p12)}")
+    print(f"  Venues with artists:    {len(v_all)}")
+    print(f"  Promoters with artists: {len(p_all)}")
 
-    # Collect all unique artist IDs from these entities
+    # Collect all unique artist IDs
     all_artist_ids = set()
-    for v in v12.values():
+    for v in v_all.values():
         all_artist_ids.update(v["artists"])
-    for p in p12.values():
+    for p in p_all.values():
         all_artist_ids.update(p["artists"])
 
     print(f"  Unique artists to look up: {len(all_artist_ids):,}")
 
     # Phase 3: Look up artist follower counts
-    print(f"\nPHASE 3: Looking up artist followers")
-    print(f"  ~{len(all_artist_ids) * DELAY / 60:.0f} minutes estimated")
+    # Load cache from previous run if exists
+    CACHE_FILE = "bcn_artist_cache.json"
+    artist_followers = {}
+    try:
+        with open(CACHE_FILE) as f:
+            cached = json.load(f)
+            artist_followers = {k: tuple(v) for k, v in cached.items()}
+        print(f"  Loaded {len(artist_followers):,} from cache")
+    except:
+        pass
+
+    to_lookup = [aid for aid in all_artist_ids
+                 if aid not in artist_followers]
+    print(f"  Need to look up: {len(to_lookup):,} new artists")
+    print(f"  ~{len(to_lookup) * DELAY / 60:.0f} minutes estimated")
     print("-" * 40)
 
-    artist_followers = {}  # aid -> (follower_count, name)
-    artist_list = list(all_artist_ids)
-
-    for i, aid in enumerate(artist_list, 1):
+    for i, aid in enumerate(to_lookup, 1):
         fc, name = get_artist_followers(aid)
         artist_followers[aid] = (fc, name)
         if i % 100 == 0:
             notable = sum(1 for f, _ in artist_followers.values()
                           if f >= 100)
-            print(f"  ... {i:,}/{len(artist_list):,} looked up "
+            print(f"  ... {i:,}/{len(to_lookup):,} looked up "
                   f"({notable} notable so far)")
+            # Save cache periodically
+            with open(CACHE_FILE, "w") as f:
+                json.dump(artist_followers, f)
         time.sleep(DELAY)
+
+    # Save final cache
+    with open(CACHE_FILE, "w") as f:
+        json.dump(artist_followers, f)
 
     notable_artists = {aid for aid, (fc, _)
                        in artist_followers.items() if fc >= 100}
-    print(f"\n  Total artists looked up:  {len(artist_followers):,}")
+    print(f"\n  Total artists:            {len(artist_followers):,}")
     print(f"  Notable (100+ followers): {len(notable_artists):,}")
 
     # Phase 4: Score and filter
@@ -217,7 +235,7 @@ def main():
     targets = []
 
     # Score venues
-    for vid, v in v12.items():
+    for vid, v in v_all.items():
         notable_booked = v["artists"] & notable_artists
         targets.append({
             "type": "venue",
@@ -230,7 +248,7 @@ def main():
         })
 
     # Score promoters
-    for pid, p in p12.items():
+    for pid, p in p_all.items():
         notable_booked = p["artists"] & notable_artists
         targets.append({
             "type": "promoter",
