@@ -64,7 +64,7 @@ button:focus{outline:none}
   border-bottom:1px solid var(--t06);background:var(--bg);z-index:100;
 }
 .logo{font-family:var(--logo);font-weight:500;font-size:1.05rem;letter-spacing:3px;color:var(--text);text-transform:uppercase;cursor:default}
-.sp-url{font-family:var(--mono);font-size:0.6rem;letter-spacing:3px;color:var(--text-faint)}
+.sp-url{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;color:#9E9888}
 
 .venue-pill{
   font-family:var(--mono);font-size:0.58rem;font-weight:500;letter-spacing:1.2px;
@@ -79,35 +79,35 @@ button:focus{outline:none}
 
 /* Sidebar — hidden until .app-ready, dimmer than content */
 .np-sidebar{
-  width:200px;flex-shrink:0;border-right:1px solid var(--t06);
-  padding:28px 0 0;display:none;flex-direction:column;background:var(--bg);
+  width:220px;flex-shrink:0;border-right:1px solid var(--t06);
+  padding:32px 0 0;display:none;flex-direction:column;background:var(--bg);
 }
 .np-app.app-ready .np-sidebar{display:flex}
 .np-nav{
-  display:flex;align-items:center;justify-content:space-between;padding:11px 24px 11px 20px;
-  font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:space-between;padding:13px 24px 13px 24px;
+  font-family:var(--mono);font-size:0.7rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;
   color:#5C5850;cursor:pointer;border-left:2px solid transparent;
   transition:all .12s;user-select:none;
 }
 .np-nav:hover{color:#9E9888;border-left-color:var(--t10)}
-.np-nav.active{color:var(--text);border-left-color:var(--text)}
+.np-nav.active{color:var(--text);border-left-color:var(--amber)}
 .np-nav-count{
-  font-family:var(--mono);font-size:0.55rem;font-weight:700;
+  font-family:var(--mono);font-size:0.6rem;font-weight:700;
   color:var(--amber);min-width:14px;text-align:right;
 }
 .np-sidebar-foot{
-  margin-top:auto;padding:16px 20px 20px;
-  font-family:var(--mono);font-size:0.55rem;letter-spacing:0.8px;
+  margin-top:auto;padding:16px 24px 20px;
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:0.8px;
   color:#5C5850;line-height:2;text-transform:uppercase;
-  border-top:1px solid var(--t06);
+  border-top:1px solid var(--t06);display:none;
 }
 
 /* Content area — slightly lighter than sidebar for depth */
 .np-content{flex:1;overflow-y:auto;background:var(--bg2)}
 
 /* Tab panels — now inside np-content */
-.shell{max-width:860px;padding:0 48px}
-.tab-panel{display:none;padding:44px 48px 60px;animation:fadeIn .2s ease;max-width:860px}
+.shell{max-width:none;padding:0}
+.tab-panel{display:none;padding:40px 48px 60px;animation:fadeIn .2s ease;max-width:1100px}
 .tab-panel.active{display:block}
 
 /* Bottom nav — mobile */
@@ -507,6 +507,7 @@ input[type="number"]{font-family:var(--mono)}
       <div class="np-nav" data-screen="intel" onclick="npNav('intel',this)">SCENE INTEL</div>
       <div class="np-nav" data-screen="check" onclick="npNav('check',this)">ARTIST CHECK</div>
       <div class="np-nav" data-screen="track" onclick="npNav('track',this)">MY PIPELINE<span class="np-nav-count" id="navCountTrack"></span></div>
+      <div class="np-nav" data-screen="rising" onclick="npNav('rising',this)">RISING<span class="np-nav-count" id="navCountRising"></span></div>
       <div class="np-sidebar-foot" id="npSidebarFoot"></div>
     </nav>
 
@@ -694,12 +695,12 @@ input[type="number"]{font-family:var(--mono)}
     <!-- Clean landing state -->
     <div id="discoverLanding" style="max-width:640px;margin:0 auto;padding-top:40px">
       <div style="font-family:var(--disp);font-weight:800;font-size:1.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:6px">Find Artists</div>
-      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);line-height:1.7;margin-bottom:28px">Discover who to book next. Enter seed artists or let your DNA pick them automatically.</div>
+      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);line-height:1.7;margin-bottom:28px">Who should you book next? Add artists you like, or leave empty and we'll suggest based on your booking history.</div>
 
       <!-- Search area -->
       <div style="margin-bottom:20px">
         <div class="ac-wrap" style="position:relative">
-          <textarea id="seedInput" placeholder="Enter artist names (one per line) or leave empty to use your DNA" rows="3" style="width:100%;font-size:0.88rem;padding:14px;resize:vertical"></textarea>
+          <textarea id="seedInput" placeholder="Type artist names, one per line — or just hit Find Artists" rows="3" style="width:100%;font-size:0.88rem;padding:14px;resize:vertical"></textarea>
         </div>
         <div id="seedH" style="margin-top:4px"></div>
       </div>
@@ -775,7 +776,7 @@ input[type="number"]{font-family:var(--mono)}
           <input type="date" id="routeDate" onchange="syncDateToAll(this.value)">
         </div>
       </div>
-      <button class="btn btn-red" id="rteBtn" onclick="runRouting()">Find Routing Deals</button>
+      <button class="btn btn-red" id="rteBtn" onclick="runRouting()">Find Deals</button>
     </div>
 
     <div id="nearbyCities" style="display:none"></div>
@@ -818,9 +819,9 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ TONIGHT ═══ -->
   <div class="tab-panel" id="panel-scanner">
-    <div class="sc-label">TONIGHT</div>
+    <div class="sc-label">WHAT'S ON</div>
     <div class="sc-ctx" id="tn-ctx-line" style="margin-bottom:32px">
-      What's on in your city &nbsp;·&nbsp; <span class="sc-edit" onclick="document.getElementById('tn-date-row').style.display=document.getElementById('tn-date-row').style.display==='flex'?'none':'flex'">Change date</span>
+      See who's competing for your audience &nbsp;·&nbsp; <span class="sc-edit" onclick="document.getElementById('tn-date-row').style.display=document.getElementById('tn-date-row').style.display==='flex'?'none':'flex'">Change date</span>
     </div>
     <div id="tn-date-row" style="display:none;align-items:flex-end;gap:10px;margin-bottom:24px;flex-wrap:wrap">
       <div class="input-group" style="margin:0">
@@ -874,25 +875,31 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ SCENE INTEL ═══ -->
   <div class="tab-panel" id="panel-intel">
-    <div class="sc-label">SCENE INTELLIGENCE</div>
-    <div class="sc-ctx" style="margin-bottom:28px">Research any venue, promoter, or festival in your city</div>
+    <div class="sc-label">SCENE INTEL</div>
+    <div class="sc-ctx" style="margin-bottom:28px">Research any venue or promoter in your city</div>
     <div class="intel-search-wrap" style="margin-bottom:12px">
-      <input type="text" id="intelSearch" placeholder="e.g. Nitsa, Brunch Electronik, Input, Razzmatazz…" autocomplete="off" style="font-size:0.88rem;padding:12px 14px;flex:1" onkeydown="if(event.key==='Enter')runIntel()">
+      <input type="text" id="intelSearch" placeholder="Search venues or promoters…" autocomplete="off" style="font-size:0.88rem;padding:12px 14px;flex:1" onkeydown="if(event.key==='Enter')runIntel()">
       <button class="btn btn-red" onclick="runIntel()" style="white-space:nowrap;flex-shrink:0">Analyse</button>
     </div>
     <div id="intelQuickChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px"></div>
-    <div id="intelMomentum" style="margin-bottom:24px"></div>
     <div id="intelRes"></div>
   </div>
 
   <!-- ═══ TRACK ═══ -->
   <div class="tab-panel" id="panel-saved">
-    <div class="sc-label">MY SHORTLIST</div>
+    <div class="sc-label">MY PIPELINE</div>
     <div class="sc-ctx" style="margin-bottom:36px">
-      Artists you're considering &nbsp;·&nbsp;
+      Artists you're tracking &nbsp;·&nbsp;
       <span class="sc-edit" onclick="exportCSV()">Export CSV</span>
     </div>
     <div id="sList"></div>
+  </div>
+
+  <!-- ═══ RISING ═══ -->
+  <div class="tab-panel" id="panel-rising">
+    <div class="sc-label">RISING</div>
+    <div class="sc-ctx" style="margin-bottom:28px">Artists gaining traction in your city — book them before fees go up</div>
+    <div id="risingContent"></div>
   </div>
 
   <!-- ═══ REPORT ═══ -->
@@ -2451,7 +2458,7 @@ function sceneRelevance(artistName, dna){
     score=20;tier=4;reason='Not in your network';breakdown={circuit:0};
   }
 
-  const label=score>=80?'Your scene':score>=55?'Circuit match':score>=35?'Scene adjacent':'Outside scene';
+  const label=score>=80?'Strong fit':score>=55?'Good fit':score>=35?'Possible fit':'New to you';
   return{score,tier,reason,label,breakdown};
 }
 
@@ -3832,8 +3839,8 @@ async function _startDNABuild(){
 }
 // ── v3 Navigation ──
 function npNav(screen, el) {
-  // DNA gate — block scanner/routing/intel without DNA
-  if ((screen==='tonight'||screen==='routing'||screen==='intel') && !getDNA()) {
+  // DNA gate — block scanner/routing/intel/rising without DNA
+  if ((screen==='tonight'||screen==='routing'||screen==='intel'||screen==='rising') && !getDNA()) {
     alert('Build your DNA profile first to access this feature.');
     return;
   }
@@ -3845,6 +3852,7 @@ function npNav(screen, el) {
     routing: 'routing',
     check: 'verify',
     intel: 'intel',
+    rising: 'rising',
   };
   const panelId = map[screen] || screen;
 
@@ -3871,6 +3879,7 @@ function npNav(screen, el) {
   }
   if (screen === 'track') renderSaved();
   if (screen === 'intel') loadIntelTab();
+  if (screen === 'rising') loadRisingTab();
 
   // Update sidebar foot info
   const p2 = P();
@@ -3902,12 +3911,15 @@ function updateNavCounts(){
   const bc=document.getElementById('navCountBook');
   const rc=document.getElementById('navCountRouting');
   const tc=document.getElementById('navCountTrack');
+  const ric=document.getElementById('navCountRising');
   // Discover results
   if(bc){const r=document.getElementById('dRes');const n=r?r.querySelectorAll('.v3-card').length:0;bc.textContent=n||''}
   // Routing results
   if(rc){const r=document.getElementById('rteRes');const n=r?r.querySelectorAll('.v3-rcard').length:0;rc.textContent=n||''}
   // Pipeline count
   if(tc){const n=saved().length;tc.textContent=n||''}
+  // Rising count
+  if(ric){const r=document.getElementById('risingContent');const n=r?r.querySelectorAll('.momentum-card').length:0;ric.textContent=n||''}
 }
 
 function injectTonightHeader() {
@@ -3947,27 +3959,15 @@ function showApp(){
   const city=(p.city||'');
   const cityLabel=city.charAt(0).toUpperCase()+city.slice(1);
 
-  let dnaTag;
-  if(dna&&dna.artistCount){
-    const dnaAgeMs=Date.now()-(dna.ts||0);
-    const dnaAgeDays=Math.floor(dnaAgeMs/(24*60*60*1000));
-    const dnaAgeHrs=Math.floor(dnaAgeMs/(60*60*1000));
-    const dnaAgeStr=dnaAgeDays>0?dnaAgeDays+'d':dnaAgeHrs>0?dnaAgeHrs+'h':'<1h';
-    const isComplete=dna.dnaComplete!==false;
-    const dnaColor=isComplete?'var(--green)':'var(--amber)';
-    const dnaIcon=isComplete?'✓':'⚠';
-    const dnaTitle=isComplete
-      ?'DNA built '+dnaAgeStr+' ago — click to rebuild'
-      :'Partial DNA ('+( dna.archiveYearsFetched||0)+' years) — click to rebuild';
-    dnaTag=' · <span style="color:'+dnaColor+';cursor:pointer" title="'+dnaTitle+'" onclick="event.stopPropagation();rebuildDNA()">DNA '+dnaIcon+' <span style="font-family:var(--mono);font-size:0.65rem;opacity:0.65">'+dnaAgeStr+'</span></span>';
-  }else{
+  let dnaTag='';
+  if(!dna||!dna.artistCount){
     dnaTag=' · <span style="color:var(--amber)" onclick="event.stopPropagation();rebuildDNA()" title="Click to build DNA">No DNA</span>';
   }
   const allP=_getAllProfiles();
   const vCount=allP&&allP.venues?Object.keys(allP.venues).filter(k=>allP.venues[k]?.venue).length:1;
   const countBadge=vCount>1?` <span style="background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:1px 6px;font-size:0.65rem;font-weight:700;vertical-align:middle">${vCount}</span>`:'';
-  // Clean pill: "Drop Dance Society · Barcelona · DNA ✓ · ▾"
-  pill.innerHTML=esc(venueName)+' <span style="color:var(--text-faint)">·</span> '+esc(cityLabel)+dnaTag+countBadge+' <span style="opacity:0.4">▾</span>';
+  // Clean pill: "Drop Dance Society · Barcelona ▾"
+  pill.innerHTML=esc(venueName)+' <span style="color:var(--text-faint)">·</span> '+esc(cityLabel)+dnaTag+countBadge+' <span style="opacity:0.4;margin-left:4px">▾</span>';
   if(wrap)wrap.style.display='inline-block';
   updateCityLabels();
   updateContextBanners();
@@ -4128,11 +4128,10 @@ function updateContextBanners(){
     const seedsEl=document.getElementById('discoverDNASeeds');
     if(seedsEl){
       if(hasDNA){
-        const topArtists=(dna.topArtists||dna.profiles||[]).slice(0,5).map(a=>a.name||a).join(', ');
         const topGenres=(dna.topGenres||[]).slice(0,3).map(g=>g.genre||g).join(', ');
-        seedsEl.textContent='DNA: '+dna.artistCount+' artists booked · Top genres: '+(topGenres||'none')+' · Suggest seeds from: '+topArtists;
+        seedsEl.textContent=dna.artistCount+' artists analysed · '+( topGenres||'no genres detected');
       }else{
-        seedsEl.textContent='No DNA yet. Results will not be personalised. Build DNA via the pill menu.';
+        seedsEl.textContent='No booking history analysed yet. Results won\'t be personalised.';
         seedsEl.style.color='var(--amber)';
       }
     }
@@ -4148,10 +4147,10 @@ function updateContextBanners(){
     if(ctxEl){
       if(hasDNA){
         const topGenres=(dna.topGenres||[]).slice(0,4).map(g=>g.genre||g).join(', ');
-        ctxEl.textContent='Results filtered to your DNA. '+dna.artistCount+' artists in network · Genres: '+(topGenres||'none');
+        ctxEl.textContent='Filtered to your sound. '+dna.artistCount+' artists in your network · '+(topGenres||'');
         ctxEl.style.color='var(--text-dim)';
       }else{
-        ctxEl.textContent='⚠ No DNA. Routing results will not be filtered by your scene. Build DNA first for best results.';
+        ctxEl.textContent='⚠ No booking history analysed. Routing works best after setup. Click your name → Rebuild DNA.';
         ctxEl.style.color='var(--amber)';
       }
     }
@@ -4599,15 +4598,15 @@ async function runScan(){
     let satLevel,satColor,satMsg;
     if(sameAudienceCount>=5||(all.length>=25&&sameAudienceCount>=3)){
       satLevel='crowded';satColor='var(--red)';
-      satMsg='Crowded night \u2014 '+sameAudienceCount+' events target your audience out of '+all.length+' total. High risk of split attendance. Consider rescheduling.';
+      satMsg='Crowded night \u2014 '+sameAudienceCount+' events are competing for your audience out of '+all.length+' total. High risk of split attendance.';
     }else if(sameAudienceCount>=2||all.length>=20){
       satLevel='moderate';satColor='var(--amber)';
-      satMsg='Moderate competition \u2014 '+sameAudienceCount+' events share your audience. '+all.length+' total events on this night.';
+      satMsg='Some competition \u2014 '+sameAudienceCount+' events share your audience. '+all.length+' total events this night.';
     }else{
       satLevel='clear';satColor='var(--green)';
       satMsg=sameAudienceCount===0
-        ?'Clear night \u2014 no events target your audience. '+all.length+' events total, all different scenes. Good date to book.'
-        :'Low competition \u2014 '+sameAudienceCount+' event'+(sameAudienceCount>1?'s':'')+' with audience overlap out of '+all.length+'. Manageable.';
+        ?'No events competing for your audience. '+all.length+' events total, none overlap with your sound. Good date.'
+        :'Light competition \u2014 '+sameAudienceCount+' event'+(sameAudienceCount>1?'s':'')+' with some audience overlap out of '+all.length+'. You\'re fine.';
     }
 
     let h=`<div class="section-head"><h2>${fdate(date)} in ${cityName()}</h2>
@@ -4617,13 +4616,12 @@ async function runScan(){
         <span style="font-family:var(--disp);font-weight:800;font-size:1.1rem;color:${satColor};text-transform:uppercase">${satLevel==='clear'?'\u2713 Clear Night':satLevel==='moderate'?'\u26a0 Moderate':'\u26a0 Crowded Night'}</span>
       </div>
       <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.6;margin:0">${satMsg}</p>
-      ${dna.topGenres?.length?`<div style="margin-top:10px;font-size:0.72rem;color:var(--text-faint)">Your scene: ${dna.topGenres.slice(0,4).map(g=>g.genre||g).join(' \xb7 ')}</div>`:''}
+      ${dna.topGenres?.length?`<div style="margin-top:10px;font-size:0.72rem;color:var(--text-faint)">Your sound: ${dna.topGenres.slice(0,4).map(g=>g.genre||g).join(' \xb7 ')}</div>`:''}
     </div>
     <div class="stats">
-      <div class="stat"><div class="sv" style="color:${sameAudienceCount?'var(--amber)':'var(--green)'}">${sameAudienceCount}</div><div class="sl">Same audience</div></div>
-      <div class="stat"><div class="sv">${tier3.length}</div><div class="sl">Adjacent scene</div></div>
-      <div class="stat"><div class="sv" style="color:var(--text-faint)">${tier4.length}</div><div class="sl">Different scene</div></div>
-      <div class="stat"><div class="sv">${fmt(totalAtt)}</div><div class="sl">Total RA interest</div></div>
+      <div class="stat"><div class="sv" style="color:${sameAudienceCount?'var(--amber)':'var(--green)'}">${sameAudienceCount}</div><div class="sl">Your competition</div></div>
+      <div class="stat"><div class="sv" style="color:var(--text-faint)">${tier3.length+tier4.length}</div><div class="sl">Different crowd</div></div>
+      <div class="stat"><div class="sv">${all.length}</div><div class="sl">Total events</div></div>
     </div>`;
 
     // Own events
@@ -4640,7 +4638,7 @@ async function runScan(){
     if(sameAudienceCount){
       h+=`<div class="card" style="border-color:var(--amber);margin-top:16px">
         <h3 style="color:var(--amber);margin-bottom:2px">\u26a0 Competing for Your Audience</h3>
-        <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">${sameAudienceCount} event${sameAudienceCount>1?'s':''} targeting the same audience \u2014 same genres, shared artists, or overlapping venue profiles.</p>`;
+        <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">${sameAudienceCount} event${sameAudienceCount>1?'s':''} with overlapping genres, shared artists, or similar venues.</p>`;
       const competingEvents=[...tier1,...tier2].sort((a,b)=>(b.attending||0)-(a.attending||0));
       for(const ev of competingEvents){
         const t=ev._threat;
@@ -4663,7 +4661,7 @@ async function runScan(){
     if(tier3.length){
       h+=`<div style="margin-top:16px">
         <div style="font-family:var(--mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;cursor:pointer" onclick="const el=document.getElementById('adjList');el.style.display=el.style.display==='none'?'block':'none'">
-          Adjacent Scene \xb7 ${tier3.length} events \u25be</div>
+          Other Events Nearby \xb7 ${tier3.length} events \u25be</div>
         <div id="adjList" style="display:none">`;
       for(const ev of tier3.sort((a,b)=>(b.attending||0)-(a.attending||0)).slice(0,6)){
         h+=`<div class="ev-item">
@@ -4676,7 +4674,7 @@ async function runScan(){
 
     // Different Scene (Tier 4) — just a count
     if(tier4.length){
-      h+=`<div style="margin-top:12px;font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);letter-spacing:1px">${tier4.length} other events \xb7 different scene entirely</div>`;
+      h+=`<div style="margin-top:12px;font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);letter-spacing:1px">${tier4.length} other events \xb7 different crowd entirely</div>`;
     }
 
     h+=`<div id="adjacentThreats" style="margin-top:20px"><div class="empty" style="padding:20px"><span class="spinner"></span> Scanning adjacent days\u2026</div></div>`;
@@ -4922,9 +4920,9 @@ async function runRouting(){
 
   if(!hasDNA){
     document.getElementById('rteRes').innerHTML=`<div class="card" style="border-color:var(--amber)">
-      <h3 style="color:var(--amber);margin-bottom:6px">DNA Required for Routing</h3>
-      <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.6">Routing Deals works by finding artists from <strong>your scene</strong> who are playing nearby cities on your date. To know which artists are "your scene," SubPulse needs your DNA.<br><br>
-      Click the venue pill above → Rebuild DNA, then come back.</p>
+      <h3 style="color:var(--amber);margin-bottom:6px">Set Up Required</h3>
+      <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.6">Routing finds artists from <strong>your world</strong> who are playing nearby cities around your date. To know which artists fit you, SubPulse needs to analyse your booking history first.<br><br>
+      Click your name in the top-right corner → Rebuild DNA, then come back.</p>
     </div>`;
     return;
   }
@@ -4948,7 +4946,7 @@ async function runRouting(){
     // ═══ STEP 1: Build YOUR scene artist pool from DNA ═══
     // This is the key insight: start from artists YOU'D actually book,
     // not from whoever happens to be playing nearby.
-    rteProg('Building your scene pool from DNA…',5);
+    rteProg('Building your artist pool…',5);
 
     const scenePool=new Map(); // norm(name) → {name, relevance, reason}
 
@@ -5058,7 +5056,7 @@ async function runRouting(){
     // Sort by relevance score descending
     routingOpps.sort((a,b)=>(b.relevance||0)-(a.relevance||0)||(b.attending||0)-(a.attending||0));
 
-    rteProg('Done! '+routingOpps.length+' routing opportunities from your scene.',100);
+    rteProg('Done! '+routingOpps.length+' routing opportunities found.',100);
     renderRouting(routingOpps,{hasDNA,scenePoolSize:scenePool.size});
 
   }catch(e){rteProg('Error: '+e.message,100);console.error(e)}
@@ -5425,7 +5423,7 @@ function renderIntelEntity(profile, allEvents){
 
   // Left: top performers
   h+=`<div class="intel-block">
-    <div class="intel-block-title">🏆 Top performers by attendance</div>`;
+    <div class="intel-block-title">Top performers by attendance</div>`;
   for(const a of profile.artists.slice(0,8)){
     const pct=Math.round((a.maxAtt/maxAtt)*100);
     const avail=artistAvailableInWindow(a.name,allEvents);
@@ -5450,7 +5448,7 @@ function renderIntelEntity(profile, allEvents){
   h+=`<div style="display:flex;flex-direction:column;gap:14px">`;
   if(profile.repeats.length){
     h+=`<div class="intel-block">
-      <div class="intel-block-title">🔁 Their formula: booked 2+ times</div>`;
+      <div class="intel-block-title">Their formula: booked 2+ times</div>`;
     for(const a of profile.repeats){
       const avail=artistAvailableInWindow(a.name,allEvents);
       h+=`<div class="intel-artist-row" onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">
@@ -5463,7 +5461,7 @@ function renderIntelEntity(profile, allEvents){
 
   if(profile.upcoming.length){
     h+=`<div class="intel-block">
-      <div class="intel-block-title">📅 Upcoming announced</div>`;
+      <div class="intel-block-title">Upcoming announced</div>`;
     for(const ev of profile.upcoming.slice(0,4)){
       h+=`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:0.8rem">
         <div style="font-family:var(--mono);font-size:0.6rem;color:var(--amber);margin-bottom:2px">${fdate(ev.date)}</div>
@@ -5479,8 +5477,8 @@ function renderIntelEntity(profile, allEvents){
   const available=profile.artists.filter(a=>!artistAvailableInWindow(a.name,allEvents)&&a.maxAtt>0);
   if(available.length){
     h+=`<div style="margin-top:20px">
-      <div class="intel-section-divider">✅ Their proven artists, available in ${cityName()} right now</div>
-      <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px;font-style:italic">These artists worked for ${esc(profile.name)} and haven't played ${cityName()} in the last 6 months. Validated draw, fresh market.</p>`;
+      <div class="intel-section-divider">Available now — proven at ${esc(profile.name)}, haven't played ${cityName()} recently</div>
+      <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px">These artists drew well at ${esc(profile.name)} and haven't played ${cityName()} in the last 6 months.</p>`;
     available.slice(0,12).forEach((a,i)=>{
       const dnaS=hasDNA?dnaScore({name:a.name,bcn:0,_networkOnly:true}):null;
       const fitBadge=hasDNA&&dnaS&&dnaS.score>20?`<span class="badge badge-${dnaS.score>=70?'green':dnaS.score>=50?'amber':'red'}" style="margin-left:6px">${dnaS.score} · ${dnaS.label}</span>`:'';
@@ -5493,7 +5491,7 @@ function renderIntelEntity(profile, allEvents){
           <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)} · ${a.shows} show${a.shows>1?'s':''}</div>
           <div class="ri-actions">
             <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
-            <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
+            <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">Check →</button>
           </div>
         </div>
         <div class="ri-number"><div class="big">${fmt(a.maxAtt)}</div><div class="sub">peak interest</div><div class="dim">${a.shows}× booked</div></div>
@@ -5508,8 +5506,8 @@ function renderIntelEntity(profile, allEvents){
     const gaps=profile.artists.filter(a=>!myProfiles.has(norm(a.name))&&a.maxAtt>0&&!artistAvailableInWindow(a.name,allEvents));
     if(gaps.length){
       h+=`<div style="margin-top:20px">
-        <div class="intel-section-divider">💡 They've booked these, you haven't. Available now.</div>
-        <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px;font-style:italic">Proven in this market, fit your DNA, not in your booking history.</p>`;
+        <div class="intel-section-divider">They've booked these, you haven't — available now</div>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px">Artists who worked at ${esc(profile.name)} that you haven't booked. Available in ${cityName()} now.</p>`;
       gaps.slice(0,8).forEach((a,i)=>{
         const dnaS=dnaScore({name:a.name,bcn:0,_networkOnly:true});
         const fitBadge=`<span class="badge badge-${dnaS.score>=70?'green':dnaS.score>=50?'amber':'red'}" style="margin-left:6px">${dnaS.score} · ${dnaS.label}</span>`;
@@ -5522,7 +5520,7 @@ function renderIntelEntity(profile, allEvents){
             <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)}</div>
             <div class="ri-actions">
               <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
-              <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
+              <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">Check →</button>
             </div>
           </div>
           <div class="ri-number"><div class="big">${fmt(a.maxAtt)}</div><div class="sub">peak interest</div></div>
@@ -5537,16 +5535,15 @@ function renderIntelEntity(profile, allEvents){
 
 /* ── MOMENTUM RENDER ── */
 function renderMomentum(momentum, allEvents){
-  const el=document.getElementById('intelMomentum');
-  if(!momentum.length){el.innerHTML='';return}
+  const el=document.getElementById('risingContent');
+  if(!el)return;
+  if(!momentum.length){el.innerHTML='<div class="empty">No rising artists detected yet. Check back after more events are tracked.</div>';return}
   const dna=getDNA();const hasDNA=dna&&dna.artistCount>0;
 
-  const trajIcon={accelerating:'🔥',steady:'↗',plateauing:'📊'};
+  const trajIcon={accelerating:'▲',steady:'↗',plateauing:'—'};
   const trajLabel={accelerating:'Accelerating',steady:'Building',plateauing:'Plateauing'};
 
-  let h=`<div class="intel-section-divider" style="border-top:none;padding-top:0">🚀 Booking window: artists heating up in ${cityName()} right now</div>
-    <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px">RA interest is rising show-by-show. The window between "affordable" and "too expensive" is typically 3–6 months. These artists are in it now.</p>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px">`;
+  let h=`<div style="display:flex;flex-direction:column;gap:10px">`;
 
   for(const m of momentum.slice(0,6)){
     const avail=artistAvailableInWindow(m.name,allEvents);
@@ -5601,7 +5598,7 @@ function renderMomentum(momentum, allEvents){
 
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;padding-top:2px">
         <button style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="saveArtist('${esc(m.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
-        <button style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="goXrayFromIntel('${esc(m.name).replace(/'/g,"\\'")}')">⚡ x-ray</button>
+        <button style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="goXrayFromIntel('${esc(m.name).replace(/'/g,"\\'")}')">Check →</button>
         <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-align:right">${m.shows} shows<br>tracked</span>
       </div>
     </div>`;
@@ -5673,16 +5670,10 @@ async function runIntel(targetName){
 /* ── LOAD INTELLIGENCE TAB ── */
 let _intelTabLoaded=false;
 async function loadIntelTab(){
-  if(_intelTabLoaded)return; // momentum only needs to load once per session
+  if(_intelTabLoaded)return;
   _intelTabLoaded=true;
-  // Load momentum immediately from cache
   const allEvents=await ensureCache().catch(()=>[]);
   if(!allEvents.length)return;
-
-  try{
-    const momentum=computeMomentum(allEvents);
-    renderMomentum(momentum,allEvents);
-  }catch(e){console.warn('Momentum failed:',e);}
 
   try{
     // Build venue quality data — filter out small/irrelevant venues
@@ -5723,6 +5714,24 @@ async function loadIntelTab(){
       `<span style="font-family:var(--mono);font-size:0.58rem;color:var(--text-faint);padding:4px 0;flex-basis:100%">Quick scan →</span>`+
       chips.map(v=>`<span class="intel-quick-chip" onclick="runIntel('${esc(v).replace(/'/g,"\\'")}')">${esc(v)}</span>`).join('');
   }catch(e){console.warn('Chips failed:',e);}
+}
+
+/* ── LOAD RISING TAB ── */
+let _risingTabLoaded=false;
+async function loadRisingTab(){
+  if(_risingTabLoaded)return;
+  _risingTabLoaded=true;
+  const el=document.getElementById('risingContent');
+  if(el)el.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Scanning artist momentum…</div>';
+  const allEvents=await ensureCache().catch(()=>[]);
+  if(!allEvents.length){if(el)el.innerHTML='<div class="empty">No event data loaded yet.</div>';return}
+  try{
+    const momentum=computeMomentum(allEvents);
+    renderMomentum(momentum,allEvents);
+    // Update rising count badge
+    const rc=document.getElementById('navCountRising');
+    if(rc)rc.textContent=momentum.length||'';
+  }catch(e){if(el)el.innerHTML='<div class="empty">Error: '+esc(e.message)+'</div>'}
 }
 
 /* ── X-RAY INTEGRATION ── */
