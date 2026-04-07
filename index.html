@@ -564,9 +564,19 @@ input[type="number"]{font-family:var(--mono)}
           <option value="dublin">Dublin</option>
         </select>
       </div>
-      <div class="input-group" id="obVenueGroup"><label>Venue Name</label>
-        <div class="ac-wrap"><input type="text" id="obV" placeholder="Start typing your venue name…" autocomplete="off"></div>
-        <span class="hint" id="venueHint">Loading venues…</span>
+      <div class="input-group" id="obVenueGroup">
+        <label>RA Venue ID <span style="color:var(--amber)">*</span></label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input type="number" id="obVenueRaId" placeholder="e.g. 207515" style="max-width:180px;font-family:var(--mono)">
+          <a id="obVenueRaLink" href="https://ra.co/clubs" target="_blank" style="font-family:var(--mono);font-size:0.72rem;color:var(--amber);text-decoration:none">Find my ID →</a>
+        </div>
+        <span id="obVenueRaStatus" style="display:block;font-family:var(--mono);font-size:0.72rem;color:var(--text-faint);margin-top:6px"></span>
+        <span class="hint">The number in your ra.co/clubs/[ID] URL</span>
+        <div class="input-group" style="margin-top:16px;margin-bottom:0">
+          <label>Venue Name</label>
+          <div class="ac-wrap"><input type="text" id="obV" placeholder="Will auto-fill from your RA ID" autocomplete="off"></div>
+          <span class="hint" id="venueHint"></span>
+        </div>
       </div>
       <div class="input-group" id="obPromoterGroup" style="display:none">
         <label>RA Promoter ID <span style="color:var(--amber)">*</span></label>
@@ -3368,7 +3378,6 @@ function setupRaIdVerifier(){
   const idInp=document.getElementById('obPromoterRaId');
   if(!idInp||idInp._verifierBound)return;
   idInp._verifierBound=true;
-  // Block 'e' key in number field
   idInp.addEventListener('keydown',e=>{if(e.key==='e'||e.key==='E'||e.key==='+'||e.key==='-')e.preventDefault()});
   idInp.addEventListener('input',()=>{
     clearTimeout(_raIdVerifyTimer);
@@ -3378,17 +3387,53 @@ function setupRaIdVerifier(){
   });
 }
 
+let _venueIdVerifyTimer=null;
+function setupVenueRaIdVerifier(){
+  const idInp=document.getElementById('obVenueRaId');
+  if(!idInp||idInp._verifierBound)return;
+  idInp._verifierBound=true;
+  idInp.addEventListener('keydown',e=>{if(e.key==='e'||e.key==='E'||e.key==='+'||e.key==='-')e.preventDefault()});
+  idInp.addEventListener('input',()=>{
+    clearTimeout(_venueIdVerifyTimer);
+    const val=parseInt(idInp.value)||0;
+    const status=document.getElementById('obVenueRaStatus');
+    const nameInp=document.getElementById('obV');
+    if(!val){if(status)status.textContent='';return}
+    if(status){status.textContent='Verifying…';status.style.color='var(--text-faint)'}
+    _venueIdVerifyTimer=setTimeout(async()=>{
+      try{
+        const vr=await fetch('/api/ra/graphql',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({query:'query V($id:ID!){venue(id:$id){id name}}',variables:{id:String(val)}})
+        });
+        const vd=await vr.json();
+        const venue=vd?.data?.venue;
+        if(venue?.id){
+          if(status){status.textContent='✓ '+venue.name;status.style.color='var(--green)'}
+          if(nameInp&&!nameInp.value.trim()&&venue.name)nameInp.value=venue.name;
+          const link=document.getElementById('obVenueRaLink');
+          if(link)link.href='https://ra.co/clubs/'+val;
+        }else{
+          if(status){status.textContent='⚠ ID not found';status.style.color='var(--amber)'}
+        }
+      }catch(e){
+        if(status){status.textContent='⚠ Lookup failed';status.style.color='var(--amber)'}
+      }
+    },600);
+  });
+}
+
 function setObType(type){
   document.getElementById('obType').value=type;
   document.getElementById('obTypePicker').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.v===type));
   document.getElementById('obVenueGroup').style.display=type==='venue'?'':'none';
   document.getElementById('obPromoterGroup').style.display=type==='promoter'?'':'none';
   if(type==='venue'){
-    document.getElementById('venueHint').textContent='Loading venues from RA…';
-    setupVenueAC();
+    setupVenueRaIdVerifier();
+    _setupCompetitorVerifier();
   }else{
     _promoterCache=null;
-    _promoterACListening=false; // reset so it re-wires with fresh list
+    _promoterACListening=false;
     setupPromoterAC();
     setupRaIdVerifier();
     _setupCompetitorVerifier();
@@ -3423,7 +3468,7 @@ async function obDone(){
     setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},2500);
     return;
   }
-  // Promoters must have an RA ID
+  // Both types must have an RA ID
   if(_obType==='promoter'){
     const raIdVal=parseInt(document.getElementById('obPromoterRaId')?.value)||0;
     if(!raIdVal){
@@ -3434,12 +3479,25 @@ async function obDone(){
       setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},3000);
       return;
     }
+  } else {
+    const raIdVal=parseInt(document.getElementById('obVenueRaId')?.value)||0;
+    if(!raIdVal){
+      const el=document.getElementById('obVenueRaId');
+      el.style.borderColor='var(--red)';el.style.boxShadow='0 0 0 3px rgba(224,96,96,0.15)';el.focus();
+      const status=document.getElementById('obVenueRaStatus');
+      if(status){status.textContent='RA ID is required';status.style.color='var(--red)'}
+      setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},3000);
+      return;
+    }
   }
-  const _manualRaId=_obType==='promoter'?parseInt(document.getElementById('obPromoterRaId')?.value)||null:null;
-  const _resolvedPromoId=_manualRaId||(_obType==='promoter'?raPromoterId(_obVenueName):null);
+  const _manualRaId=_obType==='promoter'
+    ?parseInt(document.getElementById('obPromoterRaId')?.value)||null
+    :parseInt(document.getElementById('obVenueRaId')?.value)||null;
+  const _resolvedPromoId=_obType==='promoter'?(_manualRaId||raPromoterId(_obVenueName)):null;
   const _newProfile={
     type:_obType,
     venue:_obVenueName,
+    venueRaId:_obType==='venue'?_manualRaId:null,
     promoterName:_obType==='promoter'?_obVenueName:'',
     promoterId:_resolvedPromoId,
     city:document.getElementById('obC').value,
@@ -3455,17 +3513,16 @@ async function obDone(){
   document.querySelectorAll('.ob-step').forEach(s=>{s.classList.remove('active');s.style.display='none'});
   document.getElementById('ob2').style.display='block';
   document.getElementById('ob2').classList.add('active');
-  // Dots: venues have 3 steps total, promoters have 4
-  const totalSteps=_obType==='promoter'?4:3;
+  // Both types get 4 steps now
   for(let i=1;i<=4;i++){
     const dot=document.getElementById('d'+i);
     if(!dot)continue;
-    if(i<=totalSteps){dot.style.display='';dot.classList.toggle('active',i<=2)}
-    else{dot.style.display='none'}
+    dot.style.display='';dot.classList.toggle('active',i<=2);
   }
   
   // Setup drag-and-drop for priority ranking
   _setupPriorityDrag();
+  _setupCompetitorVerifier();
 }
 
 /* Helper: chip input for competitor/venue tagging */
@@ -3670,16 +3727,12 @@ function obStep2SoundDone(){
   
   setP(p);
   
-  // Promoters go to Step 3 (Competition), Venues go straight to DNA
-  if(p.type==='promoter'){
-    document.querySelectorAll('.ob-step').forEach(s=>{s.classList.remove('active');s.style.display='none'});
-    document.getElementById('ob3').style.display='block';
-    document.getElementById('ob3').classList.add('active');
-    for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(dot)dot.classList.toggle('active',i<=3);}
-    _setupCompetitorVerifier();
-  }else{
-    _startDNABuild();
-  }
+  // Both types go to Step 3 (Competition + Genres)
+  document.querySelectorAll('.ob-step').forEach(s=>{s.classList.remove('active');s.style.display='none'});
+  document.getElementById('ob3').style.display='block';
+  document.getElementById('ob3').classList.add('active');
+  for(let i=1;i<=4;i++){const dot=document.getElementById('d'+i);if(dot)dot.classList.toggle('active',i<=3);}
+  _setupCompetitorVerifier();
 }
 
 /* Move a priority item up (-1) or down (+1) */
