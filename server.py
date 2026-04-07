@@ -27,8 +27,8 @@ CLAUDE_URL = "https://api.anthropic.com/v1/messages"
 # Soundcharts
 SC_BASE = "https://customer.api.soundcharts.com"
 SC_HDRS = {
-    "x-app-id": os.environ.get("SC_APP_ID", "NEJNJ-API_CE1B9ACA"),
-    "x-api-key": os.environ.get("SC_API_KEY", "b3b12614c22b60d1"),
+    "x-app-id": os.environ.get("SC_APP_ID", "MHALFON3-API_1DE0762A"),
+    "x-api-key": os.environ.get("SC_API_KEY", "d0c1223735eddac1"),
 }
 
 # RA GraphQL

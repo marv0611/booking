@@ -1,0 +1,10 @@
+{
+  "name": "subpulse-visual-tester",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "puppeteer": "^22.0.0"
+  }
+}

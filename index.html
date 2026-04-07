@@ -64,15 +64,16 @@ button:focus{outline:none}
   border-bottom:1px solid var(--t06);background:var(--bg);z-index:100;
 }
 .logo{font-family:var(--logo);font-weight:500;font-size:1.05rem;letter-spacing:3px;color:var(--text);text-transform:uppercase;cursor:default}
-.sp-url{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;color:#9E9888}
+.sp-tagline{font-family:var(--mono);font-size:0.55rem;letter-spacing:1.5px;color:var(--text);text-transform:uppercase;position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap}
+.sp-url{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;color:var(--text)}
 
 .venue-pill{
   font-family:var(--mono);font-size:0.58rem;font-weight:500;letter-spacing:1.2px;
-  color:var(--t45);background:transparent;border:1px solid var(--t06);
+  color:var(--text);background:transparent;border:1px solid var(--t22);
   padding:7px 16px;border-radius:2px;cursor:pointer;text-transform:uppercase;
   transition:all .15s;
 }
-.venue-pill:hover{border-color:var(--t22);color:var(--text)}
+.venue-pill:hover{border-color:var(--amber);color:var(--text)}
 
 /* Body shell */
 .np-shell{display:flex;flex:1;overflow:hidden}
@@ -80,7 +81,7 @@ button:focus{outline:none}
 /* Sidebar — hidden until .app-ready, dimmer than content */
 .np-sidebar{
   width:220px;flex-shrink:0;border-right:1px solid var(--t06);
-  padding:32px 0 0;display:none;flex-direction:column;background:var(--bg);
+  padding:20px 0 0;display:none;flex-direction:column;background:var(--bg);
 }
 .np-app.app-ready .np-sidebar{display:flex}
 .np-nav{
@@ -96,10 +97,8 @@ button:focus{outline:none}
   color:var(--amber);min-width:14px;text-align:right;
 }
 .np-sidebar-foot{
-  margin-top:auto;padding:16px 24px 20px;
-  font-family:var(--mono);font-size:0.6rem;letter-spacing:0.8px;
-  color:#5C5850;line-height:2;text-transform:uppercase;
-  border-top:1px solid var(--t06);display:none;
+  margin-top:auto;padding:12px 16px 16px;
+  border-top:1px solid var(--t06);
 }
 
 /* Content area — slightly lighter than sidebar for depth */
@@ -107,7 +106,7 @@ button:focus{outline:none}
 
 /* Tab panels — now inside np-content */
 .shell{max-width:none;padding:0}
-.tab-panel{display:none;padding:40px 48px 60px;animation:fadeIn .2s ease;max-width:1100px}
+.tab-panel{display:none;padding:28px 40px 48px;animation:fadeIn .2s ease;max-width:1100px}
 .tab-panel.active{display:block}
 
 /* Bottom nav — mobile */
@@ -115,17 +114,20 @@ button:focus{outline:none}
 .np-bn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:14px 8px;font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;
-  color:var(--t22);cursor:pointer;border-top:2px solid transparent;transition:all .12s;
+  color:#5C5850;cursor:pointer;border-top:2px solid transparent;transition:all .12s;
 }
 .np-bn.active{color:var(--amber);border-top-color:var(--amber)}
 
 /* ── Screen headers ── */
-.sc-label{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-bottom:8px}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--t10);border-top-color:var(--amber);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.progress-detail{display:none}
+.sc-label{font-family:var(--disp);font-size:1.3rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:6px}
 .sc-ctx{
-  font-family:var(--mono);font-size:0.63rem;color:var(--t45);
-  display:flex;align-items:center;gap:14px;margin-bottom:40px;
+  font-family:var(--mono);font-size:0.75rem;color:#9E9888;
+  display:flex;align-items:center;gap:14px;margin-bottom:20px;line-height:1.6;
 }
-.sc-edit{color:var(--amber);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:0.56rem}
+.sc-edit{color:var(--amber);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:0.7rem}
 
 /* ── Routing Feature Card (BOOK screen) ── */
 .rf-card{border:1px solid var(--a20);border-radius:2px;padding:24px 28px;margin-bottom:40px}
@@ -136,7 +138,7 @@ button:focus{outline:none}
 .rf-name{font-family:var(--disp);font-size:1.2rem;font-weight:800;letter-spacing:2px;color:var(--amber);line-height:1}
 .rf-where{font-family:var(--mono);font-size:0.57rem;color:var(--a40);letter-spacing:.5px;margin-top:3px}
 .rf-foot{padding-top:18px;border-top:1px solid var(--a20);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
-.rf-note{font-family:var(--mono);font-size:0.59rem;color:var(--t45);line-height:1.6;flex:1}
+.rf-note{font-family:var(--mono);font-size:0.59rem;color:#9E9888;line-height:1.6;flex:1}
 .rf-link{font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;padding:7px 14px;border:1px solid var(--a40);border-radius:2px;color:var(--amber);background:transparent;cursor:pointer;white-space:nowrap;transition:all .12s;text-transform:uppercase}
 .rf-link:hover{background:var(--a10)}
 
@@ -146,38 +148,38 @@ button:focus{outline:none}
 .v3-card:hover{border-color:var(--t22)}
 .v3-card.open{border-color:rgba(237,232,220,.25)}
 .v3-main{display:flex;align-items:center;gap:18px;padding:15px 20px}
-.v3-rank{font-family:var(--mono);font-size:0.65rem;color:var(--t22);width:16px;text-align:right;flex-shrink:0}
+.v3-rank{font-family:var(--mono);font-size:0.65rem;color:#5C5850;width:16px;text-align:right;flex-shrink:0}
 .v3-ava{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:1.3rem;font-weight:800}
 .v3-info{flex:1;min-width:0}
 .v3-name{font-family:var(--disp);font-size:1.1rem;font-weight:800;letter-spacing:1.5px;color:var(--text);display:flex;align-items:center;gap:10px}
 .v3-trend{font-family:var(--mono);font-size:0.65rem;color:var(--green)}
-.v3-sub{font-family:var(--mono);font-size:0.57rem;color:var(--t22);margin-top:3px}
+.v3-sub{font-family:var(--mono);font-size:0.57rem;color:#5C5850;margin-top:3px}
 .v3-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
 .v3-badge{font-family:var(--mono);font-size:0.6rem;letter-spacing:1.2px;padding:3px 9px;border-radius:2px;border:1px solid}
 .v3-ok{color:var(--green);border-color:var(--g30);background:var(--g10)}
 .v3-warn{color:var(--amber);border-color:var(--a40);background:var(--a10)}
-.v3-genre{font-family:var(--mono);font-size:0.51rem;color:var(--t22)}
+.v3-genre{font-family:var(--mono);font-size:0.51rem;color:#5C5850}
 
 /* Expanded card */
 .v3-exp{display:none;padding:0 20px 22px 84px}
 .v3-exp.open{display:block;animation:fadeIn .15s ease}
 .v3-hero{display:flex;justify-content:space-between;align-items:flex-end;padding:20px 0 18px;border-bottom:1px solid var(--t06);margin-bottom:16px}
-.v3-hlbl{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-bottom:10px}
+.v3-hlbl{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:#5C5850;margin-bottom:10px}
 .v3-hnum{font-family:var(--disp);font-size:3rem;font-weight:800;color:var(--amber);line-height:1;letter-spacing:0}
-.v3-hunit{font-family:var(--mono);font-size:0.65rem;color:var(--t22);letter-spacing:1px;margin-top:5px}
+.v3-hunit{font-family:var(--mono);font-size:0.65rem;color:#5C5850;letter-spacing:1px;margin-top:5px}
 .v3-hvenue{font-family:var(--disp);font-size:1rem;font-weight:700;letter-spacing:1px;color:var(--text);margin-bottom:4px;text-align:right}
-.v3-hdate{font-family:var(--mono);font-size:0.58rem;color:var(--t45);text-align:right}
+.v3-hdate{font-family:var(--mono);font-size:0.58rem;color:#9E9888;text-align:right}
 .v3-rows{display:flex;flex-direction:column;margin-bottom:20px}
 .v3-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--t06)}
 .v3-row:last-child{border-bottom:none}
-.v3-rlbl{font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--t22)}
+.v3-rlbl{font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:#5C5850}
 .v3-rval{font-family:var(--mono);font-size:0.63rem;color:var(--text);text-align:right}
 .v3-rval.g{color:var(--green)}
 .v3-rval.w{color:var(--amber)}
-.v3-why{border-left:2px solid var(--t10);padding-left:16px;font-size:0.75rem;color:var(--t45);line-height:1.7;margin-bottom:18px}
+.v3-why{border-left:2px solid var(--t10);padding-left:16px;font-size:0.75rem;color:#9E9888;line-height:1.7;margin-bottom:18px}
 .v3-why em{color:var(--t70);font-style:normal}
 .v3-acts{display:flex;gap:8px}
-.v3-btn{font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:7px 16px;border:1px solid var(--t06);border-radius:2px;background:transparent;color:var(--t45);cursor:pointer;transition:all .12s}
+.v3-btn{font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:7px 16px;border:1px solid var(--t06);border-radius:2px;background:transparent;color:#9E9888;cursor:pointer;transition:all .12s}
 .v3-btn:hover{border-color:var(--t22);color:var(--text)}
 .v3-btn.p{border-color:var(--a40);color:var(--amber)}
 .v3-btn.p:hover{background:var(--a10)}
@@ -195,35 +197,35 @@ button:focus{outline:none}
 /* ── Tonight screen ── */
 .tn-date{font-family:var(--disp);font-size:2.4rem;font-weight:800;letter-spacing:2px;color:var(--text);margin-bottom:6px}
 .tn-change{font-family:var(--mono);font-size:0.56rem;color:var(--amber);cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-bottom:36px;display:inline-block}
-.tn-summary{padding:18px 22px;background:var(--bg2);border:1px solid var(--t06);border-radius:2px;margin-bottom:36px;font-family:var(--mono);font-size:0.65rem;color:var(--t45);line-height:2}
+.tn-summary{padding:18px 22px;background:var(--bg2);border:1px solid var(--t06);border-radius:2px;margin-bottom:36px;font-family:var(--mono);font-size:0.65rem;color:#9E9888;line-height:2}
 .tn-k{color:var(--text)} .tn-w{color:var(--amber)} .tn-g{color:var(--green)}
-.tn-sec{font-family:var(--mono);font-size:0.65rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--t22);padding-bottom:10px;border-bottom:1px solid var(--t06);margin-bottom:2px}
+.tn-sec{font-family:var(--mono);font-size:0.65rem;letter-spacing:2.5px;text-transform:uppercase;color:#5C5850;padding-bottom:10px;border-bottom:1px solid var(--t06);margin-bottom:2px}
 .tn-list{display:flex;flex-direction:column;gap:2px;margin-bottom:32px}
 .tn-row{display:flex;align-items:center;gap:18px;padding:15px 20px;border:1px solid var(--t06);border-radius:2px;cursor:pointer;transition:border-color .12s}
 .tn-row:hover{border-color:var(--t22)}
 .tn-row.crowd{border-left:2px solid var(--amber)}
 .tn-venue{font-family:var(--disp);font-size:0.95rem;font-weight:700;letter-spacing:1px;color:var(--text)}
-.tn-artists{font-family:var(--mono);font-size:0.56rem;color:var(--t22);margin-top:3px}
+.tn-artists{font-family:var(--mono);font-size:0.56rem;color:#5C5850;margin-top:3px}
 .tn-int{font-family:var(--mono);font-size:0.72rem;margin-left:auto;flex-shrink:0}
-.tn-int.c{color:var(--amber)} .tn-int.o{color:var(--t22)}
+.tn-int.c{color:var(--amber)} .tn-int.o{color:#5C5850}
 
 /* ── TRACK / Pipeline ── */
 .tk-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:8px}
 .tk-title{font-family:var(--disp);font-size:1.4rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text)}
-.tk-sub{font-family:var(--mono);font-size:0.58rem;color:var(--t22);margin-top:4px}
+.tk-sub{font-family:var(--mono);font-size:0.58rem;color:#5C5850;margin-top:4px}
 
 /* ── Legacy classes (keep working) ── */
 .masthead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding:0}
 .tabs{display:none} /* hidden — sidebar replaces it */
 .tab-btn{display:none}
 .filter-bar{background:var(--bg2);border:1px solid var(--t06);border-radius:2px;padding:16px 20px;margin-bottom:28px}
-.filter-bar h4{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);margin-bottom:14px}
+.filter-bar h4{font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:#5C5850;margin-bottom:14px}
 .filter-row{display:flex;gap:24px;flex-wrap:wrap}
 .filter-group{display:flex;flex-direction:column;gap:8px}
-.fg-label{font-family:var(--mono);font-size:0.58rem;color:var(--t45)}
+.fg-label{font-family:var(--mono);font-size:0.58rem;color:#9E9888}
 .input-group{margin-bottom:20px}
-.input-group label{display:block;font-family:var(--disp);font-weight:700;font-size:0.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t45);margin-bottom:8px}
-.input-group .hint{display:block;font-family:var(--mono);font-size:0.72rem;color:var(--t22);margin-top:6px}
+.input-group label{display:block;font-family:var(--disp);font-weight:700;font-size:0.75rem;letter-spacing:1.5px;text-transform:uppercase;color:#9E9888;margin-bottom:8px}
+.input-group .hint{display:block;font-family:var(--mono);font-size:0.72rem;color:#5C5850;margin-top:6px}
 textarea,input[type="text"],input[type="date"],input[type="number"],select{width:100%;background:var(--bg);border:1px solid var(--t10);border-radius:2px;color:var(--text);font-family:var(--body);font-size:0.95rem;padding:12px 14px;outline:none;transition:border-color .15s}
 textarea:focus,input:focus,select:focus{border-color:var(--amber)}
 textarea{resize:vertical;min-height:80px;line-height:1.6;font-family:var(--mono);font-size:0.9rem}
@@ -239,14 +241,13 @@ input[type="number"]{font-family:var(--mono)}
 .btn-red{background:var(--amber);color:#080808}
 .btn-red:hover{opacity:.85}
 .btn-red:disabled{background:var(--accent-dim);cursor:not-allowed;opacity:.4}
-.btn-ghost{background:transparent;color:var(--t45);border:1px solid var(--t10);padding:8px 16px;font-size:0.72rem;font-family:var(--disp);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .15s,color .15s}
+.btn-ghost{background:transparent;color:#9E9888;border:1px solid var(--t10);padding:8px 16px;font-size:0.72rem;font-family:var(--disp);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .15s,color .15s}
 .btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
 .progress-wrap{margin:20px 0;display:none}
 .progress-wrap.visible{display:block;animation:slideDown .2s ease}
-.progress-label{font-family:var(--mono);font-weight:500;font-size:0.75rem;color:var(--t45);margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase}
+.progress-label{font-family:var(--mono);font-weight:500;font-size:0.75rem;color:#9E9888;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase}
 .progress-bar{height:2px;background:var(--bg2);overflow:hidden}
 .progress-fill{height:100%;background:var(--amber);transition:width .4s ease;width:0%}
-.progress-detail{font-family:var(--mono);font-size:0.68rem;color:var(--t22);margin-top:8px;max-height:140px;overflow-y:auto;line-height:1.9;letter-spacing:.2px;border-top:1px solid var(--t06);padding-top:8px}
 .card{background:var(--bg2);border:1px solid var(--t06);border-radius:2px;padding:20px;margin-bottom:12px}
 .card:hover{border-color:var(--t10)}
 .card h3{font-family:var(--disp);font-weight:700;font-size:0.95rem;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
@@ -254,8 +255,8 @@ input[type="number"]{font-family:var(--mono)}
 .stat{background:var(--bg);border:1px solid var(--t06);border-radius:2px;padding:12px 16px;min-width:100px;transition:border-color .15s}
 .stat:hover{border-color:var(--t10)}
 .stat .sv{font-family:var(--mono);font-weight:700;font-size:1.3rem;color:var(--amber);line-height:1.1}
-.stat .sl{font-family:var(--mono);font-size:0.62rem;color:var(--t22);text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
-.empty{font-family:var(--mono);font-size:0.75rem;color:var(--t22);padding:40px;text-align:center;border:1px solid var(--t06);border-radius:2px}
+.stat .sl{font-family:var(--mono);font-size:0.62rem;color:#5C5850;text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+.empty{font-family:var(--mono);font-size:0.75rem;color:#5C5850;padding:40px;text-align:center;border:1px solid var(--t06);border-radius:2px}
 .badge,.badge-green,.badge-red,.badge-amber,.badge-blue,.badge-purple{display:inline-block;font-family:var(--mono);font-size:0.58rem;letter-spacing:.8px;padding:3px 8px;border-radius:2px;border:1px solid;text-transform:uppercase}
 .badge,.badge-amber{color:var(--amber);border-color:var(--a40);background:var(--a10)}
 .badge-green{color:var(--green);border-color:var(--g30);background:var(--g10)}
@@ -263,7 +264,7 @@ input[type="number"]{font-family:var(--mono)}
 .badge-blue{color:var(--blue);border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.1)}
 .badge-purple{color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)}
 .seg-picker{display:flex;gap:0;border:1px solid var(--t06);border-radius:2px;overflow:hidden}
-.seg-picker button{flex:1;font-family:var(--disp);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;background:transparent;border:none;color:var(--t22);cursor:pointer;transition:all .12s;line-height:1.3;display:flex;flex-direction:column;align-items:center}
+.seg-picker button{flex:1;font-family:var(--disp);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;background:transparent;border:none;color:#5C5850;cursor:pointer;transition:all .12s;line-height:1.3;display:flex;flex-direction:column;align-items:center}
 .seg-picker button:hover{background:var(--bg3);color:var(--text)}
 .seg-picker button.active{background:var(--amber);color:#080808}
 .seg-sub{font-size:0.65rem;letter-spacing:.5px;opacity:.7;display:block}
@@ -282,39 +283,46 @@ input[type="number"]{font-family:var(--mono)}
 .ob-dot{width:6px;height:6px;border-radius:50%;background:var(--t10)}
 .ob-dot.active{background:var(--amber)}
 .ob-step h2{font-family:var(--disp);font-size:1.6rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:8px}
-.ob-step .sub{font-family:var(--mono);font-size:0.72rem;color:var(--t45);line-height:1.7;margin-bottom:24px}
+.ob-step .sub{font-family:var(--mono);font-size:0.72rem;color:#9E9888;line-height:1.7;margin-bottom:24px}
 .dna-progress{margin-top:16px}
-.dna-log{font-family:var(--mono);font-size:0.65rem;color:var(--t22);line-height:1.9;max-height:120px;overflow-y:auto;border-top:1px solid var(--t06);padding-top:10px;margin-top:10px}
+.dna-log{font-family:var(--mono);font-size:0.65rem;color:#5C5850;line-height:1.9;max-height:120px;overflow-y:auto;border-top:1px solid var(--t06);padding-top:10px;margin-top:10px}
 .result-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--t06);animation:fadeIn .2s ease both;transition:background .1s}
 .result-item:hover{background:var(--bg2);margin:0 -10px;padding:14px 10px;border-radius:2px}
 .result-item:last-child{border-bottom:none}
-.ri-rank{font-family:var(--mono);font-size:0.65rem;color:var(--t22);width:28px;text-align:right;flex-shrink:0}
+.ri-rank{font-family:var(--mono);font-size:0.65rem;color:#5C5850;width:28px;text-align:right;flex-shrink:0}
 .result-item:nth-child(-n+3) .ri-rank{color:var(--amber)}
 .ri-img{width:40px;height:40px;border-radius:50%;background:var(--bg3);flex-shrink:0;object-fit:cover;border:1px solid var(--t06);transition:border-color .15s}
-.ri-img-placeholder{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--t06);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:1.1rem;color:var(--t22)}
+.ri-img-placeholder{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--t06);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:1.1rem;color:#5C5850}
 .ri-info{flex:1;min-width:0}
 .ri-name{font-family:var(--disp);font-weight:800;font-size:1.05rem;letter-spacing:1px;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ri-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
-.ri-reason{font-family:var(--mono);font-size:0.62rem;color:var(--t22);margin-top:2px}
+.ri-reason{font-family:var(--mono);font-size:0.62rem;color:#5C5850;margin-top:2px}
 .ri-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.ri-actions button{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.5px;text-transform:uppercase;padding:5px 12px;border:1px solid var(--t10);border-radius:2px;background:transparent;color:#9E9888;cursor:pointer;transition:all .12s}
+.ri-actions button:hover{border-color:var(--amber);color:var(--amber)}
+.ri-actions button.saved{border-color:var(--g30);color:var(--green)}
 .ri-right{flex-shrink:0;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.ri-number{flex-shrink:0;text-align:right;min-width:60px}
+.ri-number .big{font-family:var(--disp);font-size:1.1rem;font-weight:800;color:var(--amber);line-height:1}
+.ri-number .sub{font-family:var(--mono);font-size:0.58rem;color:#9E9888;margin-top:2px}
+.ri-number .dim{font-family:var(--mono);font-size:0.58rem;color:#5C5850}
 .ri-score{font-family:var(--disp);font-size:1.3rem;font-weight:800;color:var(--amber);line-height:1}
-.ri-score-label{font-family:var(--mono);font-size:0.65rem;letter-spacing:.5px;color:var(--t22);text-transform:uppercase;margin-top:2px}
-.ri-date-label{font-family:var(--mono);font-size:0.62rem;color:var(--t45)}
+.ri-score-label{font-family:var(--mono);font-size:0.65rem;letter-spacing:.5px;color:#5C5850;text-transform:uppercase;margin-top:2px}
+.ri-date-label{font-family:var(--mono);font-size:0.62rem;color:#9E9888}
 .intel-hero{margin-bottom:24px}
 .intel-hero h2{font-family:var(--disp);font-size:1.4rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
-.intel-hero p{font-family:var(--mono);font-size:0.72rem;color:var(--t45);line-height:1.7;max-width:480px}
+.intel-hero p{font-family:var(--mono);font-size:0.72rem;color:#9E9888;line-height:1.7;max-width:480px}
 .intel-search-wrap{display:flex;gap:8px;margin-bottom:16px}
 .intel-search-wrap input{padding:12px 14px;font-size:0.88rem}
 .v-status-bar{position:fixed;top:0;left:0;right:0;background:var(--amber);color:#080808;font-family:var(--mono);font-size:0.68rem;font-weight:700;letter-spacing:1px;text-align:center;padding:8px;z-index:1000;text-transform:uppercase;display:none}
-.venue-switcher-dd{position:absolute;top:calc(100% + 4px);right:0;z-index:200;background:var(--bg2);border:1px solid var(--t10);border-radius:2px;min-width:240px;animation:slideDown .15s ease}
+.venue-switcher-dd{position:absolute;bottom:calc(100% + 4px);left:0;z-index:200;background:var(--bg2);border:1px solid var(--t10);border-radius:2px;min-width:240px;animation:slideDown .15s ease}
 .venue-switcher-dd .vs-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--t06);font-family:var(--disp);font-weight:600;font-size:1rem;letter-spacing:.5px;text-transform:uppercase;transition:background .1s}
 .venue-switcher-dd .vs-item:last-child{border-bottom:none}
 .venue-switcher-dd .vs-item:hover{background:var(--bg3)}
 .venue-switcher-dd .vs-item.active{color:var(--amber)}
-.venue-switcher-dd .vs-item .vs-city{font-family:var(--mono);font-size:0.72rem;color:var(--t22);font-weight:400;text-transform:none}
-.venue-switcher-dd .vs-add{color:var(--t45);font-style:normal}
-.venue-switcher-dd .vs-del{font-size:0.72rem;color:var(--t22);padding:2px 5px;border-radius:2px;transition:all .15s}
+.venue-switcher-dd .vs-item .vs-city{font-family:var(--mono);font-size:0.72rem;color:#5C5850;font-weight:400;text-transform:none}
+.venue-switcher-dd .vs-add{color:#9E9888;font-style:normal}
+.venue-switcher-dd .vs-del{font-size:0.72rem;color:#5C5850;padding:2px 5px;border-radius:2px;transition:all .15s}
 .venue-switcher-dd .vs-del:hover{color:var(--red);background:var(--r10)}
 #venueSwitcherWrap{position:relative}
 
@@ -325,7 +333,7 @@ input[type="number"]{font-family:var(--mono)}
 .saved-card.t1{border-left:2px solid var(--amber)}
 .saved-card.t2{border-left:2px solid var(--green)}
 .saved-name{font-family:var(--disp);font-size:1rem;font-weight:800;letter-spacing:1.5px;color:var(--text);flex:1;min-width:0}
-.saved-meta{font-family:var(--mono);font-size:0.65rem;color:var(--t22);margin-top:2px}
+.saved-meta{font-family:var(--mono);font-size:0.65rem;color:#5C5850;margin-top:2px}
 .saved-actions{display:flex;gap:6px;flex-shrink:0}
 
 /* ── Responsive ── */
@@ -335,6 +343,7 @@ input[type="number"]{font-family:var(--mono)}
   .tab-panel{padding:24px 20px 60px}
   .np-hdr{padding:0 20px}
   .sp-url{display:none}
+  .sp-tagline{display:none}
   .sp-waveform{width:28px;height:20px}
   .v3-exp{padding:0 16px 18px 16px}
   .v3-hnum{font-size:2.4rem}
@@ -344,7 +353,7 @@ input[type="number"]{font-family:var(--mono)}
 }
 
 /* ── Scene Intel quick chips ── */
-#intelQuickChips .chip{font-family:var(--mono);font-size:0.58rem;padding:5px 10px;border:1px solid var(--t06);border-radius:2px;cursor:pointer;color:var(--t22);transition:all .12s;background:transparent}
+#intelQuickChips .chip{font-family:var(--mono);font-size:0.58rem;padding:5px 10px;border:1px solid var(--t06);border-radius:2px;cursor:pointer;color:#5C5850;transition:all .12s;background:transparent}
 #intelQuickChips .chip:hover{border-color:var(--amber);color:var(--amber)}
 
 /* ── Onboarding shell ── */
@@ -430,7 +439,7 @@ input[type="number"]{font-family:var(--mono)}
 /* ── Date picker components ── */
 .np-dp-wrap{position:relative}
 .np-dp-display{
-  font-family:var(--mono);font-size:0.85rem;color:var(--t45);
+  font-family:var(--mono);font-size:0.85rem;color:#9E9888;
   padding:12px 14px;border:1px solid var(--t10);border-radius:2px;
   cursor:pointer;background:var(--bg);transition:border-color .15s;
   user-select:none;letter-spacing:0.5px;
@@ -462,6 +471,7 @@ input[type="number"]{font-family:var(--mono)}
 
 /* ── Score display ── */
 .v3-score{font-family:var(--disp);font-size:1.6rem;font-weight:800;color:var(--amber);line-height:1}
+.v3-fit{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.5px;text-transform:uppercase;text-align:right}
 
 /* ── Autocomplete sub ── */
 .ac-sub{font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-top:1px}
@@ -476,15 +486,13 @@ input[type="number"]{font-family:var(--mono)}
 <div class="np-app">
 
   <!-- HEADER -->
-  <div class="np-hdr">
+  <div class="np-hdr" style="position:relative">
     <div style="display:flex;align-items:center;gap:14px">
       <svg class="sp-waveform" viewBox="0 0 48 28" width="36" height="26" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="0.0" y="9.8" width="1.2" height="4.2" fill="#B8860B" rx="0.4"/><rect x="0.0" y="14" width="1.2" height="4.2" fill="#B8860B" rx="0.4"/><rect x="1.5" y="6.6" width="1.2" height="7.4" fill="#E8A912" rx="0.4"/><rect x="1.5" y="14" width="1.2" height="7.4" fill="#E8A912" rx="0.4"/><rect x="3.0" y="3.8" width="1.2" height="10.2" fill="#F0C040" rx="0.4"/><rect x="3.0" y="14" width="1.2" height="10.2" fill="#F0C040" rx="0.4"/><rect x="4.5" y="9.2" width="1.2" height="4.8" fill="#B8860B" rx="0.4"/><rect x="4.5" y="14" width="1.2" height="4.8" fill="#B8860B" rx="0.4"/><rect x="6.0" y="5.4" width="1.2" height="8.6" fill="#E8A912" rx="0.4"/><rect x="6.0" y="14" width="1.2" height="8.6" fill="#E8A912" rx="0.4"/><rect x="7.5" y="2.6" width="1.2" height="11.4" fill="#F5D060" rx="0.4"/><rect x="7.5" y="14" width="1.2" height="11.4" fill="#F5D060" rx="0.4"/><rect x="9.0" y="9.0" width="1.2" height="5.0" fill="#B8860B" rx="0.4"/><rect x="9.0" y="14" width="1.2" height="5.0" fill="#B8860B" rx="0.4"/><rect x="10.5" y="4.6" width="1.2" height="9.4" fill="#F0C040" rx="0.4"/><rect x="10.5" y="14" width="1.2" height="9.4" fill="#F0C040" rx="0.4"/><rect x="12.0" y="2.0" width="1.2" height="12.0" fill="#F5D060" rx="0.4"/><rect x="12.0" y="14" width="1.2" height="12.0" fill="#F5D060" rx="0.4"/><rect x="13.5" y="8.2" width="1.2" height="5.8" fill="#D49B10" rx="0.4"/><rect x="13.5" y="14" width="1.2" height="5.8" fill="#D49B10" rx="0.4"/><rect x="15.0" y="7.0" width="1.2" height="7.0" fill="#D49B10" rx="0.4"/><rect x="15.0" y="14" width="1.2" height="7.0" fill="#D49B10" rx="0.4"/><rect x="16.5" y="3.4" width="1.2" height="10.6" fill="#F0C040" rx="0.4"/><rect x="16.5" y="14" width="1.2" height="10.6" fill="#F0C040" rx="0.4"/><rect x="18.0" y="10.2" width="1.2" height="3.8" fill="#B8860B" rx="0.4"/><rect x="18.0" y="14" width="1.2" height="3.8" fill="#B8860B" rx="0.4"/><rect x="19.5" y="5.0" width="1.2" height="9.0" fill="#F0C040" rx="0.4"/><rect x="19.5" y="14" width="1.2" height="9.0" fill="#F0C040" rx="0.4"/><rect x="21.0" y="4.2" width="1.2" height="9.8" fill="#F0C040" rx="0.4"/><rect x="21.0" y="14" width="1.2" height="9.8" fill="#F0C040" rx="0.4"/><rect x="22.5" y="7.4" width="1.2" height="6.6" fill="#D49B10" rx="0.4"/><rect x="22.5" y="14" width="1.2" height="6.6" fill="#D49B10" rx="0.4"/><rect x="24.0" y="5.8" width="1.2" height="8.2" fill="#E8A912" rx="0.4"/><rect x="24.0" y="14" width="1.2" height="8.2" fill="#E8A912" rx="0.4"/><rect x="25.5" y="2.2" width="1.2" height="11.8" fill="#F5D060" rx="0.4"/><rect x="25.5" y="14" width="1.2" height="11.8" fill="#F5D060" rx="0.4"/><rect x="27.0" y="9.4" width="1.2" height="4.6" fill="#B8860B" rx="0.4"/><rect x="27.0" y="14" width="1.2" height="4.6" fill="#B8860B" rx="0.4"/><rect x="28.5" y="4.4" width="1.2" height="9.6" fill="#F0C040" rx="0.4"/><rect x="28.5" y="14" width="1.2" height="9.6" fill="#F0C040" rx="0.4"/><rect x="30.0" y="6.6" width="1.2" height="7.4" fill="#E8A912" rx="0.4"/><rect x="30.0" y="14" width="1.2" height="7.4" fill="#E8A912" rx="0.4"/><rect x="31.5" y="9.0" width="1.2" height="5.0" fill="#B8860B" rx="0.4"/><rect x="31.5" y="14" width="1.2" height="5.0" fill="#B8860B" rx="0.4"/><rect x="33.0" y="3.0" width="1.2" height="11.0" fill="#F5D060" rx="0.4"/><rect x="33.0" y="14" width="1.2" height="11.0" fill="#F5D060" rx="0.4"/><rect x="34.5" y="8.2" width="1.2" height="5.8" fill="#D49B10" rx="0.4"/><rect x="34.5" y="14" width="1.2" height="5.8" fill="#D49B10" rx="0.4"/><rect x="36.0" y="9.8" width="1.2" height="4.2" fill="#B8860B" rx="0.4"/><rect x="36.0" y="14" width="1.2" height="4.2" fill="#B8860B" rx="0.4"/><rect x="37.5" y="5.6" width="1.2" height="8.4" fill="#E8A912" rx="0.4"/><rect x="37.5" y="14" width="1.2" height="8.4" fill="#E8A912" rx="0.4"/><rect x="39.0" y="3.4" width="1.2" height="10.6" fill="#F0C040" rx="0.4"/><rect x="39.0" y="14" width="1.2" height="10.6" fill="#F0C040" rx="0.4"/><rect x="40.5" y="8.6" width="1.2" height="5.4" fill="#D49B10" rx="0.4"/><rect x="40.5" y="14" width="1.2" height="5.4" fill="#D49B10" rx="0.4"/><rect x="42.0" y="4.2" width="1.2" height="9.8" fill="#F0C040" rx="0.4"/><rect x="42.0" y="14" width="1.2" height="9.8" fill="#F0C040" rx="0.4"/><rect x="43.5" y="7.8" width="1.2" height="6.2" fill="#D49B10" rx="0.4"/><rect x="43.5" y="14" width="1.2" height="6.2" fill="#D49B10" rx="0.4"/><rect x="45.0" y="6.2" width="1.2" height="7.8" fill="#E8A912" rx="0.4"/><rect x="45.0" y="14" width="1.2" height="7.8" fill="#E8A912" rx="0.4"/><rect x="46.5" y="3.2" width="1.2" height="10.8" fill="#F5D060" rx="0.4"/><rect x="46.5" y="14" width="1.2" height="10.8" fill="#F5D060" rx="0.4"/></svg>
       <div class="logo">SUBPULSE</div>
     </div>
+    <span class="sp-tagline">booking intelligence tool for electronic music</span>
     <div style="display:flex;align-items:center;gap:20px">
-      <div id="venueSwitcherWrap" style="display:none;position:relative">
-        <div class="venue-pill" id="venuePill" onclick="toggleVenueSwitcher(event)" title="Switch venue or add new"></div>
-      </div>
       <span class="sp-url">subpulse.fm</span>
     </div>
   </div>
@@ -492,23 +500,27 @@ input[type="number"]{font-family:var(--mono)}
   <!-- TAB BAR -->
   <div class="sp-tabbar" id="spTabbar" style="display:none">
     <div class="sp-tab active" data-screen="book" onclick="npNav('book',this)">FIND ARTISTS</div>
-    <div class="sp-tab" data-screen="routing" onclick="npNav('routing',this)">ROUTING DEALS</div>
+    <div class="sp-tab" data-screen="check" onclick="npNav('check',this)">CHECK</div>
+    <div class="sp-tab" data-screen="routing" onclick="npNav('routing',this)">ROUTING</div>
     <div class="sp-tab" data-screen="tonight" onclick="npNav('tonight',this)">WHAT'S ON</div>
-    <div class="sp-tab" data-screen="intel" onclick="npNav('intel',this)">SCENE INTEL</div>
-    <div class="sp-tab" data-screen="check" onclick="npNav('check',this)">ARTIST CHECK</div>
-    <div class="sp-tab" data-screen="track" onclick="npNav('track',this)">MY PIPELINE</div>
+    <div class="sp-tab" data-screen="intel" onclick="npNav('intel',this)">COMPETITORS</div>
+    <div class="sp-tab" data-screen="track" onclick="npNav('track',this)">PIPELINE</div>
   </div>
 
   <div class="np-shell">
     <nav class="np-sidebar" id="npSidebar">
       <div class="np-nav active" data-screen="book" onclick="npNav('book',this)">FIND ARTISTS<span class="np-nav-count" id="navCountBook"></span></div>
+      <div class="np-nav" data-screen="check" onclick="npNav('check',this)">CHECK AVAILABILITY</div>
       <div class="np-nav" data-screen="routing" onclick="npNav('routing',this)">ROUTING<span class="np-nav-count" id="navCountRouting"></span></div>
       <div class="np-nav" data-screen="tonight" onclick="npNav('tonight',this)">WHAT'S ON<span class="np-nav-count" id="navCountTonight"></span></div>
-      <div class="np-nav" data-screen="intel" onclick="npNav('intel',this)">SCENE INTEL</div>
-      <div class="np-nav" data-screen="check" onclick="npNav('check',this)">ARTIST CHECK</div>
+      <div class="np-nav" data-screen="intel" onclick="npNav('intel',this)">COMPETITORS</div>
       <div class="np-nav" data-screen="track" onclick="npNav('track',this)">MY PIPELINE<span class="np-nav-count" id="navCountTrack"></span></div>
-      <div class="np-nav" data-screen="rising" onclick="npNav('rising',this)">RISING<span class="np-nav-count" id="navCountRising"></span></div>
-      <div class="np-sidebar-foot" id="npSidebarFoot"></div>
+      <div class="np-nav" data-screen="rising" onclick="npNav('rising',this)" style="margin-top:12px;opacity:0.5">RISING<span class="np-nav-count" id="navCountRising"></span></div>
+      <div class="np-sidebar-foot" id="npSidebarFoot">
+        <div id="venueSwitcherWrap" style="position:relative">
+          <div class="venue-pill" id="venuePill" onclick="toggleVenueSwitcher(event)" title="Switch venue or add new" style="width:100%;text-align:left;padding:8px 12px;font-size:0.62rem"></div>
+        </div>
+      </div>
     </nav>
 
     <!-- CONTENT -->
@@ -631,7 +643,8 @@ input[type="number"]{font-family:var(--mono)}
         </div>
       </div>
       <div class="input-group">
-        <label>Your Genre Focus</label>
+        <label>Your Genre Focus <span id="obGenreCount" style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">0 selected — pick at least 2</span></label>
+        <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-bottom:8px">Select 3–5 genres for the most accurate results</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px" id="obGenrePicker">
           <button type="button" class="btn-ghost" data-genre="house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">House</button>
           <button type="button" class="btn-ghost" data-genre="deep-house" onclick="_toggleGenre(this)" style="font-size:0.72rem;padding:6px 12px">Deep House</button>
@@ -654,7 +667,7 @@ input[type="number"]{font-family:var(--mono)}
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn-ghost" onclick="obGo(2)" style="padding:14px">← Back</button>
-        <button class="btn btn-red" id="obStep3Btn" onclick="obStep3Done()" style="flex:1;padding:14px;font-size:0.95rem">Build My DNA →</button>
+        <button class="btn btn-red" id="obStep3Btn" onclick="obStep3Done()" style="flex:1;padding:14px;font-size:0.95rem">Analyse My Bookings →</button>
       </div>
     </div>
 
@@ -693,39 +706,39 @@ input[type="number"]{font-family:var(--mono)}
   <div class="tab-panel" id="panel-discover">
 
     <!-- Clean landing state -->
-    <div id="discoverLanding" style="max-width:640px;margin:0 auto;padding-top:40px">
-      <div style="font-family:var(--disp);font-weight:800;font-size:1.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:6px">Find Artists</div>
-      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);line-height:1.7;margin-bottom:28px">Who should you book next? Add artists you like, or leave empty and we'll suggest based on your booking history.</div>
+    <div id="discoverLanding" style="max-width:900px;padding-top:20px">
+      <div class="sc-label">Find Artists</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);line-height:1.7;margin-bottom:20px">Who should you book next? Add artists you like, or leave empty to get suggestions from your booking history.</div>
 
-      <!-- Search area -->
-      <div style="margin-bottom:20px">
-        <div class="ac-wrap" style="position:relative">
-          <textarea id="seedInput" placeholder="Type artist names, one per line — or just hit Find Artists" rows="3" style="width:100%;font-size:0.88rem;padding:14px;resize:vertical"></textarea>
+      <!-- Search row — all controls same height, aligned -->
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px">
+        <div style="flex:1;min-width:200px">
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">ARTISTS</div>
+          <div class="ac-wrap" style="position:relative">
+            <textarea id="seedInput" placeholder="Artist names, one per line" rows="1" style="width:100%;font-size:0.85rem;padding:10px 14px;resize:vertical;min-height:0;height:42px;box-sizing:border-box"></textarea>
+          </div>
+          <style>#seedInput~.ac-chips{display:none!important}</style>
         </div>
-        <div id="seedH" style="margin-top:4px"></div>
-      </div>
-
-      <!-- Date + result count -->
-      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap">
-        <div style="flex:1;min-width:180px">
-          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">YOUR EVENT DATE</div>
-          <div class="date-wrap">
+        <div style="min-width:140px">
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">EVENT DATE</div>
+          <div class="date-wrap" style="height:42px;display:flex;align-items:center">
             <input type="date" id="eventDate" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
             <span class="date-display" id="eventDateDisplay"></span>
           </div>
         </div>
-        <div style="min-width:120px">
-          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">RESULTS</div>
-          <select id="minBcn" style="font-size:0.78rem;width:100%"><option value="0">All matches</option><option value="20" selected>Top 20</option><option value="40">Top 40</option></select>
+        <div style="min-width:90px">
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">RESULTS</div>
+          <select id="minBcn" style="font-size:0.78rem;width:100%;height:42px"><option value="0">All</option><option value="20" selected>Top 20</option><option value="40">Top 40</option></select>
         </div>
-        <button class="btn btn-red" id="dBtn" onclick="runDiscover()" style="padding:14px 28px;font-size:0.85rem;white-space:nowrap">Find Artists</button>
+        <button class="btn btn-red" id="dBtn" onclick="runDiscover()" style="padding:0 28px;height:42px;font-size:0.85rem;white-space:nowrap">Find Artists</button>
       </div>
+      <div id="seedH" style="margin-bottom:12px"></div>
 
       <!-- Filters toggle -->
       <div style="margin-bottom:20px">
-        <span class="sc-edit" onclick="document.getElementById('v3-filters').style.display=document.getElementById('v3-filters').style.display==='flex'?'none':'flex'" style="font-family:var(--mono);font-size:0.65rem;color:var(--amber);cursor:pointer;letter-spacing:1px">Advanced filters ▾</span>
-        <div id="v3-filters" style="display:none;flex-wrap:wrap;gap:8px;margin-top:12px;padding:16px;background:var(--bg2);border:1px solid var(--t06);border-radius:2px">
-          <div style="width:100%;font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">HASN'T PLAYED CITY IN</div>
+        <span class="sc-edit" onclick="document.getElementById('v3-filters').style.display=document.getElementById('v3-filters').style.display==='flex'?'none':'flex'" style="font-family:var(--mono);font-size:0.68rem;color:var(--amber);cursor:pointer;letter-spacing:1px">Filters ▾</span>
+        <div id="v3-filters" style="display:none;flex-wrap:wrap;gap:8px;margin-top:12px;padding:16px;background:var(--bg);border:1px solid var(--t06);border-radius:2px">
+          <div style="width:100%;font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">HASN'T PLAYED CITY IN</div>
           <div class="seg-picker" id="segBack" style="border:1px solid var(--t06)">
             <button onclick="setPicker('segBack','filterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
             <button onclick="setPicker('segBack','filterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
@@ -733,7 +746,7 @@ input[type="number"]{font-family:var(--mono)}
             <button onclick="setPicker('segBack','filterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
           </div>
           <input type="hidden" id="filterBack" value="6">
-          <div style="width:100%;font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-top:12px;margin-bottom:6px">NOT BOOKED FOR NEXT</div>
+          <div style="width:100%;font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-top:12px;margin-bottom:6px">NOT BOOKED FOR NEXT</div>
           <div class="seg-picker" id="segFwd" style="border:1px solid var(--t06)">
             <button onclick="setPicker('segFwd','filterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
             <button onclick="setPicker('segFwd','filterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
@@ -766,17 +779,36 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ ROUTING ═══ -->
   <div class="tab-panel" id="panel-routing">
-    <div class="sc-label">ROUTING DEALS</div>
-    <div class="sc-ctx">Artists already in the region &nbsp;·&nbsp; ±1 day from your date &nbsp;·&nbsp; 30–50% lower fees</div>
+    <div class="sc-label">Routing</div>
+    <div class="sc-ctx">Artists already nearby your date — split travel costs, get lower fees</div>
 
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap">
-      <div class="input-group" style="margin:0;flex:1;min-width:200px">
-        <label style="font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;color:var(--t22)">YOUR EVENT DATE</label>
+    <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap">
+      <div style="min-width:180px">
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">EVENT DATE</div>
         <div class="date-wrap">
           <input type="date" id="routeDate" onchange="syncDateToAll(this.value)">
         </div>
       </div>
-      <button class="btn btn-red" id="rteBtn" onclick="runRouting()">Find Deals</button>
+      <div>
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">NOT PLAYED IN</div>
+        <div class="seg-picker" id="rSegBack" style="border:1px solid var(--t06)">
+          <button onclick="setPicker('rSegBack','rFilterBack',3)" data-v="3">3<span class="seg-sub">mo</span></button>
+          <button onclick="setPicker('rSegBack','rFilterBack',6)" data-v="6" class="active">6<span class="seg-sub">mo</span></button>
+          <button onclick="setPicker('rSegBack','rFilterBack',12)" data-v="12">12<span class="seg-sub">mo</span></button>
+          <button onclick="setPicker('rSegBack','rFilterBack',18)" data-v="18">18<span class="seg-sub">mo</span></button>
+        </div>
+        <input type="hidden" id="rFilterBack" value="6">
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">NOT BOOKED FOR</div>
+        <div class="seg-picker" id="rSegFwd" style="border:1px solid var(--t06)">
+          <button onclick="setPicker('rSegFwd','rFilterFwd',1)" data-v="1">1<span class="seg-sub">mo</span></button>
+          <button onclick="setPicker('rSegFwd','rFilterFwd',3)" data-v="3" class="active">3<span class="seg-sub">mo</span></button>
+          <button onclick="setPicker('rSegFwd','rFilterFwd',6)" data-v="6">6<span class="seg-sub">mo</span></button>
+        </div>
+        <input type="hidden" id="rFilterFwd" value="3">
+      </div>
+      <button class="btn btn-red" id="rteBtn" onclick="runRouting()" style="padding:12px 24px">Find Deals</button>
     </div>
 
     <div id="nearbyCities" style="display:none"></div>
@@ -785,34 +817,6 @@ input[type="number"]{font-family:var(--mono)}
     <div id="routingDNAContext" style="display:none"></div>
     <span id="fCityR" style="display:none"></span>
 
-    <!-- Collapsible filters -->
-    <details style="margin-bottom:24px">
-      <summary style="font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t22);cursor:pointer;list-style:none;padding:8px 0;border-top:1px solid var(--t06)">
-        ▸ AVAILABILITY FILTERS
-      </summary>
-      <div style="padding-top:16px;display:flex;flex-wrap:wrap;gap:20px">
-        <div>
-          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--t22);margin-bottom:8px">HASN'T PLAYED CITY IN</div>
-          <div class="seg-picker" id="rSegBack" style="border:1px solid var(--t06)">
-            <button onclick="setPicker('rSegBack','rFilterBack',3)" data-v="3">3<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('rSegBack','rFilterBack',6)" data-v="6" class="active">6<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('rSegBack','rFilterBack',12)" data-v="12">12<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('rSegBack','rFilterBack',18)" data-v="18">18<span class="seg-sub">months</span></button>
-          </div>
-          <input type="hidden" id="rFilterBack" value="6">
-        </div>
-        <div>
-          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--t22);margin-bottom:8px">NOT BOOKED FOR NEXT</div>
-          <div class="seg-picker" id="rSegFwd" style="border:1px solid var(--t06)">
-            <button onclick="setPicker('rSegFwd','rFilterFwd',1)" data-v="1">1<span class="seg-sub">month</span></button>
-            <button onclick="setPicker('rSegFwd','rFilterFwd',3)" data-v="3" class="active">3<span class="seg-sub">months</span></button>
-            <button onclick="setPicker('rSegFwd','rFilterFwd',6)" data-v="6">6<span class="seg-sub">months</span></button>
-          </div>
-          <input type="hidden" id="rFilterFwd" value="3">
-        </div>
-      </div>
-    </details>
-
     <div class="progress-wrap" id="rteProg"><div class="progress-label" id="rteLbl">Starting...</div><div class="progress-bar"><div class="progress-fill" id="rteFill"></div></div><div class="progress-detail" id="rteDet"></div></div>
     <div id="rteRes"></div>
   </div>
@@ -820,12 +824,12 @@ input[type="number"]{font-family:var(--mono)}
   <!-- ═══ TONIGHT ═══ -->
   <div class="tab-panel" id="panel-scanner">
     <div class="sc-label">WHAT'S ON</div>
-    <div class="sc-ctx" id="tn-ctx-line" style="margin-bottom:32px">
+    <div class="sc-ctx" id="tn-ctx-line" style="margin-bottom:20px">
       See who's competing for your audience &nbsp;·&nbsp; <span class="sc-edit" onclick="document.getElementById('tn-date-row').style.display=document.getElementById('tn-date-row').style.display==='flex'?'none':'flex'">Change date</span>
     </div>
     <div id="tn-date-row" style="display:none;align-items:flex-end;gap:10px;margin-bottom:24px;flex-wrap:wrap">
       <div class="input-group" style="margin:0">
-        <label style="font-family:var(--mono);font-size:0.65rem;letter-spacing:2px;color:var(--t22)">DATE</label>
+        <label style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;color:#5C5850">DATE</label>
         <input type="date" id="scanDate" onchange="syncDateToAll(this.value)">
       </div>
       <button class="btn btn-red" onclick="runScan();document.getElementById('tn-date-row').style.display='none'">Scan</button>
@@ -835,18 +839,18 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ ARTIST CHECK ═══ -->
   <div class="tab-panel" id="panel-verify">
-    <div style="max-width:640px;margin:0 auto;padding-top:20px">
-      <div style="font-family:var(--disp);font-weight:800;font-size:1.4rem;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:6px">Artist Check</div>
-      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);line-height:1.7;margin-bottom:24px">Check if an artist is available for your event — hasn't played your city recently and isn't booked on your date.</div>
+    <div style="max-width:700px;padding-top:8px">
+      <div class="sc-label">Check Availability</div>
+      <div class="sc-ctx" style="margin-bottom:20px">Is this artist free for your date? Check they haven't played your city recently and aren't booked elsewhere.</div>
 
       <!-- Artist + Date row -->
-      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
         <div style="flex:1;min-width:200px">
-          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">ARTIST</div>
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">ARTIST</div>
           <div class="ac-wrap"><input type="text" id="xIn" placeholder="e.g. Kerri Chandler, Folamour, Hunee…" autocomplete="off"></div>
         </div>
         <div style="min-width:160px">
-          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">YOUR EVENT DATE</div>
+          <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">EVENT DATE</div>
           <div class="date-wrap">
             <input type="date" id="xDate" onchange="syncDateToAll(this.value)">
             <span class="date-display" id="xDateDisplay"></span>
@@ -856,7 +860,7 @@ input[type="number"]{font-family:var(--mono)}
 
       <!-- Exclusivity window -->
       <div style="background:var(--bg2);border:1px solid var(--t06);border-radius:2px;padding:16px;margin-bottom:16px">
-        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px">EXCLUSIVITY WINDOW</div>
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:12px">EXCLUSION PERIOD</div>
         <div style="font-family:var(--body);font-size:0.82rem;color:var(--text-dim);line-height:1.6;margin-bottom:14px">
           I want an artist who hasn't played <span style="color:var(--text)" class="xCityLabel">your city</span> in the past
           <select id="xBackMo" style="font-size:0.82rem;width:auto;display:inline;padding:4px 8px;margin:0 2px;background:var(--bg);border:1px solid var(--t10)">
@@ -875,11 +879,11 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ SCENE INTEL ═══ -->
   <div class="tab-panel" id="panel-intel">
-    <div class="sc-label">SCENE INTEL</div>
-    <div class="sc-ctx" style="margin-bottom:28px">Research any venue or promoter in your city</div>
+    <div class="sc-label">Competitors</div>
+    <div class="sc-ctx" style="margin-bottom:20px">See what other venues and promoters have been booking</div>
     <div class="intel-search-wrap" style="margin-bottom:12px">
-      <input type="text" id="intelSearch" placeholder="Search venues or promoters…" autocomplete="off" style="font-size:0.88rem;padding:12px 14px;flex:1" onkeydown="if(event.key==='Enter')runIntel()">
-      <button class="btn btn-red" onclick="runIntel()" style="white-space:nowrap;flex-shrink:0">Analyse</button>
+      <input type="text" id="intelSearch" placeholder="Search a venue or promoter…" autocomplete="off" style="font-size:0.88rem;padding:12px 14px;flex:1" onkeydown="if(event.key==='Enter')runIntel()">
+      <button class="btn btn-red" onclick="runIntel()" style="white-space:nowrap;flex-shrink:0">Look up</button>
     </div>
     <div id="intelQuickChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px"></div>
     <div id="intelRes"></div>
@@ -904,7 +908,7 @@ input[type="number"]{font-family:var(--mono)}
 
   <!-- ═══ REPORT ═══ -->
   <div class="tab-panel" id="panel-report">
-    <div id="rOut"><div class="empty" style="padding:40px;font-family:var(--mono);font-size:0.72rem;color:var(--text-faint)">Click the Report tab to generate your intelligence report.</div></div>
+    <div id="rOut"><div class="empty" style="padding:40px;font-family:var(--mono);font-size:0.72rem;color:var(--text-faint)">Intelligence reports coming soon.</div></div>
     <div id="reportCalibration" style="display:none;margin-top:24px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
       <div style="font-family:var(--disp);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Refine Your Report <span style="font-weight:400;color:var(--text-faint);font-size:0.62rem;text-transform:none;letter-spacing:0">optional, improves accuracy</span></div>
       <div class="row" style="gap:16px;flex-wrap:wrap">
@@ -1114,10 +1118,10 @@ function raVenueId(name){
 }
 
 // Top 30 European RA cities by event volume (excludes Tbilisi)
-const TOP30_EU=['london','berlin','barcelona','amsterdam','paris','madrid','manchester','milan','lisbon','ibiza','glasgow','dublin','edinburgh','hamburg','munich','bristol','vienna','prague','brussels','leeds','warsaw','budapest','copenhagen','cologne','rome','naples','zurich','lyon','porto','stockholm'];
+const TOP40_EU=['london','berlin','barcelona','amsterdam','paris','madrid','manchester','milan','lisbon','ibiza','glasgow','dublin','edinburgh','hamburg','munich','bristol','vienna','prague','brussels','leeds','warsaw','budapest','copenhagen','cologne','rome','naples','zurich','lyon','porto','stockholm','frankfurt','rotterdam','leipzig','marseille','tbilisi','sofia','liverpool','antwerp','geneva','oslo'];
 const NEARBY_CITIES=(()=>{
   const map={};
-  for(const city of TOP30_EU)map[city]=TOP30_EU.filter(c=>c!==city);
+  for(const city of TOP40_EU)map[city]=TOP40_EU.filter(c=>c!==city);
   return map;
 })();
 // Genre filters — only keep artists matching these genres
@@ -1835,7 +1839,7 @@ async function buildDNA(statusCb,artistCb){
   if(isPromoter){
     const pid=p.promoterId||raPromoterId(venueName);
     if(!pid){
-      if(statusCb)statusCb('⚠ No RA Promoter ID. Enter your ID in the venue pill to get accurate DNA');
+      if(statusCb)statusCb('⚠ No RA Promoter ID — enter your ID in settings for accurate results');
       // Still try title matching as last resort
       if(statusCb)statusCb('Loading event history for title matching…');
       const allEvents=await ensureCache();
@@ -1995,7 +1999,7 @@ async function buildDNA(statusCb,artistCb){
     profiles.push(profile);
     if(artistCb)artistCb(profile);
   }
-  if(statusCb)statusCb('Building DNA from '+profiles.length+' artists (RA event genres)…');
+  if(statusCb)statusCb('Analysing '+profiles.length+' artists…');
 
   // ═══ NEW: Compute billing position + title matches from event data ═══
   // Billing: position 1-2 in artist array = headliner, 3+ = support
@@ -2192,11 +2196,16 @@ async function buildDNA(statusCb,artistCb){
   // Include user's genre focus from onboarding — they told us their scene explicitly
   const userGenreFocus=p.genreFocus||[];
   for(const g of userGenreFocus){
+    // genreFocus stores slugs like 'soulful-house' — normalize hyphens to spaces
+    const normalized=g.replace(/-/g,' ').toLowerCase();
     // Map genre name to scene group
-    const group=_genreGroupMap.get(g.toLowerCase());
+    const group=_genreGroupMap.get(normalized);
     if(group)raSceneGroupsSet.add(group);
+    // Also try without normalization (in case it's already correct)
+    const group2=_genreGroupMap.get(g.toLowerCase());
+    if(group2)raSceneGroupsSet.add(group2);
     // Also add raw genre name to ensure direct matching works
-    raGenreCount.set(g, (raGenreCount.get(g)||0)+10); // high weight — user said it explicitly
+    raGenreCount.set(g.replace(/-/g,' '), (raGenreCount.get(g.replace(/-/g,' '))||0)+10); // high weight — user said it explicitly
   }
 
   // Auto-detect venues from promoter's event history
@@ -2302,7 +2311,7 @@ async function buildDNA(statusCb,artistCb){
   };
   setDNA(dna);
   _imgCacheSave(); // persist all artist images discovered during DNA build
-  if(statusCb)statusCb('DNA complete — '+profiles.length+' artists, '+coBillNetwork.length+' co-billing connections, '+sortedGenres.length+' genres');
+  if(statusCb)statusCb('Analysis complete — '+profiles.length+' artists, '+coBillNetwork.length+' connections, '+sortedGenres.length+' genres');
   return dna;
 }
 
@@ -2328,6 +2337,10 @@ const RA_GENRE_GROUPS={
   dnb:         ['Drum & Bass / Jungle','Breaks / Breakbeat / UK Bass'],
   urban:       ['Hip-Hop / R&B','Reggae / Dancehall','Latin / Tropical'],
 };
+
+// Human-readable group names
+const _groupLabel={'house_disco':'House & Disco','techno':'Techno','melodic':'Melodic','electronic':'Electronic','dnb':'DnB & Breaks','urban':'Urban'};
+function fmtGroup(g){return _groupLabel[g]||g.replace(/_/g,' ').replace(/\w/g,c=>c.toUpperCase())}
 
 // Flatten to norm→group map for O(1) lookup
 const _genreGroupMap=new Map();
@@ -2392,6 +2405,21 @@ function getDNAFingerprint(dna){
       if(group)dnaSceneGroups.add(group);
     }
   }
+  // If still empty, use genreFocus from onboarding (user's own genre picks)
+  if(!dnaSceneGroups.size){
+    const gf=P().genreFocus||[];
+    for(const g of gf){
+      // genreFocus stores slugs like 'house', 'soulful-house', 'disco'
+      // Map them to genre group keys
+      const normalized=g.replace(/-/g,' ').toLowerCase();
+      const group=_genreGroupMap.get(normalized);
+      if(group)dnaSceneGroups.add(group);
+      // Also try the raw value as a group key
+      for(const[gk,genres] of Object.entries(RA_GENRE_GROUPS)){
+        if(genres.some(rg=>rg.toLowerCase()===normalized))dnaSceneGroups.add(gk);
+      }
+    }
+  }
 
   // Most recent bookings get 2× weight — your 2024 sound matters more than 2021
   const now=Date.now();
@@ -2424,7 +2452,7 @@ function getDNAFingerprint(dna){
    Tier 3: Genre/scene match but no direct connection (score 30-54)
    Tier 4: No meaningful connection (score 0-29)              */
 function sceneRelevance(artistName, dna){
-  if(!dna||!dna.artistCount)return{score:50,tier:3,reason:'No DNA built yet',breakdown:{}};
+  if(!dna||!dna.artistCount)return{score:50,tier:3,reason:'Not analysed yet',breakdown:{}};
   const fp=getDNAFingerprint(dna);
   const n=norm(artistName);
   let score=0,tier=4,reason='',breakdown={};
@@ -2450,12 +2478,28 @@ function sceneRelevance(artistName, dna){
     score=38;tier=2;reason='2nd-degree connection';breakdown={circuit:38};
   }
 
-  // Tier 3: No direct connection — try genre matching
+  // Tier 3: No direct connection — try genre matching from city cache
   if(tier===4){
-    // We don't have genre data for this artist at scoring time
-    // Genre matching happens at display time via enrichGenres (Beatport + RA event genres)
-    // So here we give a neutral score — it gets refined when genres load
-    score=20;tier=4;reason='Not in your network';breakdown={circuit:0};
+    // Check if this artist has played events with matching genres in the cache
+    const cache=getCache();
+    if(cache&&cache.events&&fp.dnaSceneGroups.size){
+      const artistGenres=new Set();
+      for(const ev of cache.events){
+        if((ev.artists||[]).some(a=>norm(a)===n)){
+          for(const g of(ev.genres||[])){
+            const group=_genreGroupMap.get((typeof g==='string'?g:g.name||'').toLowerCase());
+            if(group)artistGenres.add(group);
+          }
+        }
+      }
+      const overlap=[...artistGenres].filter(g=>fp.dnaSceneGroups.has(g));
+      if(overlap.length>0){
+        score=45;tier=3;reason='Genre match: '+overlap.map(fmtGroup).join(', ');breakdown={genre:45};
+      }
+    }
+    if(tier===4){
+      score=20;reason='Not in your network';breakdown={circuit:0};
+    }
   }
 
   const label=score>=80?'Strong fit':score>=55?'Good fit':score>=35?'Possible fit':'New to you';
@@ -2475,7 +2519,7 @@ function sceneRelevance(artistName, dna){
    Tier 3: Adjacent — score 25-49
    Tier 4: Different scene — score 0-24              */
 function eventThreat(event, dna){
-  if(!dna||!dna.artistCount)return{tier:4,score:0,reason:'No DNA',isCompetition:false,signals:{}};
+  if(!dna||!dna.artistCount)return{tier:4,score:0,reason:'Not analysed',isCompetition:false,signals:{}};
   const fp=getDNAFingerprint(dna);
   const p=P();
   const isPromoterMode=p.type==='promoter';
@@ -2489,7 +2533,7 @@ function eventThreat(event, dna){
     if(matchedComp){
       return{
         tier:1,score:95,
-        reason:'Tagged competitor: '+(matchedComp.name||matchedComp),
+        reason:'Competitor: '+(matchedComp.name||matchedComp),
         isCompetition:true,
         signals:{competitor:100}
       };
@@ -2505,7 +2549,7 @@ function eventThreat(event, dna){
     matchingGroups=eventGroups.filter(g=>fp.dnaSceneGroups.has(g));
     if(matchingGroups.length){
       genreScore=70;
-      genreReason='Same audience: '+matchingGroups.join(', ');
+      genreReason=matchingGroups.map(fmtGroup).join(', ');
     }
   }
   // Direct genre name match fallback (catches subgenres not in group map)
@@ -2513,7 +2557,7 @@ function eventThreat(event, dna){
     const evGenresLower=raGenreNames.map(g=>g.toLowerCase());
     if(evGenresLower.length&&fp.dnaGenres.size){
       const matches=evGenresLower.filter(g=>fp.dnaGenres.has(g));
-      if(matches.length>=1){genreScore=60;genreReason='Genre match: '+matches[0]}
+      if(matches.length>=1){genreScore=60;genreReason=matches[0]}
     }
   }
 
@@ -2565,7 +2609,7 @@ function eventThreat(event, dna){
   else if(genreScore>=60)reason=genreReason;
   else if(venueScore>=50)reason=venueReason;
   else if(genreScore>0)reason=genreReason;
-  else reason='Different scene';
+  else reason='Different crowd';
 
   const signals={genre:genreScore,artist:artistScore,venue:venueScore,attendance:attendScore};
 
@@ -2584,7 +2628,7 @@ function eventThreat(event, dna){
 /* Legacy wrapper — keeps existing callers working during transition */
 function dnaScore(candidate,dna){
   if(!dna)dna=getDNA();
-  if(!dna||!dna.artistCount)return{score:50,flags:[],label:'No DNA'};
+  if(!dna||!dna.artistCount)return{score:50,flags:[],label:'Not analysed'};
   const rel=sceneRelevance(candidate.name||'',dna);
   return{score:rel.score,flags:[],label:rel.label,listenerScore:0,networkScore:rel.score,cloudBonus:0};
 }
@@ -3375,6 +3419,18 @@ async function obDone(){
     setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},2500);
     return;
   }
+  // Promoters must have an RA ID
+  if(_obType==='promoter'){
+    const raIdVal=parseInt(document.getElementById('obPromoterRaId')?.value)||0;
+    if(!raIdVal){
+      const el=document.getElementById('obPromoterRaId');
+      el.style.borderColor='var(--red)';el.style.boxShadow='0 0 0 3px rgba(224,96,96,0.15)';el.focus();
+      const status=document.getElementById('obPromoterRaStatus');
+      if(status){status.textContent='RA ID is required';status.style.color='var(--red)'}
+      setTimeout(()=>{el.style.borderColor='';el.style.boxShadow=''},3000);
+      return;
+    }
+  }
   const _manualRaId=_obType==='promoter'?parseInt(document.getElementById('obPromoterRaId')?.value)||null:null;
   const _resolvedPromoId=_manualRaId||(_obType==='promoter'?raPromoterId(_obVenueName):null);
   const _newProfile={
@@ -3556,6 +3612,16 @@ function _toggleGenre(btn){
   }else{
     btn.style.background='';btn.style.color='';btn.style.borderColor='';
   }
+  _updateGenreCount();
+}
+function _updateGenreCount(){
+  const count=document.querySelectorAll('#obGenrePicker button.active').length;
+  const label=document.getElementById('obGenreCount');
+  if(!label)return;
+  if(count===0)      {label.textContent='0 selected — pick at least 2';label.style.color='var(--text-faint)'}
+  else if(count===1) {label.textContent='1 selected — add at least 1 more';label.style.color='var(--amber)'}
+  else if(count<=5)  {label.textContent=count+' selected ✓';label.style.color='var(--green)'}
+  else               {label.textContent=count+' selected — consider narrowing to 3–5';label.style.color='var(--amber)'}
 }
 
 /* Helper: read chips from a chip container */
@@ -3572,7 +3638,27 @@ function obStep2SoundDone(){
   const a1=(document.getElementById('obSoundArtist1')?.value||'').trim();
   const a2=(document.getElementById('obSoundArtist2')?.value||'').trim();
   const a3=(document.getElementById('obSoundArtist3')?.value||'').trim();
-  p.soundAnchors=[a1,a2,a3].filter(Boolean);
+  const anchors=[a1,a2,a3].filter(Boolean);
+  
+  if(anchors.length<1){
+    const inp=document.getElementById('obSoundArtist1');
+    inp.style.borderColor='var(--red)';inp.style.boxShadow='0 0 0 3px rgba(224,96,96,0.15)';inp.focus();
+    // Show error hint
+    const hint=inp.closest('.input-group')?.querySelector('.hint')||inp.parentElement;
+    const existing=document.getElementById('obSoundError');
+    if(!existing){
+      const err=document.createElement('div');err.id='obSoundError';
+      err.style.cssText='font-family:var(--mono);font-size:0.72rem;color:var(--red);margin-top:8px';
+      err.textContent='Enter at least 1 artist to define your sound';
+      inp.closest('.ac-wrap').parentElement.appendChild(err);
+    }
+    setTimeout(()=>{inp.style.borderColor='';inp.style.boxShadow=''},3000);
+    return;
+  }
+  // Clear any previous error
+  const errEl=document.getElementById('obSoundError');if(errEl)errEl.remove();
+  
+  p.soundAnchors=anchors;
   
   // Save priority ranking
   const items=[...document.querySelectorAll('#obPriorityRank .priority-item')];
@@ -3692,6 +3778,12 @@ function obStep3Done(){
   }
   p.competitors=competitors;
   p.genreFocus=[...document.querySelectorAll('#obGenrePicker button.active')].map(b=>b.dataset.genre).filter(Boolean);
+  if(p.genreFocus.length<2){
+    const label=document.getElementById('obGenreCount');
+    if(label){label.textContent='Select at least 2 genres';label.style.color='var(--red)'}
+    document.getElementById('obGenrePicker').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
   setP(p);
   _startDNABuild();
 }
@@ -3778,8 +3870,8 @@ async function _startDNABuild(){
     if(artMatch){state.totalArtists=parseInt(artMatch[1]);if(phEl)phEl.textContent='Mapping your artist bookings'}
     const apMatch=msg.match(/Analyzing\s*(\d+)\/(\d+)/);
     if(apMatch)state.artists=parseInt(apMatch[1]);
-    if(msg.includes('Genre enrichment')||msg.includes('Building DNA from'))if(phEl)phEl.textContent='Analyzing your competition';
-    if(msg.includes('co-billing')||msg.includes('sound anchor')||msg.includes('venue affinity'))if(phEl)phEl.textContent='Building your DNA';
+    if(msg.includes('Genre enrichment')||msg.includes('Building DNA from'))if(phEl)phEl.textContent='Analysing your competition';
+    if(msg.includes('co-billing')||msg.includes('sound anchor')||msg.includes('venue affinity'))if(phEl)phEl.textContent='Building your profile';
     if(s1El)s1El.textContent=state.events;
     if(s2El)s2El.textContent=state.artists||avatarCount;
     pctDraw=Math.min(95,state.years.length*8+(state.artists/Math.max(state.totalArtists,1))*50+10);
@@ -3797,7 +3889,7 @@ async function _startDNABuild(){
     pctDraw=100;fill.style.width='100%';
     if(s1El)s1El.textContent=state.events;
     if(s2El)s2El.textContent=dna?dna.artistCount:avatarCount;
-    if(phEl){phEl.textContent='Your DNA is ready';phEl.style.color='var(--green)'}
+    if(phEl){phEl.textContent='Analysis complete';phEl.style.color='var(--green)'}
     if(lbl)lbl.textContent='';
     fill.style.background='var(--green)';
     if(dna&&dna.artistCount>0){
@@ -3819,7 +3911,7 @@ async function _startDNABuild(){
         sum.innerHTML='<div style="text-align:center;margin-top:16px">'
           +'<h3 style="color:var(--amber);font-family:var(--disp);font-size:1.3rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">'+esc(dna.venue||P().venue)+'</h3>'
           +'<div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px">'+cityName()+' · '+dna.artistCount+' artists · '+dna.venueEvents+' events</div>'
-          +'<div style="font-family:var(--mono);font-size:0.65rem;color:var(--green);margin-bottom:20px;padding:8px 12px;background:rgba(34,197,94,0.08);border-radius:4px;display:inline-block">✓ DNA built from '+state.years.length+' years of booking history</div>'
+          +'<div style="font-family:var(--mono);font-size:0.65rem;color:var(--green);margin-bottom:20px;padding:8px 12px;background:rgba(34,197,94,0.08);border-radius:4px;display:inline-block">✓ Analysed '+state.years.length+' years of booking history</div>'
           +'<br><button class="btn btn-red" style="width:100%;font-size:1rem;padding:16px;margin-top:8px" onclick="showApp()">'+cta+'</button>'
           +'</div>';
       },800);
@@ -3841,7 +3933,7 @@ async function _startDNABuild(){
 function npNav(screen, el) {
   // DNA gate — block scanner/routing/intel/rising without DNA
   if ((screen==='tonight'||screen==='routing'||screen==='intel'||screen==='rising') && !getDNA()) {
-    alert('Build your DNA profile first to access this feature.');
+    alert('Complete your setup first — we need to analyse your booking history.');
     return;
   }
   // Map screens to panels
@@ -3881,17 +3973,6 @@ function npNav(screen, el) {
   if (screen === 'intel') loadIntelTab();
   if (screen === 'rising') loadRisingTab();
 
-  // Update sidebar foot info
-  const p2 = P();
-  const sf = document.getElementById('npSidebarFoot');
-  if (sf && p2.venue) {
-    sf.textContent = '';
-    sf.innerHTML = (p2.venue||p2.promoterName||'').toUpperCase() + '<br>' +
-      ((getDNA()&&getDNA().artistCount)?getDNA().artistCount+' ARTISTS<br>':'') +
-      (p2.city||'').toUpperCase() + '<br>' +
-      (getDNA()&&getDNA().topGenres?(getDNA().topGenres.slice(0,2).join(' · ').toUpperCase()):'');
-  }
-
   if (screen === 'check') {
     document.querySelectorAll('.xCityLabel').forEach(el=>el.textContent=cityName());
     const xd=document.getElementById('xDate');
@@ -3900,7 +3981,13 @@ function npNav(screen, el) {
   }
 
   // Show routing opportunity banner on BOOK screen
-  if (screen === 'book') maybeShowRoutingBanner();
+  if (screen === 'book') {
+    maybeShowRoutingBanner();
+    // Re-show landing if no results
+    const dRes=document.getElementById('dRes');
+    const landing=document.getElementById('discoverLanding');
+    if(landing&&dRes&&!dRes.querySelector('.v3-card'))landing.style.display='';
+  }
 
   // Update nav count badges
   updateNavCounts();
@@ -3961,14 +4048,11 @@ function showApp(){
 
   let dnaTag='';
   if(!dna||!dna.artistCount){
-    dnaTag=' · <span style="color:var(--amber)" onclick="event.stopPropagation();rebuildDNA()" title="Click to build DNA">No DNA</span>';
+    dnaTag=' · <span style="color:var(--amber)" onclick="event.stopPropagation();rebuildDNA()" title="Click to analyse bookings">Not analysed</span>';
   }
-  const allP=_getAllProfiles();
-  const vCount=allP&&allP.venues?Object.keys(allP.venues).filter(k=>allP.venues[k]?.venue).length:1;
-  const countBadge=vCount>1?` <span style="background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:1px 6px;font-size:0.65rem;font-weight:700;vertical-align:middle">${vCount}</span>`:'';
-  // Clean pill: "Drop Dance Society · Barcelona ▾"
-  pill.innerHTML=esc(venueName)+' <span style="color:var(--text-faint)">·</span> '+esc(cityLabel)+dnaTag+countBadge+' <span style="opacity:0.4;margin-left:4px">▾</span>';
-  if(wrap)wrap.style.display='inline-block';
+  // Clean pill: "Drop Dance Society · Barcelona ▾"  
+  pill.innerHTML=esc(venueName)+' <span style="color:var(--text-faint)">·</span> '+esc(cityLabel)+dnaTag+' <span style="opacity:0.4;margin-left:2px">▾</span>';
+  if(wrap)wrap.style.display='';
   updateCityLabels();
   updateContextBanners();
 
@@ -3981,32 +4065,23 @@ function showApp(){
     return;
   }
 
-  // Update sidebar foot with profile info
-  const sf2=document.getElementById('npSidebarFoot');
-  if(sf2){
-    const p2=P(),d2=getDNA();
-    sf2.innerHTML=(p2.venue||p2.promoterName||'').toUpperCase()+
-      (d2&&d2.artistCount?'<br>'+d2.artistCount+' ARTISTS':'') +
-      '<br>'+(p2.city||'').toUpperCase()+
-      (d2&&d2.topGenres&&d2.topGenres.length?'<br>'+d2.topGenres.slice(0,2).join(' · ').toUpperCase():'');
-  }
   updateNavCounts();
 }
 async function rebuildDNA(silent){
-  if(!silent)showCacheStatus('Rebuilding venue DNA…');
+  if(!silent)showCacheStatus('Re-analysing your bookings…');
   try{
     const dna=await buildDNA(silent?null:msg=>showCacheStatus(msg));
     if(dna&&dna.artistCount>0){
-      showCacheStatus('DNA rebuilt — '+dna.artistCount+' artists, '+dna.topGenres.length+' genres ✓',true);
+      showCacheStatus('Re-analysis complete — '+dna.artistCount+' artists, '+dna.topGenres.length+' genres ✓',true);
       // Refresh pill
       showApp(); // refresh pill with updated DNA status
     }else if(!silent){
-      showCacheStatus('No booking history found for DNA',true);
+      showCacheStatus('No booking history found',true);
     }
-  }catch(e){if(!silent)showCacheStatus('DNA rebuild failed: '+e.message,true)}
+  }catch(e){if(!silent)showCacheStatus('Analysis failed: '+e.message,true)}
 }
 function resetOb(){
-  if(confirm('Start over from scratch? This clears your profile and DNA.')){
+  if(confirm('Start over from scratch? This clears your profile and booking history analysis.')){
     localStorage.removeItem('np_dna_'+_vk());
     const d=_getAllProfiles();if(d&&d.venues)delete d.venues[_vk()];if(d)_setAllProfiles(d);
     // Clear any running state
@@ -4023,7 +4098,7 @@ function resetOb(){
 function rebuildDNAFromScratch(){
   document.getElementById('npVenueSwitcherDd')?.remove();
   if(!P().venue&&!P().promoterName){alert('No profile to rebuild. Set up your profile first.');return}
-  if(!confirm('Rebuild DNA? This re-scans all your bookings (takes ~60 seconds).'))return;
+  if(!confirm('Re-analyse your bookings? This takes about 60 seconds.'))return;
   localStorage.removeItem('np_dna_'+_vk());
   // Show onboarding step 4 (DNA build) directly
   document.querySelector('.np-app').classList.remove('app-ready');
@@ -4055,8 +4130,8 @@ function toggleVenueSwitcher(e){
       try{
         const dnaKey='np_dna_'+key;
         const dna=JSON.parse(localStorage.getItem(dnaKey)||'null');
-        if(dna&&dna.artistCount)return`<span style="color:var(--green);font-size:0.65rem">DNA ✓ ${dna.artistCount} artists</span>`;
-        return`<span style="color:var(--text-faint);font-size:0.65rem">No DNA</span>`;
+        if(dna&&dna.artistCount)return`<span style="color:var(--green);font-size:0.65rem">✓ ${dna.artistCount} artists</span>`;
+        return`<span style="color:var(--text-faint);font-size:0.65rem">Not analysed</span>`;
       }catch{return''}
     };
 
@@ -4079,7 +4154,7 @@ function toggleVenueSwitcher(e){
     <span style="font-size:1rem;margin-right:6px">+</span> Add another profile
   </div>`;
   html+=`<div class="vs-item" onclick="rebuildDNAFromScratch()" style="color:var(--text-dim);font-size:0.75rem">
-    ↻ Rebuild DNA
+    ↻ Re-analyse bookings
   </div>`;
   html+=`<div class="vs-item" onclick="resetOb()" style="color:var(--text-faint);font-size:0.75rem">
     ✕ Full reset (start over)
@@ -4094,7 +4169,7 @@ function toggleVenueSwitcher(e){
 function saveSeeds(list){const h=seeds();list.forEach(s=>{if(s&&!h.some(x=>x.toLowerCase()===s.toLowerCase()))h.unshift(s)});if(h.length>40)h.length=40;setSeeds(h);renderSeeds()}
 function renderSeeds(){
   const el=document.getElementById('seedH'),h=seeds();if(!h.length){el.innerHTML='';return}
-  el.innerHTML='<span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase">Recent: </span>'+h.slice(0,12).map(s=>`<span style="display:inline-block;background:var(--bg3);border:1px solid var(--border);padding:1px 7px;border-radius:3px;font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);margin:2px 3px;cursor:pointer" onclick="addSeed('${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</span>`).join('');
+  el.innerHTML='<span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase">Recent: </span>'+h.slice(0,6).map(s=>`<span style="display:inline-block;background:var(--bg3);border:1px solid var(--border);padding:1px 7px;border-radius:3px;font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);margin:2px 3px;cursor:pointer" onclick="addSeed('${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</span>`).join('');
 }
 function addSeed(n){const el=document.getElementById('seedInput'),ls=el.value.trim().split('\n').filter(Boolean);if(!ls.some(l=>l.toLowerCase()===n.toLowerCase())){ls.push(n);el.value=ls.join('\n')}}
 
@@ -4150,7 +4225,7 @@ function updateContextBanners(){
         ctxEl.textContent='Filtered to your sound. '+dna.artistCount+' artists in your network · '+(topGenres||'');
         ctxEl.style.color='var(--text-dim)';
       }else{
-        ctxEl.textContent='⚠ No booking history analysed. Routing works best after setup. Click your name → Rebuild DNA.';
+        ctxEl.textContent='⚠ No booking history analysed. Routing works best after setup. Click your profile → Re-analyse bookings.';
         ctxEl.style.color='var(--amber)';
       }
     }
@@ -4161,7 +4236,7 @@ function updateContextBanners(){
 function loadDNASeedsIntoDiscover(){
   const dna=getDNA();
   if(!dna||!dna.artistCount){
-    alert('Build your DNA first — click the venue pill and select "Rebuild DNA".');
+    alert('Analyse your bookings first — click your profile at the bottom of the sidebar.');
     return;
   }
   
@@ -4171,7 +4246,7 @@ function loadDNASeedsIntoDiscover(){
     return p.raFollowers>=100;
   }).sort((a,b)=>(b.headlinerScore||0)-(a.headlinerScore||0));
   
-  if(!profiles.length){alert('No qualifying artists in DNA.');return}
+  if(!profiles.length){alert('No qualifying artists found in your booking history.');return}
   
   const c=document.getElementById('dRes');
   const bpGenreStr=p=>{
@@ -4182,7 +4257,7 @@ function loadDNASeedsIntoDiscover(){
     return'';
   };
   
-  let html='<div class="card" style="border-color:var(--amber);margin-bottom:16px"><h3 style="color:var(--amber);margin-bottom:4px">Your DNA: '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">All artists with ≥100 RA followers from your booking history. Click any artist to use as a discovery seed.</div>';
+  let html='<div class="card" style="border-color:var(--amber);margin-bottom:16px"><h3 style="color:var(--amber);margin-bottom:4px">Your Booking History: '+profiles.length+' Artists</h3><div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px">Artists with 100+ RA followers from your events. Click any to use as a discovery seed.</div>';
   
   for(const p of profiles){
     const fc=p.raFollowers!=null?fmt(p.raFollowers):'?';
@@ -4229,10 +4304,10 @@ function _buildSmartSeeds(dna){
   // Also mix in co-billing network
   const coBills=(dna.coBillNetwork||[]).slice(0,5).map(c=>c.name);
   
-  // All qualifying artists + top co-bills (no artificial limit)
+  // Top 5 headliners + top 3 co-bills = max 8 seeds
   const seeds=[
-    ...qualifying.map(a=>a.name),
-    ...coBills.filter(n=>!qualifying.some(p=>norm(p.name)===norm(n)))
+    ...qualifying.slice(0,5).map(a=>a.name),
+    ...coBills.filter(n=>!qualifying.slice(0,5).some(p=>norm(p.name)===norm(n))).slice(0,3)
   ].filter(Boolean);
   
   return seeds;
@@ -4270,15 +4345,18 @@ async function runDiscover(){
   }
   const seedList=text.split('\n').map(s=>s.trim()).filter(Boolean);
   saveSeeds(seedList);const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='Working…';
-  // Hide landing, show progress
-  const _landing=document.getElementById('discoverLanding');if(_landing)_landing.style.display='none';
+  // Hide chip display during search — it clutters the screen
+  const chipDisplay=document.querySelector('#panel-discover .ac-chips');
+  if(chipDisplay)chipDisplay.style.display='none';
+  // Show progress below landing (don't hide the landing)
+  const _landing=document.getElementById('discoverLanding');
   progReset();document.getElementById('dRes').innerHTML='';const cn=cityName();
   // Snapshot DNA at search start — prevents race condition if background rebuild finishes mid-search
   const snapshotDNA=getDNA();
 
   try{
     // Step 1: resolve seeds — RA cache index (instant, no API calls)
-    prog('Resolving seeds…',5);
+    prog('Looking up artists…',5);
     const resolved=[];
     for(const seed of seedList){
       // Resolve seed name from RA cache (instant, no API call)
@@ -4297,7 +4375,7 @@ async function runDiscover(){
 
     // Step 2: related artists — fusion engine (RA co-billing + RA official + RA worldwide)
     // Zero SC calls here. SC only used later for Spotify listener counts in X-Ray.
-    prog('Finding related artists…',15);
+    prog('Finding similar artists…',15);
     const cmap=new Map();
     const allEvents=await ensureCache()||[];
 
@@ -4317,10 +4395,10 @@ async function runDiscover(){
       }catch(e){prog(null,20,s.name+': fusion error — '+e.message)}
     }
 
-    const cands=Array.from(cmap.values());prog(cands.length+' candidates',25);
+    const cands=Array.from(cmap.values());prog('Found '+cands.length+' potential matches',25);
 
     // Step 3: city exclusion from cache (instant)
-    prog('Checking '+cn+' availability…',30);
+    prog('Checking availability in '+cn+'…',30);
     const anchor=new Date(date),exFrom=new Date(anchor),exTo=new Date(anchor);
     exFrom.setMonth(anchor.getMonth()-backMo);exTo.setMonth(anchor.getMonth()+fwdMo);
     const cityEvents=await getCityEvents(exFrom,exTo);
@@ -4329,18 +4407,18 @@ async function runDiscover(){
 
     let raX=0;const afterRA=[];
     for(const c of cands){const hit=idxLookup(cityIdx,c.name);if(hit){raX++;prog(null,50,'✗ '+c.name+' — '+fdate(hit.date)+' @ '+hit.venue)}else afterRA.push(c)}
-    prog(raX+' excluded, '+afterRA.length+' remain',50);
+    prog(afterRA.length+' available in '+cn,50);
 
     // Step 4: worldwide same-day
-    prog('Checking worldwide conflicts…',55);
+    prog('Checking tour schedules…',55);
     const wwIdx=await raWorldwide(date);
     prog(null,60,wwIdx.size+' artists worldwide on '+fdate(date));
     let sdX=0;const afterSD=[];
     for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' — '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
-    prog(sdX+' same-day conflicts, '+afterSD.length+' remain',65);
+    prog(afterSD.length+' clear',65);
 
     // Step 5: Genres (Beatport primary, RA event genres fallback)
-    prog('Fetching genre data…',70);
+    prog('Matching genres…',70);
     const wd=[];
     let genreSkipped=0;
     // Fetch genres in parallel batches of 5 (Beatport + RA fallback)
@@ -4377,10 +4455,10 @@ async function runDiscover(){
         a._dna.score=a._dna.score; // unified score
       }
       qual.sort((a,b)=>(b._dna?.score||0)-(a._dna?.score||0));
-      prog('Done! '+qual.length+' artists — sorted by venue DNA fit',100);
+      prog('Done — '+qual.length+' artists found',100);
     }else{
       qual.sort((a,b)=>(b.fusionScore||0)-(a.fusionScore||0));
-      prog('Done! '+qual.length+' artists — sorted by circuit relevance',100);
+      prog('Done — '+qual.length+' artists found',100);
     }
     // Pass diagnostic counts for empty state messaging
     renderDiscover(qual,hasDNA,{total:cands.length,raExcluded:raX,sdExcluded:sdX,genreExcluded:genreSkipped,belowMin:0});
@@ -4405,8 +4483,45 @@ const V3_COLORS=[
   ['#060C1A','#5A7ACA'],['#0A1A0A','#7ACA5A'],['#1A060A','#CA5A7A'],
 ];
 
+
+// ═══ ASYNC SPOTIFY ENRICHMENT ═══
+// Lazy-loads Spotify listener counts into rendered cards
+async function _enrichSpotify(container, selector){
+  const cards=container.querySelectorAll(selector);
+  // Process in batches of 3 to avoid hammering SC API
+  for(let i=0;i<cards.length;i+=3){
+    const batch=Array.from(cards).slice(i,i+3);
+    await Promise.all(batch.map(async card=>{
+      const el=card.querySelector('.v3-spotify');
+      if(!el)return;
+      const name=el.dataset.artist;
+      if(!name)return;
+      try{
+        const sc=await scSearch(name);
+        if(!sc)return;
+        const sp=await scSpotify(sc.uuid);
+        const city=(P().city||'barcelona');
+        const cityName=city.charAt(0).toUpperCase()+city.slice(1);
+        if(sp.g>0){
+          const gFmt=sp.g>=1000000?(sp.g/1000000).toFixed(1)+'M':sp.g>=1000?Math.round(sp.g/1000)+'K':sp.g;
+          const cFmt=sp.c>0?(sp.c>=1000?Math.round(sp.c/1000)+'K':sp.c):'';
+          const spIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="#1DB954" style="vertical-align:-1px;margin-right:4px"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>';
+          if(sp.c>0){
+            el.innerHTML=spIcon+cFmt+' <span style="color:var(--text-faint)">monthly listeners in '+cityName+'</span>';
+          } else {
+            el.innerHTML=spIcon+gFmt+' <span style="color:var(--text-faint)">monthly listeners</span>';
+          }
+          el.style.opacity='1';
+        }
+      }catch(e){}
+    }));
+  }
+}
+
 function renderDiscover(arts,hasDNA,diag){
   const c=document.getElementById('dRes'),cn=cityName();
+  // Hide landing now that results are ready
+  const _l=document.getElementById('discoverLanding');if(_l)_l.style.display='none';
   if(hasDNA===undefined)hasDNA=!!getDNA()?.artistCount;
   const dna=getDNA();const p=P();
   const competitors=(p.competitors||[]).map(x=>(x.name||x).toLowerCase());
@@ -4484,34 +4599,21 @@ function renderDiscover(arts,hasDNA,diag){
           '<div class="v3-name">'+esc(a.name)+(hasMomentum?'<span class="v3-trend">↑'+a.momentum+'</span>':'')+routeTag+'</div>'+
           '<div class="v3-sub">'+genreText+' <span class="v3-badge '+statusClass+'">'+statusText+'</span></div>'+
         '</div>'+
-        '<div class="v3-right">'+(scoreNum?'<div class="v3-score" title="DNA match score — higher means better fit for your sound">'+scoreNum+'</div>':'')+'<div class="v3-rlbl">match</div></div>'+
+        '<div class="v3-right">'+(scoreNum>=80?'<div class="v3-fit" style="color:var(--green)">Strong fit</div>':scoreNum>=55?'<div class="v3-fit" style="color:var(--amber)">Good fit</div>':scoreNum>=35?'<div class="v3-fit" style="color:var(--text-dim)">Worth a look</div>':'')+
+          '<div class="v3-spotify" data-artist="'+esc(a.name)+'" style="font-family:var(--mono);font-size:0.6rem;color:var(--amber);margin-top:3px;opacity:0;transition:opacity .3s"></div>'+
+        '</div>'+
       '</div>'+
       '<div class="v3-exp">'+
-        '<div class="v3-why" style="margin-bottom:16px">'+
-          '<b>'+esc(a.name)+'</b> '+(dnaLabel?dnaLabel+'. ':'')+
-          (connectionText?'Connected through <b>'+connectionText+'</b>. ':'')+
-          (a.raCoBills?'Co-billed with your artists <b>'+a.raCoBills+'×</b> on RA. ':'')+
-          (a.routeCity?'Playing <b>'+esc(a.routeCity)+'</b> '+esc(a.routeDate||'')+' — propose your date with shared flights. ':'')+
-          (cb.length?'<b>'+cb.length+' competitors</b> booked them — proven '+cn+' draw. ':'')+
-          (hasMomentum?'RA interest <b>up '+a.momentum+'</b> — book before fees rise.':'')+
+        '<div class="v3-why" style="margin-bottom:14px">'+
+          (connectionText?'Via <b>'+connectionText+'</b>. ':'')+
+          (a.routeCity?'Playing <b>'+esc(a.routeCity)+'</b> '+esc(a.routeDate||'')+'. ':'')+
+          (cb.length?'Booked by '+cb.map(x=>esc(x.venue)).join(', ')+'. ':'')+
+          (hasMomentum?'Interest rising '+a.momentum+'.':'')+
+          (a.lastBcnMonths?' Last here '+a.lastBcnMonths+' months ago.':a.neverPlayed?' Never played '+cn+'.':'')+
         '</div>'+
-        '<div class="v3-sec-title">Key facts</div>'+
-        '<div class="v3-facts">'+
-          '<div class="v3-fact"><div class="v3-fact-l">Last '+cn+' gig</div><div class="v3-fact-v">'+(a.lastBcnMonths?a.lastBcnMonths+' months ago':(a.neverPlayed?'Never':'Unknown'))+'</div></div>'+
-          (a.routeCity?'<div class="v3-fact"><div class="v3-fact-l">Nearby dates</div><div class="v3-fact-v" style="color:var(--blue)">'+esc(a.routeCity)+' · '+esc(a.routeDate||'')+'</div><div class="v3-fact-n">Split flights possible</div></div>':'')+
-          (a.raFollowers?'<div class="v3-fact"><div class="v3-fact-l">RA followers</div><div class="v3-fact-v" style="color:var(--amber)">'+fmt(a.raFollowers)+'</div><div class="v3-fact-n">'+(a.raPercentile?'Top '+a.raPercentile+'%':'')+'</div></div>':'')+
-          (cb.length?'<div class="v3-fact"><div class="v3-fact-l">Your competitors</div><div class="v3-fact-v" style="color:var(--red)">'+cb.map(x=>esc(x.venue)).join(' · ')+'</div><div class="v3-fact-n">Booked '+cb.length+'× this year</div></div>':'')+
-        '</div>'+
-        '<div class="v3-sec-title">Match breakdown</div>'+
-        '<div class="v3-bars">'+
-          '<div class="v3-bar"><span class="v3-bar-l">Genre overlap</span><div class="v3-bar-t"><div class="v3-bar-f" style="width:'+genreScore+'%"></div></div><span class="v3-bar-v">'+genreScore+'</span></div>'+
-          '<div class="v3-bar"><span class="v3-bar-l">Freshness</span><div class="v3-bar-t"><div class="v3-bar-f'+(freshScore>80?' g':'')+'" style="width:'+freshScore+'%"></div></div><span class="v3-bar-v">'+freshScore+'</span></div>'+
-          (hasMomentum?'<div class="v3-bar"><span class="v3-bar-l">Momentum</span><div class="v3-bar-t"><div class="v3-bar-f g" style="width:'+momentumScore+'%"></div></div><span class="v3-bar-v">'+momentumScore+'</span></div>':'')+
-        '</div>'+
-        (cb.length?'<div class="v3-sec-title">Competitor history</div><div class="v3-comp-list">'+cb.map(function(x){var d=new Date(x.date);return'<div class="v3-comp-row"><div class="v3-comp-dot" style="background:var(--red)"></div><div class="v3-comp-name">'+esc(x.venue)+'</div><div class="v3-comp-when">'+d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'})+'</div></div>'}).join('')+'</div>':'')+
         '<div class="v3-acts">'+
           '<button class="v3-btn p'+(sv?' is-saved':'')+'" onclick="npSaveArtist(\''+nameE+'\','+(a.bcn||0)+','+(a.global||0)+',\'\',\''+esc(a.imageUrl||'').replace(/'/g,"\\'")+'\');event.stopPropagation()">'+(sv?'✓ Saved':'Save')+'</button>'+
-          '<button class="v3-btn" onclick="goXray(\''+nameE+'\');event.stopPropagation()">Full profile</button>'+
+          '<button class="v3-btn" onclick="goXray(\''+nameE+'\');event.stopPropagation()">Check availability</button>'+
         '</div>'+
       '</div>';
     list.appendChild(card);
@@ -4519,6 +4621,7 @@ function renderDiscover(arts,hasDNA,diag){
 
   c.innerHTML='';c.appendChild(list);
 
+  // Async image loading
   c.querySelectorAll('.v3-ava[data-lazy]').forEach(async el=>{
     const name=el.dataset.lazy;if(!name)return;
     const url=await getArtistImage(name);
@@ -4527,6 +4630,9 @@ function renderDiscover(arts,hasDNA,diag){
       el.innerHTML='<img src="'+esc(url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent=\''+( name||'?').charAt(0).toUpperCase()+'\'">';
     }
   });
+
+  // Async Spotify listener enrichment
+  _enrichSpotify(c,'.v3-card');
 }
 
 function injectDiscoverHeader(count, hasDNA, cn) {
@@ -4646,7 +4752,7 @@ async function runScan(){
           ?`<span class="badge badge-red" style="font-size:0.65rem">${esc(t.reason)}</span>`
           :`<span class="badge badge-amber" style="font-size:0.65rem">${esc(t.reason)}</span>`;
         h+=`<div class="ev-item" style="border-left:3px solid ${t.tier===1?'var(--red)':'var(--amber)'};padding-left:11px">
-          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA interest</div></div>
+          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">going</div></div>
           <div class="ev-detail">
             <div class="ev-v">${esc(ev.venue)}</div>
             <div class="ev-t">${esc(ev.title)}</div>
@@ -4665,7 +4771,7 @@ async function runScan(){
         <div id="adjList" style="display:none">`;
       for(const ev of tier3.sort((a,b)=>(b.attending||0)-(a.attending||0)).slice(0,6)){
         h+=`<div class="ev-item">
-          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">RA</div></div>
+          <div class="ev-att">${ev.attending>0?fmt(ev.attending):'?'}<div class="ev-lbl">going</div></div>
           <div class="ev-detail"><div class="ev-v">${esc(ev.venue)}</div><div class="ev-t">${esc(ev.title)}</div>
           <div class="ev-a">${esc(ev.artists.slice(0,3).map(a=>a.name||a).join(', '))}</div></div></div>`;
       }
@@ -4763,7 +4869,7 @@ async function scanAdjacentThreats(dateStr){
       th+=`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);border-left:3px solid ${borderClr};padding-left:11px">
         <div style="text-align:center;min-width:50px">
           <div style="font-family:var(--disp);font-weight:800;font-size:1.1rem;color:var(--amber)">${t.attending>0?fmt(t.attending):'?'}</div>
-          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-transform:uppercase">RA interest</div>
+          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-transform:uppercase">going</div>
         </div>
         <div style="flex:1">
           <div style="font-family:var(--mono);font-size:0.6rem;color:var(--amber);margin-bottom:2px">${esc(t.dayLabel)} · ${fdate(t.dayDate)}</div>
@@ -4798,24 +4904,17 @@ function goXray(name){
   const discoverDate=document.getElementById('eventDate').value;
   const routeDate=document.getElementById('routeDate').value;
   document.getElementById('xDate').value=discoverDate||routeDate||'';
-  // Show verify panel via v3 nav (no sidebar highlight — it's a sub-page)
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-verify').classList.add('active');
-  // Add a back button if not present
-  const vp=document.getElementById('panel-verify');
-  if(!vp.querySelector('.np-back-btn')){
-    const back=document.createElement('button');
-    back.className='btn-ghost np-back-btn';
-    back.style.cssText='margin-bottom:20px;font-size:0.58rem;padding:6px 12px';
-    back.textContent='← Back';
-    back.onclick=()=>npNav('book',document.querySelector('.np-nav'));
-    vp.prepend(back);
-  }
+  // Navigate properly via sidebar
+  const checkNav=document.querySelector('.np-nav[data-screen="check"]');
+  npNav('check',checkNav);
   runXray();
 }
 
 async function runXray(){
   const name=document.getElementById('xIn').value.trim();if(!name)return;
+  // Close autocomplete dropdown
+  document.querySelectorAll('.ac-dropdown').forEach(d=>d.classList.remove('open'));
+  document.getElementById('xIn').blur();
   const date=document.getElementById('xDate').value;
   if(!date){
     const dateEl=document.getElementById('xDate');
@@ -4826,7 +4925,7 @@ async function runXray(){
   }
   const cn=cityName();
   const c=document.getElementById('xRes');
-  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Analyzing '+esc(name)+' for '+fdate(date)+'…</div>';
+  c.innerHTML='<div class="empty" style="padding:20px"><span class="spinner"></span> Checking '+esc(name)+' for '+fdate(date)+'…</div>';
 
   try{
     // Soundcharts
@@ -4865,13 +4964,13 @@ async function runXray(){
     let lastTxt='No shows in last 12 months';
     if(shows.length){
       const lastShow=shows.find(s=>new Date(s.date)<=new Date()); // most recent past show
-      if(lastShow){const m=Math.round((new Date()-new Date(lastShow.date))/(30.44*86400000));lastTxt=m+' months ago ('+fdate(lastShow.date)+')'}
+      if(lastShow){const m=Math.round((new Date()-new Date(lastShow.date))/(30.44*86400000));lastTxt=(m<1?'Recently':m+' months ago')+' ('+fdate(lastShow.date)+')'}
     }
     const imgH=scD?.imageUrl&&scD.imageUrl.length>10?`<img src="${esc(scD.imageUrl)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-right:14px" onerror="this.outerHTML='<div style=\\'width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:1.1rem;color:var(--text-faint);margin-right:14px\\'>${(scD?.name||name).charAt(0).toUpperCase()}</div>'">`:'<div style="width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:1.1rem;color:var(--text-faint);margin-right:14px">'+(scD?.name||name).charAt(0).toUpperCase()+'</div>';
 
     let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start"><div style="display:flex;align-items:center">${imgH}<div><h3 style="font-size:1.15rem">${esc(scD?.name||name)}</h3><div style="font-size:0.78rem;color:var(--text-dim)">Last ${cn} show: ${lastTxt}</div></div></div><span class="badge ${blocked?'badge-red':'badge-green'}">${blocked?'Unavailable':'Available'}</span></div>
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);margin:8px 0 4px">Checked against your date: ${fdate(date)} · Exclusion: ${backMo}mo back / ${fwdMo}mo forward</div>
-      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'?'}</div><div class="sl">${cn} Spotify</div></div><div class="stat"><div class="sv">${fmt(sp.g)}</div><div class="sl">Global Spotify</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
+      <div class="stats"><div class="stat"><div class="sv">${sp.c>0?fmt(sp.c):'—'}</div><div class="sl">${cn} listeners</div></div><div class="stat"><div class="sv">${sp.g>0?fmt(sp.g):'—'}</div><div class="sl">Global listeners</div></div><div class="stat"><div class="sv" style="color:${cityC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${cityC.hit?'Conflict':'Clear'}</div><div class="sl">${cn} window</div></div><div class="stat"><div class="sv" style="color:${sdC.hit?'var(--accent)':'var(--green)'};font-size:1rem">${sdC.hit?'Booked':'Clear'}</div><div class="sl">Same day worldwide</div></div></div>`;
     if(cityC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim);margin-top:8px">⚠ ${cn}: ${fdate(cityC.date)} @ ${esc(cityC.venue)}. Within ${backMo}mo before / ${fwdMo}mo after your date</p>`;
     if(sdC.hit)h+=`<p style="font-size:0.78rem;color:var(--text-dim)">⚠ Playing ${esc(sdC.venue)} (${esc(sdC.area)}) on ${fdate(date)}</p>`;
     if(shows.length){
@@ -4879,12 +4978,12 @@ async function runXray(){
       for(const s of shows.slice(0,5)){
         const isPast=new Date(s.date)<=new Date();
         const isFuture=!isPast;
-        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--mono)">UPCOMING</span> ':''}${fdate(s.date)} · ${esc(s.venue)}</span><span style="font-family:var(--mono);font-size:0.7rem;color:${s.att>0?'var(--accent)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' RA interest':'?'}</span></div>`;
+        h+=`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem;border-bottom:1px solid var(--border)"><span>${isFuture?'<span style="color:var(--amber);font-size:0.65rem;font-family:var(--mono)">UPCOMING</span> ':''}${fdate(s.date)} · ${esc(s.venue)}</span><span style="font-family:var(--mono);font-size:0.7rem;color:${s.att>0?'var(--accent)':'var(--text-faint)'}">${s.att>0?fmt(s.att)+' going':'?'}</span></div>`;
       }
       h+=`</div>`;
     }
     h+=`<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn-ghost" onclick="saveArtist('${esc(scD?.name||name).replace(/'/g,"\\'")}',${sp.c},${sp.g},'${scD?.uuid||''}','${esc(scD?.imageUrl||'').replace(/'/g,"\\'")}')" >+ Add to shortlist</button>
+      <button class="btn-ghost" onclick="saveArtist('${esc(scD?.name||name).replace(/'/g,"\\'")}',${sp.c},${sp.g},'${scD?.uuid||''}','${esc(scD?.imageUrl||'').replace(/'/g,"\\'")}',document.getElementById('xDate')?.value||'')" >Save to pipeline</button>
     </div>`;
     // Cross-venue performance block — async, appended after initial render
     c.innerHTML=h+'</div>';
@@ -4911,7 +5010,7 @@ async function runRouting(){
   }
   const p=P();
   if(!p.venue){
-    document.getElementById('rteRes').innerHTML='<div class="empty">Complete your setup first. Click SubPulse in the header to begin.</div>';
+    document.getElementById('rteRes').innerHTML='<div class="empty">Complete your setup first. Click your profile at the bottom of the sidebar.</div>';
     return;
   }
 
@@ -4922,7 +5021,7 @@ async function runRouting(){
     document.getElementById('rteRes').innerHTML=`<div class="card" style="border-color:var(--amber)">
       <h3 style="color:var(--amber);margin-bottom:6px">Set Up Required</h3>
       <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.6">Routing finds artists from <strong>your world</strong> who are playing nearby cities around your date. To know which artists fit you, SubPulse needs to analyse your booking history first.<br><br>
-      Click your name in the top-right corner → Rebuild DNA, then come back.</p>
+      Click your profile at the bottom of the sidebar → Re-analyse bookings.</p>
     </div>`;
     return;
   }
@@ -4937,16 +5036,21 @@ async function runRouting(){
   rteProgReset();document.getElementById('rteRes').innerHTML='';
 
   try{
-    const center=new Date(date),dayB=new Date(center),dayA=new Date(center);
-    dayB.setDate(center.getDate()-1);dayA.setDate(center.getDate()+1);
-    const dayBStr=dayB.toISOString().slice(0,10);
-    const dayAStr=dayA.toISOString().slice(0,10);
-    const scanDates=[dayBStr,dayAStr];
+    const center=new Date(date);
+    // Scan ±2 days around target date for routing opportunities
+    const scanDates=[];
+    for(let offset=-2;offset<=2;offset++){
+      if(offset===0)continue; // skip target date itself
+      const d=new Date(center);
+      d.setDate(center.getDate()+offset);
+      scanDates.push(d.toISOString().slice(0,10));
+    }
+    // scanDates = [date-2, date-1, date+1, date+2]
 
     // ═══ STEP 1: Build YOUR scene artist pool from DNA ═══
     // This is the key insight: start from artists YOU'D actually book,
     // not from whoever happens to be playing nearby.
-    rteProg('Building your artist pool…',5);
+    rteProg('Analysing your bookings…',5);
 
     const scenePool=new Map(); // norm(name) → {name, relevance, reason}
 
@@ -4969,10 +5073,10 @@ async function runRouting(){
     }
     rteProg(null,12,coBilled.length+' co-billed artists added');
 
-    // Layer 3: RA official related artists for your top 5 DNA artists
+    // Layer 3: RA official related artists for your top 10 DNA artists
     // RA's own similarity algorithm — exactly what shows on their artist pages
-    const topDnaArtists=yourArtists.slice(0,5);
-    rteProg('Fetching RA related artists for your top bookings…',15);
+    const topDnaArtists=yourArtists.slice(0,10);
+    rteProg('Finding similar artists…',15);
     let raRelatedCount=0;
     for(const seedName of topDnaArtists){
       try{
@@ -5000,26 +5104,28 @@ async function runRouting(){
       const cityBatch=nearby.slice(ci,ci+CITY_BATCH);
       await Promise.all(cityBatch.map(async ncity=>{
         const nArea=AREAS[ncity];if(!nArea)return;
-        for(const dt of scanDates){
-          try{
-            const events=await raBulkFetch(nArea,dt,dt,6);
-            for(const ev of events){
-              for(const a of ev.artists){
-                const n=norm(a);
-                if(n&&!nearbyEvents.has(n)){
-                  nearbyEvents.set(n,{name:a,city:ncity,date:dt,venue:ev.venue,attending:ev.attending||0,title:ev.title||''});
-                }
+        try{
+          // Fetch entire ±3 day window in one call per city
+          const events=await raBulkFetch(nArea,scanDates[0],scanDates[scanDates.length-1],6);
+          for(const ev of events){
+            // Only include events on our scan dates (not the target date itself)
+            const evDate=(ev.date||'').slice(0,10);
+            if(evDate===date)continue; // skip target date
+            for(const a of ev.artists){
+              const n=norm(a);
+              if(n&&!nearbyEvents.has(n)){
+                nearbyEvents.set(n,{name:a,city:ncity,date:evDate,venue:ev.venue,attending:ev.attending||0,title:ev.title||'',genres:ev.genres||[]});
               }
             }
-          }catch(e){}
-        }
+          }
+        }catch(e){}
       }));
       rteProg('Scanning cities… '+Math.min(ci+CITY_BATCH,nearby.length)+'/'+nearby.length,35+Math.round(((ci+CITY_BATCH)/nearby.length)*30));
     }
-    rteProg(nearbyEvents.size+' artists touring nearby cities',65);
+    rteProg(nearbyEvents.size+' artists nearby',65);
 
     // ═══ STEP 3: Intersect — which scene artists are actually nearby? ═══
-    rteProg('Finding your artists in the region…',70);
+    rteProg('Matching to your sound…',70);
     const matches=[];
 
     // Check artists from your scene pool against nearby events
@@ -5035,15 +5141,94 @@ async function runRouting(){
       }
     }
 
-    // ═══ STEP 4: City exclusion — already booked in your city in last 8 months? ═══
-    rteProg('Checking '+cityName()+' exclusion…',75);
-    const anchor=new Date(date),exFrom8=new Date(anchor);
-    exFrom8.setMonth(anchor.getMonth()-8); // 8 months back only
-    const cityEvents=await getCityEvents(exFrom8,anchor);
+    // ═══ STEP 3b: Genre-matched artists NOT in your pool ═══
+    // For artists not in your network, check if they fit your sound.
+    // Strategy: check the artist's OTHER events in the city cache for genre tags,
+    // not just the nearby event they're currently playing.
+    if(hasDNA){
+      const fp=getDNAFingerprint(dna);
+      const cityCache=getCache()?.events||[];
+      
+      // Build a quick genre lookup: artist norm → Set of genre groups they've played
+      const artistGenreGroups=new Map();
+      for(const ev of cityCache){
+        const evGroups=new Set((ev.genres||[]).map(g=>_genreGroupMap.get((typeof g==='string'?g:g.name||'').toLowerCase())).filter(Boolean));
+        if(evGroups.size===0)continue;
+        for(const a of(ev.artists||[])){
+          const n=norm(a);
+          if(!artistGenreGroups.has(n))artistGenreGroups.set(n,new Set());
+          for(const g of evGroups)artistGenreGroups.get(n).add(g);
+        }
+      }
+      
+      let genreMatchCount=0;
+      for(const[n,nearby_ev] of nearbyEvents){
+        if(scenePool.has(n))continue; // already in matches from Step 3
+        if(matches.some(m=>norm(m.name)===n))continue; // already matched
+        
+        // Method 1: Check event genres directly
+        let overlap=[];
+        const evGenres=(nearby_ev.genres||[]);
+        if(evGenres.length){
+          const evGroups=new Set(evGenres.map(g=>_genreGroupMap.get((typeof g==='string'?g:g.name||'').toLowerCase())).filter(Boolean));
+          overlap=[...evGroups].filter(g=>fp.dnaSceneGroups.has(g));
+        }
+        
+        // Method 2: Check artist's historical genre from city cache
+        if(!overlap.length){
+          const cached=artistGenreGroups.get(n);
+          if(cached){
+            overlap=[...cached].filter(g=>fp.dnaSceneGroups.has(g));
+          }
+        }
+        
+        if(overlap.length>0){
+          matches.push({
+            ...nearby_ev,
+            relevance:35,
+            reason:'Genre fit: '+overlap.map(fmtGroup).join(', '),
+            _genreMatch:true
+          });
+          genreMatchCount++;
+        }
+      }
+      rteProg(null,72,'Added '+genreMatchCount+' genre-matched artists');
+    }
+
+    // ═══ STEP 4: Filter conflicts ═══
+    rteProg('Checking availability…',75,'Matches before filtering: '+matches.length);
+    
+    // 4a: Remove artists playing on the SAME day as your event (conflict, not opportunity)
+    const targetDateStr=date; // "2026-06-26"
+    const afterSameDay=matches.filter(m=>{
+      if(m.date===targetDateStr){
+        rteProg(null,null,'✗ '+m.name+' — playing '+m.city+' on your date');
+        return false;
+      }
+      return true;
+    });
+
+    // 4b: Worldwide same-day check — is the artist booked ANYWHERE on your date?
+    rteProg('Checking worldwide conflicts…',78,'After same-day filter: '+afterSameDay.length);
+    const wwIdx=await raWorldwide(targetDateStr);
+    const afterWW=afterSameDay.filter(m=>{
+      const hit=idxLookup(wwIdx,m.name);
+      if(hit){
+        rteProg(null,null,'✗ '+m.name+' — playing '+hit.venue+' ('+hit.area+') on your date');
+        return false;
+      }
+      return true;
+    });
+
+    // 4c: City exclusion — already played in your city within user's "Not played in" window
+    rteProg(null,82,'After worldwide check: '+afterWW.length);
+    const anchor=new Date(date),exFrom=new Date(anchor);
+    exFrom.setMonth(anchor.getMonth()-backMo); // use the user's filter, not hardcoded 8
+    const cityEvents=await getCityEvents(exFrom,anchor);
     const cityIdx=buildIndex(cityEvents);
 
     const routingOpps=[];
-    for(const m of matches){
+    for(const m of afterWW){
       if(idxLookup(cityIdx,m.name)){
         rteProg(null,null,'✗ '+m.name+' — already booked in '+cityName());
         continue;
@@ -5051,27 +5236,26 @@ async function runRouting(){
       routingOpps.push(m);
     }
 
-    // Also look for scene-adjacent artists in nearby cities NOT in pool
-    // (catches artists who co-billed with nearby artists but aren't in DNA)
     // Sort by relevance score descending
     routingOpps.sort((a,b)=>(b.relevance||0)-(a.relevance||0)||(b.attending||0)-(a.attending||0));
 
-    rteProg('Done! '+routingOpps.length+' routing opportunities found.',100);
+    rteProg('Done — '+routingOpps.length+' routing deals found',100);
     renderRouting(routingOpps,{hasDNA,scenePoolSize:scenePool.size});
 
   }catch(e){rteProg('Error: '+e.message,100);console.error(e)}
-  btn.disabled=false;btn.textContent='Find Routing';
+  btn.disabled=false;btn.textContent='Find Deals';
   _routingRunning=false;
 }_routingRunning=false;
 
 function renderRouting(arts, meta={}){
   const c=document.getElementById('rteRes'),cn=cityName();
   const {hasDNA,scenePoolSize}=meta;
+  const targetDate=document.getElementById('routeDate')?.value||'';
 
   if(!arts.length){
     c.innerHTML=`<div class="empty">
-      <div style="font-family:var(--disp);font-size:1rem;letter-spacing:1px;margin-bottom:8px;color:var(--text)">No routing opportunities</div>
-      <div style="font-size:0.75rem;line-height:1.8">None of the ${scenePoolSize||0} artists in your scene were touring nearby on this date. Try a different date.</div>
+      <div style="font-family:var(--disp);font-size:1rem;letter-spacing:1px;margin-bottom:8px;color:var(--text)">No routing deals found</div>
+      <div style="font-size:0.75rem;line-height:1.8">No artists matching your sound are touring nearby on these dates. Try a different date or expand your filters.</div>
     </div>`;
     return;
   }
@@ -5079,16 +5263,15 @@ function renderRouting(arts, meta={}){
   // Update routing banner on BOOK screen
   updateRoutingBanner(arts);
 
-  // Render v3 routing cards
-  const targetDate=document.getElementById('routeDate')?.value;
+  // Capitalize city name helper
+  const capCity=s=>(s||'').split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+
   const list=document.createElement('div');
   list.className='v3-rlist';
 
   arts.forEach((a,i)=>{
     const [bg,fg]=V3_COLORS[i%V3_COLORS.length];
     const initial=(a.name||'?').charAt(0).toUpperCase();
-    const daysDiff=targetDate?Math.round((new Date(targetDate)-new Date(a.date))/(1000*60*60*24)):null;
-    const dayLabel=daysDiff===1?'NIGHT BEFORE':daysDiff===-1?'NIGHT AFTER':daysDiff!==null?'±'+Math.abs(daysDiff)+'D':'NEARBY';
     const nameE=esc(a.name).replace(/'/g,"\'");
     const sv=saved().some(s=>s.name===a.name);
 
@@ -5098,11 +5281,12 @@ function renderRouting(arts, meta={}){
       <div class="v3-ava" style="background:${bg};color:${fg}" data-lazy="${esc(a.name)}" data-bg="${bg}" data-fg="${fg}">${initial}</div>
       <div style="flex:1;min-width:0">
         <div class="v3-name">${esc(a.name)}</div>
-        <div class="v3-sub">${esc(a.city)} · ${fdate(a.date)} · ${esc(a.venue)}${a.attending>0?' · '+fmt(a.attending)+' interest':''}</div>
+        <div class="v3-sub">${capCity(a.city)} · ${fdate(a.date)}</div>
+        <div class="v3-spotify" data-artist="${esc(a.name)}" style="font-family:var(--mono);font-size:0.55rem;color:var(--amber);margin-top:2px;opacity:0;transition:opacity .3s"></div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <div class="v3-rtag">${dayLabel}</div>
-        <button class="v3-btn p" style="font-size:0.65rem;padding:4px 10px" onclick="saveArtist('${nameE}',0,0,'','');event.stopPropagation()">${sv?'✓ SAVED':'+ SAVE'}</button>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="v3-btn p" style="font-size:0.62rem;padding:5px 12px" onclick="saveArtist('${nameE}',0,0,'','','${targetDate}');event.stopPropagation()">${sv?'✓ Saved':'Save'}</button>
+        <button class="v3-btn" style="font-size:0.62rem;padding:5px 12px;border-color:var(--t10);color:var(--text-dim)" onclick="goXrayFromIntel('${nameE}');event.stopPropagation()">Check</button>
       </div>`;
     list.appendChild(card);
   });
@@ -5116,6 +5300,9 @@ function renderRouting(arts, meta={}){
     const url=await getArtistImage(name);
     if(url&&el.isConnected){el.style.padding='0';el.style.overflow='hidden';el.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'">`;}
   });
+
+  // Async Spotify listener enrichment
+  _enrichSpotify(c,'.v3-rcard');
 }
 
 function updateRoutingBanner(arts){
@@ -5406,13 +5593,13 @@ function renderIntelEntity(profile, allEvents){
   const trendColor=profile.trend==='up'?'var(--green)':profile.trend==='down'?'var(--accent)':'var(--text-dim)';
 
   let h=`<div class="intel-entity-card">
-    <h3>${esc(profile.name)}</h3>
-    <div class="intel-entity-meta">${profile.totalEvents} events · avg ${fmt(profile.avgAtt)} RA interest · peak ${fmt(profile.peakAtt)} · <span style="color:${trendColor}">${trendIcon} ${profile.trend} trend</span></div>
+    <h3>${esc(profile.name).split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}</h3>
+    <div class="intel-entity-meta">${profile.totalEvents} events · avg ${fmt(profile.avgAtt)} going · best night ${fmt(profile.peakAtt)} · <span style="color:${trendColor}">${trendIcon} ${profile.trend}</span></div>
     <div class="stats" style="margin-bottom:0">
       <div class="stat"><div class="sv">${profile.totalEvents}</div><div class="sl">Events (12mo)</div></div>
-      <div class="stat"><div class="sv">${fmt(profile.avgAtt)}</div><div class="sl">Avg RA interest</div></div>
-      <div class="stat"><div class="sv">${fmt(profile.peakAtt)}</div><div class="sl">Peak night</div></div>
-      <div class="stat"><div class="sv" style="color:${trendColor}">${trendIcon}</div><div class="sl">Attendance trend</div></div>
+      <div class="stat"><div class="sv">${fmt(profile.avgAtt)}</div><div class="sl">Avg going</div></div>
+      <div class="stat"><div class="sv">${fmt(profile.peakAtt)}</div><div class="sl">Best night</div></div>
+      <div class="stat"><div class="sv" style="color:${trendColor}">${trendIcon}</div><div class="sl">Trend</div></div>
       <div class="stat"><div class="sv">${profile.avgPerMonth}</div><div class="sl">Events/month</div></div>
     </div>
   </div>`;
@@ -5423,22 +5610,21 @@ function renderIntelEntity(profile, allEvents){
 
   // Left: top performers
   h+=`<div class="intel-block">
-    <div class="intel-block-title">Top performers by attendance</div>`;
+    <div class="intel-block-title">Biggest draws</div>`;
   for(const a of profile.artists.slice(0,8)){
     const pct=Math.round((a.maxAtt/maxAtt)*100);
     const avail=artistAvailableInWindow(a.name,allEvents);
-    const dnaScore_=hasDNA?dnaScore({name:a.name,bcn:0,_networkOnly:true}):null;
-    const fitBadge=hasDNA&&dnaScore_&&dnaScore_.score>20?`<span class="badge badge-${dnaScore_.score>=70?'green':dnaScore_.score>=50?'amber':'red'}" style="margin-left:4px;font-size:0.65rem">${dnaScore_.score}</span>`:'';
+    const lastPlayed=avail?fdate(avail.date):'';
     h+=`<div class="intel-artist-row" onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">
       <div class="ia-att">${a.maxAtt>0?fmt(a.maxAtt):'?'}</div>
       <div style="flex:1">
-        <div class="ia-name">${esc(a.name)}${fitBadge}</div>
+        <div class="ia-name">${esc(a.name)}</div>
         <div class="intel-bar"><div class="intel-bar-fill" style="width:${pct}%"></div></div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
-        <span class="intel-avail-badge ${!avail?'intel-avail-yes':'intel-avail-no'}" title="${avail?'Last: '+fdate(avail.date)+' at '+avail.venue:''}">${!avail?'available':'booked'}</span>
-        ${avail?`<span class="ia-meta" style="font-size:0.65rem;max-width:80px;text-align:right;line-height:1.3">${fdate(avail.date)}</span>`:''}
-        ${a.shows>1?`<span class="ia-meta">×${a.shows}</span>`:''}
+        <span class="intel-avail-badge ${!avail?'intel-avail-yes':'intel-avail-no'}">${!avail?'available':'booked'}</span>
+        ${avail?`<span class="ia-meta" style="font-size:0.6rem;color:var(--text-faint)">${lastPlayed}</span>`:''}
+        ${a.shows>1?`<span class="ia-meta" style="font-size:0.6rem;color:var(--text-faint)">${a.shows} shows</span>`:''}
       </div>
     </div>`;
   }
@@ -5448,12 +5634,13 @@ function renderIntelEntity(profile, allEvents){
   h+=`<div style="display:flex;flex-direction:column;gap:14px">`;
   if(profile.repeats.length){
     h+=`<div class="intel-block">
-      <div class="intel-block-title">Their formula: booked 2+ times</div>`;
+      <div class="intel-block-title">Regulars — booked 2+ times</div>`;
     for(const a of profile.repeats){
       const avail=artistAvailableInWindow(a.name,allEvents);
+      const avgAtt=a.shows>0?Math.round(a.totalAtt/a.shows):0;
       h+=`<div class="intel-artist-row" onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">
-        <div style="flex:1"><div class="ia-name">${esc(a.name)}</div><div class="ia-meta">×${a.shows} bookings · avg ${fmt(Math.round(a.totalAtt/a.shows))} RA interest</div></div>
-        <span class="intel-avail-badge ${!avail?'intel-avail-yes':'intel-avail-no'}" title="${avail?'Last: '+fdate(avail.date)+' at '+avail.venue:''}">${!avail?'available':avail.daysAgo>=0?'played '+avail.daysAgo+'d ago':'upcoming'}</span>
+        <div style="flex:1"><div class="ia-name">${esc(a.name)}</div><div class="ia-meta">Booked ${a.shows} times · avg ${fmt(avgAtt)} going</div></div>
+        <span class="intel-avail-badge ${!avail?'intel-avail-yes':'intel-avail-no'}">${!avail?'available':avail.daysAgo>=0?fdate(avail.date):'upcoming'}</span>
       </div>`;
     }
     h+=`</div>`;
@@ -5476,25 +5663,21 @@ function renderIntelEntity(profile, allEvents){
   // Artists available in YOUR market — the money section
   const available=profile.artists.filter(a=>!artistAvailableInWindow(a.name,allEvents)&&a.maxAtt>0);
   if(available.length){
-    h+=`<div style="margin-top:20px">
-      <div class="intel-section-divider">Available now — proven at ${esc(profile.name)}, haven't played ${cityName()} recently</div>
-      <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px">These artists drew well at ${esc(profile.name)} and haven't played ${cityName()} in the last 6 months.</p>`;
+    h+=`<div style="margin-top:24px">
+      <div style="font-family:var(--disp);font-weight:800;font-size:0.9rem;letter-spacing:1px;text-transform:uppercase;color:var(--text);margin-bottom:4px">Available to book</div>
+      <div style="font-family:var(--mono);font-size:0.65rem;color:#9E9888;margin-bottom:14px">Drew well at ${esc(profile.name)}, haven't played ${cityName()} in 6+ months</div>`;
     available.slice(0,12).forEach((a,i)=>{
-      const dnaS=hasDNA?dnaScore({name:a.name,bcn:0,_networkOnly:true}):null;
-      const fitBadge=hasDNA&&dnaS&&dnaS.score>20?`<span class="badge badge-${dnaS.score>=70?'green':dnaS.score>=50?'amber':'red'}" style="margin-left:6px">${dnaS.score} · ${dnaS.label}</span>`:'';
       const sv=saved().some(s=>s.name===a.name);
       h+=`<div class="result-item" style="animation-delay:${i*25}ms">
-        <div class="ri-rank">${i+1}</div>
         <div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>
         <div class="ri-info">
-          <h3>${esc(a.name)}${fitBadge}</h3>
-          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)} · ${a.shows} show${a.shows>1?'s':''}</div>
+          <div class="ri-name">${esc(a.name)}</div>
+          <div style="font-family:var(--mono);font-size:0.62rem;color:#9E9888;margin-top:2px">Best night: ${fmt(a.maxAtt)} going · ${a.shows} show${a.shows>1?'s':''}</div>
           <div class="ri-actions">
             <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
             <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">Check →</button>
           </div>
         </div>
-        <div class="ri-number"><div class="big">${fmt(a.maxAtt)}</div><div class="sub">peak interest</div><div class="dim">${a.shows}× booked</div></div>
       </div>`;
     });
     h+=`</div>`;
@@ -5505,25 +5688,21 @@ function renderIntelEntity(profile, allEvents){
     const myProfiles=new Set((dna.profiles||[]).map(p=>norm(p.name)));
     const gaps=profile.artists.filter(a=>!myProfiles.has(norm(a.name))&&a.maxAtt>0&&!artistAvailableInWindow(a.name,allEvents));
     if(gaps.length){
-      h+=`<div style="margin-top:20px">
-        <div class="intel-section-divider">They've booked these, you haven't — available now</div>
-        <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:14px">Artists who worked at ${esc(profile.name)} that you haven't booked. Available in ${cityName()} now.</p>`;
+      h+=`<div style="margin-top:24px">
+        <div style="font-family:var(--disp);font-weight:800;font-size:0.9rem;letter-spacing:1px;text-transform:uppercase;color:var(--text);margin-bottom:4px">You haven't booked these</div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:#9E9888;margin-bottom:14px">Worked at ${esc(profile.name)}, available in ${cityName()}, not in your history</div>`;
       gaps.slice(0,8).forEach((a,i)=>{
-        const dnaS=dnaScore({name:a.name,bcn:0,_networkOnly:true});
-        const fitBadge=`<span class="badge badge-${dnaS.score>=70?'green':dnaS.score>=50?'amber':'red'}" style="margin-left:6px">${dnaS.score} · ${dnaS.label}</span>`;
         const sv=saved().some(s=>s.name===a.name);
         h+=`<div class="result-item" style="animation-delay:${i*25}ms">
-          <div class="ri-rank">${i+1}</div>
           <div class="ri-img-placeholder">${esc(a.name).charAt(0)}</div>
           <div class="ri-info">
-            <h3>${esc(a.name)}${fitBadge}</h3>
-            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">Peak at ${esc(profile.name)}: ${fmt(a.maxAtt)}</div>
+            <div class="ri-name">${esc(a.name)}</div>
+            <div style="font-family:var(--mono);font-size:0.62rem;color:#9E9888;margin-top:2px">Best night: ${fmt(a.maxAtt)} going</div>
             <div class="ri-actions">
               <button onclick="saveArtist('${esc(a.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
               <button onclick="goXrayFromIntel('${esc(a.name).replace(/'/g,"\\'")}')">Check →</button>
             </div>
           </div>
-          <div class="ri-number"><div class="big">${fmt(a.maxAtt)}</div><div class="sub">peak interest</div></div>
         </div>`;
       });
       h+=`</div>`;
@@ -5547,44 +5726,38 @@ function renderMomentum(momentum, allEvents){
 
   for(const m of momentum.slice(0,6)){
     const avail=artistAvailableInWindow(m.name,allEvents);
-    const dnaS=hasDNA?dnaScore({name:m.name,bcn:0,_networkOnly:true}):null;
     const pctGain=Math.round((m.ratio-1)*100);
     const sv=saved().some(s=>s.name===m.name);
 
-    // Human-readable date ranges
-    const earlyLabel=fdate(m.earlyFrom)+'–'+fdate(m.earlyTo);
-    const lateLabel=fdate(m.lateFrom)+'–'+fdate(m.lateTo);
-
     // Freshness indicator
-    const freshness=m.daysSinceLast<30?'<span style="color:var(--green);font-size:0.6rem">● Active</span>'
-      :m.daysSinceLast<90?'<span style="color:var(--amber);font-size:0.6rem">● '+m.daysSinceLast+'d ago</span>'
-      :'<span style="color:var(--text-faint);font-size:0.6rem">● '+m.daysSinceLast+'d since last show</span>';
+    const freshness=m.daysSinceLast<30?'<span style="color:var(--green);font-size:0.6rem">● Active now</span>'
+      :m.daysSinceLast<90?'<span style="color:var(--amber);font-size:0.6rem">● Last show '+m.daysSinceLast+' days ago</span>'
+      :'<span style="color:var(--text-faint);font-size:0.6rem">● Last show '+m.daysSinceLast+' days ago</span>';
 
     // Venue spread context
     const spreadNote=m.venueSpread===1
-      ?`<span style="color:var(--amber);font-size:0.6rem">⚠ Only at ${esc(m.venues[0])}. Verify city-wide</span>`
-      :`<span style="font-size:0.6rem;color:var(--text-faint)">${m.venueSpread} venues: ${m.venues.map(esc).join(', ')}</span>`;
+      ?`<span style="color:var(--amber);font-size:0.6rem">Only played at ${esc(m.venues[0])}</span>`
+      :`<span style="font-size:0.6rem;color:var(--text-faint)">Played at ${m.venueSpread} venues: ${m.venues.map(esc).join(', ')}</span>`;
 
-    h+=`<div class="momentum-card" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start">
+    h+=`<div class="momentum-card" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;padding:16px 0;border-bottom:1px solid var(--t06)">
       <div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
           <span style="font-family:var(--disp);font-weight:800;font-size:1rem">${esc(m.name)}</span>
           <span style="font-family:var(--disp);font-weight:700;font-size:0.85rem;color:var(--green)">↑${pctGain}%</span>
           <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">${trajIcon[m.trajectory]} ${trajLabel[m.trajectory]}</span>
-          ${dnaS&&dnaS.score>20?`<span class="badge badge-${dnaS.score>=70?'green':dnaS.score>=50?'amber':'red'}" style="font-size:0.65rem">${dnaS.score} fit</span>`:''}
           ${freshness}
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;background:var(--bg3);border-radius:6px;padding:8px 10px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;background:var(--bg3);border-radius:2px;padding:8px 10px">
           <div>
-            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">${earlyLabel}</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">Before</div>
             <div style="font-family:var(--disp);font-weight:700;font-size:1rem;color:var(--text-dim)">${fmt(m.avgEarly)}</div>
-            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">avg RA interest</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">avg going</div>
           </div>
           <div>
-            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">${lateLabel}</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">Now</div>
             <div style="font-family:var(--disp);font-weight:700;font-size:1rem;color:var(--amber)">${fmt(m.avgLate)}</div>
-            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">avg RA interest</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">avg going</div>
           </div>
         </div>
 
@@ -5592,14 +5765,14 @@ function renderMomentum(momentum, allEvents){
 
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <span style="font-family:var(--mono);font-size:0.6rem;font-weight:700;color:${m.windowColor}">${m.windowSignal}</span>
-          <span class="intel-avail-badge ${!avail?'intel-avail-yes':'intel-avail-no'}" title="${avail?'Last played: '+fdate(avail.date)+' at '+avail.venue:''}">${!avail?'available':avail.daysAgo>=0?'played '+fdate(avail.date):'upcoming'}</span>
+          <span class="intel-avail-badge ${!avail?'intel-avail-yes':'intel-avail-no'}">${!avail?'available':avail.daysAgo>=0?fdate(avail.date):'upcoming'}</span>
         </div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;padding-top:2px">
-        <button style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="saveArtist('${esc(m.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
-        <button style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="goXrayFromIntel('${esc(m.name).replace(/'/g,"\\'")}')">Check →</button>
-        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);text-align:right">${m.shows} shows<br>tracked</span>
+        <button style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:2px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="saveArtist('${esc(m.name).replace(/'/g,"\\'")}',0,0,'','')" ${sv?'class="saved"':''}>${sv?'✓ saved':'+ save'}</button>
+        <button style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:2px;padding:4px 10px;cursor:pointer;white-space:nowrap" onclick="goXrayFromIntel('${esc(m.name).replace(/'/g,"\\'")}')">Check →</button>
+        <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">${m.shows} shows</span>
       </div>
     </div>`;
   }
@@ -5702,17 +5875,20 @@ async function loadIntelTab(){
       .slice(0,10)
       .map(([v])=>v);
 
-    // Known promoters from the map
-    const knownPromoters=Object.entries(RA_PROMOTER_IDS)
-      .filter(([k,id])=>id)
-      .map(([k])=>k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '))
-      .slice(0,6);
-
-    const chips=[...new Set([...qualityVenues,...knownPromoters])].slice(0,16);
+    // Show configured competitors first, then other notable venues
+    const p=P();
+    const myCompetitors=(p.competitors||[]).map(c=>{const n=c.name||c;return n.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}).filter(Boolean);
+    
+    // Only add other venues if we have few competitors
+    const otherVenues=myCompetitors.length>=5?[]:qualityVenues.filter(v=>!myCompetitors.some(c=>norm(c)===norm(v))).slice(0,8-myCompetitors.length);
+    
+    const chips=[...myCompetitors,...otherVenues];
     const chipsEl=document.getElementById('intelQuickChips');
-    if(chipsEl)chipsEl.innerHTML=
-      `<span style="font-family:var(--mono);font-size:0.58rem;color:var(--text-faint);padding:4px 0;flex-basis:100%">Quick scan →</span>`+
-      chips.map(v=>`<span class="intel-quick-chip" onclick="runIntel('${esc(v).replace(/'/g,"\\'")}')">${esc(v)}</span>`).join('');
+    if(chipsEl&&chips.length)chipsEl.innerHTML=
+      (myCompetitors.length?`<span style="font-family:var(--mono);font-size:0.58rem;color:var(--text-faint);padding:4px 0;flex-basis:100%">Your competitors</span>`+
+      myCompetitors.map(v=>`<span class="intel-quick-chip" style="border-color:var(--amber-border)" onclick="runIntel('${esc(v).replace(/'/g,"\\'")}')">${esc(v)}</span>`).join(''):'') +
+      (otherVenues.length?`<span style="font-family:var(--mono);font-size:0.58rem;color:var(--text-faint);padding:4px 0;flex-basis:100%;margin-top:8px">Other venues</span>`+
+      otherVenues.map(v=>`<span class="intel-quick-chip" onclick="runIntel('${esc(v).replace(/'/g,"\\'")}')">${esc(v)}</span>`).join(''):'');
   }catch(e){console.warn('Chips failed:',e);}
 }
 
@@ -5741,7 +5917,8 @@ function goXrayFromIntel(name){
   const bestDate=discoverDate||routeDate||'';
   document.getElementById('xIn').value=name;
   document.getElementById('xDate').value=bestDate;
-  npNav('check',null);
+  const checkNav=document.querySelector('.np-nav[data-screen="check"]');
+  npNav('check',checkNav);
   if(bestDate)runXray();
 }
 
@@ -5852,7 +6029,7 @@ async function genReport(){
       <div class="stats">
         <div class="stat"><div class="sv">${venueEv.length}</div><div class="sl">Your events</div></div>
         <div class="stat"><div class="sv">${vArt.size}</div><div class="sl">Artists booked</div></div>
-        <div class="stat"><div class="sv">${avgAtt?fmt(avgAtt):'?'}</div><div class="sl">Avg RA interest</div></div>
+        <div class="stat"><div class="sv">${avgAtt?fmt(avgAtt):'?'}</div><div class="sl">Avg going</div></div>
         <div class="stat"><div class="sv">${fmt(totalEv)}</div><div class="sl">${cn} events total</div></div>
       </div>
     </div>`;
@@ -6029,54 +6206,97 @@ async function loadCalendar(){
 }
 
 /* ═══ SHORTLIST ═══ */
-function npSaveArtist(name,bcn,g,uuid,imageUrl){return saveArtist(name,bcn,g,uuid,imageUrl)}
-function saveArtist(name,bcn,g,uuid,imageUrl){const s=saved();if(s.some(x=>x.name===name)){npToast(name+' already saved','ok');return;}s.push({name,bcn,g,uuid,imageUrl:imageUrl||'',notes:'',fee:0,outcome:'',at:new Date().toISOString()});setSaved(s);renderSaved();npToast(name+' saved to pipeline','ok');addLog({type:'save',name,bcn})}
+function npSaveArtist(name,bcn,g,uuid,imageUrl){
+  // Auto-detect event date from whichever screen is active
+  const ed=document.getElementById('eventDate')?.value||document.getElementById('routeDate')?.value||document.getElementById('xDate')?.value||'';
+  return saveArtist(name,bcn,g,uuid,imageUrl,ed);
+}
+function saveArtist(name,bcn,g,uuid,imageUrl,eventDate){const s=saved();if(s.some(x=>x.name===name)){npToast(name+' already saved','ok');return;}s.push({name,bcn,g,uuid,imageUrl:imageUrl||'',notes:'',fee:0,outcome:'',at:new Date().toISOString(),eventDate:eventDate||''});setSaved(s);renderSaved();npToast(name+' saved to pipeline','ok');addLog({type:'save',name,bcn})}
 function removeSaved(name){setSaved(saved().filter(s=>s.name!==name));renderSaved()}
 function updateNotes(name,notes){const s=saved(),a=s.find(x=>x.name===name);if(a){a.notes=notes;setSaved(s)}}
 // Only writes crowdsource fee data when fee > 0 — never overwrites real data with a cleared field
 function updateFee(name,fee){const s=saved(),a=s.find(x=>x.name===name);if(a){a.fee=parseInt(fee)||0;setSaved(s)}if(a&&a.fee>0){const f=fees();f[name]={fee:a.fee,bcn:a.bcn||0,name,ts:Date.now()};setFees(f)}}
 function updateOutcome(name,outcome){const s=saved(),a=s.find(x=>x.name===name);if(a){a.outcome=a.outcome===outcome?'':outcome;setSaved(s)}const f=fees();if(f[name]){f[name].outcome=a?a.outcome:'';setFees(f)}renderSaved()}
 
+function updateStatus(name,status){const s=saved(),a=s.find(x=>x.name===name);if(a){a.status=status;setSaved(s);renderSaved()}}
+
 function renderSaved(){
   const c=document.getElementById('sList'),s=saved(),cn=cityName();
   if(!s.length){
     c.innerHTML=`<div class="empty">
-      <div style="font-family:var(--disp);font-size:1rem;letter-spacing:1px;margin-bottom:8px;color:var(--text)">Your shortlist is empty</div>
-      <div style="font-size:0.75rem;line-height:1.8">Save artists from Book, Routing, or Artist Check.<br>When you confirm a booking here, it's removed from your discovery and routing results.</div>
+      <div style="font-family:var(--disp);font-size:1rem;letter-spacing:1px;margin-bottom:8px;color:var(--text)">Pipeline is empty</div>
+      <div style="font-size:0.75rem;line-height:1.8">Save artists from Find Artists, Routing, or Check Availability.</div>
     </div>`;
     return;
   }
-  const sorted=[...s].sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
-  const dna=getDNA();const hasDNA=dna&&dna.artistCount>0;
 
-  c.innerHTML=sorted.map((a,i)=>{
-    const [bg,fg]=V3_COLORS[i%V3_COLORS.length];
-    const initial=(a.name||'?').charAt(0).toUpperCase();
-    const img=a.imageUrl&&a.imageUrl.length>10
-      ?`<div class="v3-ava" style="background:${bg};padding:0;overflow:hidden"><img src="${esc(a.imageUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'"></div>`
-      :`<div class="v3-ava" style="background:${bg};color:${fg}">${initial}</div>`;
-    const savedAgo=a.at?Math.round((Date.now()-new Date(a.at))/(1000*60*60*24))+'d ago':'';
-    const nameE=esc(a.name).replace(/'/g,"\'");
-    const stateClass=a.outcome==='up'?'t2':a.outcome==='down'?'t2':'t0';
+  // Group by event date, then undated
+  const byDate=new Map();
+  const undated=[];
+  for(const a of s){
+    if(a.eventDate){
+      if(!byDate.has(a.eventDate))byDate.set(a.eventDate,[]);
+      byDate.get(a.eventDate).push(a);
+    }else{
+      undated.push(a);
+    }
+  }
+  // Sort date groups chronologically
+  const sortedDates=[...byDate.keys()].sort();
 
-    return`<div class="saved-card ${stateClass}">
-      ${img}
-      <div style="flex:1;min-width:0">
-        <div class="saved-name">${esc(a.name)}</div>
-        <div class="saved-meta">${savedAgo?'Saved '+savedAgo+' · ':''} ${a.fee?'€'+a.fee+' · ':''}</div>
-        <textarea class="notes" placeholder="Notes, agent, offer status…" style="margin-top:8px;font-size:0.72rem;min-height:52px;border-color:var(--t06)" onchange="updateNotes('${nameE}',this.value)">${esc(a.notes||'')}</textarea>
+  let html='';
+  for(const dt of sortedDates){
+    const artists=byDate.get(dt);
+    html+=`<div style="margin-bottom:24px">
+      <div style="font-family:var(--disp);font-weight:800;font-size:0.9rem;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--t06)">${fdate(dt)}</div>`;
+    html+=artists.map((a,i)=>renderSavedCard(a,i)).join('');
+    html+=`</div>`;
+  }
+  if(undated.length){
+    if(sortedDates.length)html+=`<div style="margin-bottom:24px"><div style="font-family:var(--mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--t06)">No date set</div>`;
+    html+=undated.map((a,i)=>renderSavedCard(a,i+s.length)).join('');
+    if(sortedDates.length)html+=`</div>`;
+  }
+  c.innerHTML=html;
+}
+
+function renderSavedCard(a,i){
+  const [bg,fg]=V3_COLORS[i%V3_COLORS.length];
+  const initial=(a.name||'?').charAt(0).toUpperCase();
+  const img=a.imageUrl&&a.imageUrl.length>10
+    ?`<div class="v3-ava" style="background:${bg};padding:0;overflow:hidden"><img src="${esc(a.imageUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'"></div>`
+    :`<div class="v3-ava" style="background:${bg};color:${fg}">${initial}</div>`;
+  const nameE=esc(a.name).replace(/'/g,"\'");
+  const status=a.status||'saved';
+  const statusColors={saved:'var(--text-faint)',contacted:'var(--amber)',discussion:'var(--amber)',confirmed:'var(--green)',aborted:'var(--red)'};
+  const statusLabels={saved:'Saved',contacted:'Contacted',discussion:'In discussion',confirmed:'Confirmed',aborted:'Aborted'};
+  const notesId='note-'+norm(a.name);
+
+  return`<div class="saved-card" style="border-left:3px solid ${statusColors[status]||'var(--t06)'}">
+    ${img}
+    <div style="flex:1;min-width:0">
+      <div class="saved-name">${esc(a.name)}</div>
+      <div class="saved-meta" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px">
+        <select onchange="updateStatus('${nameE}',this.value)" style="font-family:var(--mono);font-size:0.6rem;background:var(--bg);border:1px solid var(--t10);color:${statusColors[status]};padding:2px 6px;border-radius:2px;cursor:pointer">
+          ${['saved','contacted','discussion','confirmed','aborted'].map(s=>`<option value="${s}" ${s===status?'selected':''}>${statusLabels[s]}</option>`).join('')}
+        </select>
+        ${a.fee?'<span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint)">€'+a.fee+'</span>':''}
       </div>
-      <div class="saved-actions">
-        <button class="btn-ghost" style="font-size:0.65rem;padding:4px 10px;white-space:nowrap" onclick="goXray('${nameE}')">Profile →</button>
-        <button class="btn-ghost" style="font-size:0.65rem;padding:4px 10px;white-space:nowrap;color:var(--red);border-color:var(--r30)" onclick="removeSaved('${nameE}')">Remove</button>
+      <div id="${notesId}" onclick="this.querySelector('textarea').style.display='block';this.querySelector('span').style.display='none';this.querySelector('textarea').focus()" style="margin-top:4px;cursor:text">
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--text-faint);${a.notes?'':'font-style:italic'}">${a.notes?esc(a.notes.slice(0,80))+(a.notes.length>80?'…':''):'Add notes…'}</span>
+        <textarea onblur="updateNotes('${nameE}',this.value);renderSaved()" style="display:none;width:100%;font-size:0.68rem;padding:6px 8px;margin-top:2px;min-height:40px;resize:vertical;border-color:var(--t06)">${esc(a.notes||'')}</textarea>
       </div>
-    </div>`;
-  }).join('');
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;align-items:flex-start">
+      <button class="btn-ghost" style="font-size:0.62rem;padding:5px 12px" onclick="goXray('${nameE}')">Check</button>
+      <button class="btn-ghost" style="font-size:0.62rem;padding:5px 12px;color:var(--red);border-color:var(--r30)" onclick="removeSaved('${nameE}')">Remove</button>
+    </div>
+  </div>`;
 }
 
 function exportCSV(){
   const s=saved();if(!s.length)return;
-  const csv='Name,'+cityName()+' Spotify,Global Spotify,Fee,Outcome,Notes,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+','+(a.fee||'')+','+(a.outcome||'')+',"'+(a.notes||'').replace(/"/g,'""')+'",'+a.at).join('\n');
+  const csv='Name,City Listeners,Global Listeners,Fee,Status,Notes,Event Date,Saved\n'+s.map(a=>'"'+a.name+'",'+a.bcn+','+a.g+','+(a.fee||'')+','+(a.status||'saved')+',"'+(a.notes||'').replace(/"/g,'""')+'",'+(a.eventDate||'')+','+a.at).join('\n');
   const b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='subpulse-'+new Date().toISOString().slice(0,10)+'.csv';l.click();URL.revokeObjectURL(u);
 }
 
@@ -6223,9 +6443,10 @@ function npToast(msg,type){
 
   <!-- BOTTOM NAV (mobile) -->
   <nav class="np-bnav" id="npBnav" style="display:none">
-    <div class="np-bn active" onclick="npNav('book',this)">BOOK</div>
-    <div class="np-bn" onclick="npNav('tonight',this)">TONIGHT</div>
-    <div class="np-bn" onclick="npNav('track',this)">TRACK</div>
+    <div class="np-bn active" onclick="npNav('book',this)">FIND</div>
+    <div class="np-bn" onclick="npNav('check',this)">CHECK</div>
+    <div class="np-bn" onclick="npNav('tonight',this)">WHAT'S ON</div>
+    <div class="np-bn" onclick="npNav('track',this)">PIPELINE</div>
   </nav>
 
     </div><!-- /np-content -->
