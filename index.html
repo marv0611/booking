@@ -312,7 +312,6 @@ input[type="number"]{font-family:var(--mono)}
 .intel-hero{margin-bottom:24px}
 .intel-hero h2{font-family:var(--disp);font-size:1.4rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
 .intel-hero p{font-family:var(--mono);font-size:0.72rem;color:#9E9888;line-height:1.7;max-width:480px}
-.intel-search-wrap{display:flex;gap:8px;margin-bottom:16px}
 .intel-search-wrap input{padding:12px 14px;font-size:0.88rem}
 .v-status-bar{position:fixed;top:0;left:0;right:0;background:var(--amber);color:#080808;font-family:var(--mono);font-size:0.68rem;font-weight:700;letter-spacing:1px;text-align:center;padding:8px;z-index:1000;text-transform:uppercase;display:none}
 .venue-switcher-dd{position:absolute;bottom:calc(100% + 4px);left:0;z-index:200;background:var(--bg2);border:1px solid var(--t10);border-radius:2px;min-width:240px;animation:slideDown .15s ease}
@@ -433,7 +432,7 @@ input[type="number"]{font-family:var(--mono)}
 .intel-bar-fill{height:100%;border-radius:2px;background:var(--amber)}
 .intel-quick-chip{font-family:var(--mono);font-size:0.7rem;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border);color:var(--text-faint);cursor:pointer;background:transparent;transition:all .1s}
 .intel-quick-chip:hover{border-color:var(--amber);color:var(--amber)}
-.intel-search-wrap{position:relative;margin-bottom:16px}
+.intel-search-wrap{display:flex;gap:8px;position:relative;margin-bottom:16px}
 .intel-section-divider{height:1px;background:var(--border);margin:24px 0}
 
 /* ── Date picker components ── */
@@ -715,14 +714,13 @@ input[type="number"]{font-family:var(--mono)}
         <div style="flex:1;min-width:200px">
           <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">ARTISTS</div>
           <div class="ac-wrap" style="position:relative">
-            <textarea id="seedInput" placeholder="Artist names, one per line" rows="1" style="width:100%;font-size:0.85rem;padding:10px 14px;resize:vertical;min-height:0;height:42px;box-sizing:border-box"></textarea>
+            <input type="text" id="seedInput" placeholder="Artist names, comma separated" style="width:100%;font-size:0.85rem;padding:10px 14px;height:42px;box-sizing:border-box">
           </div>
-          <style>#seedInput~.ac-chips{display:none!important}</style>
         </div>
         <div style="min-width:140px">
           <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">EVENT DATE</div>
           <div class="date-wrap" style="height:42px;display:flex;align-items:center">
-            <input type="date" id="eventDate" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
+            <input type="date" id="eventDate" style="height:42px" onchange="const d=document.getElementById('eventDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
             <span class="date-display" id="eventDateDisplay"></span>
           </div>
         </div>
@@ -2949,9 +2947,9 @@ function setupTextareaAC(ta){
 /* Remove a chip and its line from the associated textarea */
 function removeChip(el,name){
   const wrap=el.closest('.ac-wrap');if(!wrap)return;
-  const ta=wrap.querySelector('textarea');if(!ta)return;
-  const lines=ta.value.split('\n').filter(l=>l.trim().toLowerCase()!==name.toLowerCase());
-  ta.value=lines.join('\n');
+  const ta=wrap.querySelector('textarea')||wrap.querySelector('input[type="text"]');if(!ta)return;
+  const lines=ta.value.split(/[,\n]/).map(s=>s.trim()).filter(l=>l.toLowerCase()!==name.toLowerCase());
+  ta.value=lines.join(', ');
   el.closest('.ac-chip').remove();
 }
 
@@ -3232,7 +3230,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   setObType('venue'); // initialise toggle state
   _devPrefill(); // dev pre-fill for first-time onboarding too
   setupAutocomplete(document.getElementById('xIn'),a=>{document.getElementById('xIn').value=a.name});
-  setupTextareaAC(document.getElementById('seedInput'));
+  // Seed input — comma-separated, append on select
+  setupAutocomplete(document.getElementById('seedInput'),a=>{
+    const el=document.getElementById('seedInput');
+    const existing=el.value.trim().split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
+    if(!existing.some(e=>e.toLowerCase()===a.name.toLowerCase())){existing.push(a.name)}
+    el.value=existing.join(', ');
+  });
   setupTextareaAC(document.getElementById('obW'));
   setupTextareaAC(document.getElementById('obL'));
   setupVenueAC();
@@ -4171,7 +4175,7 @@ function renderSeeds(){
   const el=document.getElementById('seedH'),h=seeds();if(!h.length){el.innerHTML='';return}
   el.innerHTML='<span style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);text-transform:uppercase">Recent: </span>'+h.slice(0,6).map(s=>`<span style="display:inline-block;background:var(--bg3);border:1px solid var(--border);padding:1px 7px;border-radius:3px;font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);margin:2px 3px;cursor:pointer" onclick="addSeed('${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</span>`).join('');
 }
-function addSeed(n){const el=document.getElementById('seedInput'),ls=el.value.trim().split('\n').filter(Boolean);if(!ls.some(l=>l.toLowerCase()===n.toLowerCase())){ls.push(n);el.value=ls.join('\n')}}
+function addSeed(n){const el=document.getElementById('seedInput'),ls=el.value.trim().split(/[,\n]/).map(s=>s.trim()).filter(Boolean);if(!ls.some(l=>l.toLowerCase()===n.toLowerCase())){ls.push(n);el.value=ls.join(', ')}}
 
 /* ═══ GLOBAL DATE SYNC ═══
    When user sets a date in any tab, propagate it everywhere.
@@ -4333,7 +4337,7 @@ async function runDiscover(){
     if(dna&&dna.artistCount>0){
       const autoSeeds=_buildSmartSeeds(dna);
       if(autoSeeds.length){
-        text=autoSeeds.join('\n');
+        text=autoSeeds.join(', ');
         document.getElementById('seedInput').value=text;
         document.getElementById('seedInput').dispatchEvent(new Event('blur'));
       }
@@ -4343,7 +4347,7 @@ async function runDiscover(){
     _discoverRunning=false;
     return;
   }
-  const seedList=text.split('\n').map(s=>s.trim()).filter(Boolean);
+  const seedList=text.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
   saveSeeds(seedList);const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='Working…';
   // Hide chip display during search — it clutters the screen
   const chipDisplay=document.querySelector('#panel-discover .ac-chips');
