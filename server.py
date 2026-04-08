@@ -471,9 +471,11 @@ Rules:
                     tracks = data
                 genres = {}
                 subgenres = {}
+                labels = {}
                 for t in (tracks if isinstance(tracks, list) else []):
                     g = t.get("genre") or {}
                     sg = t.get("sub_genre") or {}
+                    lb = t.get("label") or t.get("release", {}).get("label") if isinstance(t.get("release"), dict) else t.get("label") or {}
                     if isinstance(g, dict) and g.get("name"):
                         genres[g["name"]] = genres.get(g["name"], 0) + 1
                     elif isinstance(g, list):
@@ -486,9 +488,14 @@ Rules:
                         for si in sg:
                             sn = si.get("name", str(si)) if isinstance(si, dict) else str(si)
                             subgenres[sn] = subgenres.get(sn, 0) + 1
+                    if isinstance(lb, dict) and lb.get("name"):
+                        labels[lb["name"]] = labels.get(lb["name"], 0) + 1
+                    elif isinstance(lb, str) and lb:
+                        labels[lb] = labels.get(lb, 0) + 1
                 self._send(200, json.dumps({
                     "genres": genres,
                     "subgenres": subgenres,
+                    "labels": labels,
                     "tracks": len(tracks) if isinstance(tracks, list) else 0,
                 }).encode())
 
