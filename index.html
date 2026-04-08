@@ -1152,7 +1152,7 @@ const PROFILES_KEY='np_profiles';
 function _getAllProfiles(){
   try{return JSON.parse(localStorage.getItem(PROFILES_KEY))||null}catch{return null}
 }
-function _setAllProfiles(d){localStorage.setItem(PROFILES_KEY,JSON.stringify(d))}
+function _setAllProfiles(d){try{localStorage.setItem(PROFILES_KEY,JSON.stringify(d))}catch(e){console.warn('Storage full:',e)}}
 
 function _migrateIfNeeded(){
   if(_getAllProfiles())return;
@@ -1297,17 +1297,17 @@ const _vk=()=>_activeKey();
 const saved=()=>{try{return JSON.parse(localStorage.getItem('np_saved_'+_vk()))||[]}catch{
   // legacy migration
   try{const l=JSON.parse(localStorage.getItem('libro_s'));if(l&&l.length){localStorage.setItem('np_saved_'+_vk(),JSON.stringify(l));localStorage.removeItem('libro_s');return l}return[]}catch{return[]}}};
-const setSaved=d=>localStorage.setItem('np_saved_'+_vk(),JSON.stringify(d));
+const setSaved=d=>{try{localStorage.setItem('np_saved_'+_vk(),JSON.stringify(d))}catch(e){console.warn('Storage full:',e)}};
 const seeds=()=>{try{return JSON.parse(localStorage.getItem('np_seeds_'+_vk()))||[]}catch{return[]}};
-const setSeeds=d=>localStorage.setItem('np_seeds_'+_vk(),JSON.stringify(d));
+const setSeeds=d=>{try{localStorage.setItem('np_seeds_'+_vk(),JSON.stringify(d))}catch(e){console.warn('Storage full:',e)}};
 const fees=()=>{try{return JSON.parse(localStorage.getItem('np_fees_'+_vk()))||{}}catch{return{}}};
-const setFees=d=>localStorage.setItem('np_fees_'+_vk(),JSON.stringify(d));
+const setFees=d=>{try{localStorage.setItem('np_fees_'+_vk(),JSON.stringify(d))}catch(e){console.warn('Storage full:',e)}};
 const getDNA=()=>{try{return JSON.parse(localStorage.getItem('np_dna_'+_vk()))||null}catch{return null}};
-const setDNA=d=>localStorage.setItem('np_dna_'+_vk(),JSON.stringify(d));
+const setDNA=d=>{try{localStorage.setItem('np_dna_'+_vk(),JSON.stringify(d))}catch(e){console.warn('Storage full:',e)}};
 const addLog=e=>{try{const l=JSON.parse(localStorage.getItem('libro_log')||'[]');l.push({...e,ts:Date.now()});if(l.length>500)l.splice(0,l.length-500);localStorage.setItem('libro_log',JSON.stringify(l))}catch{}};
 const fmt=n=>{if(!n||isNaN(n))return'0';if(n>=1e6)return(n/1e6).toFixed(1).replace(/\.0$/,'')+'M';if(n>=1e3)return(n/1e3).toFixed(1).replace(/\.0$/,'')+'K';return n.toLocaleString()};
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML};
-const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\band\b/g,'').replace(/[^a-z0-9]/g,'');
 const areaId=()=>AREAS[(P().city||'barcelona').toLowerCase()]||20;
 const cityName=()=>{const c=P().city||'barcelona';return c.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')};
 const fdate=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
@@ -1843,7 +1843,11 @@ async function scSpotify(uuid){
 async function scSimilar(uuid){
   try{
     const d=await sc('/api/v2/artist/'+uuid+'/related');
-    return(d.items||[]).map(a=>({name:a.name||a.appUrl?.split('/').pop(),uuid:a.uuid,score:a.score||50}));
+    return(d.items||[]).map(a=>{
+      // SC response may use different field names depending on version
+      const name=a.name||a.artistName||(a.appUrl?a.appUrl.split('/').filter(Boolean).pop().replace(/-/g,' '):'');
+      return{name,uuid:a.uuid||a.artistUuid,score:a.score||a.similarityScore||50};
+    }).filter(a=>a.name&&a.name.length>1);
   }catch(e){return[]}
 }
 
@@ -2293,7 +2297,7 @@ async function buildDNA(statusCb,artistCb){
       if(!coBillMap.has(n))coBillMap.set(n,{name:r.name,totalCoBills:0,connectedTo:[]});
       const entry=coBillMap.get(n);
       entry.totalCoBills+=r.count;
-      if(!entry.connectedTo.includes('⚓ '+anchor))entry.connectedTo.push('⚓ '+anchor);
+      if(!entry.connectedTo.includes(anchor))entry.connectedTo.push(anchor);
     }
     // Beatport genres for anchors — enrich the genre fingerprint
     try{
@@ -2428,6 +2432,82 @@ async function buildDNA(statusCb,artistCb){
     }
   }catch(e){if(statusCb)statusCb('Venue affinity computation failed — continuing')}
 
+  // ═══ COMPETITOR INTELLIGENCE ═══
+  // What are your competitors booking that you're NOT?
+  // This is the most valuable discovery signal — trusted taste, different network
+  if(statusCb)statusCb('Analysing competitor bookings…');
+  const competitorArtists=new Map(); // norm(name) → {name, bookedBy:[], eventCount, genres:[]}
+  const ourNorms=new Set(profiles.map(pp=>norm(pp.name)));
+  const competitors=p.competitors||[];
+  
+  try{
+    const cityEvents=await ensureCache().catch(()=>[]);
+    if(cityEvents.length&&competitors.length){
+      for(const comp of competitors){
+        const compName=(comp.name||'').toLowerCase();
+        const compId=comp.raId?String(comp.raId):null;
+        if(!compName&&!compId)continue;
+        
+        // Find competitor's events in the cache
+        const compNorm=norm(compName);
+        const compEvents=cityEvents.filter(ev=>{
+          // Match by venue ID (most accurate)
+          if(compId&&ev.venueId&&String(ev.venueId)===compId)return true;
+          // Match by venue name — use norm() for fuzzy match
+          // "nitsa" matches "Nitsa Club", "Sala Apolo" matches "sala apolo"
+          if(compNorm&&ev.venue&&norm(ev.venue)===compNorm)return true;
+          // Partial match — "nitsa" in "Nitsa Club Barcelona"
+          if(compName&&compName.length>3&&ev.venue&&ev.venue.toLowerCase().includes(compName))return true;
+          // Match by title (catches promoter names like "Soundit presents...")
+          if(compName&&compName.length>3&&ev.title&&ev.title.toLowerCase().includes(compName))return true;
+          return false;
+        });
+        
+        const compLabel=comp.name||('ID '+compId);
+        
+        for(const ev of compEvents){
+          for(const a of(ev.artists||[])){
+            const n=norm(a);
+            if(!n||n.length<2)continue;
+            if(ourNorms.has(n))continue; // skip artists we already book
+            
+            if(!competitorArtists.has(n)){
+              competitorArtists.set(n,{name:a,bookedBy:[],eventCount:0,genres:new Set()});
+            }
+            const entry=competitorArtists.get(n);
+            if(!entry.bookedBy.includes(compLabel))entry.bookedBy.push(compLabel);
+            entry.eventCount++;
+            for(const g of(ev.genres||[]))entry.genres.add(typeof g==='string'?g:g.name||'');
+          }
+        }
+        if(statusCb)statusCb('  '+compLabel+': '+compEvents.length+' events found');
+      }
+      
+      // Filter: only keep competitor artists who match our genres
+      // Genre is non-negotiable — even if all 5 competitors book a techno DJ, 
+      // they don't belong in a house/disco promoter's results
+      const myGroups=raSceneGroupsSet;
+      if(myGroups.size>0){
+        for(const[n,entry] of competitorArtists){
+          const artistGroups=new Set([...entry.genres].map(g=>_genreGroupMap.get(g.toLowerCase())).filter(Boolean));
+          const genreMatch=[...artistGroups].some(g=>myGroups.has(g));
+          if(!genreMatch&&artistGroups.size>0){
+            competitorArtists.delete(n); // known genre, doesn't match → out
+          }
+          // No genre data = keep (benefit of doubt, will be filtered later in discovery)
+        }
+      }
+      
+      if(statusCb)statusCb('Competitor intelligence: '+competitorArtists.size+' artists your competitors book that you don\'t');
+    }
+  }catch(e){if(statusCb)statusCb('Competitor analysis failed — continuing')}
+  
+  // Convert to storable format
+  const competitorArtistsArr=[...competitorArtists.values()]
+    .sort((a,b)=>b.bookedBy.length*10+b.eventCount-(a.bookedBy.length*10+a.eventCount))
+    .slice(0,100)
+    .map(a=>({name:a.name,bookedBy:a.bookedBy,eventCount:a.eventCount,genres:[...a.genres].slice(0,5)}));
+
   // Compute average headliner follower count for caliber matching
   const headlinerFollowers=profiles.filter(p=>p.raFollowers>0).map(p=>p.raFollowers).sort((a,b)=>a-b);
   const avgHeadlinerFollowers=headlinerFollowers.length
@@ -2473,12 +2553,13 @@ async function buildDNA(statusCb,artistCb){
     archiveYearsFetched:window._dnaBuildMeta?.archiveYearsFetched??null,
     dnaComplete:window._dnaBuildMeta?.dnaComplete??true,
     venueAffinity:venueAffinityMap,
+    competitorArtists:competitorArtistsArr,
     avgHeadlinerFollowers,
     medianHeadlinerFollowers,
     // Compact venue events for recency weighting + time-of-day fingerprint
     _venueEvents:venueEvents.slice(0,200).map(ev=>({
       date:ev.date,startTime:ev.startTime||null,attending:ev.attending,
-      artists:(ev.artists||[]).slice(0,5),genres:(ev.genres||[])
+      artists:(ev.artists||[]).slice(0,5),genres:(ev.genres||[]).map(g=>typeof g==='string'?g:g.name||'')
     })),
   };
   setDNA(dna);
@@ -2564,8 +2645,9 @@ function isEventDaytime(startTime){
 /* Build DNA scene fingerprint — computed once, cached on dna object */
 function getDNAFingerprint(dna){
   if(!dna)return null;
-  if(dna._fingerprint)return dna._fingerprint; // cached
-  // Invalidate cache if user genre focus changed
+  // Check if cached fingerprint is still valid (genreFocus may have changed)
+  const currentGF=(P().genreFocus||[]).join(',');
+  if(dna._fingerprint&&dna._fpGenreKey===currentGF)return dna._fingerprint;
   delete dna._fingerprint;
 
   // Artist sets for O(1) lookup
@@ -2583,33 +2665,24 @@ function getDNAFingerprint(dna){
     for(const g of dna._userGenreFocus)dnaGenres.add(g.toLowerCase());
   }
 
-  // Scene group fingerprint — which RA genre groups does this DNA represent?
-  // Prefer RA's own genre tags (raSceneGroups) — most reliable for scene detection
+  // Scene group fingerprint — ALWAYS includes both RA data AND user's genre picks
   const dnaSceneGroups=new Set();
+  // Source 1: RA event genre tags (from booking history)
   if(dna.raSceneGroups&&dna.raSceneGroups.length){
-    // Use RA's curated genre classification — most accurate
     for(const g of dna.raSceneGroups)dnaSceneGroups.add(g);
-  } else {
-    // Fall back to Beatport-derived genre groups
-    for(const g of dnaGenres){
-      const group=_genreGroupMap.get(g);
-      if(group)dnaSceneGroups.add(group);
-    }
   }
-  // If still empty, use genreFocus from onboarding (user's own genre picks)
-  if(!dnaSceneGroups.size){
-    const gf=P().genreFocus||[];
-    for(const g of gf){
-      // genreFocus stores slugs like 'house', 'soulful-house', 'disco'
-      // Map them to genre group keys
-      const normalized=g.replace(/-/g,' ').toLowerCase();
-      const group=_genreGroupMap.get(normalized);
-      if(group)dnaSceneGroups.add(group);
-      // Also try the raw value as a group key
-      for(const[gk,genres] of Object.entries(RA_GENRE_GROUPS)){
-        if(genres.some(rg=>rg.toLowerCase()===normalized))dnaSceneGroups.add(gk);
-      }
-    }
+  // Source 2: Beatport-derived genres
+  for(const g of dnaGenres){
+    const group=_genreGroupMap.get(g);
+    if(group)dnaSceneGroups.add(group);
+  }
+  // Source 3: User's explicit genre picks — ALWAYS included, not just fallback
+  // The user knows their scene better than any algorithm
+  const gf=dna._userGenreFocus||P().genreFocus||[];
+  for(const g of gf){
+    const normalized=g.replace(/-/g,' ').toLowerCase();
+    const group=_genreGroupMap.get(normalized);
+    if(group)dnaSceneGroups.add(group);
   }
 
   // Most recent bookings get 2× weight — your 2024 sound matters more than 2021
@@ -2629,8 +2702,14 @@ function getDNAFingerprint(dna){
     dnaIsDaytime=daytimeEvents.length/dna._venueEvents.length>0.4; // >40% daytime = daytime brand
   }
 
-  const fp={bookedNorms,coBillMap,cloudNorms,secondDegree,dnaGenres,dnaSceneGroups,recentArtists,dnaIsDaytime};
-  dna._fingerprint=fp; // cache it
+  // Competitor-booked artists — artists your competitors book that you don't
+  const competitorMap=new Map();
+  for(const a of(dna.competitorArtists||[])){
+    competitorMap.set(norm(a.name),{bookedBy:a.bookedBy,eventCount:a.eventCount});
+  }
+
+  const fp={bookedNorms,coBillMap,cloudNorms,secondDegree,dnaGenres,dnaSceneGroups,recentArtists,dnaIsDaytime,competitorMap};
+  dna._fingerprint=fp;dna._fpGenreKey=currentGF; // cache with genre key
   return fp;
 }
 
@@ -2667,6 +2746,20 @@ function sceneRelevance(artistName, dna){
     score=50;tier=2;reason='In your artist network';breakdown={circuit:50};
   } else if(fp.secondDegree.has(n)){
     score=38;tier=2;reason='2nd-degree connection';breakdown={circuit:38};
+  }
+  
+  // Tier 2.5: Competitor-booked — your rivals book this artist, you don't
+  // This is strong social proof: trusted taste in your scene
+  if(tier>=3&&fp.competitorMap){
+    const comp=fp.competitorMap.get(n);
+    if(comp){
+      const multiComp=comp.bookedBy.length>=2;
+      const frequent=comp.eventCount>=3;
+      score=multiComp?70:frequent?62:55;
+      tier=2;
+      reason='Booked by '+comp.bookedBy.slice(0,2).join(' + ')+(comp.bookedBy.length>2?' +'+( comp.bookedBy.length-2)+' more':'');
+      breakdown={competitor:score,count:comp.eventCount};
+    }
   }
 
   // Tier 3: No direct connection — check venue vibe + genre
@@ -4579,20 +4672,61 @@ function _buildSmartSeeds(dna){
     return p.raFollowers>=FOLLOWER_GATE;
   });
   
-  // Sort by headliner score (computed during DNA build)
-  qualifying.sort((a,b)=>(b.headlinerScore||0)-(a.headlinerScore||0));
+  // Sort by recency-weighted headliner score
+  // Recent bookings (last 12 months) get 2× weight — your current sound matters more
+  const fp=getDNAFingerprint(dna);
+  qualifying.sort((a,b)=>{
+    const aRecent=fp&&fp.recentArtists.has(norm(a.name))?2:1;
+    const bRecent=fp&&fp.recentArtists.has(norm(b.name))?2:1;
+    return(b.headlinerScore||0)*bRecent-(a.headlinerScore||0)*aRecent;
+  });
   
   // Also mix in co-billing network
   const coBills=(dna.coBillNetwork||[]).slice(0,5).map(c=>c.name);
   
-  // Top 8 headliners + sound anchors + top 5 co-bills
-  const headliners=qualifying.slice(0,8).map(a=>a.name);
-  const anchors=(P().soundAnchors||[]).filter(Boolean);
-  const usedNorms=new Set([...headliners,...anchors].map(norm));
-  const extraCoBills=coBills.filter(n=>!usedNorms.has(norm(n))).slice(0,5);
+  // Also get top competitor-exclusive artists (what your rivals book that you don't)
+  const compArtists=(dna.competitorArtists||[]).slice(0,5).map(a=>a.name);
   
-  const seeds=[...headliners,...anchors,...extraCoBills].filter(Boolean);
-  // Deduplicate
+  // Genre-diverse seeding: pick top artists from EACH of your genre groups
+  // This ensures disco seeds AND house seeds AND melodic seeds, not just top-by-score
+  const dnaGroups=new Set((dna.raSceneGroups||[]).concat(
+    (dna._userGenreFocus||[]).map(g=>{const n=g.replace(/-/g,' ').toLowerCase();return _genreGroupMap.get(n)}).filter(Boolean)
+  ));
+  const headliners=[];
+  const usedNorms=new Set();
+  
+  if(dnaGroups.size>0){
+    // Pick top 2-3 from each genre group
+    const perGroup=Math.max(2,Math.ceil(8/dnaGroups.size));
+    for(const group of dnaGroups){
+      const groupArtists=qualifying.filter(a=>{
+        const genres=(a.genres||[]).map(g=>_genreGroupMap.get(g.toLowerCase())).filter(Boolean);
+        return genres.includes(group);
+      });
+      let added=0;
+      for(const a of groupArtists){
+        const n=norm(a.name);
+        if(usedNorms.has(n))continue;
+        headliners.push(a.name);
+        usedNorms.add(n);
+        added++;
+        if(added>=perGroup)break;
+      }
+    }
+  }
+  // Fill remaining slots with top overall headliners
+  for(const a of qualifying){
+    if(headliners.length>=10)break;
+    const n=norm(a.name);
+    if(!usedNorms.has(n)){headliners.push(a.name);usedNorms.add(n)}
+  }
+  
+  const anchors=(P().soundAnchors||[]).filter(Boolean);
+  for(const a of anchors)usedNorms.add(norm(a));
+  const extraCoBills=coBills.filter(n=>!usedNorms.has(norm(n))).slice(0,5);
+  const extraComp=compArtists.filter(n=>!usedNorms.has(norm(n))).slice(0,3);
+  
+  const seeds=[...headliners,...anchors,...extraCoBills,...extraComp].filter(Boolean);
   const seen=new Set();
   return seeds.filter(s=>{const n=norm(s);if(seen.has(n))return false;seen.add(n);return true});
 }
@@ -4606,7 +4740,15 @@ let _discoverRunning=false;
 async function runDiscover(){
   if(_discoverRunning)return;_discoverRunning=true;
   let text=document.getElementById('seedInput').value.trim();
-  const date=document.getElementById('eventDate').value;
+  let date=document.getElementById('eventDate').value;
+  if(!date){
+    // Default to 30 days from now if no date set
+    const d=new Date();d.setDate(d.getDate()+30);
+    date=d.toISOString().slice(0,10);
+    document.getElementById('eventDate').value=date;
+    const disp=document.getElementById('eventDateDisplay');
+    if(disp)disp.textContent=new Date(date+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  }
   const maxResults=parseInt(document.getElementById('minBcn').value)||0; // 0 = all
   const backMo=parseInt(document.getElementById('filterBack').value)||7,fwdMo=parseInt(document.getElementById('filterFwd').value)||3;
   
@@ -4663,6 +4805,7 @@ async function runDiscover(){
     const cmap=new Map();
     const allEvents=await ensureCache()||[];
 
+    let _lightweightQueue=[];
     for(let si=0;si<resolved.length;si++){
       const s=resolved[si];
       prog(null,17,'Scanning connections for '+s.name+'…');
@@ -4680,17 +4823,31 @@ async function runDiscover(){
           }
           prog(null,20,s.name+': '+fused.length+' related');
         }else{
-          // Lightweight: RA official only for remaining seeds (1 API call each)
-          const related=await raOfficialRelated(s.name);
-          for(const r of related){
-            const key=norm(r.name);
-            if(resolved.some(x=>norm(x.name)===key))continue;
-            if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:'',seeds:[s.seed],source:'ra_official',fusionScore:60,sources:['ra_official'],raCoBills:0});
-            else{const e=cmap.get(key);e.seeds.push(s.seed);e.fusionScore=(e.fusionScore||0)+30}
-          }
-          prog(null,20,s.name+': '+related.length+' related (quick)');
+          // Queue for parallel batch below
+
+          _lightweightQueue.push(s);
         }
       }catch(e){prog(null,20,s.name+': fusion error — '+e.message)}
+    }
+    
+    // Process lightweight seeds in parallel (3 at a time)
+    if(typeof _lightweightQueue!=='undefined'&&_lightweightQueue&&_lightweightQueue.length){
+      prog(null,22,'Processing '+_lightweightQueue.length+' additional seeds…');
+      for(let li=0;li<_lightweightQueue.length;li+=3){
+        const batch=_lightweightQueue.slice(li,li+3);
+        await Promise.all(batch.map(async s=>{
+          try{
+            const related=await raOfficialRelated(s.name);
+            for(const r of related){
+              const key=norm(r.name);
+              if(resolved.some(x=>norm(x.name)===key))continue;
+              if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:'',seeds:[s.seed],source:'ra_official',fusionScore:60,sources:['ra_official'],raCoBills:0});
+              else{const e=cmap.get(key);e.seeds.push(s.seed);e.fusionScore=(e.fusionScore||0)+30}
+            }
+          }catch(e){}
+        }));
+      }
+      _lightweightQueue=null;
     }
 
     // Extra pass: RA official related for sound anchors not already in seeds
@@ -4702,11 +4859,39 @@ async function runDiscover(){
         for(const r of related){
           const key=norm(r.name);
           if(resolved.some(x=>norm(x.name)===key))continue;
-          if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:'',seeds:['⚓ '+anchor],source:'anchor_related',fusionScore:55,sources:['anchor_related'],raCoBills:0});
+          if(!cmap.has(key))cmap.set(key,{name:r.name,uuid:null,imageUrl:'',seeds:[anchor],source:'anchor_related',fusionScore:55,sources:['anchor_related'],raCoBills:0});
         }
         prog(null,24,'Sound anchor '+anchor+': '+related.length+' related');
       }catch(e){}
     }
+    // ═══ COMPETITOR INTELLIGENCE: add their artists directly to candidate pool ═══
+    // These bypass fusion entirely — validated by trusted competitor taste
+    if(snapshotDNA&&snapshotDNA.competitorArtists){
+      let compAdded=0;
+      for(const ca of snapshotDNA.competitorArtists){
+        const key=norm(ca.name);
+        if(resolved.some(x=>norm(x.name)===key))continue; // you already seeded them
+        if(!cmap.has(key)){
+          cmap.set(key,{
+            name:ca.name,uuid:null,imageUrl:'',
+            seeds:ca.bookedBy.map(b=>b),
+            source:'competitor',
+            fusionScore:55+ca.bookedBy.length*10, // multi-competitor = stronger
+            sources:['competitor'],
+            raCoBills:0
+          });
+          compAdded++;
+        }else{
+          // Already found via fusion — boost their score
+          const e=cmap.get(key);
+          e.fusionScore=(e.fusionScore||0)+25;
+          if(!e.sources)e.sources=[];
+          if(!e.sources.includes('competitor'))e.sources.push('competitor');
+        }
+      }
+      if(compAdded)prog(null,25,compAdded+' artists from competitor intelligence');
+    }
+    
     const cands=Array.from(cmap.values());prog('Found '+cands.length+' potential matches',25);
 
     // Step 3: city exclusion from cache (instant)
@@ -4728,6 +4913,18 @@ async function runDiscover(){
     let sdX=0;const afterSD=[];
     for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' — '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
     prog(afterSD.length+' clear',65);
+
+    // Pre-build artist event count index (used for quality floor + sort tiebreaker)
+    const cache=getCache();
+    const artistEventCounts=new Map();
+    if(cache&&cache.events){
+      for(const ev of cache.events){
+        for(const a of(ev.artists||[])){
+          const n=norm(a);
+          artistEventCounts.set(n,(artistEventCounts.get(n)||0)+1);
+        }
+      }
+    }
 
     // Step 5: Genre filter — RA event genres only (instant, zero API calls)
     prog('Filtering by genre…',70);
@@ -4758,30 +4955,26 @@ async function runDiscover(){
         }
       }
       
-      // NO GENRES = suspicious. Only let through if high-confidence (multiple sources or strong score)
-      if((!c.genres||!c.genres.length)&&(c.fusionScore||0)<80){
-        genreSkipped++;
-        continue; // unknown + weak connection = skip
+      // NO GENRES in city cache = not active in this city
+      // Let through if: high fusion score, OR found by multiple sources, OR SC audience match
+      if(!c.genres||!c.genres.length){
+        const hasSC=(c.sources||[]).includes('sc_similar');
+        const multiSource=(c.sources||[]).length>=2;
+        const strongFusion=(c.fusionScore||0)>=60;
+        if(!hasSC&&!multiSource&&!strongFusion){
+          genreSkipped++;
+          continue;
+        }
       }
       
       c.bcn=0;c.global=0;
+      c._cacheEvents=artistEventCounts.get(norm(c.name))||0;
       wd.push(c);
     }
     if(genreSkipped)prog(null,95,genreSkipped+' artists excluded by genre');
     else prog(null,95,'Genre filter done ✓');
     
     // Step 6: Quality floor — filter out completely unknown artists
-    // Must have SOME presence: appeared in 3+ events in the city cache, OR known RA follower count
-    const cache=getCache();
-    const artistEventCounts=new Map();
-    if(cache&&cache.events){
-      for(const ev of cache.events){
-        for(const a of(ev.artists||[])){
-          const n=norm(a);
-          artistEventCounts.set(n,(artistEventCounts.get(n)||0)+1);
-        }
-      }
-    }
     let qualitySkipped=0;
     const qualityFiltered=wd.filter(c=>{
       const n=norm(c.name);
@@ -4811,12 +5004,15 @@ async function runDiscover(){
       }
       // Composite score: DNA relevance (0-100) + fusion (0-150) + source bonus
       const dnaScore=a._dna?.score||30; // default 30 for unknown
-      const fusionScore=Math.min(a.fusionScore||0,150);
+      const fusionScore=Math.min(a.fusionScore||0,100);
       const sourceBonus=(a.sources?.length||1)*5;
-      const scBonus=(a.sources||[]).includes('sc_similar')?15:0; // audience overlap = high signal
-      a._compositeScore=dnaScore*0.4 + fusionScore*0.35 + sourceBonus + scBonus;
+      const scBonus=(a.sources||[]).includes('sc_similar')?15:0;
+      const compBonus=(a.sources||[]).includes('competitor')?20:0; // competitor intelligence = high value
+      // Sparse penalty: artists with no genre data or no cache presence get pushed down
+      const sparsePenalty=(!a.genres||!a.genres.length)?-10:0;
+      a._compositeScore=dnaScore*0.5 + fusionScore*0.3 + sourceBonus + scBonus + compBonus + sparsePenalty;
     }
-    qual.sort((a,b)=>(b._compositeScore||0)-(a._compositeScore||0));
+    qual.sort((a,b)=>(b._compositeScore||0)-(a._compositeScore||0)||(b._cacheEvents||0)-(a._cacheEvents||0));
     prog('Done — '+qual.length+' artists found',100);
     
     // Pass diagnostic counts for empty state messaging
@@ -4923,10 +5119,17 @@ function renderDiscover(arts,hasDNA,diag){
     const [bg,fg]=V3_COLORS[i%V3_COLORS.length];
     const initial=(a.name||'?').charAt(0).toUpperCase();
     const scoreNum=a._dna?.score||a.fusionScore||a.score||'';
-    const genreText=(a.genres||[]).slice(0,2).map(g=>{
-      // Clean: strip Beatport parentheticals like "techno (peak time / driving)"
+    // Sort genres: user's DNA-matching genres first, then others
+    const _fpG=snapshotDNA?getDNAFingerprint(snapshotDNA):null;
+    const sortedGenres=(a.genres||[]).slice().sort((ga,gb)=>{
+      const gaGroup=_genreGroupMap.get(ga.toLowerCase());
+      const gbGroup=_genreGroupMap.get(gb.toLowerCase());
+      const gaMatch=_fpG&&_fpG.dnaSceneGroups.has(gaGroup)?1:0;
+      const gbMatch=_fpG&&_fpG.dnaSceneGroups.has(gbGroup)?1:0;
+      return gbMatch-gaMatch;
+    });
+    const genreText=sortedGenres.slice(0,2).map(g=>{
       let clean=(g||'').replace(/\s*\([^)]*\)/g,'').trim();
-      // Strip long slash chains: "hard dance / hardcore / neo rave" → "hard dance"
       if(clean.includes(' / ')&&clean.length>25)clean=clean.split(' / ')[0];
       return clean;
     }).filter(Boolean).join(' · ')||'';
@@ -4970,7 +5173,8 @@ function renderDiscover(arts,hasDNA,diag){
       '</div>'+
       '<div class="v3-exp">'+
         '<div class="v3-why" style="margin-bottom:14px">'+
-          (connectionText?'Via <b>'+connectionText+'</b>. ':'')+
+          (a._dna?.reason&&a._dna.tier<=3?'<b>'+esc(a._dna.reason)+'</b>. ':'')+
+          (connectionText&&!a._dna?.reason?.includes('Booked by')?'Via '+connectionText+'. ':'')+
           (a.routeCity?'Playing <b>'+esc(a.routeCity)+'</b> '+esc(a.routeDate||'')+'. ':'')+
           (cb.length?'Booked by '+cb.map(x=>esc(x.venue)).join(', ')+'. ':'')+
           (hasMomentum?'Interest rising '+a.momentum+'.':'')+
@@ -5368,7 +5572,14 @@ async function runXray(){
 let _routingRunning=false;
 async function runRouting(){
   if(_routingRunning)return;_routingRunning=true;
-  const date=document.getElementById('routeDate').value;
+  let date=document.getElementById('routeDate').value;
+  if(!date){
+    const d=new Date();d.setDate(d.getDate()+14);
+    date=d.toISOString().slice(0,10);
+    document.getElementById('routeDate').value=date;
+    const disp=document.getElementById('routeDateDisplay');
+    if(disp)disp.textContent=new Date(date+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  }
   if(!date){
     const dateEl=document.getElementById('routeDate');
     dateEl.style.borderColor='var(--accent)';dateEl.style.boxShadow='0 0 0 3px var(--accent-glow)';dateEl.focus();
@@ -5461,6 +5672,19 @@ async function runRouting(){
     }
     rteProg(null,30,'Scene pool: '+scenePool.size+' artists ('+raRelatedCount+' from RA related)');
 
+    // Layer 4: Competitor-exclusive artists
+    // Artists your competitors book that you don't — strong discovery signal
+    const compArtists=dna.competitorArtists||[];
+    let compAdded=0;
+    for(const ca of compArtists){
+      const n=norm(ca.name);
+      if(!scenePool.has(n)){
+        scenePool.set(n,{name:ca.name,relevance:55+ca.bookedBy.length*10,reason:'Booked by '+ca.bookedBy.slice(0,2).join(' + ')});
+        compAdded++;
+      }
+    }
+    if(compAdded)rteProg(null,32,compAdded+' competitor-exclusive artists added');
+
     // ═══ STEP 2: Scan nearby cities for those dates ═══
     rteProg('Scanning '+nearby.length+' nearby cities…',35);
     const nearbyEvents=new Map();
@@ -5494,46 +5718,66 @@ async function runRouting(){
     // ═══ STEP 3: Intersect — which scene artists are actually nearby? ═══
     rteProg('Matching to your sound…',70);
     const matches=[];
-
-    // Check artists from your scene pool against nearby events
-    for(const[n,sceneArtist] of scenePool){
-      const nearby=nearbyEvents.get(n);
-      if(nearby){
-        matches.push({
-          ...nearby,
-          relevance:sceneArtist.relevance,
-          reason:sceneArtist.reason,
-          _sceneArtist:true
-        });
+    const fp=hasDNA?getDNAFingerprint(dna):null;
+    const hasFp=fp&&fp.dnaSceneGroups&&fp.dnaSceneGroups.size>0;
+    
+    // Build artist genre lookup from city cache for genre checking
+    const cityCache=getCache()?.events||[];
+    const artistGenreGroups=new Map();
+    for(const ev of cityCache){
+      const evGroups=new Set((ev.genres||[]).map(g=>_genreGroupMap.get((typeof g==='string'?g:g.name||'').toLowerCase())).filter(Boolean));
+      if(evGroups.size===0)continue;
+      for(const a of(ev.artists||[])){
+        const n=norm(a);
+        if(!artistGenreGroups.has(n))artistGenreGroups.set(n,new Set());
+        for(const g of evGroups)artistGenreGroups.get(n).add(g);
       }
     }
 
-    // ═══ STEP 3b: Genre-matched artists NOT in your pool ═══
-    // For artists not in your network, check if they fit your sound.
-    // Strategy: check the artist's OTHER events in the city cache for genre tags,
-    // not just the nearby event they're currently playing.
-    if(hasDNA){
-      const fp=getDNAFingerprint(dna);
-      const cityCache=getCache()?.events||[];
+    // Check artists from your scene pool against nearby events
+    // WITH genre validation — scene pool can contain wrong-genre artists from RA related
+    for(const[n,sceneArtist] of scenePool){
+      const nearby=nearbyEvents.get(n);
+      if(!nearby)continue;
       
-      // Build a quick genre lookup: artist norm → Set of genre groups they've played
-      const artistGenreGroups=new Map();
-      for(const ev of cityCache){
-        const evGroups=new Set((ev.genres||[]).map(g=>_genreGroupMap.get((typeof g==='string'?g:g.name||'').toLowerCase())).filter(Boolean));
-        if(evGroups.size===0)continue;
-        for(const a of(ev.artists||[])){
-          const n=norm(a);
-          if(!artistGenreGroups.has(n))artistGenreGroups.set(n,new Set());
-          for(const g of evGroups)artistGenreGroups.get(n).add(g);
+      // Genre check: verify this artist fits your sound
+      if(hasFp){
+        let genreOk=false;
+        // Check event genres
+        const evGenres=(nearby.genres||[]);
+        if(evGenres.length){
+          const evGroups=new Set(evGenres.map(g=>_genreGroupMap.get((typeof g==='string'?g:g.name||'').toLowerCase())).filter(Boolean));
+          if([...evGroups].some(g=>fp.dnaSceneGroups.has(g)))genreOk=true;
         }
+        // Check artist's cached genres
+        if(!genreOk){
+          const cached=artistGenreGroups.get(n);
+          if(cached&&[...cached].some(g=>fp.dnaSceneGroups.has(g)))genreOk=true;
+        }
+        // High relevance (booked/co-billed) passes regardless — you chose them
+        if(!genreOk&&sceneArtist.relevance>=60)genreOk=true;
+        // No genre data + in your network = benefit of doubt
+        if(!genreOk&&!evGenres.length&&!artistGenreGroups.has(n)&&sceneArtist.relevance>=35)genreOk=true;
+        
+        if(!genreOk)continue; // wrong genre — skip
       }
       
+      matches.push({
+        ...nearby,
+        relevance:sceneArtist.relevance,
+        reason:sceneArtist.reason,
+        _sceneArtist:true
+      });
+    }
+
+    // ═══ STEP 3b: Genre-matched artists NOT in your pool ═══
+    if(hasDNA&&hasFp){
       let genreMatchCount=0;
       for(const[n,nearby_ev] of nearbyEvents){
-        if(scenePool.has(n))continue; // already in matches from Step 3
-        if(matches.some(m=>norm(m.name)===n))continue; // already matched
+        if(scenePool.has(n))continue;
+        if(matches.some(m=>norm(m.name)===n))continue;
         
-        // Method 1: Check event genres directly
+        // Check event genres
         let overlap=[];
         const evGenres=(nearby_ev.genres||[]);
         if(evGenres.length){
@@ -5541,7 +5785,7 @@ async function runRouting(){
           overlap=[...evGroups].filter(g=>fp.dnaSceneGroups.has(g));
         }
         
-        // Method 2: Check artist's historical genre from city cache
+        // Check artist's historical genre from city cache
         if(!overlap.length){
           const cached=artistGenreGroups.get(n);
           if(cached){
