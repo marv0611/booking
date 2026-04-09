@@ -642,9 +642,14 @@ input[type="number"]{font-family:var(--mono)}
         <label>My Competition <span id="obCompCount" style="font-weight:400;color:var(--text-faint);text-transform:none;letter-spacing:0;font-size:0.85em">0 of 3 minimum</span></label>
         <div id="obCompetitorList"></div>
         <div id="obCompInputRow" style="position:relative;margin-top:8px">
+          <div style="display:flex;gap:4px;margin-bottom:6px">
+            <button type="button" class="btn-ghost" id="obCompTypeVenue" onclick="_setCompType('venue')" style="font-size:0.65rem;padding:4px 10px;opacity:0.5">Venue</button>
+            <button type="button" class="btn-ghost active" id="obCompTypePromoter" onclick="_setCompType('promoter')" style="font-size:0.65rem;padding:4px 10px">Promoter</button>
+            <span style="font-family:var(--mono);font-size:0.62rem;color:var(--text-faint);padding:4px 6px">← select type first for ID lookup</span>
+          </div>
           <div style="display:flex;gap:8px;align-items:center">
-            <input type="text" id="obCompetitorSearch" placeholder="Type a venue or promoter name…" autocomplete="off" style="font-size:0.85rem;flex:1;min-width:0">
-            <button type="button" class="btn-ghost" id="obCompAddBtn" onclick="_addCompetitorFromSearch()" style="padding:10px 14px;white-space:nowrap;opacity:0.4;pointer-events:none;flex-shrink:0">+ Add</button>
+            <input type="text" id="obCompetitorSearch" placeholder="Type a name or paste an RA ID…" autocomplete="off" style="font-size:0.85rem;flex:1;min-width:0">
+            <button type="button" class="btn-ghost" id="obCompAddBtn" onclick="_addCompetitorFromSearch()" style="padding:10px 14px;white-space:nowrap;flex-shrink:0">+ Add</button>
           </div>
           <div id="obCompDropdown" class="ac-dropdown" style="position:absolute;top:100%;left:0;right:0;z-index:50"></div>
         </div>
@@ -793,7 +798,8 @@ input[type="number"]{font-family:var(--mono)}
       <div style="min-width:180px">
         <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C5850;margin-bottom:6px">EVENT DATE</div>
         <div class="date-wrap">
-          <input type="date" id="routeDate" onchange="syncDateToAll(this.value)">
+          <input type="date" id="routeDate" onchange="const d=document.getElementById('routeDateDisplay');if(d)d.textContent=this.value?new Date(this.value+' ').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';syncDateToAll(this.value)">
+          <span class="date-display" id="routeDateDisplay"></span>
         </div>
       </div>
       <div>
@@ -949,7 +955,7 @@ input[type="number"]{font-family:var(--mono)}
    Single bulk-fetch architecture. No chunking.
    ═══════════════════════════════════════════ */
 
-const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date startTime contentUrl interestedCount venue{id name area{id name}} artists{id name} genres{id name}}}totalResults}}`;
+const RA_Q=`query Q($f:FilterInputDtoInput,$fo:FilterOptionsInputDtoInput,$p:Int,$s:Int){eventListings(filters:$f,filterOptions:$fo,pageSize:$s,page:$p){data{id listingDate event{id title date startTime contentUrl interestedCount venue{id name area{id name}} artists{id name} promoters{id name} genres{id name}}}totalResults}}`;
 
 /* Confirmed working promoter query (probed 2026-04-04):
    eventListings promoter ID filter is BROKEN — silently returns all 10,000 events.
@@ -1228,28 +1234,62 @@ function deleteVenue(key,e){
 function _devPrefill(){
   if(localStorage.getItem('_np_dev')!=='1')return;
   setTimeout(()=>{
-    setObType('promoter');
+    // Prefill BOTH paths — user can switch type on step 1
+    // Promoter fields
     const raId=document.getElementById('obPromoterRaId');if(raId)raId.value='83067';
     const pName=document.getElementById('obPromoterName');if(pName){pName.value='Drop Dance Society';pName.readOnly=false;}
+    // Venue fields
+    const vRaId=document.getElementById('obVenueRaId');if(vRaId)vRaId.value='2072';
+    const vName=document.getElementById('obV');if(vName)vName.value='Nitsa Club';
+    // Sound anchors (shared)
     const s1=document.getElementById('obSoundArtist1');if(s1)s1.value='Kerri Chandler';
     const s2=document.getElementById('obSoundArtist2');if(s2)s2.value='CC:DISCO!';
     const s3=document.getElementById('obSoundArtist3');if(s3)s3.value='Antal';
-    const compIds=[77801,72357,207515,140794,103095];
+    // Competitors (shared — same 5 for both types)
+    const compData=[
+      {id:77801,name:'Soundit',type:'promoter'},
+      {id:72357,name:null,type:'promoter'},
+      {id:103095,name:null,type:'promoter'},
+      {id:140794,name:null,type:'promoter'},
+      {id:2072,name:'Nitsa',type:'venue'}
+    ];
     const compList=document.getElementById('obCompetitorList');
     if(compList){
-      compIds.forEach(id=>{
+      compData.forEach(comp=>{
         const entry=document.createElement('div');
         entry.className='competitor-entry';
-        entry.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px';
-        entry.dataset.name='ID '+id;
-        entry.dataset.raId=String(id);
-        entry.innerHTML='<span style="flex:1;font-family:var(--mono);font-weight:600;font-size:0.8rem;color:var(--text-dim)">RA ID: '+id+'</span>'
-          +'<span style="cursor:pointer;color:var(--text);font-size:1rem;padding:0 4px;line-height:1;flex-shrink:0" onclick="this.parentElement.remove();if(typeof _updateCompetitorInputVisibility===\'function\')_updateCompetitorInputVisibility();if(typeof _updateCompCount===\'function\')_updateCompCount()" title="Remove">✕</span>';
+        entry.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:3px;font-size:0.78rem';
+        entry.dataset.name=comp.name||'';
+        entry.dataset.raId=String(comp.id);
+        const displayName=comp.name||('Loading ID '+comp.id+'…');
+        entry.innerHTML='<span style="flex:1;font-family:var(--disp);font-weight:600;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px" data-comp-name>'+displayName+'</span>'
+          +'<span style="font-family:var(--mono);color:var(--amber);font-size:0.62rem;flex-shrink:0">ID '+comp.id+'</span>'
+          +'<span style="cursor:pointer;color:var(--text-faint);font-size:0.9rem;padding:0 4px;line-height:1;flex-shrink:0" onclick="this.parentElement.remove();if(typeof _updateCompetitorInputVisibility===\'function\')_updateCompetitorInputVisibility();if(typeof _updateCompCount===\'function\')_updateCompCount()" title="Remove">✕</span>';
         compList.appendChild(entry);
+        // Async name resolution for unknown names
+        if(!comp.name){
+          (async()=>{try{
+            const query=comp.type==='venue'
+              ?{query:'query V($id:ID!){venue(id:$id){id name}}',variables:{id:String(comp.id)}}
+              :{query:'query P($id:ID!){promoter(id:$id){id name}}',variables:{id:String(comp.id)}};
+            const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(query)}).then(r=>r.json());
+            const name=comp.type==='venue'?r?.data?.venue?.name:r?.data?.promoter?.name;
+            if(name){entry.dataset.name=name;const el=entry.querySelector('[data-comp-name]');if(el)el.textContent=name}
+            else{entry.dataset.name='ID:'+comp.id}
+          }catch(e){entry.dataset.name='ID:'+comp.id}})();
+        }
       });
       if(typeof _updateCompCount==='function')setTimeout(_updateCompCount,200);
       if(typeof _updateCompetitorInputVisibility==='function')setTimeout(_updateCompetitorInputVisibility,200);
     }
+    // Pre-select genres for dev mode
+    setTimeout(()=>{
+      const genres=['house','deep-house','disco','soulful-house'];
+      genres.forEach(g=>{
+        const btn=document.querySelector('#obGenrePicker button[data-genre="'+g+'"]');
+        if(btn&&!btn.classList.contains('active')){btn.click()}
+      });
+    },300);
   },150);
 }
 
@@ -2451,14 +2491,17 @@ async function buildDNA(statusCb,artistCb){
         // Find competitor's events in the cache
         const compNorm=norm(compName);
         const compEvents=cityEvents.filter(ev=>{
-          // Match by venue ID (most accurate)
+          // Match by venue ID (most accurate for venue competitors)
           if(compId&&ev.venueId&&String(ev.venueId)===compId)return true;
+          // Match by promoter ID (most accurate for promoter competitors)
+          if(compId&&ev.promoters&&ev.promoters.some(p=>String(p.id)===compId))return true;
           // Match by venue name — use norm() for fuzzy match
-          // "nitsa" matches "Nitsa Club", "Sala Apolo" matches "sala apolo"
           if(compNorm&&ev.venue&&norm(ev.venue)===compNorm)return true;
+          // Match by promoter name
+          if(compNorm&&ev.promoters&&ev.promoters.some(p=>norm(p.name)===compNorm))return true;
           // Partial match — "nitsa" in "Nitsa Club Barcelona"
           if(compName&&compName.length>3&&ev.venue&&ev.venue.toLowerCase().includes(compName))return true;
-          // Match by title (catches promoter names like "Soundit presents...")
+          // Match by title (catches "Soundit presents...")
           if(compName&&compName.length>3&&ev.title&&ev.title.toLowerCase().includes(compName))return true;
           return false;
         });
@@ -2849,7 +2892,21 @@ function eventThreat(event, dna){
     const competitors=p.competitors||[];
     const evVenue=norm(event.venue||'');
     const evTitle=norm(event.title||'');
-    const matchedComp=competitors.find(c=>{const cn=norm(c.name||c);return cn.length>2&&(evVenue.includes(cn)||evTitle.includes(cn))});
+    const matchedComp=competitors.find(c=>{
+      const cn=norm(c.name||c);
+      const cid=c.raId?String(c.raId):null;
+      if(cn.length<2)return false;
+      // Match by venue name or title
+      if(evVenue.includes(cn)||evTitle.includes(cn))return true;
+      // Match by promoter name/ID from event data
+      if(event.promoters){
+        if(event.promoters.some(p=>norm(p.name||'')===cn))return true;
+        if(cid&&event.promoters.some(p=>String(p.id)===cid))return true;
+      }
+      // Match by venue ID
+      if(cid&&event.venueId&&String(event.venueId)===cid)return true;
+      return false;
+    });
     if(matchedComp){
       return{
         tier:1,score:95,
@@ -3010,7 +3067,7 @@ async function raBulkFetch(areaCode, from, to, maxPages=60){
     const evs=d?.data?.eventListings?.data||[];const tot=d?.data?.eventListings?.totalResults||0;
     for(const el of evs){
       const ev=el.event||{};
-      events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
+      events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,promoters:(ev.promoters||[]).map(p=>({id:p.id,name:p.name})),genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
     }
     if(p*50>=tot)break;
   }
@@ -3042,7 +3099,7 @@ async function ensureCache(force=false){
       // Parse first page
       for(const el of(first?.data?.eventListings?.data||[])){
         const ev=el.event||{};
-        events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
+        events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,promoters:(ev.promoters||[]).map(p=>({id:p.id,name:p.name})),genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
       }
       showCacheStatus('Loading events… 1/'+totalPages+' pages ('+total+' total)');
 
@@ -3058,7 +3115,7 @@ async function ensureCache(force=false){
           if(!d){failedPages.push(pageNums[i]);continue}
           for(const el of(d?.data?.eventListings?.data||[])){
             const ev=el.event||{};
-            events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
+            events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,promoters:(ev.promoters||[]).map(p=>({id:p.id,name:p.name})),genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
           }
         }
         showCacheStatus('Loading events… '+Math.min(batch+4,totalPages)+'/'+totalPages+' pages'+(failedPages.length?' ('+failedPages.length+' retrying)':'')); 
@@ -3068,7 +3125,7 @@ async function ensureCache(force=false){
             const d=await ra({f:{areas:{eq:area},listingDate:{gte,lte}},fo:{},p,s:50});
             for(const el of(d?.data?.eventListings?.data||[])){
               const ev=el.event||{};
-              events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
+              events.push({date:(ev.date||'').slice(0,10),venue:(ev.venue||{}).name||'?',venueId:(ev.venue||{}).id||null,artists:(ev.artists||[]).map(a=>a.name||'').filter(Boolean),artistIds:(ev.artists||[]).reduce((m,a)=>{if(a.id&&a.name)m[a.name]=String(a.id);return m},{}),attending:ev.interestedCount||0,title:ev.title||'',startTime:ev.startTime||null,promoters:(ev.promoters||[]).map(p=>({id:p.id,name:p.name})),genres:(ev.genres||[]).map(g=>g.name||g).filter(Boolean)});
             }
           }catch(e){}
         }
@@ -3859,6 +3916,14 @@ function _setupChipInput(inputId,chipsId){
 /* Add a competitor (ID-first flow — name auto-filled from RA verification) */
 let _compVerifyTimer=null;
 let _selectedComp=null;
+let _compSearchType='promoter'; // default to promoter
+function _setCompType(type){
+  _compSearchType=type;
+  const vBtn=document.getElementById('obCompTypeVenue');
+  const pBtn=document.getElementById('obCompTypePromoter');
+  if(vBtn){vBtn.style.opacity=type==='venue'?'1':'0.5';vBtn.classList.toggle('active',type==='venue')}
+  if(pBtn){pBtn.style.opacity=type==='promoter'?'1':'0.5';pBtn.classList.toggle('active',type==='promoter')}
+}
 function _setupCompetitorVerifier(){
   const inp=document.getElementById('obCompetitorSearch');
   if(!inp||inp._compACBound)return;
@@ -3870,39 +3935,84 @@ function _setupCompetitorVerifier(){
   inp.addEventListener('input',()=>{
     clearTimeout(timer);
     _selectedComp=null;
-    if(addBtn){addBtn.style.opacity='0.4';addBtn.style.pointerEvents='none'}
-    const q=inp.value.trim().toLowerCase();
+    const q=inp.value.trim();
+    const ql=q.toLowerCase();
+    // Visual hint — dim button when no input
+    if(addBtn){
+      addBtn.style.opacity=q.length>=2?'1':'0.5';
+    }
     if(q.length<2){dd.classList.remove('open');dd.innerHTML='';return}
-    timer=setTimeout(()=>{
-      // Search venues from city cache
-      const cache=getCache();
-      const venueMap=new Map();
-      if(cache&&cache.events){
-        for(const ev of cache.events){
-          if(ev.venue&&ev.venue!=='?'){
-            const vn=ev.venue;
-            if(!venueMap.has(vn))venueMap.set(vn,{name:vn,id:ev.venueId||null,count:0,type:'venue'});
-            venueMap.get(vn).count++;
+    
+    // If input looks like an RA ID (all digits), do RA lookup
+    const isId=/^\d+$/.test(q)&&q.length>=3;
+    
+    // Show immediate feedback for ID input
+    if(isId){
+      const status=document.getElementById('obCompVerifyStatus');
+      if(status){status.textContent='Looking up ID '+q+'…';status.style.color='var(--text-faint)'}
+      if(addBtn){addBtn.style.opacity='1';addBtn.style.pointerEvents='auto'}
+    }
+    
+    timer=setTimeout(async()=>{
+      const items=[];
+      
+      if(isId){
+        // RA ID lookup — use selected type (Venue or Promoter toggle)
+        const status=document.getElementById('obCompVerifyStatus');
+        try{
+          let name=null,type=_compSearchType;
+          if(_compSearchType==='venue'){
+            const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({query:'query V($id:ID!){venue(id:$id){id name}}',variables:{id:q}})
+            }).then(r=>r.json()).catch(()=>null);
+            name=r?.data?.venue?.name;
+          }else{
+            const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({query:'query P($id:ID!){promoter(id:$id){id name}}',variables:{id:q}})
+            }).then(r=>r.json()).catch(()=>null);
+            name=r?.data?.promoter?.name;
+          }
+          if(name){
+            _selectedComp={name,id:parseInt(q),type};
+            if(status){status.textContent='✓ '+name+' ('+type+')';status.style.color='var(--green)'}
+          }else{
+            if(status){status.textContent='No '+_compSearchType+' found with ID '+q;status.style.color='var(--amber)'}
+          }
+        }catch(e){
+          if(status){status.textContent='Lookup failed';status.style.color='var(--amber)'}
+        }
+        return;
+      } else {
+        // Name search — venues from cache + promoters from known IDs
+        const cache=getCache();
+        const venueMap=new Map();
+        if(cache&&cache.events){
+          for(const ev of cache.events){
+            if(ev.venue&&ev.venue!=='?'){
+              const vn=ev.venue;
+              if(!venueMap.has(vn))venueMap.set(vn,{name:vn,id:ev.venueId||null,count:0,type:'venue'});
+              venueMap.get(vn).count++;
+            }
           }
         }
+        const venues=[...venueMap.values()]
+          .filter(v=>v.name.toLowerCase().includes(ql)&&v.count>=3)
+          .sort((a,b)=>b.count-a.count)
+          .slice(0,6);
+        
+        const promos=Object.entries(RA_PROMOTER_IDS)
+          .filter(([k])=>k.includes(ql))
+          .map(([k,id])=>({name:k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '),id,count:0,type:'promoter'}))
+          .slice(0,4);
+        
+        items.push(...venues,...promos);
       }
-      const venues=[...venueMap.values()]
-        .filter(v=>v.name.toLowerCase().includes(q)&&v.count>=3) // must have 3+ events
-        .sort((a,b)=>b.count-a.count)
-        .slice(0,6);
       
-      // Search promoters from RA_PROMOTER_IDS
-      const promos=Object.entries(RA_PROMOTER_IDS)
-        .filter(([k])=>k.includes(q))
-        .map(([k,id])=>({name:k.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '),id,count:0,type:'promoter'}))
-        .slice(0,4);
-      
-      const items=[...venues,...promos].slice(0,8);
       if(!items.length){dd.classList.remove('open');dd.innerHTML='';return}
       
-      dd.innerHTML=items.map((it,i)=>`<div class="ac-item" data-idx="${i}">
+      dd.innerHTML=items.slice(0,8).map((it,i)=>`<div class="ac-item" data-idx="${i}">
         <div><div class="ac-name">${esc(it.name)}</div>
-        <div class="ac-sub">${it.type==='venue'?'Venue · '+it.count+' events':'Promoter'}${it.id?' · ID '+it.id:''}</div></div>
+        <div class="ac-sub">${it.type==='venue'?'Venue'+(it.count?' · '+it.count+' events':''):'Promoter'}${it.id?' · ID '+it.id:''}</div></div>
       </div>`).join('');
       dd.classList.add('open');
       dd.querySelectorAll('.ac-item').forEach((el,i)=>el.addEventListener('click',()=>{
@@ -3911,7 +4021,7 @@ function _setupCompetitorVerifier(){
         dd.classList.remove('open');dd.innerHTML='';
         if(addBtn){addBtn.style.opacity='1';addBtn.style.pointerEvents='auto'}
       }));
-    },200);
+    },isId?600:200); // longer delay for ID lookup (API call)
   });
   
   inp.addEventListener('keydown',e=>{
@@ -3932,34 +4042,60 @@ function _setupCompetitorVerifier(){
 function _addCompetitorFromSearch(){
   const inp=document.getElementById('obCompetitorSearch');
   const list=document.getElementById('obCompetitorList');
-  const addBtn=document.getElementById('obCompAddBtn');
   if(!inp||!list)return;
   
-  const name=inp.value.trim();
-  if(!name)return;
+  const raw=inp.value.trim();
+  if(!raw){inp.focus();return}
   if(list.querySelectorAll('.competitor-entry').length>=5)return;
   
-  // Use selected comp data if available, otherwise just use the typed name
-  const raId=_selectedComp?.name?.toLowerCase()===name.toLowerCase()?_selectedComp.id:null;
+  // Determine name and ID
+  let name=_selectedComp?.name||null;
+  let raId=_selectedComp?.id||null;
   
-  // Build entry (reuse existing _addCompetitor logic with name)
+  if(/^\d+$/.test(raw)){
+    // User typed an ID
+    raId=parseInt(raw);
+    if(!name)name=null; // resolve async below
+  } else if(!name){
+    name=raw; // user typed a name
+  }
+  
+  const displayName=name||'ID '+raId;
+  
   const entry=document.createElement('div');
   entry.className='competitor-entry';
   entry.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:3px;font-size:0.78rem';
-  entry.dataset.name=name;
+  entry.dataset.name=name||(raId?'ID:'+raId:raw);
   entry.dataset.raId=raId||'';
-  entry.innerHTML='<span style="flex:1;font-family:var(--disp);font-weight:600;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px">'+esc(name)+'</span>'
+  entry.innerHTML='<span style="flex:1;font-family:var(--disp);font-weight:600;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px" data-comp-name>'+esc(displayName)+'</span>'
     +(raId?'<span style="font-family:var(--mono);color:var(--amber);font-size:0.62rem;flex-shrink:0">ID '+raId+'</span>':'')
     +'<span style="cursor:pointer;color:var(--text-faint);font-size:0.9rem;padding:0 4px;line-height:1;flex-shrink:0" onclick="this.parentElement.remove();_updateCompetitorInputVisibility();_updateCompCount()" title="Remove">✕</span>';
   list.appendChild(entry);
   
+  // If name unknown and we have an ID, resolve async using selected type
+  if(!name&&raId){
+    const resolveType=_compSearchType||'promoter';
+    (async()=>{
+      try{
+        const query=resolveType==='venue'
+          ?{query:'query V($id:ID!){venue(id:$id){id name}}',variables:{id:String(raId)}}
+          :{query:'query P($id:ID!){promoter(id:$id){id name}}',variables:{id:String(raId)}};
+        const r=await fetch('/api/ra/graphql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(query)}).then(r=>r.json());
+        const resolved=resolveType==='venue'?r?.data?.venue?.name:r?.data?.promoter?.name;
+        if(resolved){entry.dataset.name=resolved;const el=entry.querySelector('[data-comp-name]');if(el)el.textContent=resolved}
+      }catch(e){}
+    })();
+  }
+  
   // Reset
   inp.value='';
-  if(addBtn){addBtn.style.opacity='0.4';addBtn.style.pointerEvents='none'}
+  _selectedComp=null;
+  const _st=document.getElementById('obCompVerifyStatus');if(_st)_st.textContent='';
   _updateCompetitorInputVisibility();
   _updateCompCount();
   if(list.querySelectorAll('.competitor-entry').length<5)inp.focus();
 }
+
 
 
 
@@ -4145,7 +4281,7 @@ function obStep3Done(){
   const competitors=list?[...list.querySelectorAll('.competitor-entry')].map(el=>({
     name:(el.dataset.name||'').toLowerCase(),
     raId:parseInt(el.dataset.raId)||null
-  })).filter(c=>c.name):[];
+  })).filter(c=>c.name||c.raId):[];
   if(competitors.length<3){
     const status=document.getElementById('obCompVerifyStatus');
     if(status){status.textContent='Add at least '+(3-competitors.length)+' more competitor'+(3-competitors.length>1?'s':'');status.style.color='var(--amber)'}
@@ -4914,14 +5050,21 @@ async function runDiscover(){
     for(const c of afterRA){const hit=idxLookup(wwIdx,c.name);if(hit){sdX++;prog(null,65,'✗ '+c.name+' — '+hit.venue+' ('+hit.area+')')}else afterSD.push(c)}
     prog(afterSD.length+' clear',65);
 
-    // Pre-build artist event count index (used for quality floor + sort tiebreaker)
+    // Pre-build artist event count + attendance index
     const cache=getCache();
     const artistEventCounts=new Map();
+    const artistAttendance=new Map(); // norm → {total, count}
     if(cache&&cache.events){
       for(const ev of cache.events){
+        const att=ev.attending||0;
         for(const a of(ev.artists||[])){
           const n=norm(a);
           artistEventCounts.set(n,(artistEventCounts.get(n)||0)+1);
+          if(att>0){
+            if(!artistAttendance.has(n))artistAttendance.set(n,{total:0,count:0});
+            const entry=artistAttendance.get(n);
+            entry.total+=att;entry.count++;
+          }
         }
       }
     }
@@ -4968,7 +5111,10 @@ async function runDiscover(){
       }
       
       c.bcn=0;c.global=0;
-      c._cacheEvents=artistEventCounts.get(norm(c.name))||0;
+      const _cn=norm(c.name);
+      c._cacheEvents=artistEventCounts.get(_cn)||0;
+      const _att=artistAttendance.get(_cn);
+      c._avgAttendance=_att?Math.round(_att.total/_att.count):0;
       wd.push(c);
     }
     if(genreSkipped)prog(null,95,genreSkipped+' artists excluded by genre');
@@ -5008,9 +5154,12 @@ async function runDiscover(){
       const sourceBonus=(a.sources?.length||1)*5;
       const scBonus=(a.sources||[]).includes('sc_similar')?15:0;
       const compBonus=(a.sources||[]).includes('competitor')?20:0; // competitor intelligence = high value
-      // Sparse penalty: artists with no genre data or no cache presence get pushed down
+      // Sparse penalty: artists with no genre data get pushed down
       const sparsePenalty=(!a.genres||!a.genres.length)?-10:0;
-      a._compositeScore=dnaScore*0.5 + fusionScore*0.3 + sourceBonus + scBonus + compBonus + sparsePenalty;
+      // Proven draw bonus: high RA attendance in this city = people actually go see them
+      const avgAtt=a._avgAttendance||0;
+      const drawBonus=avgAtt>=500?15:avgAtt>=200?10:avgAtt>=50?5:0;
+      a._compositeScore=dnaScore*0.5 + fusionScore*0.3 + sourceBonus + scBonus + compBonus + sparsePenalty + drawBonus;
     }
     qual.sort((a,b)=>(b._compositeScore||0)-(a._compositeScore||0)||(b._cacheEvents||0)-(a._cacheEvents||0));
     prog('Done — '+qual.length+' artists found',100);
@@ -5178,6 +5327,7 @@ function renderDiscover(arts,hasDNA,diag){
           (a.routeCity?'Playing <b>'+esc(a.routeCity)+'</b> '+esc(a.routeDate||'')+'. ':'')+
           (cb.length?'Booked by '+cb.map(x=>esc(x.venue)).join(', ')+'. ':'')+
           (hasMomentum?'Interest rising '+a.momentum+'.':'')+
+          (a._avgAttendance>0?' Avg '+a._avgAttendance+' going per show in '+cn+'.':'')+
           (a.lastBcnMonths?' Last here '+a.lastBcnMonths+' months ago.':a.neverPlayed?' Never played '+cn+'.':'')+
         '</div>'+
         '<div class="v3-acts">'+
