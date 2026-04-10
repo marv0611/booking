@@ -4873,6 +4873,7 @@ function rteProgReset(){document.getElementById('rteProg').classList.remove('vis
 
 /* ═══ DISCOVER ═══ */
 let _discoverRunning=false;
+let _discoverDNA=null; // snapshot of DNA at search start
 async function runDiscover(){
   if(_discoverRunning)return;_discoverRunning=true;
   let text=document.getElementById('seedInput').value.trim();
@@ -4914,7 +4915,8 @@ async function runDiscover(){
   const _landing=document.getElementById('discoverLanding');
   progReset();document.getElementById('dRes').innerHTML='';const cn=cityName();
   // Snapshot DNA at search start — prevents race condition if background rebuild finishes mid-search
-  const snapshotDNA=getDNA();
+  _discoverDNA=getDNA();
+  const snapshotDNA=_discoverDNA;
 
   try{
     // Step 1: resolve seeds — RA cache index (instant, no API calls)
@@ -5269,7 +5271,7 @@ function renderDiscover(arts,hasDNA,diag){
     const initial=(a.name||'?').charAt(0).toUpperCase();
     const scoreNum=a._dna?.score||a.fusionScore||a.score||'';
     // Sort genres: user's DNA-matching genres first, then others
-    const _fpG=snapshotDNA?getDNAFingerprint(snapshotDNA):null;
+    const _fpG=(snapshotDNA||_discoverDNA||getDNA())?getDNAFingerprint(snapshotDNA||_discoverDNA||getDNA()):null;
     const sortedGenres=(a.genres||[]).slice().sort((ga,gb)=>{
       const gaGroup=_genreGroupMap.get(ga.toLowerCase());
       const gbGroup=_genreGroupMap.get(gb.toLowerCase());
